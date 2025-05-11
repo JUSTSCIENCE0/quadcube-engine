@@ -49,10 +49,12 @@ FetchContent_Declare(
     GIT_TAG        main # TODO: use commit hash when it will be ready
 )
 FetchContent_MakeAvailable(common-utils)
+set_property(TARGET common-utils PROPERTY FOLDER "externals")
 
 set(QCE_INTERFACE
-    include/qce/math.hpp
     include/qce/about.hpp
+    include/qce/common.hpp
+    include/qce/math.hpp
 )
 
 set(QCE_MATH
