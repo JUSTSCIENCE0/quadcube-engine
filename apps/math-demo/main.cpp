@@ -3,7 +3,7 @@
 //
 // License: MIT
 
-#include <qce/math/vector_def.hpp>
+#include <qce/math.hpp>
 
 using namespace QCE;
 
