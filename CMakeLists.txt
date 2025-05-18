@@ -92,6 +92,8 @@ target_link_libraries(${PROJECT_NAME}
         common-utils
 )
 
+set_property(TARGET ${PROJECT_NAME} PROPERTY INCLUDE_DIR_POSTFIX "qce")
+
 if (BUILD_QCE_APPS)
     add_subdirectory(apps)
 endif(BUILD_QCE_APPS)
@@ -99,3 +101,5 @@ endif(BUILD_QCE_APPS)
 if (BUILD_QCE_TEST)
     add_subdirectory(tests)
 endif(BUILD_QCE_TEST)
+
+target_interface_group(common-utils)

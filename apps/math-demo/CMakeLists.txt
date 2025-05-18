@@ -17,3 +17,5 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps")
+target_interface_group(common-utils)
+target_interface_group(quadcube-engine)
