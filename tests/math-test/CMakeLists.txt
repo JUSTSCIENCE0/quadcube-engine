@@ -8,6 +8,11 @@ cmake_minimum_required(VERSION 3.22)
 project(math-test)
 
 add_executable(${PROJECT_NAME}
+    vector_operations_conformance.cpp
+    vector_operations_template.hpp
+    vector_operations_def.cpp
+    vector_operations.hpp
+
     main.cpp
 )
 
