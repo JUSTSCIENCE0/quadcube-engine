@@ -15,4 +15,6 @@ if (NOT TARGET googletest)
     set_property(TARGET gmock gmock_main gtest gtest_main PROPERTY FOLDER "tests/externals")
 endif() # googletest
 
+set(QCE_TEST_DATA_PATH ${CMAKE_CURRENT_LIST_DIR}/test_data)
+
 add_subdirectory(math-test)

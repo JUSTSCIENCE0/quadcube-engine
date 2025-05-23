@@ -22,6 +22,11 @@ target_link_libraries(${PROJECT_NAME}
         quadcube-engine
 )
 
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+        QCE_TEST_DATA_PATH="${QCE_TEST_DATA_PATH}"
+    )
+
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "tests")
 target_interface_group(common-utils)
 target_interface_group(quadcube-engine)
