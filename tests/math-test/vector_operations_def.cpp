@@ -6,5 +6,5 @@
 // TODO: autogenerate this file
 
 #define CU_COMPILE_UNIT_DEF
-#include "vector_operations_template.hpp"
+#include "vector_operations_impl.hpp"
 
