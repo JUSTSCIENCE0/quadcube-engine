@@ -54,6 +54,7 @@ set_property(TARGET common-utils PROPERTY FOLDER "externals")
 set(QCE_INTERFACE
     include/qce/about.hpp
     include/qce/common.hpp
+    include/qce/vector.hpp
     include/qce/math.hpp
 )
 
