@@ -12,17 +12,21 @@ add_executable(${PROJECT_NAME}
     vector_operations_iface.hpp
     vector_operations_impl.hpp
 
-# TODO: generate this files
-    vector_operations_def.cpp
-    vector_operations.hpp
-
     main.cpp
 )
+
+include(SimdAutogenerator)
+generate_simd_compile_units(${PROJECT_NAME} vector_operations DEF)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         GTest::gtest
         quadcube-engine
+)
+
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
 )
 
 target_compile_definitions(${PROJECT_NAME}

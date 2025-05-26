@@ -50,6 +50,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(common-utils)
 set_property(TARGET common-utils PROPERTY FOLDER "externals")
+list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")
 
 set(QCE_INTERFACE
     include/qce/about.hpp
