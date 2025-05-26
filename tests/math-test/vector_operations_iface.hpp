@@ -9,5 +9,12 @@
 #include <stdint.h>
 
 namespace QCE {
-    void CU_SIMD_IFACE(vector_addition)(const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(vector_addition)
+        (const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(vector_subtraction)
+        (const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(vector_multiplication)
+        (const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(vector_division)
+        (const float* values, int64_t count, float* results);
 }
