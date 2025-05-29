@@ -48,6 +48,9 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/JUSTSCIENCE0/common-utils.git
     GIT_TAG        main # TODO: use commit hash when it will be ready
 )
+if (BUILD_QCE_TEST)
+    set(ENABLE_CU_TEST_UTILS ON CACHE BOOL "" FORCE)
+endif(BUILD_QCE_TEST)
 FetchContent_MakeAvailable(common-utils)
 set_property(TARGET common-utils PROPERTY FOLDER "externals")
 list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")

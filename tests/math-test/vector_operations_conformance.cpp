@@ -3,29 +3,40 @@
 //
 // License: MIT
 
-// TODO: common-utils: test_utils::conformance_test
-
-#include <gtest/gtest.h>
-
-#include <cu/file-utils.hpp>
+#include <cu/test-utils.hpp>
 
 #include "vector_operations.hpp"
 
+
 TEST(VectorOperationsConformance, Addition) {
+    static const std::string INPUT_FILE = QCE_TEST_DATA_PATH "/16000000_float32.bin";
+    static const std::string OUTPUT_FILE = QCE_TEST_DATA_PATH "/vector4_float32_sum.bin";
+
+    auto test_list = CU::make_conformance_list({ QCE::vector_addition_def });
+    CU::run_conformance_test<float>(INPUT_FILE, OUTPUT_FILE, test_list);
+}
+
+TEST(VectorOperationsConformance, Subtraction) {
     static constexpr auto INPUT_FILE = QCE_TEST_DATA_PATH "/16000000_float32.bin";
-    static constexpr auto OUTPUT_FILE = QCE_TEST_DATA_PATH "/vector4_float32_sum.bin";
+    static constexpr auto OUTPUT_FILE = QCE_TEST_DATA_PATH "/vector4_float32_diff.bin";
 
-    auto input_data = CU::load_data_from_file<float>(INPUT_FILE);
-    ASSERT_FALSE(input_data.empty());
+    auto test_list = CU::make_conformance_list({ QCE::vector_subtraction_def });
+    CU::run_conformance_test<float>(INPUT_FILE, OUTPUT_FILE, test_list);
+}
 
-    auto output_data = CU::load_data_from_file<float>(OUTPUT_FILE);
-    ASSERT_FALSE(output_data.empty());
+TEST(VectorOperationsConformance, Multiplication) {
+    static constexpr auto INPUT_FILE = QCE_TEST_DATA_PATH "/16000000_float32.bin";
+    static constexpr auto OUTPUT_FILE = QCE_TEST_DATA_PATH "/vector4_float32_mul.bin";
 
-    std::vector<float> result_data(output_data.size());
-    QCE::vector_addition_def(input_data.data(), input_data.size(), result_data.data());
+    auto test_list = CU::make_conformance_list({ QCE::vector_multiplication_def });
+    CU::run_conformance_test<float>(INPUT_FILE, OUTPUT_FILE, test_list);
+}
 
-    for (unsigned i = 0; i < output_data.size(); i++) {
-        ASSERT_EQ(output_data[i], result_data[i]);
-    }
+TEST(VectorOperationsConformance, Division) {
+    static constexpr auto INPUT_FILE = QCE_TEST_DATA_PATH "/16000000_float32.bin";
+    static constexpr auto OUTPUT_FILE = QCE_TEST_DATA_PATH "/vector4_float32_div.bin";
+
+    auto test_list = CU::make_conformance_list({ QCE::vector_division_def });
+    CU::run_conformance_test<float>(INPUT_FILE, OUTPUT_FILE, test_list);
 }
 

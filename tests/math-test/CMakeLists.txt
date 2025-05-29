@@ -20,7 +20,6 @@ generate_simd_compile_units(${PROJECT_NAME} vector_operations DEF)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
-        GTest::gtest
         quadcube-engine
 )
 
