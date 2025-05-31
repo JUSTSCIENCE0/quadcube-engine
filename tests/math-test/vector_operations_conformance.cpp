@@ -7,36 +7,35 @@
 
 #include "vector_operations.hpp"
 
+CU_CONFORMANCE_TEST_SIMD(
+    VectorAddition,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "vector4_float32_sum.bin",
+    QCE::vector_addition,
+    def)
 
-TEST(VectorOperationsConformance, Addition) {
-    static const std::string INPUT_FILE = QCE_TEST_DATA_PATH "/16000000_float32.bin";
-    static const std::string OUTPUT_FILE = QCE_TEST_DATA_PATH "/vector4_float32_sum.bin";
+CU_CONFORMANCE_TEST_SIMD(
+    VectorSubtraction,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "vector4_float32_diff.bin",
+    QCE::vector_subtraction,
+    def)
 
-    auto test_list = CU::make_conformance_list({ QCE::vector_addition_def });
-    CU::run_conformance_test<float>(INPUT_FILE, OUTPUT_FILE, test_list);
-}
+CU_CONFORMANCE_TEST_SIMD(
+    VectorMultiplication,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "vector4_float32_mul.bin",
+    QCE::vector_multiplication,
+    def)
 
-TEST(VectorOperationsConformance, Subtraction) {
-    static constexpr auto INPUT_FILE = QCE_TEST_DATA_PATH "/16000000_float32.bin";
-    static constexpr auto OUTPUT_FILE = QCE_TEST_DATA_PATH "/vector4_float32_diff.bin";
-
-    auto test_list = CU::make_conformance_list({ QCE::vector_subtraction_def });
-    CU::run_conformance_test<float>(INPUT_FILE, OUTPUT_FILE, test_list);
-}
-
-TEST(VectorOperationsConformance, Multiplication) {
-    static constexpr auto INPUT_FILE = QCE_TEST_DATA_PATH "/16000000_float32.bin";
-    static constexpr auto OUTPUT_FILE = QCE_TEST_DATA_PATH "/vector4_float32_mul.bin";
-
-    auto test_list = CU::make_conformance_list({ QCE::vector_multiplication_def });
-    CU::run_conformance_test<float>(INPUT_FILE, OUTPUT_FILE, test_list);
-}
-
-TEST(VectorOperationsConformance, Division) {
-    static constexpr auto INPUT_FILE = QCE_TEST_DATA_PATH "/16000000_float32.bin";
-    static constexpr auto OUTPUT_FILE = QCE_TEST_DATA_PATH "/vector4_float32_div.bin";
-
-    auto test_list = CU::make_conformance_list({ QCE::vector_division_def });
-    CU::run_conformance_test<float>(INPUT_FILE, OUTPUT_FILE, test_list);
-}
+CU_CONFORMANCE_TEST_SIMD(
+    VectorDivision,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "vector4_float32_div.bin",
+    QCE::vector_division,
+    def)
 
