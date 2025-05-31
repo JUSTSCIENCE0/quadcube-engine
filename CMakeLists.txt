@@ -23,6 +23,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         /wd4505 /wd4100
         /DUNICODE /D_UNICODE  # use unicode
         /MP                   # multiple processes build
+        /Zc:preprocessor      # __VA_ARG__ support
     )
 elseif ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
     add_compile_options(

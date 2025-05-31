@@ -73,14 +73,14 @@ namespace QCE {
 #endif
 
 #define VECTOR_OPERATION(operation) \
-static inline vector& operator ##operation= (vector& lhs, const vector& rhs) { \
-    lhs.x operation= rhs.x; \
-    lhs.y operation= rhs.y; \
-    lhs.z operation= rhs.z; \
-    lhs.w operation= rhs.w; \
+static inline vector& operator operation ##= (vector& lhs, const vector& rhs) { \
+    lhs.x operation ##= rhs.x; \
+    lhs.y operation ##= rhs.y; \
+    lhs.z operation ##= rhs.z; \
+    lhs.w operation ##= rhs.w; \
     return lhs; \
 } \
-static inline vector operator ##operation (const vector& lhs, const vector& rhs) { \
+static inline vector operator operation (const vector& lhs, const vector& rhs) { \
     vector result = { \
         lhs.x operation rhs.x, \
         lhs.y operation rhs.y, \
@@ -98,14 +98,14 @@ static inline vector operator ##operation (const vector& lhs, const vector& rhs)
 #undef VECTOR_OPERATION
 
 #define VECTOR_WITH_SCALAR_OPERATION(operation) \
-static inline vector& operator ##operation= (vector& lhs, float rhs) { \
-    lhs.x operation= rhs; \
-    lhs.y operation= rhs; \
-    lhs.z operation= rhs; \
-    lhs.w operation= rhs; \
+static inline vector& operator operation ##= (vector& lhs, float rhs) { \
+    lhs.x operation ##= rhs; \
+    lhs.y operation ##= rhs; \
+    lhs.z operation ##= rhs; \
+    lhs.w operation ##= rhs; \
     return lhs; \
 } \
-static inline vector operator ##operation (const vector& lhs, float rhs) { \
+static inline vector operator operation (const vector& lhs, float rhs) { \
     vector result = { \
         lhs.x operation rhs, \
         lhs.y operation rhs, \
