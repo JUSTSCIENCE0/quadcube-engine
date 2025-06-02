@@ -25,10 +25,7 @@ namespace QCE {
             auto rhs = vector_init(values[4], values[5], values[6], values[7]); \
 \
             auto res = lhs operation rhs; \
-            results[0] = res.x; \
-            results[1] = res.y; \
-            results[2] = res.z; \
-            results[3] = res.w; \
+            vector_copy(res, results); \
 \
             values += 8; \
             count -= 8; \

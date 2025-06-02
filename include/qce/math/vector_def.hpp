@@ -40,6 +40,15 @@ namespace QCE {
     }
 
     // functions
+    static inline void vector_copy(const vector& value, float* dst) noexcept {
+        dst[0] = value.x;
+        dst[1] = value.y;
+        dst[2] = value.z;
+        dst[3] = value.w;
+    }
+
+    // member access
+    // TODO - getters
 
     // operators
     static inline vector operator+ (const vector& value) noexcept {
