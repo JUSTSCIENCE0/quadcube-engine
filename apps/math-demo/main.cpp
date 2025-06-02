@@ -3,12 +3,14 @@
 //
 // License: MIT
 
-#include <qce/math.hpp>
+//#include <qce/math.hpp>
+#include <qce/math/vector_sse2.hpp>
+#include <array>
 
 using namespace QCE;
 
 int main() {
-    auto v1 = vector_init(1, 2, 3, 4);
+    auto v1 = vector_init(1.0f, 2.0f, 3.0f, 4.0f);
     auto v2 = vector_init(4, 3, 2, 1);
 
     auto vp = v1 + v2;
