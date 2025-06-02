@@ -31,11 +31,6 @@ namespace QCE {
         return { x, y, z, w };
     }
 
-    static inline vector vector_init(
-            int x, int y, int z, int w) noexcept {
-        return { float(x), float(y), float(z), float(w) };
-    }
-
     static inline vector vector_zero() noexcept {
         return { 0.0, 0.0, 0.0, 0.0 };
     }
@@ -47,40 +42,40 @@ namespace QCE {
     // functions
 
     // operators
-    static inline vector operator+ (const vector& value) {
+    static inline vector operator+ (const vector& value) noexcept {
         return value;
     }
 
-    static inline vector operator- (const vector& value) {
+    static inline vector operator- (const vector& value) noexcept {
         return { -value.x, -value.y, -value.z, -value.w };
     }
 
 #ifdef __INTELLISENSE__
     // just for disable IntelliSense errors
-    static inline vector& operator+=(vector & lhs, const vector & rhs);
-    static inline vector  operator+(const vector& lhs, const vector& rhs);
-    static inline vector& operator-=(vector& lhs, const vector& rhs);
-    static inline vector  operator-(const vector& lhs, const vector& rhs);
-    static inline vector& operator*=(vector& lhs, const vector& rhs);
-    static inline vector  operator*(const vector& lhs, const vector& rhs);
-    static inline vector& operator/=(vector& lhs, const vector& rhs);
-    static inline vector  operator/(const vector& lhs, const vector& rhs);
+    static inline vector& operator+=(vector & lhs, const vector & rhs) noexcept;
+    static inline vector  operator+(const vector& lhs, const vector& rhs) noexcept;
+    static inline vector& operator-=(vector& lhs, const vector& rhs) noexcept;
+    static inline vector  operator-(const vector& lhs, const vector& rhs) noexcept;
+    static inline vector& operator*=(vector& lhs, const vector& rhs) noexcept;
+    static inline vector  operator*(const vector& lhs, const vector& rhs) noexcept;
+    static inline vector& operator/=(vector& lhs, const vector& rhs) noexcept;
+    static inline vector  operator/(const vector& lhs, const vector& rhs) noexcept;
 
-    static inline vector& operator*= (vector& lhs, float rhs);
-    static inline vector  operator*(const vector& lhs, float rhs);
-    static inline vector& operator/= (vector& lhs, float rhs);
-    static inline vector  operator/(const vector& lhs, float rhs);
+    static inline vector& operator*= (vector& lhs, float rhs) noexcept;
+    static inline vector  operator*(const vector& lhs, float rhs) noexcept;
+    static inline vector& operator/= (vector& lhs, float rhs) noexcept;
+    static inline vector  operator/(const vector& lhs, float rhs) noexcept;
 #endif
 
 #define VECTOR_OPERATION(operation) \
-static inline vector& operator operation ##= (vector& lhs, const vector& rhs) { \
+static inline vector& operator operation ##= (vector& lhs, const vector& rhs) noexcept { \
     lhs.x operation ##= rhs.x; \
     lhs.y operation ##= rhs.y; \
     lhs.z operation ##= rhs.z; \
     lhs.w operation ##= rhs.w; \
     return lhs; \
 } \
-static inline vector operator operation (const vector& lhs, const vector& rhs) { \
+static inline vector operator operation (const vector& lhs, const vector& rhs) noexcept { \
     vector result = { \
         lhs.x operation rhs.x, \
         lhs.y operation rhs.y, \
@@ -98,14 +93,14 @@ static inline vector operator operation (const vector& lhs, const vector& rhs) {
 #undef VECTOR_OPERATION
 
 #define VECTOR_WITH_SCALAR_OPERATION(operation) \
-static inline vector& operator operation ##= (vector& lhs, float rhs) { \
+static inline vector& operator operation ##= (vector& lhs, float rhs) noexcept { \
     lhs.x operation ##= rhs; \
     lhs.y operation ##= rhs; \
     lhs.z operation ##= rhs; \
     lhs.w operation ##= rhs; \
     return lhs; \
 } \
-static inline vector operator operation (const vector& lhs, float rhs) { \
+static inline vector operator operation (const vector& lhs, float rhs) noexcept { \
     vector result = { \
         lhs.x operation rhs, \
         lhs.y operation rhs, \
