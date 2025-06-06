@@ -51,6 +51,7 @@ FetchContent_Declare(
 )
 if (BUILD_QCE_TEST)
     set(ENABLE_CU_TEST_UTILS ON CACHE BOOL "" FORCE)
+    set(ENABLE_CU_PROFILE ON CACHE BOOL "" FORCE)
 endif(BUILD_QCE_TEST)
 FetchContent_MakeAvailable(common-utils)
 set_property(TARGET common-utils PROPERTY FOLDER "externals")
