@@ -13,7 +13,8 @@ CU_CONFORMANCE_TEST_SIMD(
     "16000000_float32.bin",
     "vector4_float32_sum.bin",
     QCE::vector_addition,
-    def, sse2)
+    ( def, sse2 )
+)
 
 CU_CONFORMANCE_TEST_SIMD(
     VectorSubtraction,
@@ -21,7 +22,8 @@ CU_CONFORMANCE_TEST_SIMD(
     "16000000_float32.bin",
     "vector4_float32_diff.bin",
     QCE::vector_subtraction,
-    def, sse2)
+    ( def, sse2 )
+)
 
 CU_CONFORMANCE_TEST_SIMD(
     VectorMultiplication,
@@ -29,7 +31,8 @@ CU_CONFORMANCE_TEST_SIMD(
     "16000000_float32.bin",
     "vector4_float32_mul.bin",
     QCE::vector_multiplication,
-    def, sse2)
+    ( def, sse2 )
+)
 
 CU_CONFORMANCE_TEST_SIMD(
     VectorDivision,
@@ -37,5 +40,6 @@ CU_CONFORMANCE_TEST_SIMD(
     "16000000_float32.bin",
     "vector4_float32_div.bin",
     QCE::vector_division,
-    def, sse2)
+    ( def, sse2 )
+)
 
