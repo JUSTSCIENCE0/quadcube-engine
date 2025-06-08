@@ -9,6 +9,7 @@ project(math-test)
 
 add_executable(${PROJECT_NAME}
     vector_operations_conformance.cpp
+    vector_operations_performance.cpp
     vector_operations_iface.hpp
     vector_operations_impl.hpp
 
