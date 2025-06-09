@@ -28,34 +28,34 @@
 namespace QCE {
     // vector type
 
-    struct alignas(16) vector {
-        __m128 data;
-    };
+    using vector = __m128;
 
     // initializers
     static inline vector VECTOR_CALL vector_init(
             float x, float y, float z, float w) noexcept {
-        return { _mm_set_ps(x, y, z, w) };
+        return _mm_set_ps(x, y, z, w);
     }
 
     static inline vector VECTOR_CALL vector_zero() noexcept {
-        return { _mm_setzero_ps() };
+        return _mm_setzero_ps();
     }
 
     static inline vector VECTOR_CALL vector_one() noexcept {
-        return { _mm_set1_ps(1.0) };
+        return _mm_set1_ps(1.0);
     }
 
     // functions
     static inline void VECTOR_CALL vector_copy(vector value, float* dst) noexcept {
         assert(dst);
-        value.data = _mm_shuffle_ps(value.data, value.data, _MM_SHUFFLE(0, 1, 2, 3));
-        _mm_storeu_ps(dst, value.data);
+        value = _mm_shuffle_ps(value, value, _MM_SHUFFLE(0, 1, 2, 3));
+        _mm_storeu_ps(dst, value);
     }
 
     // member access
     // TODO - getters
 
+// GCC & CLang already have operators for __m128
+#ifdef _MSC_VER
     // operators
     static inline vector VECTOR_CALL operator+ (const vector& value) noexcept {
         return value;
@@ -121,5 +121,5 @@ namespace QCE {
         lhs = lhs / rhs;
         return lhs;
     }
-
+#endif
 }
