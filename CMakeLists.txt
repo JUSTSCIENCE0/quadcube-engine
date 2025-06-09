@@ -32,7 +32,7 @@ elseif ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES 
         -Wdisabled-optimization -Wformat=2 -Winit-self 
         -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual
         -Wredundant-decls -Wshadow -Wsign-promo 
-        -Wstrict-overflow=5 -Wundef -Wno-unused -Wno-variadic-macros
+        -Wundef -Wno-unused -Wno-variadic-macros
         -Wno-parentheses -Wno-unused-parameter -fdiagnostics-show-option
         -Werror
     )
