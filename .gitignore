@@ -1,4 +1,4 @@
 build*/
 tests/test_data*/
-.vscode/settings.json
+.vscode/*
 **/generated/**
