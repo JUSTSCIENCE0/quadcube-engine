@@ -63,11 +63,11 @@ namespace QCE {
 
     static inline vector VECTOR_CALL operator- (vector value) noexcept {
         auto zero_vector = _mm_setzero_ps();
-        return { _mm_sub_ps(zero_vector, value.data) };
+        return { _mm_sub_ps(zero_vector, value) };
     }
 
     static inline vector VECTOR_CALL operator+(vector lhs, vector rhs) noexcept {
-        return { _mm_add_ps(lhs.data, rhs.data) };
+        return { _mm_add_ps(lhs, rhs) };
     }
 
     static inline vector& VECTOR_CALL operator+=(vector& lhs, vector rhs) noexcept {
@@ -76,7 +76,7 @@ namespace QCE {
     }
 
     static inline vector VECTOR_CALL operator-(vector lhs, vector rhs) noexcept {
-        return { _mm_sub_ps(lhs.data, rhs.data) };
+        return { _mm_sub_ps(lhs, rhs) };
     }
 
     static inline vector& VECTOR_CALL operator-=(vector& lhs, vector rhs) noexcept {
@@ -85,7 +85,7 @@ namespace QCE {
     }
 
     static inline vector VECTOR_CALL operator*(vector lhs, vector rhs) noexcept {
-        return { _mm_mul_ps(lhs.data, rhs.data) };
+        return { _mm_mul_ps(lhs, rhs) };
     }
 
     static inline vector& VECTOR_CALL operator*=(vector& lhs, vector rhs) noexcept {
@@ -94,7 +94,7 @@ namespace QCE {
     }
 
     static inline vector VECTOR_CALL operator/(vector lhs, vector rhs) noexcept {
-        return { _mm_div_ps(lhs.data, rhs.data) };
+        return { _mm_div_ps(lhs, rhs) };
     }
 
     static inline vector& VECTOR_CALL operator/=(vector& lhs, vector rhs) noexcept {
@@ -104,7 +104,7 @@ namespace QCE {
 
     static inline vector VECTOR_CALL operator*(vector lhs, float rhs) noexcept {
         auto scale = _mm_set1_ps(rhs);
-        return { _mm_mul_ps(lhs.data, scale) };
+        return { _mm_mul_ps(lhs, scale) };
     }
 
     static inline vector& VECTOR_CALL operator*= (vector& lhs, float rhs) noexcept {
@@ -114,7 +114,7 @@ namespace QCE {
 
     static inline vector VECTOR_CALL operator/(vector lhs, float rhs) noexcept {
         auto scale = _mm_set1_ps(rhs);
-        return { _mm_div_ps(lhs.data, scale) };
+        return { _mm_div_ps(lhs, scale) };
     }
 
     static inline vector& VECTOR_CALL operator/= (vector& lhs, float rhs) noexcept {
