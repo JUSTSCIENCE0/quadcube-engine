@@ -14,6 +14,8 @@
 
 #define VECTOR_IMPLEMENTATION "default"
 
+#include <cassert>
+
 namespace QCE {
 
     // vector type
@@ -31,6 +33,11 @@ namespace QCE {
         return { x, y, z, w };
     }
 
+    static inline vector vector_init(const float* arr) noexcept {
+        assert(arr);
+        return { arr[0], arr[1], arr[2], arr[3]};
+    }
+
     static inline vector vector_zero() noexcept {
         return { 0.0, 0.0, 0.0, 0.0 };
     }
@@ -41,6 +48,7 @@ namespace QCE {
 
     // functions
     static inline void vector_copy(const vector& value, float* dst) noexcept {
+        assert(dst);
         dst[0] = value.x;
         dst[1] = value.y;
         dst[2] = value.z;
