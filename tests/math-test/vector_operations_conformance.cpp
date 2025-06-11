@@ -43,3 +43,20 @@ CU_CONFORMANCE_TEST_SIMD(
     ( def, sse2 )
 )
 
+CU_CONFORMANCE_TEST_SIMD(
+    VectorScalarMultiplication,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "vector4_float32_scalar_mul.bin",
+    QCE::vector_scalar_multiplication,
+    (def, sse2)
+)
+
+CU_CONFORMANCE_TEST_SIMD(
+    VectorScalarDivision,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "vector4_float32_scalar_div.bin",
+    QCE::vector_scalar_division,
+    (def, sse2)
+)

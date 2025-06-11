@@ -37,5 +37,26 @@ namespace QCE {
     VECTOR_BINARY_OPERATOR(subtraction,    -)
     VECTOR_BINARY_OPERATOR(multiplication, *)
     VECTOR_BINARY_OPERATOR(division,       /)
+
+#define VECTOR_WITH_SCALAR_OPERATION(name, operation) \
+    void CU_SIMD(vector_scalar_ ##name)(const float* values, int64_t count, float* results) { \
+        assert(values && count && results); \
+        assert(count % 5 == 0); \
+\
+        while (count > 0) { \
+            auto rhs = values[0]; \
+            auto lhs = vector_init(values + 1); \
+\
+            auto res = lhs operation rhs; \
+            vector_copy(res, results); \
+\
+            values += 5; \
+            count -= 5; \
+            results += 4; \
+        } \
+    }
+
+    VECTOR_WITH_SCALAR_OPERATION(multiplication, *)
+    VECTOR_WITH_SCALAR_OPERATION(division,       /)
 }
 
