@@ -33,7 +33,12 @@ namespace QCE {
     // initializers
     static inline vector VECTOR_CALL vector_init(
             float x, float y, float z, float w) noexcept {
-        return _mm_set_ps(x, y, z, w);
+        return _mm_set_ps(w, z, y, x);
+    }
+
+    static inline vector vector_init(const float* arr) noexcept {
+        assert(arr);
+        return _mm_loadu_ps(arr);
     }
 
     static inline vector VECTOR_CALL vector_zero() noexcept {
@@ -47,7 +52,6 @@ namespace QCE {
     // functions
     static inline void VECTOR_CALL vector_copy(vector value, float* dst) noexcept {
         assert(dst);
-        value = _mm_shuffle_ps(value, value, _MM_SHUFFLE(0, 1, 2, 3));
         _mm_storeu_ps(dst, value);
     }
 
@@ -63,11 +67,11 @@ namespace QCE {
 
     static inline vector VECTOR_CALL operator- (vector value) noexcept {
         auto zero_vector = _mm_setzero_ps();
-        return { _mm_sub_ps(zero_vector, value) };
+        return _mm_sub_ps(zero_vector, value);
     }
 
     static inline vector VECTOR_CALL operator+(vector lhs, vector rhs) noexcept {
-        return { _mm_add_ps(lhs, rhs) };
+        return _mm_add_ps(lhs, rhs);
     }
 
     static inline vector& VECTOR_CALL operator+=(vector& lhs, vector rhs) noexcept {
@@ -85,7 +89,7 @@ namespace QCE {
     }
 
     static inline vector VECTOR_CALL operator*(vector lhs, vector rhs) noexcept {
-        return { _mm_mul_ps(lhs, rhs) };
+        return _mm_mul_ps(lhs, rhs);
     }
 
     static inline vector& VECTOR_CALL operator*=(vector& lhs, vector rhs) noexcept {
@@ -94,7 +98,7 @@ namespace QCE {
     }
 
     static inline vector VECTOR_CALL operator/(vector lhs, vector rhs) noexcept {
-        return { _mm_div_ps(lhs, rhs) };
+        return _mm_div_ps(lhs, rhs);
     }
 
     static inline vector& VECTOR_CALL operator/=(vector& lhs, vector rhs) noexcept {
@@ -104,7 +108,7 @@ namespace QCE {
 
     static inline vector VECTOR_CALL operator*(vector lhs, float rhs) noexcept {
         auto scale = _mm_set1_ps(rhs);
-        return { _mm_mul_ps(lhs, scale) };
+        return _mm_mul_ps(lhs, scale);
     }
 
     static inline vector& VECTOR_CALL operator*= (vector& lhs, float rhs) noexcept {
@@ -114,7 +118,7 @@ namespace QCE {
 
     static inline vector VECTOR_CALL operator/(vector lhs, float rhs) noexcept {
         auto scale = _mm_set1_ps(rhs);
-        return { _mm_div_ps(lhs, scale) };
+        return _mm_div_ps(lhs, scale);
     }
 
     static inline vector& VECTOR_CALL operator/= (vector& lhs, float rhs) noexcept {
