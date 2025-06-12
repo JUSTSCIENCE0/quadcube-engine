@@ -73,5 +73,21 @@ namespace QCE {
             results += 1;
         }
     }
+
+    void CU_SIMD(vector_calc_normalized)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 4 == 0);
+
+        while (count > 0) {
+            auto value = vector_init(values);
+
+            auto res = vector_normalize(value);
+            vector_copy(res, results);
+
+            values += 4;
+            count -= 4;
+            results += 4;
+        }
+    }
 }
 

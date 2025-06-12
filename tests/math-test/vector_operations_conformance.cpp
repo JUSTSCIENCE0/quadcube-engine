@@ -69,3 +69,12 @@ CU_CONFORMANCE_TEST_SIMD(
     QCE::vector_calc_length,
     (def, sse2)
 )
+
+CU_CONFORMANCE_TEST_SIMD(
+    VectorNormalization,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "vector4_float32_normalize.bin",
+    QCE::vector_calc_normalized,
+    (def, sse2)
+)

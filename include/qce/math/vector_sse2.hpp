@@ -30,6 +30,23 @@ namespace QCE {
 
     using vector = __m128;
 
+// GCC & CLang already have operators for __m128
+#ifdef _MSC_VER
+    static inline vector& VECTOR_CALL operator+=(vector& lhs, vector rhs) noexcept;
+    static inline vector  VECTOR_CALL operator+ (vector  lhs, vector rhs) noexcept;
+    static inline vector& VECTOR_CALL operator-=(vector& lhs, vector rhs) noexcept;
+    static inline vector  VECTOR_CALL operator- (vector  lhs, vector rhs) noexcept;
+    static inline vector& VECTOR_CALL operator*=(vector& lhs, vector rhs) noexcept;
+    static inline vector  VECTOR_CALL operator* (vector  lhs, vector rhs) noexcept;
+    static inline vector& VECTOR_CALL operator/=(vector& lhs, vector rhs) noexcept;
+    static inline vector  VECTOR_CALL operator/ (vector  lhs, vector rhs) noexcept;
+
+    static inline vector& VECTOR_CALL operator*=(vector& lhs, float rhs) noexcept;
+    static inline vector  VECTOR_CALL operator* (vector  lhs, float rhs) noexcept;
+    static inline vector& VECTOR_CALL operator/=(vector& lhs, float rhs) noexcept;
+    static inline vector  VECTOR_CALL operator/ (vector  lhs, float rhs) noexcept;
+#endif
+
     // initializers
     static inline vector VECTOR_CALL vector_init(
             float x, float y, float z, float w) noexcept {
@@ -58,6 +75,11 @@ namespace QCE {
         sums = _mm_add_ss(sums, shuf);
         sums = _mm_sqrt_ps(sums);
         return _mm_cvtss_f32(sums);
+    }
+
+    static inline vector vector_normalize(const vector& value) noexcept {
+        auto vec_len = vector_length(value);
+        return value / vec_len;
     }
 
     static inline void VECTOR_CALL vector_copy(vector value, float* dst) noexcept {
