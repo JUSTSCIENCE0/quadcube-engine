@@ -58,5 +58,20 @@ namespace QCE {
 
     VECTOR_WITH_SCALAR_OPERATION(multiplication, *)
     VECTOR_WITH_SCALAR_OPERATION(division,       /)
+
+    void CU_SIMD(vector_calc_length)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 4 == 0);
+
+        while (count > 0) {
+            auto value = vector_init(values);
+
+            results[0] = vector_length(value);
+
+            values += 4;
+            count -= 4;
+            results += 1;
+        }
+    }
 }
 

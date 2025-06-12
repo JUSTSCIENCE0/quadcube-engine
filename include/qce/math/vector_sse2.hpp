@@ -50,6 +50,16 @@ namespace QCE {
     }
 
     // functions
+    static inline float VECTOR_CALL vector_length(vector value) noexcept {
+        value = _mm_mul_ps(value, value);
+        auto shuf = _mm_shuffle_ps(value, value, _MM_SHUFFLE(2, 3, 0, 1));
+        auto sums = _mm_add_ps(value, shuf);
+        shuf = _mm_movehl_ps(shuf, sums);
+        sums = _mm_add_ss(sums, shuf);
+        sums = _mm_sqrt_ps(sums);
+        return _mm_cvtss_f32(sums);
+    }
+
     static inline void VECTOR_CALL vector_copy(vector value, float* dst) noexcept {
         assert(dst);
         _mm_storeu_ps(dst, value);

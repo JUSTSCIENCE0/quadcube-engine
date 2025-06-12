@@ -15,6 +15,7 @@
 #define VECTOR_IMPLEMENTATION "default"
 
 #include <cassert>
+#include <cmath>
 
 namespace QCE {
 
@@ -47,6 +48,14 @@ namespace QCE {
     }
 
     // functions
+    static inline float vector_length(const vector& value) noexcept {
+        auto sqr_x = value.x * value.x;
+        auto sqr_y = value.y * value.y;
+        auto sqr_z = value.z * value.z;
+        auto sqr_w = value.w * value.w;
+        return std::sqrtf(sqr_x + sqr_y + sqr_z + sqr_w);
+    }
+
     static inline void vector_copy(const vector& value, float* dst) noexcept {
         assert(dst);
         dst[0] = value.x;

@@ -21,4 +21,6 @@ namespace QCE {
         (const float* values, int64_t count, float* results);
     void CU_SIMD_IFACE(vector_scalar_division)
         (const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(vector_calc_length)
+        (const float* values, int64_t count, float* results);
 }

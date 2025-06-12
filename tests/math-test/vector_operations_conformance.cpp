@@ -60,3 +60,12 @@ CU_CONFORMANCE_TEST_SIMD(
     QCE::vector_scalar_division,
     (def, sse2)
 )
+
+CU_CONFORMANCE_TEST_SIMD(
+    VectorLength,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "vector4_float32_length.bin",
+    QCE::vector_calc_length,
+    (def, sse2)
+)
