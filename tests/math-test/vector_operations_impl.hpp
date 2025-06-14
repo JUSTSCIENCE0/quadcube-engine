@@ -105,5 +105,22 @@ namespace QCE {
             results += 1;
         }
     }
+
+    void CU_SIMD(vector_calc_cross_product)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 8 == 0);
+
+        while (count > 0) {
+            auto lhs = vector_init(values);
+            auto rhs = vector_init(values + 4);
+
+            auto res = vector_cross_product(lhs, rhs);
+            vector_copy(res, results);
+
+            values += 8;
+            count -= 8;
+            results += 4;
+        }
+    }
 }
 

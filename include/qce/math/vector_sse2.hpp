@@ -91,6 +91,16 @@ namespace QCE {
         return _mm_cvtss_f32(sums);
     }
 
+    static inline vector VECTOR_CALL vector_cross_product(vector lhs, vector rhs) noexcept {
+        auto lhs_yzx = _mm_shuffle_ps(lhs, lhs, _MM_SHUFFLE(3, 0, 2, 1));
+        auto rhs_yzx = _mm_shuffle_ps(rhs, rhs, _MM_SHUFFLE(3, 0, 2, 1));
+
+        lhs = _mm_mul_ps(lhs, rhs_yzx);
+        rhs = _mm_mul_ps(rhs, lhs_yzx);
+        auto res = _mm_sub_ps(lhs, rhs);
+        return _mm_shuffle_ps(res, res, _MM_SHUFFLE(3, 0, 2, 1));
+    }
+
     static inline void VECTOR_CALL vector_copy(vector value, float* dst) noexcept {
         assert(dst);
         _mm_storeu_ps(dst, value);

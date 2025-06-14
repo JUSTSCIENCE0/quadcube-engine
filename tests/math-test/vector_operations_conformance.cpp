@@ -87,3 +87,12 @@ CU_CONFORMANCE_TEST_SIMD(
     QCE::vector_calc_dot_product,
     (def, sse2)
 )
+
+CU_CONFORMANCE_TEST_SIMD(
+    VectorCrossProduct,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "vector4_float32_cross_product.bin",
+    QCE::vector_calc_cross_product,
+    (def, sse2)
+)

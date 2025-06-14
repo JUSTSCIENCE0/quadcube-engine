@@ -80,6 +80,15 @@ namespace QCE {
         return (product.x + product.y) + (product.z + product.w);
     }
 
+    static inline vector vector_cross_product(const vector& lhs, const vector& rhs) noexcept {
+        return {
+            .x = lhs.y * rhs.z - lhs.z * rhs.y,
+            .y = lhs.z * rhs.x - lhs.x * rhs.z,
+            .z = lhs.x * rhs.y - lhs.y * rhs.x,
+            .w = 0.0f
+        };
+    }
+
     static inline void vector_copy(const vector& value, float* dst) noexcept {
         assert(dst);
         dst[0] = value.x;
