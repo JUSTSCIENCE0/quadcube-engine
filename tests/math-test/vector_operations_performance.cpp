@@ -72,3 +72,11 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE::vector_calc_normalized,
     (def, sse2)
 )
+
+CU_PERFORMANCE_TEST_SIMD(
+    VectorDotProduct,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    QCE::vector_calc_dot_product,
+    (def, sse2)
+)

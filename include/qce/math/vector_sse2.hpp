@@ -77,9 +77,18 @@ namespace QCE {
         return _mm_cvtss_f32(sums);
     }
 
-    static inline vector vector_normalize(const vector& value) noexcept {
+    static inline vector VECTOR_CALL vector_normalize(vector value) noexcept {
         auto vec_len = vector_length(value);
         return value / vec_len;
+    }
+
+    static inline float VECTOR_CALL vector_dot_product(vector lhs, vector rhs) noexcept {
+        auto product = _mm_mul_ps(lhs, rhs);
+        auto shuf = _mm_shuffle_ps(product, product, _MM_SHUFFLE(2, 3, 0, 1));
+        auto sums = _mm_add_ps(product, shuf);
+        shuf = _mm_movehl_ps(shuf, sums);
+        sums = _mm_add_ss(sums, shuf);
+        return _mm_cvtss_f32(sums);
     }
 
     static inline void VECTOR_CALL vector_copy(vector value, float* dst) noexcept {

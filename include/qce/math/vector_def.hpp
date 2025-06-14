@@ -75,6 +75,11 @@ namespace QCE {
         return value / vec_len;
     }
 
+    static inline float vector_dot_product(const vector& lhs, const vector& rhs) noexcept {
+        auto product = lhs * rhs;
+        return (product.x + product.y) + (product.z + product.w);
+    }
+
     static inline void vector_copy(const vector& value, float* dst) noexcept {
         assert(dst);
         dst[0] = value.x;

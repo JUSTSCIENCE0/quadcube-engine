@@ -18,7 +18,7 @@ namespace QCE {
 #define VECTOR_BINARY_OPERATOR(name, operation) \
     void CU_SIMD(vector_ ##name)(const float* values, int64_t count, float* results) { \
         assert(values && count && results); \
-        assert(count % 4 == 0); \
+        assert(count % 8 == 0); \
 \
         while (count > 0) { \
             auto lhs = vector_init(values[0], values[1], values[2], values[3]); \
@@ -87,6 +87,22 @@ namespace QCE {
             values += 4;
             count -= 4;
             results += 4;
+        }
+    }
+
+    void CU_SIMD(vector_calc_dot_product)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 8 == 0);
+
+        while (count > 0) {
+            auto lhs = vector_init(values);
+            auto rhs = vector_init(values + 4);
+
+            results[0] = vector_dot_product(lhs, rhs);
+
+            values += 8;
+            count -= 8;
+            results += 1;
         }
     }
 }
