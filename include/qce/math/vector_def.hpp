@@ -14,6 +14,8 @@
 
 #define VECTOR_IMPLEMENTATION "default"
 
+#include <cu/math-utils.hpp>
+
 #include <cassert>
 #include <cmath>
 
@@ -62,6 +64,15 @@ namespace QCE {
     }
 
     // functions
+    static inline bool vector_is_equal(
+            const vector& lhs, const vector& rhs,
+            float absolute_epsilon = 1e-5f, float relative_epsilon = 1e-5f) noexcept {
+        return CU::is_equal(lhs.x, rhs.x, absolute_epsilon, relative_epsilon) &&
+               CU::is_equal(lhs.y, rhs.y, absolute_epsilon, relative_epsilon) &&
+               CU::is_equal(lhs.z, rhs.z, absolute_epsilon, relative_epsilon) &&
+               CU::is_equal(lhs.w, rhs.w, absolute_epsilon, relative_epsilon);
+    }
+
     static inline float vector_length(const vector& value) noexcept {
         auto sqr_x = value.x * value.x;
         auto sqr_y = value.y * value.y;

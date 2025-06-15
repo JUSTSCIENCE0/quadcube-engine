@@ -29,4 +29,6 @@ namespace QCE {
         (const float* values, int64_t count, float* results);
     void CU_SIMD_IFACE(vector_calc_cross_product)
         (const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(vector_equality)
+        (const float* values, int64_t count, float* results);
 }

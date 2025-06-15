@@ -67,6 +67,33 @@ namespace QCE {
     }
 
     // functions
+    static inline bool VECTOR_CALL vector_is_equal(
+            vector lhs, vector rhs,
+            float absolute_epsilon = 1e-5f, float relative_epsilon = 1e-5f) noexcept {
+        // calc abs delta
+        static const auto sign_mask = _mm_set1_ps(-0.f);
+        auto abs_delta = _mm_sub_ps(lhs, rhs);
+        abs_delta = _mm_andnot_ps(sign_mask, abs_delta);
+
+        // compare with absolute_epsilon
+        auto abs_eps = _mm_set1_ps(absolute_epsilon);
+        auto abs_res_vec = _mm_cmplt_ps(abs_delta, abs_eps);
+        auto abs_res = _mm_movemask_ps(abs_res_vec);
+        if (abs_res == 0b1111)
+            return true;
+
+        // compare with relative_epsilon
+        auto max_val = _mm_max_ps(lhs, rhs);
+        auto rel_eps = _mm_set1_ps(relative_epsilon);
+        rel_eps = _mm_mul_ps(max_val, rel_eps);
+        auto rel_res_vec = _mm_cmplt_ps(abs_delta, rel_eps);
+        auto rel_res = _mm_movemask_ps(rel_res_vec);
+        if (rel_res == 0b1111)
+            return true;
+
+        return false;
+    }
+
     static inline float VECTOR_CALL vector_length(vector value) noexcept {
         value = _mm_mul_ps(value, value);
         auto shuf = _mm_shuffle_ps(value, value, _MM_SHUFFLE(2, 3, 0, 1));

@@ -122,5 +122,21 @@ namespace QCE {
             results += 4;
         }
     }
+
+    void CU_SIMD(vector_equality)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 8 == 0);
+
+        while (count > 0) {
+            auto lhs = vector_init(values);
+            auto rhs = vector_init(values + 4);
+
+            results[0] = vector_is_equal(lhs, rhs) ? 1.0f : 0.0f;
+
+            values += 8;
+            count -= 8;
+            results += 1;
+        }
+    }
 }
 
