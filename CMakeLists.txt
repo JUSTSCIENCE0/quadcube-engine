@@ -61,6 +61,7 @@ set(QCE_INTERFACE
     include/qce/about.hpp
     include/qce/common.hpp
     include/qce/vector.hpp
+    include/qce/matrix.hpp
     include/qce/math.hpp
 )
 

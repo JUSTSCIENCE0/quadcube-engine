@@ -6,4 +6,4 @@
 #pragma once
 
 #include <qce/vector.hpp>
-
+#include <qce/matrix.hpp>
