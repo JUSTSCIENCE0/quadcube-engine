@@ -9,3 +9,6 @@
 #define CU_IMPLEMENTATION_INCLUDE_EXT hpp
 
 #include <cu/simd-utils.hpp>
+
+#undef CU_IMPLEMENTATION_INCLUDE
+#undef CU_IMPLEMENTATION_INCLUDE_EXT

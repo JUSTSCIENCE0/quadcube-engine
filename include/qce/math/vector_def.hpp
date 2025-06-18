@@ -6,7 +6,7 @@
 #pragma once
 
 // do not include manually
-// used only in the composition of the math.hpp
+// used only in the composition of the vector.hpp and matrix implementation
 
 #if defined(VECTOR_IMPLEMENTATION)
 #  error "Vector already implemented in other file. Check includes!"
