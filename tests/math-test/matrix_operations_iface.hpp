@@ -11,4 +11,6 @@
 namespace QCE {
     void CU_SIMD_IFACE(matrix_addition)
         (const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(matrix_subtraction)
+        (const float* values, int64_t count, float* results);
 }
