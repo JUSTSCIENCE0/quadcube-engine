@@ -33,3 +33,21 @@ CU_CONFORMANCE_TEST_SIMD(
     QCE::matrix_multiplication,
     (def)
 )
+
+CU_CONFORMANCE_TEST_SIMD(
+    VectorMatrixMultiplication,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "matrix4x4_float32_vector_matrix_mul.bin",
+    QCE::vector_matrix_multiplication,
+    (def)
+)
+
+CU_CONFORMANCE_TEST_SIMD(
+    MatrixVectorMultiplication,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "matrix4x4_float32_matrix_vector_mul.bin",
+    QCE::matrix_vector_multiplication,
+    (def)
+)

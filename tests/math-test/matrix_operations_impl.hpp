@@ -59,5 +59,35 @@ namespace QCE {
             results += 16;
         }
     }
+
+    void CU_SIMD(vector_matrix_multiplication)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 20 == 0);
+        while (count > 0) {
+            auto lhs = vector_init(values);
+            auto rhs = matrix_init(values + 4);
+            auto res = lhs * rhs;
+            vector_copy(res, results);
+
+            values += 20;
+            count -= 20;
+            results += 4;
+        }
+    }
+
+    void CU_SIMD(matrix_vector_multiplication)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 20 == 0);
+        while (count > 0) {
+            auto rhs = vector_init(values);
+            auto lhs = matrix_init(values + 4);
+            auto res = lhs * rhs;
+            vector_copy(res, results);
+
+            values += 20;
+            count -= 20;
+            results += 4;
+        }
+    }
 }
 
