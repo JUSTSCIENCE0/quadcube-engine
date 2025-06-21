@@ -24,3 +24,12 @@ CU_CONFORMANCE_TEST_SIMD(
     QCE::matrix_subtraction,
     (def)
 )
+
+CU_CONFORMANCE_TEST_SIMD(
+    MatrixMultiplication,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "matrix4x4_float32_mul.bin",
+    QCE::matrix_multiplication,
+    (def)
+)
