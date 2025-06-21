@@ -13,11 +13,17 @@ add_executable(${PROJECT_NAME}
     vector_operations_iface.hpp
     vector_operations_impl.hpp
 
+    matrix_operations_conformance.cpp
+    #matrix_operations_performance.cpp
+    matrix_operations_iface.hpp
+    matrix_operations_impl.hpp
+
     main.cpp
 )
 
 include(SimdAutogenerator)
 generate_simd_compile_units(${PROJECT_NAME} vector_operations DEF SSE2)
+generate_simd_compile_units(${PROJECT_NAME} matrix_operations DEF)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE

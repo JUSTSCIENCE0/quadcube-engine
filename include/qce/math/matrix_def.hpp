@@ -66,7 +66,12 @@ namespace QCE {
     }
 
     static inline matrix matrix_zero() noexcept {
-        return {};
+        return {
+            0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f
+        };
     }
 
     static inline matrix operator+(const matrix& lhs, const matrix& rhs) noexcept {
@@ -167,6 +172,14 @@ namespace QCE {
             vector_dot_product(v3, rhs),
             vector_dot_product(v4, rhs)
         );
+    }
+
+    static inline void matrix_copy(const matrix& value, float* dst) noexcept {
+        assert(dst);
+        dst[0]  = value.x1; dst[1]  = value.y1; dst[2]  = value.z1; dst[3]  = value.w1;
+        dst[4]  = value.x2; dst[5]  = value.y2; dst[6]  = value.z2; dst[7]  = value.w2;
+        dst[8]  = value.x3; dst[9]  = value.y3; dst[10] = value.z3; dst[11] = value.w3;
+        dst[12] = value.x4; dst[13] = value.y4; dst[14] = value.z4; dst[15] = value.w4;
     }
 
     static inline matrix matrix_transpose(const matrix& mtx) noexcept {

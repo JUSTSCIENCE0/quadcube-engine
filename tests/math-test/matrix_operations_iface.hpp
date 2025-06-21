@@ -1,0 +1,14 @@
+// Copyright (c) 2025, Yakov Usoltsev
+// Email: yakovmen62@gmail.com
+//
+// License: MIT
+
+// do not include manually
+// used for generation matrix_operations.hpp
+
+#include <stdint.h>
+
+namespace QCE {
+    void CU_SIMD_IFACE(matrix_addition)
+        (const float* values, int64_t count, float* results);
+}
