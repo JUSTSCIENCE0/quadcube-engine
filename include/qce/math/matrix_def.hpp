@@ -103,10 +103,10 @@ namespace QCE {
     }
 
     static inline matrix operator*(const matrix& lhs, const matrix& rhs) noexcept {
-        auto v1 = vector_init(lhs.x1, lhs.y1, lhs.w1, lhs.z1);
-        auto v2 = vector_init(lhs.x2, lhs.y2, lhs.w2, lhs.z2);
-        auto v3 = vector_init(lhs.x3, lhs.y3, lhs.w3, lhs.z3);
-        auto v4 = vector_init(lhs.x4, lhs.y4, lhs.w4, lhs.z4);
+        auto v1 = vector_init(lhs.x1, lhs.y1, lhs.z1, lhs.w1);
+        auto v2 = vector_init(lhs.x2, lhs.y2, lhs.z2, lhs.w2);
+        auto v3 = vector_init(lhs.x3, lhs.y3, lhs.z3, lhs.w3);
+        auto v4 = vector_init(lhs.x4, lhs.y4, lhs.z4, lhs.w4);
 
         auto vx = vector_init(rhs.x1, rhs.x2, rhs.x3, rhs.x4);
         auto vy = vector_init(rhs.y1, rhs.y2, rhs.y3, rhs.y4);
