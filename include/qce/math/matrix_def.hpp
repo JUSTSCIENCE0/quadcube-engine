@@ -181,9 +181,16 @@ namespace QCE {
         };
     }
 
-    static inline float matrix_determinant(const matrix& mtx) noexcept {
-        // TODO
-        return 0.0f;
+    static inline float matrix_determinant(const matrix& m) noexcept {
+        return
+              m.x1 * m.y2 * m.z3 * m.w4 + m.x1 * m.z2 * m.w3 * m.y4 + m.x1 * m.w2 * m.y3 * m.z4
+            - m.x1 * m.y2 * m.w3 * m.z4 - m.x1 * m.z2 * m.y3 * m.w4 - m.x1 * m.w2 * m.z3 * m.y4
+            + m.y1 * m.x2 * m.w3 * m.z4 + m.y1 * m.z2 * m.x3 * m.w4 + m.y1 * m.w2 * m.z3 * m.x4
+            - m.y1 * m.x2 * m.z3 * m.w4 - m.y1 * m.z2 * m.w3 * m.x4 - m.y1 * m.w2 * m.x3 * m.z4
+            + m.z1 * m.x2 * m.y3 * m.w4 + m.z1 * m.y2 * m.w3 * m.x4 + m.z1 * m.w2 * m.x3 * m.y4
+            - m.z1 * m.x2 * m.w3 * m.y4 - m.z1 * m.y2 * m.x3 * m.w4 - m.z1 * m.w2 * m.y3 * m.x4
+            + m.w1 * m.z2 * m.y3 * m.x4 + m.w1 * m.x2 * m.z3 * m.y4 + m.w1 * m.y2 * m.x3 * m.z4
+            - m.w1 * m.x2 * m.y3 * m.z4 - m.w1 * m.y2 * m.z3 * m.x4 - m.w1 * m.z2 * m.x3 * m.y4;
     }
 
     static inline matrix matrix_inverse(const matrix& mtx) noexcept {

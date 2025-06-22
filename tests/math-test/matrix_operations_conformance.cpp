@@ -51,3 +51,21 @@ CU_CONFORMANCE_TEST_SIMD(
     QCE::matrix_vector_multiplication,
     (def)
 )
+
+CU_CONFORMANCE_TEST_SIMD(
+    MatrixTranspose,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "matrix4x4_float32_transpose.bin",
+    QCE::matrix_calc_transpose,
+    (def)
+)
+
+CU_CONFORMANCE_TEST_SIMD(
+    MatrixDeterminant,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "matrix4x4_float32_det.bin",
+    QCE::matrix_calc_determinant,
+    (def)
+)
