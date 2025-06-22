@@ -193,8 +193,50 @@ namespace QCE {
             - m.w1 * m.x2 * m.y3 * m.z4 - m.w1 * m.y2 * m.z3 * m.x4 - m.w1 * m.z2 * m.x3 * m.y4;
     }
 
-    static inline matrix matrix_inverse(const matrix& mtx) noexcept {
-        // TODO
-        return {};
+    static inline matrix matrix_inverse(const matrix& m, float det) noexcept {
+        assert(0.0f != det);
+
+        const float A2323 = m.z3 * m.w4 - m.z4 * m.w3;
+        const float A1323 = m.z2 * m.w4 - m.z4 * m.w2;
+        const float A1223 = m.z2 * m.w3 - m.z3 * m.w2;
+        const float A0323 = m.z1 * m.w4 - m.z4 * m.w1;
+        const float A0223 = m.z1 * m.w3 - m.z3 * m.w1;
+        const float A0123 = m.z1 * m.w2 - m.z2 * m.w1;
+
+        const float A2313 = m.y3 * m.w4 - m.y4 * m.w3;
+        const float A1313 = m.y2 * m.w4 - m.y4 * m.w2;
+        const float A1213 = m.y2 * m.w3 - m.y3 * m.w2;
+        const float A0313 = m.y1 * m.w4 - m.y4 * m.w1;
+        const float A0213 = m.y1 * m.w3 - m.y3 * m.w1;
+        const float A0113 = m.y1 * m.w2 - m.y2 * m.w1;
+
+        const float A2303 = m.y3 * m.z4 - m.y4 * m.z3;
+        const float A1303 = m.y2 * m.z4 - m.y4 * m.z2;
+        const float A1203 = m.y2 * m.z3 - m.y3 * m.z2;
+        const float A0303 = m.y1 * m.z4 - m.y4 * m.z1;
+        const float A0203 = m.y1 * m.z3 - m.y3 * m.z1;
+        const float A0103 = m.y1 * m.z2 - m.y2 * m.z1;
+
+        return {
+            .x1 =  (m.y2 * A2323 - m.y3 * A1323 + m.y4 * A1223) / det,
+            .y1 = -(m.y1 * A2323 - m.y3 * A0323 + m.y4 * A0223) / det,
+            .z1 =  (m.y1 * A1323 - m.y2 * A0323 + m.y4 * A0123) / det,
+            .w1 = -(m.y1 * A1223 - m.y2 * A0223 + m.y3 * A0123) / det,
+
+            .x2 = -(m.x2 * A2323 - m.x3 * A1323 + m.x4 * A1223) / det,
+            .y2 =  (m.x1 * A2323 - m.x3 * A0323 + m.x4 * A0223) / det,
+            .z2 = -(m.x1 * A1323 - m.x2 * A0323 + m.x4 * A0123) / det,
+            .w2 =  (m.x1 * A1223 - m.x2 * A0223 + m.x3 * A0123) / det,
+
+            .x3 =  (m.x2 * A2313 - m.x3 * A1313 + m.x4 * A1213) / det,
+            .y3 = -(m.x1 * A2313 - m.x3 * A0313 + m.x4 * A0213) / det,
+            .z3 =  (m.x1 * A1313 - m.x2 * A0313 + m.x4 * A0113) / det,
+            .w3 = -(m.x1 * A1213 - m.x2 * A0213 + m.x3 * A0113) / det,
+
+            .x4 = -(m.x2 * A2303 - m.x3 * A1303 + m.x4 * A1203) / det,
+            .y4 =  (m.x1 * A2303 - m.x3 * A0303 + m.x4 * A0203) / det,
+            .z4 = -(m.x1 * A1303 - m.x2 * A0303 + m.x4 * A0103) / det,
+            .w4 =  (m.x1 * A1203 - m.x2 * A0203 + m.x3 * A0103) / det
+        };
     }
 }

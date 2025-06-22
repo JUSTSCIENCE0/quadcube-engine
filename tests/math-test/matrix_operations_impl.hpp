@@ -116,5 +116,20 @@ namespace QCE {
             results += 1;
         }
     }
+
+    void CU_SIMD(matrix_calc_inverse)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 16 == 0);
+        while (count > 0) {
+            auto val = matrix_init(values);
+            auto det = matrix_determinant(val);
+            auto res = matrix_inverse(val, det);
+            matrix_copy(res, results);
+
+            values += 16;
+            count -= 16;
+            results += 16;
+        }
+    }
 }
 

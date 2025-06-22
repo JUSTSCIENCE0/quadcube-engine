@@ -69,3 +69,12 @@ CU_CONFORMANCE_TEST_SIMD(
     QCE::matrix_calc_determinant,
     (def)
 )
+
+CU_CONFORMANCE_TEST_SIMD(
+    MatrixInverse,
+    QCE_TEST_DATA_PATH,
+    "16000000_float32.bin",
+    "matrix4x4_float32_invert.bin",
+    QCE::matrix_calc_inverse,
+    (def)
+)
