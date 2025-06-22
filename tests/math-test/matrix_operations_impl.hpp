@@ -51,7 +51,7 @@ namespace QCE {
         while (count > 0) {
             auto lhs = matrix_init(values);
             auto rhs = matrix_init(values + 16);
-            auto res = lhs * rhs;
+            auto res = matrix_mul(lhs, rhs);
             matrix_copy(res, results);
 
             values += 32;
@@ -66,7 +66,7 @@ namespace QCE {
         while (count > 0) {
             auto lhs = vector_init(values);
             auto rhs = matrix_init(values + 4);
-            auto res = lhs * rhs;
+            auto res = vector_matrix_mul(lhs, rhs);
             vector_copy(res, results);
 
             values += 20;
@@ -81,7 +81,7 @@ namespace QCE {
         while (count > 0) {
             auto rhs = vector_init(values);
             auto lhs = matrix_init(values + 4);
-            auto res = lhs * rhs;
+            auto res = matrix_vector_mul(lhs, rhs);
             vector_copy(res, results);
 
             values += 20;

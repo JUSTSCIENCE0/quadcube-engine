@@ -102,7 +102,7 @@ namespace QCE {
         return lhs;
     }
 
-    static inline matrix operator*(const matrix& lhs, const matrix& rhs) noexcept {
+    static inline matrix matrix_mul(const matrix& lhs, const matrix& rhs) noexcept {
         auto v1 = vector_init(lhs.x1, lhs.y1, lhs.z1, lhs.w1);
         auto v2 = vector_init(lhs.x2, lhs.y2, lhs.z2, lhs.w2);
         auto v3 = vector_init(lhs.x3, lhs.y3, lhs.z3, lhs.w3);
@@ -136,12 +136,7 @@ namespace QCE {
         };
     }
 
-    static inline matrix& operator*=(matrix& lhs, const matrix& rhs) noexcept {
-        lhs = lhs * rhs;
-        return lhs;
-    }
-
-    static inline vector operator*(const vector& lhs, const matrix& rhs) noexcept {
+    static inline vector vector_matrix_mul(const vector& lhs, const matrix& rhs) noexcept {
         auto vx = vector_init(rhs.x1, rhs.x2, rhs.x3, rhs.x4);
         auto vy = vector_init(rhs.y1, rhs.y2, rhs.y3, rhs.y4);
         auto vz = vector_init(rhs.z1, rhs.z2, rhs.z3, rhs.z4);
@@ -155,12 +150,7 @@ namespace QCE {
         );
     }
 
-    static inline vector& operator*=(vector& lhs, const matrix& rhs) noexcept {
-        lhs = lhs * rhs;
-        return lhs;
-    }
-
-    static inline vector operator*(const matrix& lhs, const vector& rhs) noexcept {
+    static inline vector matrix_vector_mul(const matrix& lhs, const vector& rhs) noexcept {
         auto v1 = vector_init(lhs.x1, lhs.y1, lhs.z1, lhs.w1);
         auto v2 = vector_init(lhs.x2, lhs.y2, lhs.z2, lhs.w2);
         auto v3 = vector_init(lhs.x3, lhs.y3, lhs.z3, lhs.w3);
