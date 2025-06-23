@@ -14,7 +14,7 @@ add_executable(${PROJECT_NAME}
     vector_operations_impl.hpp
 
     matrix_operations_conformance.cpp
-    #matrix_operations_performance.cpp
+    matrix_operations_performance.cpp
     matrix_operations_iface.hpp
     matrix_operations_impl.hpp
 
