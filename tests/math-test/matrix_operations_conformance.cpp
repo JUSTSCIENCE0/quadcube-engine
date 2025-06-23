@@ -13,7 +13,7 @@ CU_CONFORMANCE_TEST_SIMD(
     "16000000_float32.bin",
     "matrix4x4_float32_sum.bin",
     QCE::matrix_addition,
-    (def)
+    (def, sse2)
 )
 
 CU_CONFORMANCE_TEST_SIMD(
@@ -22,7 +22,7 @@ CU_CONFORMANCE_TEST_SIMD(
     "16000000_float32.bin",
     "matrix4x4_float32_diff.bin",
     QCE::matrix_subtraction,
-    (def)
+    (def, sse2)
 )
 
 CU_CONFORMANCE_TEST_SIMD(
