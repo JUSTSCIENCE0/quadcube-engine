@@ -52,7 +52,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     "16000000_float32.bin",
     QCE::matrix_calc_transpose,
-    (def)
+    (def, sse2)
 )
 
 CU_PERFORMANCE_TEST_SIMD(

@@ -127,8 +127,16 @@ namespace QCE {
     }
 
     static inline matrix VECTOR_CALL matrix_transpose(matrix mtx) noexcept {
-        // TODO
-        return {
+        auto lo12 = _mm_unpacklo_ps(mtx.v1, mtx.v2);
+        auto hi12 = _mm_unpackhi_ps(mtx.v1, mtx.v2);
+        auto lo34 = _mm_unpacklo_ps(mtx.v3, mtx.v4);
+        auto hi34 = _mm_unpackhi_ps(mtx.v3, mtx.v4);
+
+        return { 
+            _mm_movelh_ps(lo12, lo34),
+            _mm_movehl_ps(lo34, lo12),
+            _mm_movelh_ps(hi12, hi34),
+            _mm_movehl_ps(hi34, hi12)
         };
     }
 
