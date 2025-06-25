@@ -72,7 +72,7 @@ namespace QCE {
         };
     }
 
-    static inline matrix VECTOR_CALL operator+(matrix lhs, matrix rhs) noexcept {
+    static inline matrix VECTOR_CALL operator+(matrix lhs, const matrix& rhs) noexcept {
         return {
             _mm_add_ps(lhs.v1, rhs.v1),
             _mm_add_ps(lhs.v2, rhs.v2),
@@ -81,12 +81,12 @@ namespace QCE {
         };
     }
 
-    static inline matrix& VECTOR_CALL operator+=(matrix& lhs, matrix rhs) noexcept {
+    static inline matrix& VECTOR_CALL operator+=(matrix& lhs, const matrix& rhs) noexcept {
         lhs = lhs + rhs;
         return lhs;
     }
 
-    static inline matrix VECTOR_CALL operator-(matrix lhs, matrix rhs) noexcept {
+    static inline matrix VECTOR_CALL operator-(matrix lhs, const matrix& rhs) noexcept {
         return {
             _mm_sub_ps(lhs.v1, rhs.v1),
             _mm_sub_ps(lhs.v2, rhs.v2),
@@ -108,10 +108,65 @@ namespace QCE {
         _mm_storeu_ps(dst + 12, value.v4);
     }
 
-    static inline matrix VECTOR_CALL matrix_mul(matrix lhs, matrix rhs) noexcept {
-        // TODO
+    static inline matrix VECTOR_CALL matrix_transpose(matrix mtx) noexcept {
+        auto lo12 = _mm_unpacklo_ps(mtx.v1, mtx.v2);
+        auto hi12 = _mm_unpackhi_ps(mtx.v1, mtx.v2);
+        auto lo34 = _mm_unpacklo_ps(mtx.v3, mtx.v4);
+        auto hi34 = _mm_unpackhi_ps(mtx.v3, mtx.v4);
+
         return {
+            _mm_movelh_ps(lo12, lo34),
+            _mm_movehl_ps(lo34, lo12),
+            _mm_movelh_ps(hi12, hi34),
+            _mm_movehl_ps(hi34, hi12)
         };
+    }
+
+    static inline matrix VECTOR_CALL matrix_mul(matrix lhs, const matrix& rhs) noexcept {
+        matrix mul{};
+        auto rhst = matrix_transpose(rhs);
+
+        mul.v1 = _mm_mul_ps(lhs.v1, rhst.v1);
+        mul.v2 = _mm_mul_ps(lhs.v1, rhst.v2);
+        mul.v3 = _mm_mul_ps(lhs.v1, rhst.v3);
+        mul.v4 = _mm_mul_ps(lhs.v1, rhst.v4);
+        mul = matrix_transpose(mul);
+        lhs.v1 = _mm_add_ps(
+            _mm_add_ps(mul.v1, mul.v2),
+            _mm_add_ps(mul.v3, mul.v4)
+        );
+
+        mul.v1 = _mm_mul_ps(lhs.v2, rhst.v1);
+        mul.v2 = _mm_mul_ps(lhs.v2, rhst.v2);
+        mul.v3 = _mm_mul_ps(lhs.v2, rhst.v3);
+        mul.v4 = _mm_mul_ps(lhs.v2, rhst.v4);
+        mul = matrix_transpose(mul);
+        lhs.v2 = _mm_add_ps(
+            _mm_add_ps(mul.v1, mul.v2),
+            _mm_add_ps(mul.v3, mul.v4)
+        );
+
+        mul.v1 = _mm_mul_ps(lhs.v3, rhst.v1);
+        mul.v2 = _mm_mul_ps(lhs.v3, rhst.v2);
+        mul.v3 = _mm_mul_ps(lhs.v3, rhst.v3);
+        mul.v4 = _mm_mul_ps(lhs.v3, rhst.v4);
+        mul = matrix_transpose(mul);
+        lhs.v3 = _mm_add_ps(
+            _mm_add_ps(mul.v1, mul.v2),
+            _mm_add_ps(mul.v3, mul.v4)
+        );
+
+        mul.v1 = _mm_mul_ps(lhs.v4, rhst.v1);
+        mul.v2 = _mm_mul_ps(lhs.v4, rhst.v2);
+        mul.v3 = _mm_mul_ps(lhs.v4, rhst.v3);
+        mul.v4 = _mm_mul_ps(lhs.v4, rhst.v4);
+        mul = matrix_transpose(mul);
+        lhs.v4 = _mm_add_ps(
+            _mm_add_ps(mul.v1, mul.v2),
+            _mm_add_ps(mul.v3, mul.v4)
+        );
+
+        return lhs;
     }
 
     static inline vector VECTOR_CALL vector_matrix_mul(vector lhs, matrix rhs) noexcept {
@@ -123,20 +178,6 @@ namespace QCE {
     static inline vector VECTOR_CALL matrix_vector_mul(matrix lhs, vector rhs) noexcept {
         // TODO
         return {
-        };
-    }
-
-    static inline matrix VECTOR_CALL matrix_transpose(matrix mtx) noexcept {
-        auto lo12 = _mm_unpacklo_ps(mtx.v1, mtx.v2);
-        auto hi12 = _mm_unpackhi_ps(mtx.v1, mtx.v2);
-        auto lo34 = _mm_unpacklo_ps(mtx.v3, mtx.v4);
-        auto hi34 = _mm_unpackhi_ps(mtx.v3, mtx.v4);
-
-        return { 
-            _mm_movelh_ps(lo12, lo34),
-            _mm_movehl_ps(lo34, lo12),
-            _mm_movelh_ps(hi12, hi34),
-            _mm_movehl_ps(hi34, hi12)
         };
     }
 

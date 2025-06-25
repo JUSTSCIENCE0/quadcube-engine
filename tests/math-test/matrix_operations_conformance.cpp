@@ -31,7 +31,7 @@ CU_CONFORMANCE_TEST_SIMD(
     "16000000_float32.bin",
     "matrix4x4_float32_mul.bin",
     QCE::matrix_multiplication,
-    (def)
+    (def, sse2)
 )
 
 CU_CONFORMANCE_TEST_SIMD(
