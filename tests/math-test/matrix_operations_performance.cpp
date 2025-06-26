@@ -36,7 +36,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     "4000000_float32.bin",
     QCE::vector_matrix_multiplication,
-    (def)
+    (def, sse2)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -44,7 +44,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     "4000000_float32.bin",
     QCE::matrix_vector_multiplication,
-    (def)
+    (def, sse2)
 )
 
 CU_PERFORMANCE_TEST_SIMD(

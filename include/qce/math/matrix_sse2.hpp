@@ -122,63 +122,30 @@ namespace QCE {
         };
     }
 
+    static inline vector VECTOR_CALL matrix_vector_mul(matrix lhs, vector rhs) noexcept {
+        lhs.v1 = _mm_mul_ps(rhs, lhs.v1);
+        lhs.v2 = _mm_mul_ps(rhs, lhs.v2);
+        lhs.v3 = _mm_mul_ps(rhs, lhs.v3);
+        lhs.v4 = _mm_mul_ps(rhs, lhs.v4);
+        lhs = matrix_transpose(lhs);
+        return _mm_add_ps(_mm_add_ps(lhs.v1, lhs.v2),
+            _mm_add_ps(lhs.v3, lhs.v4));
+    }
+
     static inline matrix VECTOR_CALL matrix_mul(matrix lhs, const matrix& rhs) noexcept {
-        matrix mul{};
         auto rhst = matrix_transpose(rhs);
 
-        mul.v1 = _mm_mul_ps(lhs.v1, rhst.v1);
-        mul.v2 = _mm_mul_ps(lhs.v1, rhst.v2);
-        mul.v3 = _mm_mul_ps(lhs.v1, rhst.v3);
-        mul.v4 = _mm_mul_ps(lhs.v1, rhst.v4);
-        mul = matrix_transpose(mul);
-        lhs.v1 = _mm_add_ps(
-            _mm_add_ps(mul.v1, mul.v2),
-            _mm_add_ps(mul.v3, mul.v4)
-        );
-
-        mul.v1 = _mm_mul_ps(lhs.v2, rhst.v1);
-        mul.v2 = _mm_mul_ps(lhs.v2, rhst.v2);
-        mul.v3 = _mm_mul_ps(lhs.v2, rhst.v3);
-        mul.v4 = _mm_mul_ps(lhs.v2, rhst.v4);
-        mul = matrix_transpose(mul);
-        lhs.v2 = _mm_add_ps(
-            _mm_add_ps(mul.v1, mul.v2),
-            _mm_add_ps(mul.v3, mul.v4)
-        );
-
-        mul.v1 = _mm_mul_ps(lhs.v3, rhst.v1);
-        mul.v2 = _mm_mul_ps(lhs.v3, rhst.v2);
-        mul.v3 = _mm_mul_ps(lhs.v3, rhst.v3);
-        mul.v4 = _mm_mul_ps(lhs.v3, rhst.v4);
-        mul = matrix_transpose(mul);
-        lhs.v3 = _mm_add_ps(
-            _mm_add_ps(mul.v1, mul.v2),
-            _mm_add_ps(mul.v3, mul.v4)
-        );
-
-        mul.v1 = _mm_mul_ps(lhs.v4, rhst.v1);
-        mul.v2 = _mm_mul_ps(lhs.v4, rhst.v2);
-        mul.v3 = _mm_mul_ps(lhs.v4, rhst.v3);
-        mul.v4 = _mm_mul_ps(lhs.v4, rhst.v4);
-        mul = matrix_transpose(mul);
-        lhs.v4 = _mm_add_ps(
-            _mm_add_ps(mul.v1, mul.v2),
-            _mm_add_ps(mul.v3, mul.v4)
-        );
+        lhs.v1 = matrix_vector_mul(rhst, lhs.v1);
+        lhs.v2 = matrix_vector_mul(rhst, lhs.v2);
+        lhs.v3 = matrix_vector_mul(rhst, lhs.v3);
+        lhs.v4 = matrix_vector_mul(rhst, lhs.v4);
 
         return lhs;
     }
 
     static inline vector VECTOR_CALL vector_matrix_mul(vector lhs, matrix rhs) noexcept {
-        // TODO
-        return {
-        };
-    }
-
-    static inline vector VECTOR_CALL matrix_vector_mul(matrix lhs, vector rhs) noexcept {
-        // TODO
-        return {
-        };
+        rhs = matrix_transpose(rhs);
+        return matrix_vector_mul(rhs, lhs);
     }
 
     static inline float VECTOR_CALL matrix_determinant(matrix m) noexcept {

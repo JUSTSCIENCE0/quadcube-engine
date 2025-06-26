@@ -40,7 +40,7 @@ CU_CONFORMANCE_TEST_SIMD(
     "4000000_float32.bin",
     "matrix4x4_float32_vector_matrix_mul.bin",
     QCE::vector_matrix_multiplication,
-    (def)
+    (def, sse2)
 )
 
 CU_CONFORMANCE_TEST_SIMD(
@@ -49,7 +49,7 @@ CU_CONFORMANCE_TEST_SIMD(
     "4000000_float32.bin",
     "matrix4x4_float32_matrix_vector_mul.bin",
     QCE::matrix_vector_multiplication,
-    (def)
+    (def, sse2)
 )
 
 CU_CONFORMANCE_TEST_SIMD(
