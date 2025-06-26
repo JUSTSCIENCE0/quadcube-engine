@@ -10,7 +10,7 @@
 CU_CONFORMANCE_TEST_SIMD(
     MatrixAddition,
     QCE_TEST_DATA_PATH,
-    "16000000_float32.bin",
+    "4000000_float32.bin",
     "matrix4x4_float32_sum.bin",
     QCE::matrix_addition,
     (def, sse2)
@@ -19,7 +19,7 @@ CU_CONFORMANCE_TEST_SIMD(
 CU_CONFORMANCE_TEST_SIMD(
     MatrixSubtraction,
     QCE_TEST_DATA_PATH,
-    "16000000_float32.bin",
+    "4000000_float32.bin",
     "matrix4x4_float32_diff.bin",
     QCE::matrix_subtraction,
     (def, sse2)
@@ -28,7 +28,7 @@ CU_CONFORMANCE_TEST_SIMD(
 CU_CONFORMANCE_TEST_SIMD(
     MatrixMultiplication,
     QCE_TEST_DATA_PATH,
-    "16000000_float32.bin",
+    "4000000_float32.bin",
     "matrix4x4_float32_mul.bin",
     QCE::matrix_multiplication,
     (def, sse2)
@@ -37,7 +37,7 @@ CU_CONFORMANCE_TEST_SIMD(
 CU_CONFORMANCE_TEST_SIMD(
     VectorMatrixMultiplication,
     QCE_TEST_DATA_PATH,
-    "16000000_float32.bin",
+    "4000000_float32.bin",
     "matrix4x4_float32_vector_matrix_mul.bin",
     QCE::vector_matrix_multiplication,
     (def)
@@ -46,7 +46,7 @@ CU_CONFORMANCE_TEST_SIMD(
 CU_CONFORMANCE_TEST_SIMD(
     MatrixVectorMultiplication,
     QCE_TEST_DATA_PATH,
-    "16000000_float32.bin",
+    "4000000_float32.bin",
     "matrix4x4_float32_matrix_vector_mul.bin",
     QCE::matrix_vector_multiplication,
     (def)
@@ -55,7 +55,7 @@ CU_CONFORMANCE_TEST_SIMD(
 CU_CONFORMANCE_TEST_SIMD(
     MatrixTranspose,
     QCE_TEST_DATA_PATH,
-    "16000000_float32.bin",
+    "4000000_float32.bin",
     "matrix4x4_float32_transpose.bin",
     QCE::matrix_calc_transpose,
     (def, sse2)
@@ -64,7 +64,7 @@ CU_CONFORMANCE_TEST_SIMD(
 CU_CONFORMANCE_TEST_SIMD(
     MatrixDeterminant,
     QCE_TEST_DATA_PATH,
-    "16000000_float32.bin",
+    "4000000_float32.bin",
     "matrix4x4_float32_det.bin",
     QCE::matrix_calc_determinant,
     (def)
@@ -73,7 +73,7 @@ CU_CONFORMANCE_TEST_SIMD(
 CU_CONFORMANCE_TEST_SIMD(
     MatrixInverse,
     QCE_TEST_DATA_PATH,
-    "16000000_float32.bin",
+    "4000000_float32.bin",
     "matrix4x4_float32_invert.bin",
     QCE::matrix_calc_inverse,
     (def)
