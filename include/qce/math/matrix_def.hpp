@@ -182,15 +182,39 @@ namespace QCE {
     }
 
     static inline float matrix_determinant(const matrix& m) noexcept {
-        return
-              m.x1 * m.y2 * m.z3 * m.w4 + m.x1 * m.z2 * m.w3 * m.y4 + m.x1 * m.w2 * m.y3 * m.z4
-            - m.x1 * m.y2 * m.w3 * m.z4 - m.x1 * m.z2 * m.y3 * m.w4 - m.x1 * m.w2 * m.z3 * m.y4
-            + m.y1 * m.x2 * m.w3 * m.z4 + m.y1 * m.z2 * m.x3 * m.w4 + m.y1 * m.w2 * m.z3 * m.x4
-            - m.y1 * m.x2 * m.z3 * m.w4 - m.y1 * m.z2 * m.w3 * m.x4 - m.y1 * m.w2 * m.x3 * m.z4
-            + m.z1 * m.x2 * m.y3 * m.w4 + m.z1 * m.y2 * m.w3 * m.x4 + m.z1 * m.w2 * m.x3 * m.y4
-            - m.z1 * m.x2 * m.w3 * m.y4 - m.z1 * m.y2 * m.x3 * m.w4 - m.z1 * m.w2 * m.y3 * m.x4
-            + m.w1 * m.z2 * m.y3 * m.x4 + m.w1 * m.x2 * m.z3 * m.y4 + m.w1 * m.y2 * m.x3 * m.z4
-            - m.w1 * m.x2 * m.y3 * m.z4 - m.w1 * m.y2 * m.z3 * m.x4 - m.w1 * m.z2 * m.x3 * m.y4;
+        float mul1 = m.x1 * m.y2 * m.z3 * m.w4;
+        float mul2 = m.x1 * m.z2 * m.w3 * m.y4;
+        float mul3 = m.x1 * m.w2 * m.y3 * m.z4;
+        float mul4 = m.x1 * m.y2 * m.w3 * m.z4;
+        float mul5 = m.x1 * m.z2 * m.y3 * m.w4;
+        float mul6 = m.x1 * m.w2 * m.z3 * m.y4;
+        float sum1 = mul1 + mul2 + mul3 - mul4 - mul5 - mul6;
+
+        mul1 = m.y1 * m.x2 * m.w3 * m.z4;
+        mul2 = m.y1 * m.z2 * m.x3 * m.w4;
+        mul3 = m.y1 * m.w2 * m.z3 * m.x4;
+        mul4 = m.y1 * m.x2 * m.z3 * m.w4;
+        mul5 = m.y1 * m.z2 * m.w3 * m.x4;
+        mul6 = m.y1 * m.w2 * m.x3 * m.z4;
+        float sum2 = mul1 + mul2 + mul3 - mul4 - mul5 - mul6;
+
+        mul1 = m.z1 * m.x2 * m.y3 * m.w4;
+        mul2 = m.z1 * m.y2 * m.w3 * m.x4;
+        mul3 = m.z1 * m.w2 * m.x3 * m.y4;
+        mul4 = m.z1 * m.x2 * m.w3 * m.y4;
+        mul5 = m.z1 * m.y2 * m.x3 * m.w4;
+        mul6 = m.z1 * m.w2 * m.y3 * m.x4;
+        float sum3 = mul1 + mul2 + mul3 - mul4 - mul5 - mul6;
+
+        mul1 = m.w1 * m.z2 * m.y3 * m.x4;
+        mul2 = m.w1 * m.x2 * m.z3 * m.y4;
+        mul3 = m.w1 * m.y2 * m.x3 * m.z4;
+        mul4 = m.w1 * m.x2 * m.y3 * m.z4;
+        mul5 = m.w1 * m.y2 * m.z3 * m.x4;
+        mul6 = m.w1 * m.z2 * m.x3 * m.y4;
+        float sum4 = mul1 + mul2 + mul3 - mul4 - mul5 - mul6;
+
+        return (sum1 + sum2) + (sum3 + sum4);
     }
 
     static inline matrix matrix_inverse(const matrix& m, float det) noexcept {
