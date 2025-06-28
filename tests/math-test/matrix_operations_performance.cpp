@@ -55,12 +55,23 @@ CU_PERFORMANCE_TEST_SIMD(
     (def, sse2)
 )
 
+#if defined(_MSC_VER)
+// strange behavior - sse2 implementation is slower in debug mode on MSVC,
+// but three times faster in release
+#  if defined(NDEBUG)
+#    define MATRIX_DETERMINANT_SIMD (def, sse2)
+#  else
+#    define MATRIX_DETERMINANT_SIMD (def)
+#  endif
+#else
+#  define MATRIX_DETERMINANT_SIMD (def, sse2)
+#endif
 CU_PERFORMANCE_TEST_SIMD(
     MatrixDeterminant,
     QCE_TEST_DATA_PATH,
     "4000000_float32.bin",
     QCE::matrix_calc_determinant,
-    (def)
+    MATRIX_DETERMINANT_SIMD
 )
 
 CU_PERFORMANCE_TEST_SIMD(
