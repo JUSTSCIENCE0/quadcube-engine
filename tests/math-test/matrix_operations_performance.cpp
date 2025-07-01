@@ -68,5 +68,5 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     "4000000_float32.bin",
     QCE::matrix_calc_inverse,
-    (def)
+    (def, sse2)
 )

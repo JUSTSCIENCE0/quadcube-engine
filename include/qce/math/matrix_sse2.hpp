@@ -206,8 +206,63 @@ namespace QCE {
     static inline matrix VECTOR_CALL matrix_inverse(matrix m, float det) noexcept {
         assert(0.0f != det);
 
-        // TODO
-        return {
-        };
+        auto mt = matrix_transpose(m);
+
+        auto tmp00 = _mm_shuffle_ps(mt.v1, mt.v1, _MM_SHUFFLE(0, 0, 0, 1)); // x 1112
+        auto tmp01 = _mm_shuffle_ps(mt.v1, mt.v1, _MM_SHUFFLE(1, 1, 2, 2)); // x 2233
+        auto tmp02 = _mm_shuffle_ps(mt.v1, mt.v1, _MM_SHUFFLE(2, 3, 3, 3)); // x 3444
+        auto tmp03 = _mm_shuffle_ps(mt.v2, mt.v2, _MM_SHUFFLE(0, 0, 0, 1)); // y 1112
+        auto tmp04 = _mm_shuffle_ps(mt.v2, mt.v2, _MM_SHUFFLE(1, 1, 2, 2)); // y 2233
+        auto tmp05 = _mm_shuffle_ps(mt.v2, mt.v2, _MM_SHUFFLE(2, 3, 3, 3)); // y 3444
+        auto tmp06 = _mm_shuffle_ps(mt.v3, mt.v3, _MM_SHUFFLE(0, 0, 0, 1)); // z 1112
+        auto tmp07 = _mm_shuffle_ps(mt.v3, mt.v3, _MM_SHUFFLE(1, 1, 2, 2)); // z 2233
+        auto tmp08 = _mm_shuffle_ps(mt.v3, mt.v3, _MM_SHUFFLE(2, 3, 3, 3)); // z 3444
+
+        mt.v1 = _mm_shuffle_ps(mt.v4, mt.v4, _MM_SHUFFLE(0, 0, 0, 1)); // w 1112
+        mt.v2 = _mm_shuffle_ps(mt.v4, mt.v4, _MM_SHUFFLE(1, 1, 2, 2)); // w 2233
+        mt.v3 = _mm_shuffle_ps(mt.v4, mt.v4, _MM_SHUFFLE(2, 3, 3, 3)); // w 3444
+
+        m.v2 = _mm_sub_ps(_mm_mul_ps(tmp07, mt.v3), _mm_mul_ps(tmp08, mt.v2));
+        m.v3 = _mm_sub_ps(_mm_mul_ps(tmp06, mt.v3), _mm_mul_ps(tmp08, mt.v1));
+        m.v4 = _mm_sub_ps(_mm_mul_ps(tmp06, mt.v2), _mm_mul_ps(tmp07, mt.v1));
+
+        m.v1 = _mm_mul_ps(tmp03, m.v2);
+        m.v1 = _mm_sub_ps(m.v1, _mm_mul_ps(tmp04, m.v3));
+        m.v1 = _mm_add_ps(m.v1, _mm_mul_ps(tmp05, m.v4));
+
+        m.v2 = _mm_mul_ps(tmp00, m.v2);
+        m.v2 = _mm_sub_ps(m.v2, _mm_mul_ps(tmp01, m.v3));
+        m.v2 = _mm_add_ps(m.v2, _mm_mul_ps(tmp02, m.v4));
+
+        mt.v4 = _mm_sub_ps(_mm_mul_ps(tmp04, mt.v3), _mm_mul_ps(tmp05, mt.v2));
+        mt.v3 = _mm_sub_ps(_mm_mul_ps(tmp03, mt.v3), _mm_mul_ps(tmp05, mt.v1));
+        mt.v2 = _mm_sub_ps(_mm_mul_ps(tmp03, mt.v2), _mm_mul_ps(tmp04, mt.v1));
+
+        m.v3 = _mm_mul_ps(tmp00, mt.v4);
+        m.v3 = _mm_sub_ps(m.v3, _mm_mul_ps(tmp01, mt.v3));
+        m.v3 = _mm_add_ps(m.v3, _mm_mul_ps(tmp02, mt.v2));
+
+        mt.v1 = _mm_sub_ps(_mm_mul_ps(tmp04, tmp08), _mm_mul_ps(tmp05, tmp07));
+        mt.v2 = _mm_sub_ps(_mm_mul_ps(tmp03, tmp08), _mm_mul_ps(tmp05, tmp06));
+        mt.v3 = _mm_sub_ps(_mm_mul_ps(tmp03, tmp07), _mm_mul_ps(tmp04, tmp06));
+
+        m.v4 = _mm_mul_ps(tmp00, mt.v1);
+        m.v4 = _mm_sub_ps(m.v4, _mm_mul_ps(tmp01, mt.v2));
+        m.v4 = _mm_add_ps(m.v4, _mm_mul_ps(tmp02, mt.v3));
+
+        tmp07 = _mm_set_ps(-1.0f, 1.0f, -1.0f, 1.0f);
+        m.v1 = _mm_mul_ps(m.v1, tmp07);
+        m.v3 = _mm_mul_ps(m.v3, tmp07);
+        tmp07 = _mm_set_ps(1.0f, -1.0f, 1.0f, -1.0f);
+        m.v2 = _mm_mul_ps(m.v2, tmp07);
+        m.v4 = _mm_mul_ps(m.v4, tmp07);
+
+        tmp07 = _mm_set1_ps(det);
+        m.v1 = _mm_div_ps(m.v1, tmp07);
+        m.v2 = _mm_div_ps(m.v2, tmp07);
+        m.v3 = _mm_div_ps(m.v3, tmp07);
+        m.v4 = _mm_div_ps(m.v4, tmp07);
+
+        return m;
     }
 }
