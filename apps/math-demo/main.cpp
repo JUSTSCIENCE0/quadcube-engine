@@ -4,15 +4,17 @@
 // License: MIT
 
 //#include <qce/math.hpp>
-#include <qce/math/vector_avx512.hpp>
+#include <qce/math/matrix_avx512.hpp>
 
 using namespace QCE;
 
 int main() {
-    float mem[] = { 4.0f, 3.0f, 2.0f, 1.0f };
+    float mem[] = { 5.0f, 6.0f, 7.0f, 8.0f };
 
     auto v1 = vector_init(1.0f, 2.0f, 3.0f, 4.0f);
     auto v2 = vector_init(mem);
+    auto v3 = vector_init(9.0f, 10.0f, 11.0f, 12.0f);
+    auto v4 = vector_init(13.0f, 14.0f, 15.0f, 16.0f);
 
     auto vp = v1 + v2;
     auto vs = v1 - v2;
@@ -28,6 +30,15 @@ int main() {
     (void)len;
 
     vector_copy(vp, mem);
+
+    auto m1 = matrix_init(
+        0.01f, 0.02f, 0.03f, 0.04f,
+        0.05f, 0.06f, 0.07f, 0.08f,
+        0.09f, 0.10f, 0.11f, 0.12f,
+        0.13f, 0.14f, 0.15f, 0.16f
+    );
+    auto m2 = matrix_init(v1, v2, v3, v4);
+    auto mmul = matrix_mul(m1, m2);
 
     return 0;
 }

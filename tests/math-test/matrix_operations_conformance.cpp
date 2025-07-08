@@ -21,7 +21,7 @@ CU_CONFORMANCE_TEST_SIMD(
     SOURCE_FILE,
     "matrix4x4_float32_sum.bin",
     QCE::matrix_addition,
-    (def, sse2)
+    (def, sse2, avx512)
 )
 
 CU_CONFORMANCE_TEST_SIMD(
@@ -30,7 +30,7 @@ CU_CONFORMANCE_TEST_SIMD(
     SOURCE_FILE,
     "matrix4x4_float32_diff.bin",
     QCE::matrix_subtraction,
-    (def, sse2)
+    (def, sse2, avx512)
 )
 
 CU_CONFORMANCE_TEST_SIMD(
@@ -39,7 +39,7 @@ CU_CONFORMANCE_TEST_SIMD(
     SOURCE_FILE,
     "matrix4x4_float32_mul.bin",
     QCE::matrix_multiplication,
-    (def, sse2)
+    (def, sse2, avx512)
 )
 
 CU_CONFORMANCE_TEST_SIMD(
@@ -66,7 +66,7 @@ CU_CONFORMANCE_TEST_SIMD(
     SOURCE_FILE,
     "matrix4x4_float32_transpose.bin",
     QCE::matrix_calc_transpose,
-    (def, sse2)
+    (def, sse2, avx512)
 )
 
 CU_CONFORMANCE_TEST_SIMD(
