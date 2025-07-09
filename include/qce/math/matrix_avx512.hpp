@@ -72,55 +72,47 @@ namespace QCE {
         return _mm512_permutexvar_ps(mask, mtx);
     }
 
+    namespace PrivateImplementation {
+        static inline __m512 vector_X_matrix(__m128 v4, __m512 m16) {
+            auto col = _mm512_broadcast_f32x4(v4);
+            m16 = _mm512_mul_ps(col, m16);
+            col = _mm512_shuffle_ps(m16, m16, _MM_SHUFFLE(2, 3, 0, 1));
+            m16 = _mm512_add_ps(m16, col);
+            col = _mm512_shuffle_ps(m16, m16, _MM_SHUFFLE(0, 1, 2, 3));
+            return _mm512_add_ps(m16, col);
+        }
+    }
+
     static inline matrix VECTOR_CALL matrix_mul(matrix lhs, matrix rhs) noexcept {
+        using namespace PrivateImplementation;
+
         rhs = matrix_transpose(rhs);
 
-        auto col = _mm512_broadcast_f32x4(_mm512_castps512_ps128(rhs));
-        auto mul = _mm512_mul_ps(col, lhs);
-        auto shf = _mm512_shuffle_ps(mul, mul, _MM_SHUFFLE(2, 3, 0, 1));
-        auto sum = _mm512_add_ps(mul, shf);
-        shf = _mm512_shuffle_ps(sum, sum, _MM_SHUFFLE(0, 1, 2, 3));
-        auto res = _mm512_add_ps(sum, shf);
+        auto res = vector_X_matrix(_mm512_castps512_ps128(rhs), lhs);
 
-        col = _mm512_broadcast_f32x4(_mm512_extractf32x4_ps(rhs, 1));
-        mul = _mm512_mul_ps(col, lhs);
-        shf = _mm512_shuffle_ps(mul, mul, _MM_SHUFFLE(2, 3, 0, 1));
-        sum = _mm512_add_ps(mul, shf);
-        shf = _mm512_shuffle_ps(sum, sum, _MM_SHUFFLE(0, 1, 2, 3));
-        sum = _mm512_add_ps(sum, shf);
-        res = _mm512_mask_blend_ps(0b0010001000100010, res, sum);
+        auto mul = vector_X_matrix(_mm512_extractf32x4_ps(rhs, 1), lhs);
+        res = _mm512_mask_blend_ps(0b0010001000100010, res, mul);
 
-        col = _mm512_broadcast_f32x4(_mm512_extractf32x4_ps(rhs, 2));
-        mul = _mm512_mul_ps(col, lhs);
-        shf = _mm512_shuffle_ps(mul, mul, _MM_SHUFFLE(2, 3, 0, 1));
-        sum = _mm512_add_ps(mul, shf);
-        shf = _mm512_shuffle_ps(sum, sum, _MM_SHUFFLE(0, 1, 2, 3));
-        sum = _mm512_add_ps(sum, shf);
-        res = _mm512_mask_blend_ps(0b0100010001000100, res, sum);
+        mul = vector_X_matrix(_mm512_extractf32x4_ps(rhs, 2), lhs);
+        res = _mm512_mask_blend_ps(0b0100010001000100, res, mul);
 
-        col = _mm512_broadcast_f32x4(_mm512_extractf32x4_ps(rhs, 3));
-        mul = _mm512_mul_ps(col, lhs);
-        shf = _mm512_shuffle_ps(mul, mul, _MM_SHUFFLE(2, 3, 0, 1));
-        sum = _mm512_add_ps(mul, shf);
-        shf = _mm512_shuffle_ps(sum, sum, _MM_SHUFFLE(0, 1, 2, 3));
-        sum = _mm512_add_ps(sum, shf);
-        res = _mm512_mask_blend_ps(0b1000100010001000, res, sum);
+        mul = vector_X_matrix(_mm512_extractf32x4_ps(rhs, 3), lhs);
+        res = _mm512_mask_blend_ps(0b1000100010001000, res, mul);
 
         return res;
     }
 
     static inline vector VECTOR_CALL matrix_vector_mul(matrix lhs, vector rhs) noexcept {
-        //lhs.v1 = _mm_mul_ps(rhs, lhs.v1);
-        //lhs.v2 = _mm_mul_ps(rhs, lhs.v2);
-        //lhs.v3 = _mm_mul_ps(rhs, lhs.v3);
-        //lhs.v4 = _mm_mul_ps(rhs, lhs.v4);
-        //lhs = matrix_transpose(lhs);
-        return {}; //_mm_add_ps(_mm_add_ps(lhs.v1, lhs.v2), _mm_add_ps(lhs.v3, lhs.v4));
+        lhs = PrivateImplementation::vector_X_matrix(_mm512_castps512_ps128(rhs), lhs);
+
+        const auto mask = _mm512_set_epi32(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 8, 4, 0);
+        rhs = _mm512_maskz_permutexvar_ps(0b1111, mask, lhs);
+        return rhs;
     }
 
     static inline vector VECTOR_CALL vector_matrix_mul(vector lhs, matrix rhs) noexcept {
-        //rhs = matrix_transpose(rhs);
-        return {}; // matrix_vector_mul(rhs, lhs);
+        rhs = matrix_transpose(rhs);
+        return matrix_vector_mul(rhs, lhs);
     }
 
     static inline float VECTOR_CALL matrix_determinant(matrix m) noexcept {
