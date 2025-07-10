@@ -116,58 +116,40 @@ namespace QCE {
     }
 
     static inline float VECTOR_CALL matrix_determinant(matrix m) noexcept {
-        //auto row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(2, 0, 0, 1)); // y x x z
-        //auto row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(1, 1, 3, 2)); // z w y y
-        //auto row4 = _mm_shuffle_ps(m.v4, m.v4, _MM_SHUFFLE(0, 3, 2, 3)); // w z w x
-        //auto res = _mm_mul_ps(m.v1, row2);
-        //res = _mm_mul_ps(res, row3);
-        //res = _mm_mul_ps(res, row4);
+        auto v1 = _mm512_broadcast_f32x4(_mm512_castps512_ps128(m));
+        auto v2 = _mm512_permutexvar_ps(
+            _mm512_set_epi32(6, 7, 7, 7, 4, 4, 4, 5, 5, 7, 7, 7, 6, 4, 4, 5), m);
+        auto v3 = _mm512_permutexvar_ps(
+            _mm512_set_epi32(8, 9, 8, 10, 9, 11, 10, 11, 8, 8, 10, 9, 9, 9, 11, 10), m);
+        auto v4 = _mm512_permutexvar_ps(
+            _mm512_set_epi32(13, 12, 14, 13, 14, 13, 15, 14, 14, 13, 12, 14, 12, 15, 14, 15), m);
+        auto mul1 = _mm512_mul_ps(v1, v2);
+        mul1 = _mm512_mul_ps(mul1, v3);
+        mul1 = _mm512_mul_ps(mul1, v4);
 
-        //row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(0, 1, 2, 2)); // z z y x
-        //row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(2, 3, 0, 3)); // w x w z
-        //row4 = _mm_shuffle_ps(m.v4, m.v4, _MM_SHUFFLE(1, 0, 3, 1)); // y w x y
-        //auto mul = _mm_mul_ps(m.v1, row2);
-        //mul = _mm_mul_ps(mul, row3);
-        //mul = _mm_mul_ps(mul, row4);
-        //res = _mm_add_ps(res, mul);
+        v1 = _mm512_maskz_permutexvar_ps(0b0000111100001111,
+            _mm512_set_epi32(0, 0, 0, 0, 3, 2, 1, 0, 0, 0, 0, 0, 3, 2, 1, 0), m);
+        v2 = _mm512_maskz_permutexvar_ps(0b0000111100001111,
+            _mm512_set_epi32(0, 0, 0, 0, 5, 5, 6, 6, 0, 0, 0, 0, 4, 5, 6, 6), m);
+        v3 = _mm512_maskz_permutexvar_ps(0b0000111100001111,
+            _mm512_set_epi32(0, 0, 0, 0, 10, 8, 11, 9, 0, 0, 0, 0, 10, 11, 8, 11), m);
+        v4 = _mm512_maskz_permutexvar_ps(0b0000111100001111,
+            _mm512_set_epi32(0, 0, 0, 0, 12, 15, 12, 15, 0, 0, 0, 0, 13, 12, 15, 13), m);
+        auto mul2 = _mm512_mul_ps(v1, v2);
+        mul2 = _mm512_mul_ps(mul2, v3);
+        mul2 = _mm512_mul_ps(mul2, v4);
 
-        //row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(1, 3, 3, 3)); // w w w y
-        //row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(0, 0, 2, 1)); // y z x x
-        //row4 = _mm_shuffle_ps(m.v4, m.v4, _MM_SHUFFLE(2, 1, 0, 2)); // z x y z
-        //mul = _mm_mul_ps(m.v1, row2);
-        //mul = _mm_mul_ps(mul, row3);
-        //mul = _mm_mul_ps(mul, row4);
-        //res = _mm_add_ps(res, mul);
-
-        //row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(0, 0, 0, 1)); // y x x x
-        //row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(1, 3, 2, 3)); // w z w y
-        //row4 = _mm_shuffle_ps(m.v4, m.v4, _MM_SHUFFLE(2, 1, 3, 2)); // z w y z
-        //mul = _mm_mul_ps(m.v1, row2);
-        //mul = _mm_mul_ps(mul, row3);
-        //mul = _mm_mul_ps(mul, row4);
-        //res = _mm_sub_ps(res, mul);
-
-        //row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(1, 1, 2, 2)); // z z y y
-        //row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(2, 0, 3, 1)); // y w x z
-        //row4 = _mm_shuffle_ps(m.v4, m.v4, _MM_SHUFFLE(0, 3, 0, 3)); // w x w x
-        //mul = _mm_mul_ps(m.v1, row2);
-        //mul = _mm_mul_ps(mul, row3);
-        //mul = _mm_mul_ps(mul, row4);
-        //res = _mm_sub_ps(res, mul);
-
-        //row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(2, 3, 3, 3)); // w w w z
-        //row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(0, 1, 0, 2)); // z x y x
-        //row4 = _mm_shuffle_ps(m.v4, m.v4, _MM_SHUFFLE(1, 0, 2, 1)); // y z x y
-        //mul = _mm_mul_ps(m.v1, row2);
-        //mul = _mm_mul_ps(mul, row3);
-        //mul = _mm_mul_ps(mul, row4);
-        //res = _mm_sub_ps(res, mul);
-
-        //mul = _mm_shuffle_ps(res, res, _MM_SHUFFLE(2, 3, 0, 1));
-        //res = _mm_add_ps(res, mul);
-        //mul = _mm_movehl_ps(mul, res);
-        //res = _mm_add_ss(res, mul);
-        return {}; // _mm_cvtss_f32(res);
+        auto sum = _mm512_add_ps(mul1, mul2);
+        auto shuf = _mm512_shuffle_f32x4(sum, sum, _MM_SHUFFLE(2, 3, 0, 1));
+        sum = _mm512_add_ps(sum, shuf);
+        shuf = _mm512_shuffle_f32x4(sum, sum, _MM_SHUFFLE(0, 1, 2, 3));
+        sum = _mm512_sub_ps(sum, shuf);
+        
+        shuf = _mm512_movehdup_ps(sum);
+        sum = _mm512_add_ps(sum, shuf);
+        shuf = _mm512_unpackhi_ps(sum, sum);
+        sum = _mm512_add_ps(sum, shuf);
+        return _mm_cvtss_f32(_mm512_castps512_ps128(sum));
     }
 
     static inline matrix VECTOR_CALL matrix_inverse(matrix m, float det) noexcept {

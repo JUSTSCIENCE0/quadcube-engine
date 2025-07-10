@@ -9,12 +9,12 @@
 using namespace QCE;
 
 int main() {
-    float mem[] = { 5.0f, 6.0f, 7.0f, 8.0f };
+    float mem[] = { 4.0f, 5.0f, 6.0f, 7.0f };
 
-    auto v1 = vector_init(1.0f, 2.0f, 3.0f, 4.0f);
+    auto v1 = vector_init(0.0f, 1.0f, 2.0f, 3.0f);
     auto v2 = vector_init(mem);
-    auto v3 = vector_init(9.0f, 10.0f, 11.0f, 12.0f);
-    auto v4 = vector_init(13.0f, 14.0f, 15.0f, 16.0f);
+    auto v3 = vector_init(8.0f, 9.0f, 10.0f, 11.0f);
+    auto v4 = vector_init(12.0f, 13.0f, 14.0f, 15.0f);
 
     auto vp = v1 + v2;
     auto vs = v1 - v2;
@@ -39,6 +39,8 @@ int main() {
     );
     auto m2 = matrix_init(v1, v2, v3, v4);
     auto mmul = matrix_mul(m1, m2);
+    float det = matrix_determinant(m2);
+    (void)det;
 
     return 0;
 }
