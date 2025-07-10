@@ -152,9 +152,9 @@ namespace QCE {
         auto row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(2, 0, 0, 1)); // y x x z
         auto row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(1, 1, 3, 2)); // z w y y
         auto row4 = _mm_shuffle_ps(m.v4, m.v4, _MM_SHUFFLE(0, 3, 2, 3)); // w z w x
-        auto res = _mm_mul_ps(m.v1, row2);
-        res = _mm_mul_ps(res, row3);
-        res = _mm_mul_ps(res, row4);
+        auto res1 = _mm_mul_ps(m.v1, row2);
+        res1 = _mm_mul_ps(res1, row3);
+        res1 = _mm_mul_ps(res1, row4);
 
         row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(0, 1, 2, 2)); // z z y x
         row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(2, 3, 0, 3)); // w x w z
@@ -162,7 +162,7 @@ namespace QCE {
         auto mul = _mm_mul_ps(m.v1, row2);
         mul = _mm_mul_ps(mul, row3);
         mul = _mm_mul_ps(mul, row4);
-        res = _mm_add_ps(res, mul);
+        res1 = _mm_add_ps(res1, mul);
 
         row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(1, 3, 3, 3)); // w w w y
         row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(0, 0, 2, 1)); // y z x x
@@ -170,15 +170,14 @@ namespace QCE {
         mul = _mm_mul_ps(m.v1, row2);
         mul = _mm_mul_ps(mul, row3);
         mul = _mm_mul_ps(mul, row4);
-        res = _mm_add_ps(res, mul);
+        res1 = _mm_add_ps(res1, mul);
 
         row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(0, 0, 0, 1)); // y x x x
         row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(1, 3, 2, 3)); // w z w y
         row4 = _mm_shuffle_ps(m.v4, m.v4, _MM_SHUFFLE(2, 1, 3, 2)); // z w y z
-        mul = _mm_mul_ps(m.v1, row2);
-        mul = _mm_mul_ps(mul, row3);
-        mul = _mm_mul_ps(mul, row4);
-        res = _mm_sub_ps(res, mul);
+        auto res2 = _mm_mul_ps(m.v1, row2);
+        res2 = _mm_mul_ps(res2, row3);
+        res2 = _mm_mul_ps(res2, row4);
 
         row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(1, 1, 2, 2)); // z z y y
         row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(2, 0, 3, 1)); // y w x z
@@ -186,7 +185,7 @@ namespace QCE {
         mul = _mm_mul_ps(m.v1, row2);
         mul = _mm_mul_ps(mul, row3);
         mul = _mm_mul_ps(mul, row4);
-        res = _mm_sub_ps(res, mul);
+        res2 = _mm_add_ps(res2, mul);
 
         row2 = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(2, 3, 3, 3)); // w w w z
         row3 = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(0, 1, 0, 2)); // z x y x
@@ -194,13 +193,14 @@ namespace QCE {
         mul = _mm_mul_ps(m.v1, row2);
         mul = _mm_mul_ps(mul, row3);
         mul = _mm_mul_ps(mul, row4);
-        res = _mm_sub_ps(res, mul);
+        res2 = _mm_add_ps(res2, mul);
 
-        mul = _mm_shuffle_ps(res, res, _MM_SHUFFLE(2, 3, 0, 1));
-        res = _mm_add_ps(res, mul);
-        mul = _mm_movehl_ps(mul, res);
-        res = _mm_add_ss(res, mul);
-        return _mm_cvtss_f32(res);
+        res1 = _mm_sub_ps(res1, res2);
+        mul = _mm_shuffle_ps(res1, res1, _MM_SHUFFLE(2, 3, 0, 1));
+        res1 = _mm_add_ps(res1, mul);
+        mul = _mm_movehl_ps(mul, res1);
+        res1 = _mm_add_ss(res1, mul);
+        return _mm_cvtss_f32(res1);
     }
 
     static inline matrix VECTOR_CALL matrix_inverse(matrix m, float det) noexcept {
