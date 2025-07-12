@@ -84,5 +84,5 @@ CU_CONFORMANCE_TEST_SIMD(
     SOURCE_FILE,
     "matrix4x4_float32_invert.bin",
     QCE::matrix_calc_inverse,
-    (def, sse2)
+    (def, sse2, avx512)
 )
