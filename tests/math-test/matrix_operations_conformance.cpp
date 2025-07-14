@@ -69,6 +69,7 @@ CU_CONFORMANCE_TEST_SIMD(
     (def, sse2, avx512)
 )
 
+#if !defined(CU_COMPILER_GCC)
 CU_CONFORMANCE_TEST_SIMD(
     MatrixDeterminant,
     QCE_TEST_DATA_PATH,
@@ -86,3 +87,42 @@ CU_CONFORMANCE_TEST_SIMD(
     QCE::matrix_calc_inverse,
     (def, sse2, avx512)
 )
+#else
+// GCC optimization breaks conformance tests on avx512
+// GCC 13.3.0 x86_64-linux-gnu
+CU_CONFORMANCE_TEST_SIMD(
+    MatrixDeterminant,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    "matrix4x4_float32_det.bin",
+    QCE::matrix_calc_determinant,
+    (def, sse2)
+)
+
+CU_CONFORMANCE_TEST_SIMD_WEAK(
+    MatrixDeterminantWeakAVX512,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    "matrix4x4_float32_det.bin",
+    QCE::matrix_calc_determinant,
+    (avx512)
+)
+
+CU_CONFORMANCE_TEST_SIMD(
+    MatrixInverse,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    "matrix4x4_float32_invert.bin",
+    QCE::matrix_calc_inverse,
+    (def, sse2)
+)
+
+CU_CONFORMANCE_TEST_SIMD_WEAK(
+    MatrixInverseWeakAVX512,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    "matrix4x4_float32_invert.bin",
+    QCE::matrix_calc_inverse,
+    (avx512)
+)
+#endif

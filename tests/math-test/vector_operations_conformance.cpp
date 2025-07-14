@@ -96,6 +96,7 @@ CU_CONFORMANCE_TEST_SIMD(
     (def, sse2, avx512)
 )
 
+#if !defined(CU_COMPILER_GCC)
 CU_CONFORMANCE_TEST_SIMD(
     VectorCrossProduct,
     QCE_TEST_DATA_PATH,
@@ -104,6 +105,27 @@ CU_CONFORMANCE_TEST_SIMD(
     QCE::vector_calc_cross_product,
     (def, sse2, avx512)
 )
+#else
+// GCC optimization breaks conformance tests on avx512
+// GCC 13.3.0 x86_64-linux-gnu
+CU_CONFORMANCE_TEST_SIMD(
+    VectorCrossProduct,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    "vector4_float32_cross_product.bin",
+    QCE::vector_calc_cross_product,
+    (def, sse2)
+)
+
+CU_CONFORMANCE_TEST_SIMD_WEAK(
+    VectorCrossProductWeakAVX512,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    "vector4_float32_cross_product.bin",
+    QCE::vector_calc_cross_product,
+    (avx512)
+)
+#endif
 
 CU_CONFORMANCE_TEST_SIMD(
     VectorCompare,
