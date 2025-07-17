@@ -5,8 +5,6 @@
 
 #define CU_PRINT_PERFORMANCE_TEST_RESULT
 
-#define USE_TINY_DATASET // TODO: CMake implementation
-
 #ifdef USE_TINY_DATASET
 #  define SOURCE_FILE "500000_float32.bin"
 #else

@@ -7,6 +7,8 @@ cmake_minimum_required(VERSION 3.22)
 
 project(math-test)
 
+option(USE_TINY_DATASET "Use reduced dataset instead of regular one" OFF)
+
 add_executable(${PROJECT_NAME}
     vector_operations_conformance.cpp
     vector_operations_performance.cpp
@@ -38,7 +40,15 @@ target_include_directories(${PROJECT_NAME}
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE
         QCE_TEST_DATA_PATH="${QCE_TEST_DATA_PATH}"
+)
+
+#TODO: download dataset from kaggle
+if (USE_TINY_DATASET)
+    target_compile_definitions(${PROJECT_NAME}
+        PRIVATE
+            USE_TINY_DATASET
     )
+endif(USE_TINY_DATASET)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "tests")
 target_interface_group(common-utils)
