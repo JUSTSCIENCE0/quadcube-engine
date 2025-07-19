@@ -68,9 +68,11 @@ set(QCE_INTERFACE
 set(QCE_MATH
     include/qce/math/vector_def.hpp
     include/qce/math/vector_sse2.hpp
+    include/qce/math/vector_avx.hpp
     include/qce/math/vector_avx512.hpp
     include/qce/math/matrix_def.hpp
     include/qce/math/matrix_sse2.hpp
+    include/qce/math/matrix_avx.hpp
     include/qce/math/matrix_avx512.hpp
 )
 
