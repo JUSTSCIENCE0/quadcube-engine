@@ -73,7 +73,7 @@ namespace QCE {
     }
 
     namespace PrivateImplementation {
-        static inline __m512 vector_X_matrix(__m128 v4, __m512 m16) {
+        static inline __m512 VECTOR_CALL vector_X_matrix(__m128 v4, __m512 m16) {
             auto col = _mm512_broadcast_f32x4(v4);
             m16 = _mm512_mul_ps(col, m16);
             col = _mm512_shuffle_ps(m16, m16, _MM_SHUFFLE(2, 3, 0, 1));

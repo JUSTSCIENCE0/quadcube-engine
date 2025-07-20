@@ -37,7 +37,7 @@ CU_CONFORMANCE_TEST_SIMD(
     SOURCE_FILE,
     "matrix4x4_float32_mul.bin",
     QCE::matrix_multiplication,
-    (def, sse2, avx512)
+    (def, sse2, avx, avx512)
 )
 
 CU_CONFORMANCE_TEST_SIMD(
@@ -55,7 +55,7 @@ CU_CONFORMANCE_TEST_SIMD(
     SOURCE_FILE,
     "matrix4x4_float32_matrix_vector_mul.bin",
     QCE::matrix_vector_multiplication,
-    (def, sse2, avx512)
+    (def, sse2, avx, avx512)
 )
 
 CU_CONFORMANCE_TEST_SIMD(

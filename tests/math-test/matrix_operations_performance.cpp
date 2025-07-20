@@ -34,7 +34,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::matrix_multiplication,
-    (def, sse2, avx512)
+    (def, sse2, avx, avx512)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -42,7 +42,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_matrix_multiplication,
-    (def, sse2, avx512)
+    (def, sse2, avx, avx512)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -50,7 +50,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::matrix_vector_multiplication,
-    (def, sse2, avx512)
+    (def, sse2, avx, avx512)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
