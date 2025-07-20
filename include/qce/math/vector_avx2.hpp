@@ -12,7 +12,7 @@
 #  error "Vector already implemented in other file. Check includes!"
 #endif
 
-#define VECTOR_IMPLEMENTATION "avx"
+#define VECTOR_IMPLEMENTATION "avx2"
 
 #if defined(_MSC_VER)
 #  define VECTOR_CALL __vectorcall

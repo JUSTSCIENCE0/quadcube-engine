@@ -24,8 +24,8 @@ add_executable(${PROJECT_NAME}
 )
 
 include(SimdAutogenerator)
-generate_simd_compile_units("${PROJECT_NAME}" "vector_operations" "DEF" "SSE2" "AVX" "AVX512(F)")
-generate_simd_compile_units("${PROJECT_NAME}" "matrix_operations" "DEF" "SSE2" "AVX" "AVX512(F)")
+generate_simd_compile_units("${PROJECT_NAME}" "vector_operations" "DEF" "SSE2" "AVX2" "AVX512(F)")
+generate_simd_compile_units("${PROJECT_NAME}" "matrix_operations" "DEF" "SSE2" "AVX2" "AVX512(F)")
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE

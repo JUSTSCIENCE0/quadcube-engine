@@ -12,9 +12,9 @@
 #  error "Martix already implemented in other file. Check includes!"
 #endif
 
-#define MATRIX_IMPLEMENTATION "avx"
+#define MATRIX_IMPLEMENTATION "avx2"
 
-#include <qce/math/vector_avx.hpp>
+#include <qce/math/vector_avx2.hpp>
 
 namespace QCE {
     struct alignas(32) matrix final {
@@ -105,25 +105,25 @@ namespace QCE {
     }
 
     static inline matrix VECTOR_CALL matrix_transpose(matrix mtx) noexcept {
-        mtx.v12 = _mm256_permute_ps(mtx.v12, _MM_SHUFFLE(3, 1, 2, 0));
-        mtx.v34 = _mm256_permute_ps(mtx.v34, _MM_SHUFFLE(3, 1, 2, 0));
+        // AVX
+        // mtx.v12 = _mm256_permute_ps(mtx.v12, _MM_SHUFFLE(3, 1, 2, 0));
+        // mtx.v34 = _mm256_permute_ps(mtx.v34, _MM_SHUFFLE(3, 1, 2, 0));
+        //
+        // auto xz1324 = _mm256_unpacklo_ps(mtx.v12, mtx.v34);
+        // auto yw1324 = _mm256_unpackhi_ps(mtx.v12, mtx.v34);
+        //
+        // auto xzyw13 = _mm256_permute2f128_ps(xz1324, yw1324, 0x20);
+        // auto xzyw24 = _mm256_permute2f128_ps(xz1324, yw1324, 0x31);
+        //
+        // mtx.v12 = _mm256_unpacklo_ps(xzyw13, xzyw24);
+        // mtx.v34 = _mm256_unpackhi_ps(xzyw13, xzyw24);
 
-        auto xz1324 = _mm256_unpacklo_ps(mtx.v12, mtx.v34);
-        auto yw1324 = _mm256_unpackhi_ps(mtx.v12, mtx.v34);
-
-        auto xzyw13 = _mm256_permute2f128_ps(xz1324, yw1324, 0x20);
-        auto xzyw24 = _mm256_permute2f128_ps(xz1324, yw1324, 0x31);
-
-        mtx.v12 = _mm256_unpacklo_ps(xzyw13, xzyw24);
-        mtx.v34 = _mm256_unpackhi_ps(xzyw13, xzyw24);
-
-        // AVX2 - performance increase not confirmed by test
-        // 
-        // auto xy1324 = _mm256_unpacklo_ps(mtx.v12, mtx.v34);
-        // auto zw1324 = _mm256_unpackhi_ps(mtx.v12, mtx.v34);
-        // const auto mask = _mm256_setr_epi32(0, 4, 1, 5, 2, 6, 3, 7);
-        // mtx.v12 = _mm256_permutevar8x32_ps(xy1324, mask);
-        // mtx.v34 = _mm256_permutevar8x32_ps(zw1324, mask);
+        // AVX2
+        auto xy1324 = _mm256_unpacklo_ps(mtx.v12, mtx.v34);
+        auto zw1324 = _mm256_unpackhi_ps(mtx.v12, mtx.v34);
+        const auto mask = _mm256_setr_epi32(0, 4, 1, 5, 2, 6, 3, 7);
+        mtx.v12 = _mm256_permutevar8x32_ps(xy1324, mask);
+        mtx.v34 = _mm256_permutevar8x32_ps(zw1324, mask);
 
         return mtx;
     }
@@ -169,20 +169,32 @@ namespace QCE {
     }
 
     static inline vector VECTOR_CALL matrix_vector_mul(matrix lhs, vector rhs) noexcept {
+        // AVX
+        // auto vec = _mm256_permute2f128_ps(rhs, rhs, 0x20);
+        //
+        // lhs.v12 = _mm256_mul_ps(lhs.v12, vec);
+        // lhs.v34 = _mm256_mul_ps(lhs.v34, vec);
+        //
+        // auto shf1 = _mm256_shuffle_ps(lhs.v12, lhs.v34, _MM_SHUFFLE(2, 0, 2, 0));
+        // auto shf2 = _mm256_shuffle_ps(lhs.v12, lhs.v34, _MM_SHUFFLE(3, 1, 3, 1));
+        // auto sum = _mm256_add_ps(shf1, shf2);
+        // shf1 = _mm256_shuffle_ps(sum, sum, _MM_SHUFFLE(2, 3, 0, 1));
+        // sum = _mm256_add_ps(sum, shf1);
+        // shf1 = _mm256_permute2f128_ps(sum, sum, 0x31);
+        //
+        // rhs = _mm256_blend_ps(sum, shf1, 0b10101010);
+        // return _mm256_permute2f128_ps(rhs, _mm256_setzero_ps(), 0x20);
+
+        // AVX2
+        using namespace PrivateImplementation;
         auto vec = _mm256_permute2f128_ps(rhs, rhs, 0x20);
+        auto mul12 = vector256_part_mul(vec, lhs.v12);
+        auto mul34 = vector256_part_mul(vec, lhs.v34);
+        mul12 = _mm256_unpacklo_ps(mul12, mul34);
+        mul12 = _mm256_permutevar8x32_ps(mul12,
+            _mm256_set_epi32(0, 0, 0, 0, 5, 1, 4, 0));
 
-        lhs.v12 = _mm256_mul_ps(lhs.v12, vec);
-        lhs.v34 = _mm256_mul_ps(lhs.v34, vec);
-
-        auto shf1 = _mm256_shuffle_ps(lhs.v12, lhs.v34, _MM_SHUFFLE(2, 0, 2, 0));
-        auto shf2 = _mm256_shuffle_ps(lhs.v12, lhs.v34, _MM_SHUFFLE(3, 1, 3, 1));
-        auto sum = _mm256_add_ps(shf1, shf2);
-        shf1 = _mm256_shuffle_ps(sum, sum, _MM_SHUFFLE(2, 3, 0, 1));
-        sum = _mm256_add_ps(sum, shf1);
-        shf1 = _mm256_permute2f128_ps(sum, sum, 0x31);
-
-        rhs = _mm256_blend_ps(sum, shf1, 0b10101010);
-        return _mm256_permute2f128_ps(rhs, _mm256_setzero_ps(), 0x20);
+        return _mm256_permute2f128_ps(mul12, _mm256_setzero_ps(), 0x20);
     }
 
     static inline vector VECTOR_CALL vector_matrix_mul(vector lhs, matrix rhs) noexcept {

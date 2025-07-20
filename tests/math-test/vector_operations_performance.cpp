@@ -20,7 +20,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_addition,
-    (def, sse2/*, avx, avx512*/)
+    (def, sse2/*, avx2, avx512*/)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -28,7 +28,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_subtraction,
-    (def, sse2/*, avx, avx512*/)
+    (def, sse2/*, avx2, avx512*/)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -36,7 +36,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_multiplication,
-    (def, sse2/*, avx, avx512*/)
+    (def, sse2/*, avx2, avx512*/)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -44,7 +44,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_division,
-    (def, sse2/*, avx, avx512*/)
+    (def, sse2/*, avx2, avx512*/)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -52,7 +52,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_scalar_multiplication,
-    (def, sse2/*, avx, avx512*/)
+    (def, sse2/*, avx2, avx512*/)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -60,7 +60,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_scalar_division,
-    (def, sse2/*, avx, avx512*/)
+    (def, sse2/*, avx2, avx512*/)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -68,7 +68,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_calc_length,
-    (def, sse2/*, avx, avx512*/)
+    (def, sse2/*, avx2, avx512*/)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -76,7 +76,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_calc_normalized,
-    (def, sse2/*, avx, avx512*/)
+    (def, sse2/*, avx2, avx512*/)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -84,7 +84,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_calc_dot_product,
-    (def, sse2/*, avx, avx512*/)
+    (def, sse2/*, avx2, avx512*/)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -92,7 +92,7 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_calc_cross_product,
-    (def, sse2/*, avx, avx512*/)
+    (def, sse2/*, avx2, avx512*/)
 )
 
 CU_PERFORMANCE_TEST_SIMD(
@@ -100,5 +100,5 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::vector_equality,
-    (def, sse2/*, avx, avx512*/)
+    (def, sse2/*, avx2, avx512*/)
 )
