@@ -203,40 +203,52 @@ namespace QCE {
     }
 
     static inline float VECTOR_CALL matrix_determinant(matrix m) noexcept {
-        /*auto v1 = _mm512_broadcast_f32x4(_mm512_castps512_ps128(m));
-        auto v2 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(6, 7, 7, 7, 4, 4, 4, 5, 5, 7, 7, 7, 6, 4, 4, 5), m);
-        auto v3 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(8, 9, 8, 10, 9, 11, 10, 11, 8, 8, 10, 9, 9, 9, 11, 10), m);
-        auto v4 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(13, 12, 14, 13, 14, 13, 15, 14, 14, 13, 12, 14, 12, 15, 14, 15), m);
-        auto mul1 = _mm512_mul_ps(v1, v2);
-        mul1 = _mm512_mul_ps(mul1, v3);
-        mul1 = _mm512_mul_ps(mul1, v4);
+        auto v1 = _mm256_insertf128_ps(m.v12, _mm256_castps256_ps128(m.v12), 1);
+        auto v2 = _mm256_permutevar8x32_ps(m.v12,
+            _mm256_set_epi32(4, 4, 4, 5, 6, 4, 4, 5));
+        auto v3 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(1, 3, 2, 3, 1, 1, 3, 2));
+        auto v4 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(6, 5, 7, 6, 4, 7, 6, 7));
 
-        v1 = _mm512_maskz_permutexvar_ps(0b0000111100001111,
-            _mm512_set_epi32(0, 0, 0, 0, 3, 2, 1, 0, 0, 0, 0, 0, 3, 2, 1, 0), m);
-        v2 = _mm512_maskz_permutexvar_ps(0b0000111100001111,
-            _mm512_set_epi32(0, 0, 0, 0, 5, 5, 6, 6, 0, 0, 0, 0, 4, 5, 6, 6), m);
-        v3 = _mm512_maskz_permutexvar_ps(0b0000111100001111,
-            _mm512_set_epi32(0, 0, 0, 0, 10, 8, 11, 9, 0, 0, 0, 0, 10, 11, 8, 11), m);
-        v4 = _mm512_maskz_permutexvar_ps(0b0000111100001111,
-            _mm512_set_epi32(0, 0, 0, 0, 12, 15, 12, 15, 0, 0, 0, 0, 13, 12, 15, 13), m);
-        auto mul2 = _mm512_mul_ps(v1, v2);
-        mul2 = _mm512_mul_ps(mul2, v3);
-        mul2 = _mm512_mul_ps(mul2, v4);
+        auto mul14 = _mm256_mul_ps(v1, v2);
+        mul14 = _mm256_mul_ps(mul14, v3);
+        mul14 = _mm256_mul_ps(mul14, v4);
 
-        auto sum = _mm512_add_ps(mul1, mul2);
-        auto shuf = _mm512_shuffle_f32x4(sum, sum, _MM_SHUFFLE(2, 3, 0, 1));
-        sum = _mm512_add_ps(sum, shuf);
-        shuf = _mm512_shuffle_f32x4(sum, sum, _MM_SHUFFLE(0, 1, 2, 3));
-        sum = _mm512_sub_ps(sum, shuf);
-        
-        shuf = _mm512_movehdup_ps(sum);
-        sum = _mm512_add_ps(sum, shuf);
-        shuf = _mm512_unpackhi_ps(sum, sum);
-        sum = _mm512_add_ps(sum, shuf);*/
-        return 0.f; // _mm_cvtss_f32(_mm512_castps512_ps128(sum));
+        v2 = _mm256_permutevar8x32_ps(m.v12,
+            _mm256_set_epi32(5, 5, 6, 6, 4, 5, 6, 6));
+        v3 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(2, 0, 3, 1, 2, 3, 0, 3));
+        v4 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(4, 7, 4, 7, 5, 4, 7, 5));
+
+        auto mul25 = _mm256_mul_ps(v1, v2);
+        mul25 = _mm256_mul_ps(mul25, v3);
+        mul25 = _mm256_mul_ps(mul25, v4);
+
+        v2 = _mm256_permutevar8x32_ps(m.v12,
+            _mm256_set_epi32(6, 7, 7, 7, 5, 7, 7, 7));
+        v3 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(0, 1, 0, 2, 0, 0, 2, 1));
+        v4 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(5, 4, 6, 5, 6, 5, 4, 6));
+
+        auto mul36 = _mm256_mul_ps(v1, v2);
+        mul36 = _mm256_mul_ps(mul36, v3);
+        mul36 = _mm256_mul_ps(mul36, v4);
+
+        v1 = _mm256_add_ps(mul14, mul25);
+        v1 = _mm256_add_ps(v1, mul36);
+
+        v2 = _mm256_permute2f128_ps(v1, v1, 0x31);
+        v1 = _mm256_sub_ps(v1, v2);
+
+        v2 = _mm256_permute_ps(v1, _MM_SHUFFLE(2, 3, 0, 1));
+        v1 = _mm256_add_ps(v1, v2);
+        v2 = _mm256_permute_ps(v1, _MM_SHUFFLE(0, 1, 2, 3));
+        v1 = _mm256_add_ps(v1, v2);
+
+        return _mm256_cvtss_f32(v1);
     }
 
     static inline matrix VECTOR_CALL matrix_inverse(matrix m, float det) noexcept {

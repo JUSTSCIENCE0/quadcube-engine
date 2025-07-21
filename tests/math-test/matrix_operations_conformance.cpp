@@ -74,7 +74,7 @@ CU_CONFORMANCE_TEST_SIMD(
     SOURCE_FILE,
     "matrix4x4_float32_det.bin",
     QCE::matrix_calc_determinant,
-    (def, sse2, avx512)
+    (def, sse2, avx2, avx512)
 )
 
 CU_CONFORMANCE_TEST_SIMD(
