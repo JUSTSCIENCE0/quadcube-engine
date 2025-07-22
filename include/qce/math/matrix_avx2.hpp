@@ -254,45 +254,77 @@ namespace QCE {
     static inline matrix VECTOR_CALL matrix_inverse(matrix m, float det) noexcept {
         assert(0.0f != det);
 
-        /*auto tmp00 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(5, 5, 9, 9, 5, 5, 9, 9, 6, 6, 10, 10, 6, 6, 10, 10), m);
-        auto tmp01 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(10, 14, 14, 14, 11, 15, 15, 15, 11, 15, 15, 15, 11, 15, 15, 15), m);
-        auto tmp02 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(9, 13, 13, 13, 9, 13, 13, 13, 10, 14, 14, 14, 10, 14, 14, 14), m);
-        auto tmp03 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(6, 6, 10, 10, 7, 7, 11, 11, 7, 7, 11, 11, 7, 7, 11, 11), m);
-        auto tmp04 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(1, 1, 1, 5, 1, 1, 1, 5, 2, 2, 2, 6, 2, 2, 2, 6), m);
-        auto tmp05 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(2, 2, 2, 6, 3, 3, 3, 7, 3, 3, 3, 7, 3, 3, 3, 7), m);
+        auto tmp00 = _mm256_blend_ps(m.v12, m.v34, 0b00001111);
 
-        auto mul0 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0, 4, 1, 1, 1, 5), m);
-        auto mul1 = _mm512_sub_ps(_mm512_mul_ps(tmp00, tmp01), _mm512_mul_ps(tmp02, tmp03));
-        auto res = _mm512_mul_ps(mul0, mul1);
+        auto tmp01 = _mm256_permutevar8x32_ps(tmp00,
+            _mm256_set_epi32(6, 6, 2, 2, 6, 6, 2, 2));
+        auto tmp02 = _mm256_permutevar8x32_ps(tmp00,
+            _mm256_set_epi32(7, 7, 3, 3, 7, 7, 3, 3));
+        auto tmp03 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(3, 7, 7, 7, 3, 7, 7, 7));
+        auto tmp04 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(2, 6, 6, 6, 2, 6, 6, 6));
+        auto tmp05 = _mm256_permutevar8x32_ps(m.v12,
+            _mm256_set_epi32(2, 2, 2, 6, 2, 2, 2, 6));
+        auto tmp06 = _mm256_permutevar8x32_ps(m.v12,
+            _mm256_set_epi32(3, 3, 3, 7, 3, 3, 3, 7));
 
-        mul0 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(4, 4, 8, 8, 4, 4, 8, 8, 4, 4, 8, 8, 5, 5, 9, 9), m);
-        mul1 = _mm512_sub_ps(_mm512_mul_ps(tmp04, tmp01), _mm512_mul_ps(tmp05, tmp02));
-        res = _mm512_sub_ps(res, _mm512_mul_ps(mul0, mul1));
+        auto mul0 = _mm256_permutevar8x32_ps(m.v12,
+            _mm256_set_epi32(0, 0, 0, 4, 1, 1, 1, 5));
+        auto mul1 = _mm256_sub_ps(_mm256_mul_ps(tmp01, tmp03), _mm256_mul_ps(tmp04, tmp02));
+        auto res1 = _mm256_mul_ps(mul0, mul1);
 
-        mul0 = _mm512_permutexvar_ps(
-            _mm512_set_epi32(8, 12, 12, 12, 8, 12, 12, 12, 8, 12, 12, 12, 9, 13, 13, 13), m);
-        mul1 = _mm512_sub_ps(_mm512_mul_ps(tmp04, tmp03), _mm512_mul_ps(tmp00, tmp05));
-        res = _mm512_add_ps(res, _mm512_mul_ps(mul0, mul1));
+        mul0 = _mm256_permutevar8x32_ps(tmp00,
+            _mm256_set_epi32(4, 4, 0, 0, 5, 5, 1, 1));
+        mul1 = _mm256_sub_ps(_mm256_mul_ps(tmp05, tmp03), _mm256_mul_ps(tmp04, tmp06));
+        res1 = _mm256_sub_ps(res1, _mm256_mul_ps(mul0, mul1));
 
-        mul0 = _mm512_set_ps(
+        mul0 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(0, 4, 4, 4, 1, 5, 5, 5));
+        mul1 = _mm256_sub_ps(_mm256_mul_ps(tmp05, tmp02), _mm256_mul_ps(tmp01, tmp06));
+        res1 = _mm256_add_ps(res1, _mm256_mul_ps(mul0, mul1));
+
+        tmp01 = _mm256_permutevar8x32_ps(tmp00,
+            _mm256_set_epi32(5, 5, 1, 1, 5, 5, 1, 1));
+        tmp02 = _mm256_permutevar8x32_ps(tmp00,
+            _mm256_set_epi32(6, 6, 2, 2, 7, 7, 3, 3));
+        tmp03 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(2, 6, 6, 6, 3, 7, 7, 7));
+        tmp04 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(1, 5, 5, 5, 1, 5, 5, 5));
+        tmp05 = _mm256_permutevar8x32_ps(m.v12,
+            _mm256_set_epi32(1, 1, 1, 5, 1, 1, 1, 5));
+        tmp06 = _mm256_permutevar8x32_ps(m.v12,
+            _mm256_set_epi32(2, 2, 2, 6, 3, 3, 3, 7));
+
+        mul0 = _mm256_permutevar8x32_ps(m.v12,
+            _mm256_set_epi32(0, 0, 0, 4, 0, 0, 0, 4));
+        mul1 = _mm256_sub_ps(_mm256_mul_ps(tmp01, tmp03), _mm256_mul_ps(tmp04, tmp02));
+        auto res2 = _mm256_mul_ps(mul0, mul1);
+
+        mul0 = _mm256_permutevar8x32_ps(tmp00,
+            _mm256_set_epi32(4, 4, 0, 0, 4, 4, 0, 0));
+        mul1 = _mm256_sub_ps(_mm256_mul_ps(tmp05, tmp03), _mm256_mul_ps(tmp04, tmp06));
+        res2 = _mm256_sub_ps(res2, _mm256_mul_ps(mul0, mul1));
+
+        mul0 = _mm256_permutevar8x32_ps(m.v34,
+            _mm256_set_epi32(0, 4, 4, 4, 0, 4, 4, 4));
+        mul1 = _mm256_sub_ps(_mm256_mul_ps(tmp05, tmp02), _mm256_mul_ps(tmp01, tmp06));
+        res2 = _mm256_add_ps(res2, _mm256_mul_ps(mul0, mul1));
+
+        tmp00 = _mm256_set_ps(
              1.0f, -1.0f,  1.0f, -1.0f,
-            -1.0f,  1.0f, -1.0f,  1.0f,
-             1.0f, -1.0f,  1.0f, -1.0f,
-            -1.0f,  1.0f, -1.0f,  1.0f
-        );
-        res = _mm512_mul_ps(res, mul0);
+            -1.0f,  1.0f, -1.0f,  1.0f);
+        res1 = _mm256_mul_ps(res1, tmp00);
+        res2 = _mm256_mul_ps(res2, tmp00);
 
-        mul0 = _mm512_set1_ps(det);
-        res = _mm512_div_ps(res, mul0);*/
+        tmp00 = _mm256_set1_ps(det);
+        res1 = _mm256_div_ps(res1, tmp00);
+        res2 = _mm256_div_ps(res2, tmp00);
 
-        return m;
+        return {
+            .v34 = res2,
+            .v12 = res1
+        };
     }
 }

@@ -83,7 +83,7 @@ CU_CONFORMANCE_TEST_SIMD(
     SOURCE_FILE,
     "matrix4x4_float32_invert.bin",
     QCE::matrix_calc_inverse,
-    (def, sse2, avx512)
+    (def, sse2, avx2, avx512)
 )
 #else
 // GCC optimization breaks conformance tests on avx512

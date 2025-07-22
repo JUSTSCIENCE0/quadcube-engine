@@ -74,5 +74,5 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     QCE::matrix_calc_inverse,
-    (def, sse2, avx512)
+    (def, sse2, avx2, avx512)
 )
