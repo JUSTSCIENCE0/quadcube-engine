@@ -3,43 +3,62 @@
 //
 // License: MIT
 
-//#include <qce/math.hpp>
-//#include <qce/math/matrix_avx512.hpp>
-//using namespace QCE;
+#define CLI_CONFIGURATION \
+    CLI_OPTIONAL_PROPERTY(operation, WO_SYMBOL, operation, "operation to be performed on the data", \
+        std::string, "none", ListValidator, \
+        "none", "vec.add", "vec.sub", "vec.mul", "vec.div", "vec.scr.mul", \
+        "vec.scr.div", "vec.len", "vec.norm", "vec.dot", "vec.cross", \
+        "mtx.add", "mtx.sub", "mtx.mul", "mtx.vec.mul", "vec.mtx.mul" \
+        "mtx.transpose", "mtx.det", "mtx.inv") \
+    CLI_OPTIONAL_PROPERTY(input-bin-file, WO_SYMBOL, input_bin_file, "path to binary file containing float32 array", \
+        std::filesystem::path, "", BaseValidator) \
+    CLI_OPTIONAL_PROPERTY(input-txt-file, WO_SYMBOL, input_txt_file, "path to text file containing float array", \
+        std::filesystem::path, "", BaseValidator) \
+    CLI_OPTIONAL_PROPERTY(output-bin-file, WO_SYMBOL, output_bin_file, "path to the binary file where the result will be written", \
+        std::filesystem::path, "", BaseValidator) \
+    CLI_OPTIONAL_PROPERTY(output-txt-file, WO_SYMBOL, output_txt_file, "path to the text file where the result will be written", \
+        std::filesystem::path, "", BaseValidator) \
+    CLI_FLAG(to-stdout, WO_SYMBOL, is_stdout, "duplicate result in stdout") \
+    CLI_OPTIONAL_PROPERTY(simd-acceleration, WO_SYMBOL, simd_acceleration, "use the specified SIMD acceleration " \
+        "(if not specified, the acceleration type will be selected automatically for the current hardware)", \
+        std::string, "auto", ListValidator, "auto", "def", "sse2", "avx2", "avx512" ) \
+    CLI_FLAG(print-hardware-info, WO_SYMBOL, print_hardware_info, "display description of current hardware") \
 
-int main() {
-    // float mem[] = { 4.0f, 5.0f, 6.0f, 7.0f };
 
-    // auto v1 = vector_init(0.0f, 1.0f, 2.0f, 3.0f);
-    // auto v2 = vector_init(mem);
-    // auto v3 = vector_init(8.0f, 9.0f, 10.0f, 11.0f);
-    // auto v4 = vector_init(12.0f, 13.0f, 14.0f, 15.0f);
+#define CLI_ABOUT \
+    "QuadCube Math Demo\n" \
+    "Copyright (c) 2025, Yakov Usoltsev\n" \
+    "Email: yakovmen62@gmail.com\n" \
+    "License: MIT"
 
-    // auto vp = v1 + v2;
-    // auto vs = v1 - v2;
-    // auto vm = v1 * v2;
-    // auto vd = v1 / v2;
+#include <cu/cli-utils.hpp>
+#include <cu/cpu-utils.hpp>
+#include <cu/file-utils.hpp>
 
-    // auto vms = v1 * 2.0;
-    // auto vds = v1 / 2.0;
+int main(int argc, char* argv[]) {
+    CU::CLIConfig cli_config{};
+    if (!CU::parse_cli_args(argc, argv, &cli_config))
+        return -1;
 
-    // auto crossv = vector_cross_product(v1, v2);
+    if (cli_config.print_hardware_info) {
+        std::cout << CU::CURRENT_CPU_CONFIGURATION << std::endl;
+    }
 
-    // auto len = vector_length(v1);
-    // (void)len;
+    std::vector<float> input_data;
 
-    // vector_copy(vp, mem);
+    if (!cli_config.input_bin_file.empty()) {
+        input_data = CU::load_data_from_file<float>(cli_config.input_bin_file);
+    }
+    else if (!cli_config.input_txt_file.empty()) {
+        input_data = CU::load_data_from_text_file<float>(cli_config.input_txt_file);
+    }
 
-    // auto m1 = matrix_init(
-    //     0.01f, 0.02f, 0.03f, 0.04f,
-    //     0.05f, 0.06f, 0.07f, 0.08f,
-    //     0.09f, 0.10f, 0.11f, 0.12f,
-    //     0.13f, 0.14f, 0.15f, 0.16f
-    // );
-    // auto m2 = matrix_init(v1, v2, v3, v4);
-    // auto mmul = matrix_mul(m1, m2);
-    // float det = matrix_determinant(m2);
-    // (void)det;
+    if (input_data.empty()) {
+        std::cout << "Error: Input data not found!" << std::endl;
+        return -1;
+    }
+
+    std::cout << "Info: Loaded " << input_data.size() << " floats" << std::endl;
 
     return 0;
 }
