@@ -12,11 +12,11 @@
 #include <string>
 
 namespace QCEMathDemo {
-    class CU_SIMD_CLASS(Calculator) {
+    class CU_SIMD_CLASS {
     public:
         // ctor/dtor
-        CU_SIMD_CTOR(Calculator, std::vector<float> input_data);
-        CU_SIMD_DTOR(Calculator) = default;
+        CU_SIMD_CTOR(std::vector<float> input_data);
+        CU_SIMD_DTOR = default;
 
         CU_SIMD_BASE_MTD(std::vector<float>, Process, MathOperation operation);
 
