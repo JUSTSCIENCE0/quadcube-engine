@@ -9,11 +9,24 @@ project(math-demo)
 
 add_executable(${PROJECT_NAME}
     main.cpp
+
+    operations.hpp
+    calculator_iface.hpp
+    calculator_impl.hpp
 )
+
+include(SimdAutogenerator)
+generate_simd_compile_units("${PROJECT_NAME}" "calculator" "class" "DEF" "SSE2" "AVX2" "AVX512(F)")
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         quadcube-engine
+)
+
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/generated
 )
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps")

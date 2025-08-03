@@ -5,11 +5,13 @@
 
 #define CLI_CONFIGURATION \
     CLI_OPTIONAL_PROPERTY(operation, WO_SYMBOL, operation, "operation to be performed on the data", \
-        std::string, "none", ListValidator, \
-        "none", "vec.add", "vec.sub", "vec.mul", "vec.div", "vec.scr.mul", \
-        "vec.scr.div", "vec.len", "vec.norm", "vec.dot", "vec.cross", \
-        "mtx.add", "mtx.sub", "mtx.mul", "mtx.vec.mul", "vec.mtx.mul" \
-        "mtx.transpose", "mtx.det", "mtx.inv") \
+        std::string, "None", ListValidator, \
+        "None", \
+        "VectorAddition", "VectorSubtraction", "VectorMultiplication", "VectorDivision", \
+        "VectorScalarMultiplication", "VectorScalarDivision", "VectorLength", \
+        "VectorNormalization", "VectorDotProduct", "VectorCrossProduct", "VectorMatrixMultiplication", \
+        "MatrixAddition", "MatrixSubtraction", "MatrixMultiplication", "MatrixTransposition", \
+        "MatrixDeterminant", "MatrixInvert", "MatrixVectorMultiplication") \
     CLI_OPTIONAL_PROPERTY(input-bin-file, WO_SYMBOL, input_bin_file, "path to binary file containing float32 array", \
         std::filesystem::path, "", BaseValidator) \
     CLI_OPTIONAL_PROPERTY(input-txt-file, WO_SYMBOL, input_txt_file, "path to text file containing float array", \
@@ -30,6 +32,8 @@
     "Copyright (c) 2025, Yakov Usoltsev\n" \
     "Email: yakovmen62@gmail.com\n" \
     "License: MIT"
+
+#include "calculator.hpp"
 
 #include <cu/cli-utils.hpp>
 #include <cu/cpu-utils.hpp>
@@ -59,6 +63,16 @@ int main(int argc, char* argv[]) {
     }
 
     std::cout << "Info: Loaded " << input_data.size() << " floats" << std::endl;
+
+    QCEMathDemo::CalculatorDEF  calc_def{ input_data };
+    QCEMathDemo::CalculatorSSE2 calc_sse2{ input_data };
+    QCEMathDemo::CalculatorAVX2 calc_avx2{ input_data };
+    QCEMathDemo::CalculatorAVX512 calc_avx512{ input_data };
+
+    std::cout << calc_def.Description() << std::endl;
+    std::cout << calc_sse2.Description() << std::endl;
+    std::cout << calc_avx2.Description() << std::endl;
+    std::cout << calc_avx512.Description() << std::endl;
 
     return 0;
 }
