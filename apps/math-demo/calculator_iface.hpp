@@ -12,6 +12,7 @@
 #include <string>
 
 namespace QCEMathDemo {
+#ifdef CU_SIMD_CLASS_DECLARATION_SECTION
     class CU_SIMD_CLASS {
     public:
         // ctor/dtor
@@ -44,4 +45,7 @@ namespace QCEMathDemo {
 
         CU_SIMD_BASE_ATTR(std::vector<float>, m_input_data, {});
     };
+#endif // CU_SIMD_CLASS_DECLARATION_SECTION
+
+    CU_SIMD_ADD_FACTORY()
 }
