@@ -16,10 +16,10 @@
 
 namespace QCEMathDemo {
 #ifdef CU_SIMD_BASE_IMPL
-    Calculator::Calculator(std::vector<float> input_data) :
+    CU_SIMD_CLASS_IMPL::CU_SIMD_CLASS_IMPL(std::vector<float> input_data) :
         m_input_data(std::move(input_data)) {}
 
-    std::vector<float> Calculator::Process(MathOperation operation) {
+    std::vector<float> CU_SIMD_CLASS_IMPL::Process(MathOperation operation) {
         switch (operation) {
         case MathOperation::VectorAddition:
             return VectorAddition();
@@ -32,11 +32,11 @@ namespace QCEMathDemo {
 #endif
 
 #ifdef CU_SIMD_DERIVED_IMPL
-    CU_SIMD_CLASS_IMPL(Calculator)::CU_SIMD_CLASS_IMPL(Calculator)(std::vector<float> input_data) :
+    CU_SIMD_CLASS_IMPL::CU_SIMD_CLASS_IMPL(std::vector<float> input_data) :
         Calculator(std::move(input_data)) {}
 
-    std::string CU_SIMD_CLASS_IMPL(Calculator)::Description() {
-        std::string result = CU_EXPAND_STR(CU_SIMD_CLASS_IMPL(Calculator));
+    std::string CU_SIMD_CLASS_IMPL::Description() {
+        std::string result = CU_EXPAND_STR(CU_SIMD_CLASS_IMPL);
         result += " Math implementation: vector - ";
         result += VECTOR_IMPLEMENTATION;
         result += "; matrix - ";
@@ -45,7 +45,7 @@ namespace QCEMathDemo {
         return result;
     }
 
-    std::vector<float> CU_SIMD_CLASS_IMPL(Calculator)::VectorAddition() {
+    std::vector<float> CU_SIMD_CLASS_IMPL::VectorAddition() {
         using namespace QCE;
 
         auto count = m_input_data.size();
