@@ -23,7 +23,7 @@
     CLI_FLAG(to-stdout, WO_SYMBOL, is_stdout, "duplicate result in stdout") \
     CLI_OPTIONAL_PROPERTY(simd-acceleration, WO_SYMBOL, simd_acceleration, "use the specified SIMD acceleration " \
         "(if not specified, the acceleration type will be selected automatically for the current hardware)", \
-        std::string, "auto", ListValidator, "auto", "def", "sse2", "avx2", "avx512" ) \
+        std::string, "AUTO", ListValidator, "AUTO", "DEF", "SSE2", "AVX2", "AVX512F" ) \
     CLI_FLAG(print-hardware-info, WO_SYMBOL, print_hardware_info, "display description of current hardware") \
 
 
@@ -64,15 +64,13 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Info: Loaded " << input_data.size() << " floats" << std::endl;
 
-    QCEMathDemo::CalculatorDEF  calc_def{ input_data };
-    QCEMathDemo::CalculatorSSE2 calc_sse2{ input_data };
-    QCEMathDemo::CalculatorAVX2 calc_avx2{ input_data };
-    QCEMathDemo::CalculatorAVX512 calc_avx512{ input_data };
+    auto calculator = QCEMathDemo::make_calculator(CU::AUTO_INSET, input_data);
+    if (nullptr == calculator) {
+        std::cout << "Failed to make selected implementation" << std::endl;
+        return -1;
+    }
 
-    std::cout << calc_def.Description() << std::endl;
-    std::cout << calc_sse2.Description() << std::endl;
-    std::cout << calc_avx2.Description() << std::endl;
-    std::cout << calc_avx512.Description() << std::endl;
+    std::cout << calculator->Description() << std::endl;
 
     return 0;
 }
