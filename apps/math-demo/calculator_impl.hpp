@@ -20,20 +20,65 @@ namespace QCEMathDemo {
         m_input_data(std::move(input_data)) {}
 
     std::vector<float> CU_SIMD_CLASS_IMPL::Process(MathOperation operation) {
+        return ProcessImpl(operation);
+    }
+#endif
+
+#ifdef CU_SIMD_DERIVED_IMPL
+    template<
+        MathType lhs_type, MathType rhs_type, MathType res_type,
+        auto lhs_init, auto rhs_init, auto operation, auto res_store
+    >
+    std::vector<float> CalculateDyadic(const std::vector<float>& input_data) {
+        constexpr size_t iteration_read_size = lhs_type + rhs_type;
+        constexpr size_t iteration_write_size = res_type;
+
+        const float* values = input_data.data();
+        size_t count = input_data.size();
+        assert(count % iteration_read_size == 0);
+
+        std::vector<float> result(count * iteration_write_size / iteration_read_size);
+        float* results = result.data();
+
+        //std::cout << "Debug Info:" << std::endl;
+        //std::cout << "\t" << std::endl;
+
+        while (count > 0) {
+            auto lhs = lhs_init(values);
+            auto rhs = rhs_init(values + lhs_type);
+
+            auto res = operation(lhs, rhs);
+            res_store(res, results);
+
+            values += iteration_read_size;
+            count -= iteration_read_size;
+            results += iteration_write_size;
+        }
+
+        return result;
+    }
+
+    CU_SIMD_CLASS_IMPL::CU_SIMD_CLASS_IMPL(std::vector<float> input_data) :
+        Calculator(std::move(input_data)) {}
+
+    std::vector<float> CU_SIMD_CLASS_IMPL::ProcessImpl(MathOperation operation) {
+        using namespace QCE;
+
+        static constexpr auto vector_init_impl = static_cast<vector(*)(const float*)>(vector_init);
+
         switch (operation) {
         case MathOperation::VectorAddition:
-            return VectorAddition();
-        // TODO: other
+            return {};
+        case MathOperation::VectorCrossProduct:
+            return CalculateDyadic<
+                MathType::Vector, MathType::Vector, MathType::Vector,
+                vector_init_impl, vector_init_impl, vector_cross_product, vector_copy>(m_input_data);
+            // TODO: other
         default:
             std::cout << "Error: selected unsupported operation" << std::endl;
             return {};
         }
     }
-#endif
-
-#ifdef CU_SIMD_DERIVED_IMPL
-    CU_SIMD_CLASS_IMPL::CU_SIMD_CLASS_IMPL(std::vector<float> input_data) :
-        Calculator(std::move(input_data)) {}
 
     std::string CU_SIMD_CLASS_IMPL::Description() {
         std::string result = CU_EXPAND_STR(CU_SIMD_CLASS_IMPL);
@@ -45,29 +90,5 @@ namespace QCEMathDemo {
         return result;
     }
 
-    std::vector<float> CU_SIMD_CLASS_IMPL::VectorAddition() {
-        using namespace QCE;
-
-        auto count = m_input_data.size();
-        assert(count % 8 == 0);
-
-        std::vector<float> result(count / 2);
-        auto values  = m_input_data.data();
-        auto results = result.data();
-
-        while (count > 0) {
-            auto lhs = vector_init(values[0], values[1], values[2], values[3]);
-            auto rhs = vector_init(values[4], values[5], values[6], values[7]);
-
-            auto res = lhs + rhs;
-            vector_copy(res, results);
-
-            values += 8;
-            count -= 8;
-            results += 4;
-        }
-
-        return result;
-    }
 #endif
 }

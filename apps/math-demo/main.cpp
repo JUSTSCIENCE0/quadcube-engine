@@ -40,9 +40,13 @@
 #include <cu/file-utils.hpp>
 
 int main(int argc, char* argv[]) {
+    using namespace QCEMathDemo;
+
     CU::CLIConfig cli_config{};
     if (!CU::parse_cli_args(argc, argv, &cli_config))
         return -1;
+
+    std::cout << cli_config << std::endl;
 
     if (cli_config.print_hardware_info) {
         std::cout << CU::CURRENT_CPU_CONFIGURATION << std::endl;
@@ -64,13 +68,38 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Info: Loaded " << input_data.size() << " floats" << std::endl;
 
-    auto calculator = QCEMathDemo::make_calculator(CU::AUTO_INSET, input_data);
+    auto calculator = make_calculator(CU::AUTO_INSET, input_data);
     if (nullptr == calculator) {
         std::cout << "Failed to make selected implementation" << std::endl;
         return -1;
     }
 
-    std::cout << calculator->Description() << std::endl;
+    std::cout << std::endl << calculator->Description() << std::endl;
+
+    auto selected_operation = MathOperation_from_string(cli_config.operation.c_str());
+    assert(MathOperation::E_MathOperation_UNKNOWN != selected_operation);
+
+    if (MathOperation::None == selected_operation) {
+        std::cout << "Math operation isn't selected" << std::endl;
+        return -1;
+    }
+
+    auto result = calculator->Process(selected_operation);
+
+    size_t values_counter = 0;
+    for (const auto& value : result) {
+        values_counter++;
+
+        if (cli_config.is_stdout) {
+            std::cout << value << " ";
+            if (values_counter % 4 == 0) {
+                std::cout << std::endl;
+            }
+            if (values_counter % 16 == 0) {
+                std::cout << std::endl;
+            }
+        }
+    }
 
     return 0;
 }
