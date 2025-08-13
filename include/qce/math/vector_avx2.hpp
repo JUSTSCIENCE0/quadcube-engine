@@ -130,7 +130,7 @@ namespace QCE {
 
     static inline void VECTOR_CALL vector_copy(vector value, float* dst) noexcept {
         assert(dst);
-        _mm256_maskstore_ps(dst, _mm256_set_epi32(0, 0, 0, 0, 1, 1, 1, 1), value);
+        _mm256_maskstore_ps(dst, _mm256_set_epi32(0, 0, 0, 0, -1, -1, -1, -1), value);
     }
 
     // member access
