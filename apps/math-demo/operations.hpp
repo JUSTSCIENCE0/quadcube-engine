@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <cstring>
+
 namespace QCEMathDemo {
 #define CU_ENUMS_DESCRIPTION \
     CU_BEGIN_ENUM(MathType) \
