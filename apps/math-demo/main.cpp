@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Info: Loaded " << input_data.size() << " floats" << std::endl;
 
-    auto calculator = make_calculator(CU::AUTO_INSET, input_data);
+    auto calculator = make_calculator(CU::get_inset_by_name(cli_config.simd_acceleration.c_str()), input_data);
     if (nullptr == calculator) {
         std::cout << "Failed to make selected implementation" << std::endl;
         return -1;
@@ -86,11 +86,10 @@ int main(int argc, char* argv[]) {
 
     auto result = calculator->Process(selected_operation);
 
-    size_t values_counter = 0;
-    for (const auto& value : result) {
-        values_counter++;
-
-        if (cli_config.is_stdout) {
+    if (cli_config.is_stdout) {
+        size_t values_counter = 0;
+        for (const auto& value : result) {
+            values_counter++;
             std::cout << value << " ";
             if (values_counter % 4 == 0) {
                 std::cout << std::endl;
@@ -98,6 +97,20 @@ int main(int argc, char* argv[]) {
             if (values_counter % 16 == 0) {
                 std::cout << std::endl;
             }
+        }
+    }
+
+    if (!cli_config.output_bin_file.empty()) {
+        if (!CU::save_data_to_file(cli_config.output_bin_file, result)) {
+            std::cout << "Failed to save data to binary file" << std::endl;
+            return -1;
+        }
+    }
+
+    if (!cli_config.output_bin_file.empty()) {
+        if (!CU::save_data_to_text_file(cli_config.output_txt_file, result)) {
+            std::cout << "Failed to save data to text file" << std::endl;
+            return -1;
         }
     }
 
