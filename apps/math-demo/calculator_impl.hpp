@@ -25,6 +25,37 @@ namespace QCEMathDemo {
 #endif
 
 #ifdef CU_SIMD_DERIVED_IMPL
+    using namespace QCE;
+
+    static inline float float_load(const float* src) {
+        return src[0];
+    }
+    static inline void float_store(float value, float* dst) {
+        dst[0] = value;
+    }
+    static inline vector vector_init_impl(const float* dst) {
+        return vector_init(dst);
+    }
+    static inline vector vector_sum(vector lhs, vector rhs) {
+        return lhs + rhs;
+    }
+    static inline vector vector_diff(vector lhs, vector rhs) {
+        return lhs - rhs;
+    }
+    static inline vector vector_mul(vector lhs, vector rhs) {
+        return lhs * rhs;
+    }
+    static inline vector vector_div(vector lhs, vector rhs) {
+        return lhs / rhs;
+    }
+    static inline vector vector_scalar_mul(vector lhs, float rhs) {
+        return lhs * rhs;
+    }
+    static inline vector vector_scalar_div(vector lhs, float rhs) {
+        return lhs / rhs;
+    }
+
+
     template<
         MathType lhs_type, MathType rhs_type, MathType res_type,
         auto lhs_init, auto rhs_init, auto operation, auto res_store
@@ -62,13 +93,27 @@ namespace QCEMathDemo {
         Calculator(std::move(input_data)) {}
 
     std::vector<float> CU_SIMD_CLASS_IMPL::ProcessImpl(MathOperation operation) {
-        using namespace QCE;
-
-        static constexpr auto vector_init_impl = static_cast<vector(*)(const float*)>(vector_init);
-
         switch (operation) {
         case MathOperation::VectorAddition:
-            return {};
+            return CalculateDyadic<
+                MathType::Vector, MathType::Vector, MathType::Vector,
+                vector_init_impl, vector_init_impl, vector_sum, vector_copy>(m_input_data);
+        case MathOperation::VectorSubtraction:
+            return CalculateDyadic<
+                MathType::Vector, MathType::Vector, MathType::Vector,
+                vector_init_impl, vector_init_impl, vector_diff, vector_copy>(m_input_data);
+        case MathOperation::VectorMultiplication:
+            return CalculateDyadic<
+                MathType::Vector, MathType::Vector, MathType::Vector,
+                vector_init_impl, vector_init_impl, vector_mul, vector_copy>(m_input_data);
+        case MathOperation::VectorDivision:
+            return CalculateDyadic<
+                MathType::Vector, MathType::Vector, MathType::Vector,
+                vector_init_impl, vector_init_impl, vector_div, vector_copy>(m_input_data);
+        case MathOperation::VectorDotProduct:
+            return CalculateDyadic<
+                MathType::Vector, MathType::Vector, MathType::Scalar,
+                vector_init_impl, vector_init_impl, vector_dot_product, float_store>(m_input_data);
         case MathOperation::VectorCrossProduct:
             return CalculateDyadic<
                 MathType::Vector, MathType::Vector, MathType::Vector,
