@@ -10,7 +10,8 @@
 namespace QCEMathDemo {
 #define CU_ENUMS_DESCRIPTION \
     CU_BEGIN_ENUM(MathType) \
-        CU_VALUED_ENUM_UNIT(Scalar, 1) \
+        CU_ENUM_UNIT(Empty) \
+        CU_ENUM_UNIT(Scalar) \
         CU_VALUED_ENUM_UNIT(Vector, 4) \
         CU_VALUED_ENUM_UNIT(Matrix, 16) \
     CU_END_ENUM(MathType) \
