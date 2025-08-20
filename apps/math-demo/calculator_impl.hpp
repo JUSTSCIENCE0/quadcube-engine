@@ -91,9 +91,6 @@ namespace QCEMathDemo {
         std::vector<float> result(count * iteration_write_size / iteration_read_size);
         float* results = result.data();
 
-        //std::cout << "Debug Info:" << std::endl;
-        //std::cout << "\t" << std::endl;
-
         while (count > 0) {
             auto lhs = lhs_init(values);
 
