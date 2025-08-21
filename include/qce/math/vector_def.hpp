@@ -1,0 +1,171 @@
+// Copyright (c) 2025, Yakov Usoltsev
+// Email: yakovmen62@gmail.com
+//
+// License: MIT
+
+#pragma once
+
+// do not include manually
+// used only in the composition of the vector.hpp and matrix implementation
+
+#if defined(VECTOR_IMPLEMENTATION)
+#  error "Vector already implemented in other file. Check includes!"
+#endif
+
+#define VECTOR_IMPLEMENTATION "default"
+
+#include <cu/math-utils.hpp>
+
+#include <cassert>
+#include <cmath>
+
+namespace QCE {
+
+    // vector type
+    struct vector final
+    {
+        float x;
+        float y;
+        float z;
+        float w;
+    };
+
+    static inline vector& operator+=(      vector& lhs, const vector& rhs) noexcept;
+    static inline vector  operator+ (const vector& lhs, const vector& rhs) noexcept;
+    static inline vector& operator-=(      vector& lhs, const vector& rhs) noexcept;
+    static inline vector  operator- (const vector& lhs, const vector& rhs) noexcept;
+    static inline vector& operator*=(      vector& lhs, const vector& rhs) noexcept;
+    static inline vector  operator* (const vector& lhs, const vector& rhs) noexcept;
+    static inline vector& operator/=(      vector& lhs, const vector& rhs) noexcept;
+    static inline vector  operator/ (const vector& lhs, const vector& rhs) noexcept;
+
+    static inline vector& operator*=(      vector& lhs, float rhs) noexcept;
+    static inline vector  operator* (const vector& lhs, float rhs) noexcept;
+    static inline vector& operator/=(      vector& lhs, float rhs) noexcept;
+    static inline vector  operator/ (const vector& lhs, float rhs) noexcept;
+
+    // initializers
+    static inline vector vector_init(
+            float x, float y, float z, float w) noexcept {
+        return { x, y, z, w };
+    }
+
+    static inline vector vector_init(const float* arr) noexcept {
+        assert(arr);
+        return { arr[0], arr[1], arr[2], arr[3]};
+    }
+
+    static inline vector vector_zero() noexcept {
+        return { 0.0, 0.0, 0.0, 0.0 };
+    }
+
+    static inline vector vector_one() noexcept {
+        return { 1.0, 1.0, 1.0, 1.0 };
+    }
+
+    // functions
+    static inline bool vector_is_equal(
+            const vector& lhs, const vector& rhs,
+            float absolute_epsilon = 1e-5f, float relative_epsilon = 1e-5f) noexcept {
+        return CU::is_equal(lhs.x, rhs.x, absolute_epsilon, relative_epsilon) &&
+               CU::is_equal(lhs.y, rhs.y, absolute_epsilon, relative_epsilon) &&
+               CU::is_equal(lhs.z, rhs.z, absolute_epsilon, relative_epsilon) &&
+               CU::is_equal(lhs.w, rhs.w, absolute_epsilon, relative_epsilon);
+    }
+
+    static inline float vector_length(const vector& value) noexcept {
+        auto sqr_x = value.x * value.x;
+        auto sqr_y = value.y * value.y;
+        auto sqr_z = value.z * value.z;
+        auto sqr_w = value.w * value.w;
+        return std::sqrt(sqr_x + sqr_y + sqr_z + sqr_w);
+    }
+
+    static inline vector vector_normalize(const vector& value) noexcept {
+        auto vec_len = vector_length(value);
+        return value / vec_len;
+    }
+
+    static inline float vector_dot_product(const vector& lhs, const vector& rhs) noexcept {
+        auto product = lhs * rhs;
+        return (product.x + product.y) + (product.z + product.w);
+    }
+
+    static inline vector vector_cross_product(const vector& lhs, const vector& rhs) noexcept {
+        return {
+            .x = lhs.y * rhs.z - lhs.z * rhs.y,
+            .y = lhs.z * rhs.x - lhs.x * rhs.z,
+            .z = lhs.x * rhs.y - lhs.y * rhs.x,
+            .w = 0.0f
+        };
+    }
+
+    static inline void vector_copy(const vector& value, float* dst) noexcept {
+        assert(dst);
+        dst[0] = value.x;
+        dst[1] = value.y;
+        dst[2] = value.z;
+        dst[3] = value.w;
+    }
+
+    // member access
+    // TODO - getters
+
+    // operators
+    static inline vector operator+ (const vector& value) noexcept {
+        return value;
+    }
+
+    static inline vector operator- (const vector& value) noexcept {
+        return { -value.x, -value.y, -value.z, -value.w };
+    }
+
+#define VECTOR_OPERATION(operation) \
+static inline vector& operator operation ##= (vector& lhs, const vector& rhs) noexcept { \
+    lhs.x operation ##= rhs.x; \
+    lhs.y operation ##= rhs.y; \
+    lhs.z operation ##= rhs.z; \
+    lhs.w operation ##= rhs.w; \
+    return lhs; \
+} \
+static inline vector operator operation (const vector& lhs, const vector& rhs) noexcept { \
+    vector result = { \
+        lhs.x operation rhs.x, \
+        lhs.y operation rhs.y, \
+        lhs.z operation rhs.z, \
+        lhs.w operation rhs.w \
+    }; \
+    return result; \
+}
+
+    VECTOR_OPERATION(+)
+    VECTOR_OPERATION(-)
+    VECTOR_OPERATION(*)
+    VECTOR_OPERATION(/)
+
+#undef VECTOR_OPERATION
+
+#define VECTOR_WITH_SCALAR_OPERATION(operation) \
+static inline vector& operator operation ##= (vector& lhs, float rhs) noexcept { \
+    lhs.x operation ##= rhs; \
+    lhs.y operation ##= rhs; \
+    lhs.z operation ##= rhs; \
+    lhs.w operation ##= rhs; \
+    return lhs; \
+} \
+static inline vector operator operation (const vector& lhs, float rhs) noexcept { \
+    vector result = { \
+        lhs.x operation rhs, \
+        lhs.y operation rhs, \
+        lhs.z operation rhs, \
+        lhs.w operation rhs \
+    }; \
+    return result; \
+}
+
+    VECTOR_WITH_SCALAR_OPERATION(*)
+    VECTOR_WITH_SCALAR_OPERATION(/)
+
+#undef VECTOR_WITH_SCALAR_OPERATION
+
+}

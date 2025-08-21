@@ -1,0 +1,4 @@
+build*/
+tests/test_data*/
+.vscode/*
+**/generated/**
