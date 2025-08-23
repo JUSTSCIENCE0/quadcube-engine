@@ -12,7 +12,11 @@
 #    define QCE_API extern "C" __declspec(dllimport)
 #  endif
 #elif defined(__GNUC__) || defined(__clang__)
-# define  QCE_API // TODO
+#  ifdef quadcube_engine_EXPORTS
+#    define  QCE_API __attribute__((visibility("default")))
+#  else
+#    define  QCE_API
+#  endif
 #else
 # error "Unsupported compiler"
 #endif
