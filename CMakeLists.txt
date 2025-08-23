@@ -47,7 +47,7 @@ include(FetchContent)
 FetchContent_Declare(
     common-utils
     GIT_REPOSITORY https://github.com/JUSTSCIENCE0/common-utils.git
-    GIT_TAG        dev # TODO: use commit hash when it will be ready
+    GIT_TAG        main # TODO: use commit hash when it will be ready
 )
 if (BUILD_QCE_TEST)
     set(ENABLE_CU_TEST_UTILS ON CACHE BOOL "" FORCE)
