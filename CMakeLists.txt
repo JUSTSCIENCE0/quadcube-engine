@@ -58,11 +58,14 @@ set_property(TARGET common-utils PROPERTY FOLDER "externals")
 list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")
 
 set(QCE_INTERFACE
-    include/qce/about.hpp
+    include/qce/qce.hpp
     include/qce/common.hpp
+    include/qce/error_codes.hpp
     include/qce/vector.hpp
     include/qce/matrix.hpp
     include/qce/math.hpp
+    include/qce/render.hpp
+    include/qce/about.hpp
 )
 
 set(QCE_MATH
@@ -76,6 +79,12 @@ set(QCE_MATH
     include/qce/math/matrix_avx512.hpp
 )
 
+set(QCE_RENDERS
+    include/qce/renders/render_base.hpp
+    include/qce/renders/render_dx12.hpp
+    # TODO: include/qce/renders/render_vulkan.hpp
+)
+
 set(QCE_OTHER
     src/about.cpp
 )
@@ -86,11 +95,13 @@ target_sources(${PROJECT_NAME}
         ${QCE_INTERFACE}
     PRIVATE
         ${QCE_MATH}
+        ${QCE_RENDERS}
         ${QCE_OTHER}
 )
 
 source_group("Interface" FILES ${QCE_INTERFACE})
 source_group("Math" FILES ${QCE_MATH})
+source_group("Renders" FILES ${QCE_RENDERS})
 source_group("Other" FILES ${QCE_OTHER})
 
 target_include_directories(${PROJECT_NAME}
