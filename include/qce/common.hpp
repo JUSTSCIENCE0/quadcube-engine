@@ -7,9 +7,9 @@
 
 #if defined(_MSC_VER)
 #  ifdef quadcube_engine_EXPORTS
-#    define QCE_API extern "C" __declspec(dllexport)
+#    define QCE_API __declspec(dllexport)
 #  else
-#    define QCE_API extern "C" __declspec(dllimport)
+#    define QCE_API __declspec(dllimport)
 #  endif
 #elif defined(__GNUC__) || defined(__clang__)
 #  ifdef quadcube_engine_EXPORTS
