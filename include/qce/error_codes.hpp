@@ -14,15 +14,15 @@ namespace QCE {
 #define CU_ENUMS_DESCRIPTION \
     CU_BEGIN_ENUM(ErrorCode) \
         CU_ENUM_UNIT(SUCCESS) \
-        CU_VALUED_ENUM_UNIT(GROUP_WARNING, 0)       \
-        CU_VALUED_ENUM_UNIT(GROUP_ERROR,   0x10000) \
+        CU_VALUED_ENUM_UNIT(GROUP_WARNING, 0x1)     \
+        CU_VALUED_ENUM_UNIT(GROUP_ERROR,   0xFFFF)  \
         CU_VALUED_ENUM_UNIT(GROUP_WINDOW,  0x10000) \
         CU_VALUED_ENUM_UNIT(GROUP_RENDER,  0x20000) \
         CU_VALUED_ENUM_UNIT(GROUP_DX12,    0x30000) \
-        CU_VALUED_ENUM_UNIT(GROUP_VULKAN,  0x30000) \
+        CU_VALUED_ENUM_UNIT(GROUP_VULKAN,  0x40000) \
     CU_END_ENUM(ErrorCode)
-
 #include <cu/enum-utils.hpp>
+#undef CU_ENUMS_DESCRIPTION
 
     static inline bool is_success(ErrorCode code) {
         return ErrorCode::SUCCESS == code;
