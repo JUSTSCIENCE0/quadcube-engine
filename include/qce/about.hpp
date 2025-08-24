@@ -7,6 +7,8 @@
 
 #include <qce/common.hpp>
 
-QCE_API const char* get_verion();
-QCE_API const char* get_author();
-QCE_API const char* get_licence();
+namespace QCE {
+    QCE_API const char* get_verion();
+    QCE_API const char* get_author();
+    QCE_API const char* get_licence();
+}
