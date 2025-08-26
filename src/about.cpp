@@ -6,16 +6,16 @@
 #include <qce/about.hpp>
 
 namespace QCE {
-    QCE_API const char* get_verion() {
+    const char* get_verion() {
         // TODO: use git tag - common-utils
         return "0.0.0";
     }
 
-    QCE_API const char* get_author() {
+    const char* get_author() {
         return "Yakov Usoltsev, yakovmen62@gmail.com";
     }
 
-    QCE_API const char* get_licence() {
+    const char* get_licence() {
         return  "MIT License\n\n"
             "Copyright(c) 2025, Yakov Usoltsev\n\n"
             "Permission is hereby granted, free of charge, to any person obtaining a copy "

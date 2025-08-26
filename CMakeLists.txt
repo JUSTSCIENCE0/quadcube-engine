@@ -59,7 +59,6 @@ list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")
 
 set(QCE_INTERFACE
     include/qce/qce.hpp
-    include/qce/common.hpp
     include/qce/error_codes.hpp
     include/qce/vector.hpp
     include/qce/matrix.hpp
@@ -80,16 +79,20 @@ set(QCE_MATH
 )
 
 set(QCE_RENDERS
+# headers
     include/qce/renders/render_base.hpp
     include/qce/renders/render_dx12.hpp
     # TODO: include/qce/renders/render_vulkan.hpp
+
+# sources
+    # src/render_dx12.cpp
 )
 
 set(QCE_OTHER
     src/about.cpp
 )
 
-add_library(${PROJECT_NAME} SHARED)
+add_library(${PROJECT_NAME} STATIC)
 target_sources(${PROJECT_NAME}
     PUBLIC
         ${QCE_INTERFACE}
