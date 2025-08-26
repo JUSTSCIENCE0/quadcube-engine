@@ -85,7 +85,7 @@ set(QCE_RENDERS
     # TODO: include/qce/renders/render_vulkan.hpp
 
 # sources
-    # src/render_dx12.cpp
+    src/render_dx12.cpp
 )
 
 set(QCE_OTHER

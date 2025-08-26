@@ -17,6 +17,9 @@ namespace QCE {
         CU_VALUED_ENUM_UNIT(GROUP_WARNING, 0x1)     \
         CU_VALUED_ENUM_UNIT(GROUP_ERROR,   0xFFFF)  \
         CU_VALUED_ENUM_UNIT(GROUP_WINDOW,  0x10000) \
+        CU_ENUM_UNIT(E_WINNT_REGISRER_FAILED) \
+        CU_ENUM_UNIT(E_WINNT_INVALID_WINDOW_RECT) \
+        CU_ENUM_UNIT(E_WINNT_CREATE_FAILED) \
         CU_VALUED_ENUM_UNIT(GROUP_RENDER,  0x20000) \
         CU_VALUED_ENUM_UNIT(GROUP_DX12,    0x30000) \
         CU_VALUED_ENUM_UNIT(GROUP_VULKAN,  0x40000) \
@@ -40,6 +43,15 @@ namespace QCE {
         switch (code) {
         case ErrorCode::SUCCESS:
             result << "Everything is awesome";
+            break;
+        case ErrorCode::E_WINNT_REGISRER_FAILED:
+            result << "WinNTWindow - RegisterClass Failed";
+            break;
+        case ErrorCode::E_WINNT_CREATE_FAILED:
+            result << "WinNTWindow - CreateWindow Failed";
+            break;
+        case ErrorCode::E_WINNT_INVALID_WINDOW_RECT:
+            result << "WinNTWindow - AdjustWindowRect Failed";
             break;
         default:
             result << "Error has no description";
