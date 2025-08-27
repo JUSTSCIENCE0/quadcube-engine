@@ -10,10 +10,22 @@ int main(int argc, char* argv[]) {
     FreeConsole();
 #endif
 
-    QCE::WindowConfig wconf{};
-    QCE::WinNtWindow window{ wconf };
+    try {
+        QCE::WindowConfig wconf{};
+        QCE::WinNtWindow window{ wconf };
 
-    std::getchar();
-
-    return 0;
+        return window.MainLoop();
+    }
+    catch (QCE::ErrorCodeException qce_ex) {
+        MessageBox(nullptr, L"QCE Exception", L"Error", 0);
+        return qce_ex.code_value();
+    }
+    catch (std::exception ex) {
+        MessageBox(nullptr, L"General Exception", L"Error", 0);
+        return -1;
+    }
+    catch (...) {
+        MessageBox(nullptr, L"Unknown Exception", L"Error", 0);
+        return -1;
+    }
 }

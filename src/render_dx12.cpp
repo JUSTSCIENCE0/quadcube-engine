@@ -7,11 +7,11 @@
 
 namespace QCE {
     WinNtWindow::WinNtWindow(
-            WindowConfig initial_config,
-            std::wstring class_name) :
-        BaseWindow(std::move(initial_config)),
-        m_class_name(std::move(class_name)) {
-        Init();
+                WindowConfig initial_config,
+                std::wstring class_name) :
+            BaseWindow(std::move(initial_config)),
+            m_class_name(std::move(class_name)) {
+        QCE_THROW_CRITICAL(Init());
     }
 
     ErrorCode WinNtWindow::Init() {
@@ -28,6 +28,7 @@ namespace QCE {
 
         auto wnd_proc = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 auto wnd = reinterpret_cast<WinNtWindow*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+
                 if (wnd) {
                     return wnd->MessageProcess(hwnd, msg, wParam, lParam);
                 }
@@ -44,19 +45,23 @@ namespace QCE {
             return ErrorCode::E_WINNT_INVALID_WINDOW_RECT;
         }
 
-        auto hwnd = CreateWindow(wc.lpszClassName, L"DX12 Window",
+        m_hwnd = CreateWindow(wc.lpszClassName, L"DX12 Window",
             WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, m_config.width, m_config.height, nullptr, nullptr, wc.hInstance, nullptr);
-        if (!hwnd) {
+        if (!m_hwnd) {
             return ErrorCode::E_WINNT_CREATE_FAILED;
         }
 
-        ShowWindow(hwnd, SW_SHOW);
-        UpdateWindow(hwnd);
+        SetWindowLongPtr(m_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+
+        ShowWindow(m_hwnd, SW_SHOW);
+        UpdateWindow(m_hwnd);
 
         return ErrorCode::SUCCESS;
     }
 
     LRESULT WinNtWindow::MessageProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+        assert(hwnd == m_hwnd);
+
         switch (msg) {
         case WM_ACTIVATE:
             // WM_ACTIVATE is sent when the window is activated or deactivated
@@ -95,5 +100,22 @@ namespace QCE {
         }
 
         return DefWindowProc(hwnd, msg, wParam, lParam);
+    }
+
+    ErrorCode WinNtWindow::MainLoop() {
+        MSG msg{};
+
+        while (msg.message != WM_QUIT) {
+            if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
+            else {
+                // TODO: engine step
+                Sleep(10);
+            }
+        }
+
+        return ErrorCode::SUCCESS;
     }
 }

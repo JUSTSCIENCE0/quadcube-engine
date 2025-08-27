@@ -19,12 +19,15 @@ namespace QCE {
             std::wstring class_name = L"QceMainWindow");
         virtual ~WinNtWindow() = default;
 
+        virtual ErrorCode MainLoop() override;
     private:
         ErrorCode Init();
 
         LRESULT MessageProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
         const std::wstring m_class_name;
+
+        HWND m_hwnd = nullptr;
     };
 }
 

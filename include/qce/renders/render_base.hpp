@@ -32,7 +32,7 @@ namespace QCE {
     class BaseWindow {
     public:
         explicit BaseWindow(WindowConfig initial_config) :
-           m_config(std::move(initial_config)) {}
+            m_config(std::move(initial_config)) {}
 
         BaseWindow(const BaseWindow&) = delete;
         BaseWindow(BaseWindow&&) = delete;
@@ -45,9 +45,9 @@ namespace QCE {
             return ErrorCode::SUCCESS;
         }
 
+        virtual ErrorCode MainLoop() = 0;
+
     protected:
-
-
         WindowConfig m_config{};
     };
 }
