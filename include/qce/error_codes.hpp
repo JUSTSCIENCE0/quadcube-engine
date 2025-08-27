@@ -9,6 +9,8 @@
 #include <sstream>
 #include <string>
 #include <cstring>
+#include <exception>
+#include <cassert>
 
 namespace QCE {
 #define CU_ENUMS_DESCRIPTION \
@@ -60,6 +62,23 @@ namespace QCE {
 
         return result.str();
     }
+
+    class ErrorCodeException final :
+            public std::exception {
+    public:
+        explicit ErrorCodeException(ErrorCode code):
+            m_code(code),
+            m_message(describe_error(code)) {}
+
+        ErrorCode code_value() const noexcept { return m_code; }
+
+        const char* what() const noexcept override {
+            return m_message.c_str();
+        }
+    private:
+        const ErrorCode m_code;
+        const std::string m_message;
+    };
 }
 
 #define QCE_CHECK_IMPL(operation, check_func, .../*return_value*/) do { \
@@ -91,3 +110,17 @@ namespace QCE {
 /// log if not success
 #define QCE_SOFT(operation) \
     QCE_CHECK_IMPL(operation, !QCE::is_success)
+
+#define QCE_THROW_IMPL(operation, check_func) do { \
+    QCE::ErrorCode code = operation; \
+    if (check_func(code)) throw QCE::ErrorCodeException(code); \
+} while(0)
+
+/// throw if not success
+#define QCE_THROW_CRITICAL(operation) \
+    QCE_THROW_IMPL(operation, !QCE::is_success)
+
+/// throw if fail
+#define QCE_THROW(operation) \
+    QCE_THROW_IMPL(operation, QCE::is_fail)
+
