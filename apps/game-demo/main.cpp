@@ -4,6 +4,7 @@
 // License: MIT
 
 #include <qce/renders/windows_output.hpp>
+#include <qce/renders/render_dx12.hpp>
 
 int main(int argc, char* argv[]) {
 #ifdef NDEBUG
@@ -13,6 +14,9 @@ int main(int argc, char* argv[]) {
     try {
         QCE::WindowConfig wconf{};
         QCE::WinNtWindow window{ wconf };
+
+        QCE::RenderConfig rconf{};
+        auto render = QCE::GetRender(rconf, window.GetHwnd(), nullptr);
 
         return window.MainLoop();
     }

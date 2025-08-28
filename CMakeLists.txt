@@ -87,6 +87,7 @@ set(QCE_RENDERS
 
 # sources
     src/windows_output.cpp
+    src/render_base.cpp
     src/render_dx12.cpp
 )
 
@@ -118,6 +119,14 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
         common-utils
 )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_link_libraries(${PROJECT_NAME}
+        PUBLIC
+            D3D12.lib
+            DXGI.lib
+    )
+endif()
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY INCLUDE_DIR_POSTFIX "qce")
 

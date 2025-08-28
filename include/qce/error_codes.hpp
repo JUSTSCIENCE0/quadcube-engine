@@ -24,6 +24,16 @@ namespace QCE {
         CU_ENUM_UNIT(E_WINNT_CREATE_FAILED) \
         CU_VALUED_ENUM_UNIT(GROUP_RENDER,  0x20000) \
         CU_VALUED_ENUM_UNIT(GROUP_DX12,    0x30000) \
+        CU_ENUM_UNIT(E_DX12_CREATE_DXGI_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_DEVICE_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_FENCE_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_COMMAND_QUEUE_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_COMMAND_ALLOCATOR_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_COMMAND_LIST_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CLOSE_COMMAND_LIST_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_SWAP_CHAIN_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_RTV_HEAP_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_DSV_HEAP_FAILED) \
         CU_VALUED_ENUM_UNIT(GROUP_VULKAN,  0x40000) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
@@ -54,6 +64,36 @@ namespace QCE {
             break;
         case ErrorCode::E_WINNT_INVALID_WINDOW_RECT:
             result << "WinNTWindow - AdjustWindowRect Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_DXGI_FAILED:
+            result << "DX12 - CreateDXGIFactory Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_FENCE_FAILED:
+            result << "DX12 - CreateFence Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_DEVICE_FAILED:
+            result << "DX12 - CreateDevice Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_COMMAND_QUEUE_FAILED:
+            result << "DX12 - CreateCommandQueue Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_COMMAND_ALLOCATOR_FAILED:
+            result << "DX12 - CreateCommandAllocator Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_COMMAND_LIST_FAILED:
+            result << "DX12 - CreateCommandList Failed";
+            break;
+        case ErrorCode::E_DX12_CLOSE_COMMAND_LIST_FAILED:
+            result << "DX12 - CommandList Close Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_SWAP_CHAIN_FAILED:
+            result << "DX12 - CreateSwapChain Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_RTV_HEAP_FAILED:
+            result << "DX12 - RTV CreateDescriptorHeap Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_DSV_HEAP_FAILED:
+            result << "DX12 - DSV CreateDescriptorHeap Failed";
             break;
         default:
             result << "Error has no description";

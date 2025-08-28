@@ -26,6 +26,8 @@ namespace QCE {
         ErrorCode UpdateConfig(WindowConfig config);
         ErrorCode MainLoop();
 
+        HWND GetHwnd() const noexcept { return m_hwnd; }
+
     private:
         ErrorCode Init();
 
