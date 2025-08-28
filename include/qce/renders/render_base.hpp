@@ -28,26 +28,4 @@ namespace QCE {
         int width = 1280;
         int height = 720;
     };
-
-    class BaseWindow {
-    public:
-        explicit BaseWindow(WindowConfig initial_config) :
-            m_config(std::move(initial_config)) {}
-
-        BaseWindow(const BaseWindow&) = delete;
-        BaseWindow(BaseWindow&&) = delete;
-        BaseWindow& operator=(const BaseWindow&) = delete;
-        BaseWindow& operator=(BaseWindow&&) = delete;
-        virtual ~BaseWindow() = default;
-
-        virtual ErrorCode UpdateConfig(WindowConfig config) {
-            m_config = std::move(config);
-            return ErrorCode::SUCCESS;
-        }
-
-        virtual ErrorCode MainLoop() = 0;
-
-    protected:
-        WindowConfig m_config{};
-    };
 }
