@@ -80,11 +80,13 @@ set(QCE_MATH
 
 set(QCE_RENDERS
 # headers
+    include/qce/renders/windows_output.hpp
     include/qce/renders/render_base.hpp
     include/qce/renders/render_dx12.hpp
     # TODO: include/qce/renders/render_vulkan.hpp
 
 # sources
+    src/windows_output.cpp
     src/render_dx12.cpp
 )
 

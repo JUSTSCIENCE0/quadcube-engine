@@ -3,7 +3,7 @@
 //
 // License: MIT
 
-#include <qce/renders/render_dx12.hpp>
+#include <qce/renders/windows_output.hpp>
 
 int main(int argc, char* argv[]) {
 #ifdef NDEBUG
