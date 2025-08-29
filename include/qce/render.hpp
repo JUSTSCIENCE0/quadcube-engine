@@ -5,3 +5,12 @@
 
 #pragma once
 
+#ifdef WIN32
+#  include <qce/renders/windows_output.hpp>
+#  include <qce/renders/render_dx12.hpp>
+
+namespace QCE {
+    using DefaultGraphicsOutput = WinNtWindow;
+}
+#endif
+
