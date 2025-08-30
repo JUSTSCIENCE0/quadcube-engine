@@ -10,6 +10,6 @@ int main(int argc, char* argv[]) {
     FreeConsole();
 #endif
 
-    auto& app = QCE::Application<>::Get();
+    auto& app = QCE::Application::Get();
     return app.Run();
 }

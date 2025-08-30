@@ -24,7 +24,23 @@ namespace QCE {
         ~WinNtWindow() = default;
 
         ErrorCode UpdateConfig(WindowConfig config);
-        ErrorCode MainLoop();
+
+        template <typename /*TODO: concept*/ TickConsumer>
+        ErrorCode MainLoop(TickConsumer* app) {
+            MSG msg{};
+
+            while (msg.message != WM_QUIT) {
+                if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+                }
+                else {
+                    app->StepForward();
+                }
+            }
+
+            return ErrorCode::SUCCESS;
+        }
 
         HWND GetHwnd() const noexcept { return m_hwnd; }
 

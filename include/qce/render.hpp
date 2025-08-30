@@ -10,7 +10,7 @@
 #  include <qce/renders/render_dx12.hpp>
 
 namespace QCE {
-    using DefaultGraphicsOutput = WinNtWindow;
+    using GraphicsOutput = WinNtWindow;
 }
 #endif
 

@@ -14,22 +14,23 @@ namespace QCE {
     };
 
     // TODO:  additional logic, graphics, etc
-    template <typename GraphicsOutput /*TODO: concept*/ = DefaultGraphicsOutput>
     class Application {
+        friend GraphicsOutput;
+
     public:
         Application(const Application&) = delete;
         Application(Application&&) = delete;
         Application& operator=(const Application&) = delete;
         Application& operator=(Application&&) = delete;
 
-        static Application<GraphicsOutput>& Get() {
-            static Application<GraphicsOutput> app{};
+        static Application& Get() {
+            static Application app{};
             return app;
         }
 
         ErrorCode Run() {
             try {
-                return m_graphics_output.MainLoop();
+                return m_graphics_output.MainLoop(this);
             }
             catch (QCE::ErrorCodeException qce_ex) {
                 MessageBox(nullptr, L"QCE Exception", L"Error", 0);
@@ -75,6 +76,11 @@ namespace QCE {
         ApplicationConfig ReadConfig() {
             // TODO
             return {};
+        }
+
+        ErrorCode StepForward() {
+            Sleep(10);
+            return ErrorCode::SUCCESS;
         }
 
         ApplicationConfig m_config{};
