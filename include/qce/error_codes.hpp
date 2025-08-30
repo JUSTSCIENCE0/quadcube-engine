@@ -34,6 +34,11 @@ namespace QCE {
         CU_ENUM_UNIT(E_DX12_CREATE_SWAP_CHAIN_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_RTV_HEAP_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_DSV_HEAP_FAILED) \
+        CU_ENUM_UNIT(E_DX12_QUEUE_ADD_SIGNAL_FAILED) \
+        CU_ENUM_UNIT(E_DX12_SET_EVENT_ON_COMPLETE_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_EVENT_FAILED) \
+        CU_ENUM_UNIT(E_DX12_RESET_COMMAND_LIST_FAILED) \
+        CU_ENUM_UNIT(E_DX12_SWAP_CHAIN_RESIZE_BUFFERS_FAILED) \
         CU_VALUED_ENUM_UNIT(GROUP_VULKAN,  0x40000) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
@@ -94,6 +99,21 @@ namespace QCE {
             break;
         case ErrorCode::E_DX12_CREATE_DSV_HEAP_FAILED:
             result << "DX12 - DSV CreateDescriptorHeap Failed";
+            break;
+        case ErrorCode::E_DX12_QUEUE_ADD_SIGNAL_FAILED:
+            result << "DX12 - Add Signal to CommandQueue Failed";
+            break;
+        case ErrorCode::E_DX12_SET_EVENT_ON_COMPLETE_FAILED:
+            result << "DX12 - Fence SetEventOnCompletion Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_EVENT_FAILED:
+            result << "DX12 - CreateEvent Failed";
+            break;
+        case ErrorCode::E_DX12_RESET_COMMAND_LIST_FAILED:
+            result << "DX12 - CommandList Reset Failed";
+            break;
+        case ErrorCode::E_DX12_SWAP_CHAIN_RESIZE_BUFFERS_FAILED:
+            result << "DX12 - SwapChain ResizeBuffers Failed";
             break;
         default:
             result << "Error has no description";

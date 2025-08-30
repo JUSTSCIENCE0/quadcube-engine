@@ -42,6 +42,7 @@ namespace QCE {
         QCE_CRITICAL(CreateCommandObjects());
         QCE_CRITICAL(CreateSwapChain());
         QCE_CRITICAL(CreateRtvAndDsvDescriptorHeaps());
+        QCE_CRITICAL(InitBuffersAndDescriptors());
 
         return ErrorCode::SUCCESS;
     }
@@ -84,7 +85,7 @@ namespace QCE {
         sd.BufferDesc.Height = m_config.height;
         sd.BufferDesc.RefreshRate.Numerator = 60;
         sd.BufferDesc.RefreshRate.Denominator = 1;
-        sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        sd.BufferDesc.Format = BACK_BUFFER_FORMAT;
         sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
         sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
         sd.SampleDesc.Count = 1;
@@ -127,6 +128,69 @@ namespace QCE {
             &dsvHeapDesc, IID_PPV_ARGS(m_dsv_heap.GetAddressOf()));
         if (FAILED(hr))
             return ErrorCode::E_DX12_CREATE_RTV_HEAP_FAILED;
+
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::InitBuffersAndDescriptors() {
+        assert(m_d3d_device);
+        assert(m_swap_chain);
+        assert(m_cmd_alloc);
+        assert(m_cmd_list);
+
+        QCE_CRITICAL(FlushCommandQueue());
+
+        auto hr = m_cmd_list->Reset(m_cmd_alloc.Get(), nullptr);
+        if (FAILED(hr))
+            return ErrorCode::E_DX12_RESET_COMMAND_LIST_FAILED;
+
+        for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; i++) {
+            m_swap_chain_buffer[i].Reset();
+        }
+        m_depth_stencil_buffer.Reset();
+
+        hr = m_swap_chain->ResizeBuffers(
+            SWAP_CHAIN_BUFFER_COUNT,
+            m_config.width, m_config.height,
+            BACK_BUFFER_FORMAT,
+            DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+        if (FAILED(hr))
+            return ErrorCode::E_DX12_SWAP_CHAIN_RESIZE_BUFFERS_FAILED;
+
+        m_current_back_buffer = 0;
+
+        //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
+        //for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; i++) {
+        //    ThrowIfFailed(mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mSwapChainBuffer[i])));
+        //    md3dDevice->CreateRenderTargetView(mSwapChainBuffer[i].Get(), nullptr, rtvHeapHandle);
+        //    rtvHeapHandle.Offset(1, mRtvDescriptorSize);
+        //}
+
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::FlushCommandQueue() {
+        assert(m_cmd_queue);
+        assert(m_fence);
+
+        m_current_fence++;
+
+        auto hr = m_cmd_queue->Signal(m_fence.Get(), m_current_fence);
+        if (FAILED(hr))
+            return ErrorCode::E_DX12_QUEUE_ADD_SIGNAL_FAILED;
+
+        if (m_fence->GetCompletedValue() < m_current_fence) {
+            HANDLE eventHandle = CreateEventEx(nullptr, nullptr, NULL, EVENT_ALL_ACCESS);
+            if (!eventHandle)
+                return ErrorCode::E_DX12_CREATE_EVENT_FAILED;
+
+            hr = m_fence->SetEventOnCompletion(m_current_fence, eventHandle);
+            if (FAILED(hr))
+                return ErrorCode::E_DX12_SET_EVENT_ON_COMPLETE_FAILED;
+
+            WaitForSingleObject(eventHandle, INFINITE);
+            CloseHandle(eventHandle);
+        }
 
         return ErrorCode::SUCCESS;
     }
