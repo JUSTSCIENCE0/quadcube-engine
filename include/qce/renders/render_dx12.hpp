@@ -21,6 +21,8 @@ namespace QCE {
     public:
         friend std::shared_ptr<RenderBase> GetRender(RenderConfig config, void* window, void* app);
 
+        ErrorCode Draw();
+
     private:
         /// ctor
         explicit RenderDX12(RenderConfig initial_config, HWND window);
@@ -69,7 +71,7 @@ namespace QCE {
         MsPtr<ID3D12DescriptorHeap> m_dsv_heap{};
 
         D3D12_VIEWPORT m_screen_viewport{};
-        D3D12_RECT m_scissor_rect{};
+        D3D12_RECT     m_scissor_rect{};
 
         UINT m_rtv_descr_size = 0;
         UINT m_dsv_descr_size = 0;

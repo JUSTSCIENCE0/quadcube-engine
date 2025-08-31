@@ -79,8 +79,10 @@ namespace QCE {
         }
 
         ErrorCode StepForward() {
-            Sleep(10);
-            return ErrorCode::SUCCESS;
+            assert(m_render);
+
+            Sleep(100);
+            return m_render->Draw();
         }
 
         ApplicationConfig m_config{};

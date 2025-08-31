@@ -59,12 +59,22 @@ namespace QCE {
             return ErrorCode::SUCCESS;
         }
 
+        ErrorCode Draw() {
+            assert(DerivedDraw);
+            return DerivedDraw(this);
+        }
+
     protected:
-        explicit RenderBase(RenderConfig initial_config) :
-            m_config(std::move(initial_config)) {
+        template <typename /*TODO: concept*/ DerivedRender>
+        explicit RenderBase(std::in_place_type_t<DerivedRender>, RenderConfig initial_config) :
+            m_config(std::move(initial_config)),
+            DerivedDraw([](void* ptr) { return static_cast<DerivedRender*>(ptr)->Draw(); }) {
         }
 
         RenderConfig m_config{};
+
+    private:
+        ErrorCode(*DerivedDraw)(void*) = nullptr;
     };
 
     std::shared_ptr<RenderBase> GetRender(RenderConfig config, void* window, void* app);

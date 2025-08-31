@@ -9,7 +9,7 @@
 
 namespace QCE {
     RenderDX12::RenderDX12(RenderConfig initial_config, HWND window) :
-            RenderBase(std::move(initial_config)),
+        RenderBase(std::in_place_type<RenderDX12>, std::move(initial_config)),
             m_window(window) {
         assert(RenderType::E_RENDER_DIRECTX12 == initial_config.render_type);
         assert(m_window);
@@ -267,6 +267,11 @@ namespace QCE {
             CloseHandle(eventHandle);
         }
 
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::Draw() {
+        std::cout << "RenderDX12::Draw" << std::endl;
         return ErrorCode::SUCCESS;
     }
 }
