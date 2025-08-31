@@ -5,7 +5,7 @@
 
 #include <qce/renders/render_dx12.hpp>
 
-#include <directx/d3dx12.h>
+#include <DirectXColors.h>
 
 namespace QCE {
     RenderDX12::RenderDX12(RenderConfig initial_config, HWND window) :
@@ -271,7 +271,50 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::Draw() {
-        std::cout << "RenderDX12::Draw" << std::endl;
-        return ErrorCode::SUCCESS;
+        auto hr = m_cmd_alloc->Reset();
+        if (FAILED(hr)) {
+            return ErrorCode::E_DX12_RESET_COMMAND_ALLOCATOR_FAILED;
+        }
+
+        hr = m_cmd_list->Reset(m_cmd_alloc.Get(), nullptr);
+        if (FAILED(hr)) {
+            return ErrorCode::E_DX12_RESET_COMMAND_LIST_FAILED;
+        }
+
+        auto barrier_pt = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
+            D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+        m_cmd_list->ResourceBarrier(1, &barrier_pt);
+
+        m_cmd_list->RSSetViewports(1, &m_screen_viewport);
+        m_cmd_list->RSSetScissorRects(1, &m_scissor_rect);
+
+        auto current_bbv = CurrentBackBufferView();
+        m_cmd_list->ClearRenderTargetView(
+            current_bbv, DirectX::Colors::LightSteelBlue /* TODO: configurable */, 0, nullptr);
+        m_cmd_list->ClearDepthStencilView(
+            DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+        auto dsv = DepthStencilView();
+        m_cmd_list->OMSetRenderTargets(1, &current_bbv, true, &dsv);
+
+        auto barrier_tp = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
+            D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+        m_cmd_list->ResourceBarrier(1, &barrier_tp);
+
+        hr = m_cmd_list->Close();
+        if (FAILED(hr)) {
+            return ErrorCode::E_DX12_CLOSE_COMMAND_LIST_FAILED;
+        }
+
+        ID3D12CommandList* cmds_lists[] = { m_cmd_list.Get() };
+        m_cmd_queue->ExecuteCommandLists(_countof(cmds_lists), cmds_lists);
+
+        hr = m_swap_chain->Present(0, 0);
+        if (FAILED(hr)) {
+            return ErrorCode::E_DX12_PRESENT_SWAP_CHAIN_FAILED;
+        }
+        m_current_back_buffer = (m_current_back_buffer + 1) % SWAP_CHAIN_BUFFER_COUNT;
+
+        return FlushCommandQueue();
     }
 }

@@ -41,6 +41,8 @@ namespace QCE {
         CU_ENUM_UNIT(E_DX12_SWAP_CHAIN_RESIZE_BUFFERS_FAILED) \
         CU_ENUM_UNIT(E_DX12_SWAP_CHAIN_GET_BUFFER_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_DS_BUFFER_FAILED) \
+        CU_ENUM_UNIT(E_DX12_RESET_COMMAND_ALLOCATOR_FAILED) \
+        CU_ENUM_UNIT(E_DX12_PRESENT_SWAP_CHAIN_FAILED) \
         CU_VALUED_ENUM_UNIT(GROUP_VULKAN,  0x40000) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
@@ -122,6 +124,12 @@ namespace QCE {
             break;
         case ErrorCode::E_DX12_CREATE_DS_BUFFER_FAILED:
             result << "DX12 - Create Depth Stencil Buffer Failed";
+            break;
+        case ErrorCode::E_DX12_RESET_COMMAND_ALLOCATOR_FAILED:
+            result << "DX12 - Reset CommandAllocator Failed";
+            break;
+        case ErrorCode::E_DX12_PRESENT_SWAP_CHAIN_FAILED:
+            result << "DX12 - Present SwapChain Failed";
             break;
         default:
             result << "Error has no description";

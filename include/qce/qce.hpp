@@ -80,8 +80,6 @@ namespace QCE {
 
         ErrorCode StepForward() {
             assert(m_render);
-
-            Sleep(100);
             return m_render->Draw();
         }
 

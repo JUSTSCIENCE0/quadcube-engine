@@ -14,6 +14,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <dxgi.h>
+#include <directx/d3dx12.h>
 
 namespace QCE {
     class RenderDX12 final :
@@ -48,6 +49,15 @@ namespace QCE {
         ErrorCode FlushCommandQueue();
         D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView() const {
             return m_dsv_heap->GetCPUDescriptorHandleForHeapStart();
+        }
+        ID3D12Resource* CurrentBackBuffer() const {
+            return m_swap_chain_buffer[m_current_back_buffer].Get();
+        }
+        D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const {
+            return CD3DX12_CPU_DESCRIPTOR_HANDLE(
+                m_rtv_heap->GetCPUDescriptorHandleForHeapStart(),
+                m_current_back_buffer,
+                m_rtv_descr_size);
         }
 
         /// Attributes
