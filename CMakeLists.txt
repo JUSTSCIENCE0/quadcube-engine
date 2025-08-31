@@ -121,8 +121,21 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    FetchContent_Declare(
+        DirectX-Headers
+        GIT_REPOSITORY https://github.com/microsoft/DirectX-Headers.git
+        GIT_TAG        c94b9b23aaadc2034dd1cad656a5a69f1526f98a # v1.616.0
+    )
+    set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(DirectX-Headers)
+
+    set_property(TARGET DirectX-Headers DirectX-Guids PROPERTY FOLDER "externals")
+
     target_link_libraries(${PROJECT_NAME}
         PUBLIC
+            DirectX-Headers
+            DirectX-Guids
+
             D3D12.lib
             DXGI.lib
     )
