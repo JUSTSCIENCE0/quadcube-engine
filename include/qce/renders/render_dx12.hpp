@@ -44,6 +44,9 @@ namespace QCE {
 
         // Utils
         ErrorCode FlushCommandQueue();
+        D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView() const {
+            return m_dsv_heap->GetCPUDescriptorHandleForHeapStart();
+        }
 
         /// Attributes
         const HWND m_window;
@@ -60,13 +63,16 @@ namespace QCE {
         int m_current_back_buffer = 0;
         MsPtr<IDXGISwapChain> m_swap_chain{};
         MsPtr<ID3D12Resource> m_swap_chain_buffer[SWAP_CHAIN_BUFFER_COUNT];
-        MsPtr<ID3D12Resource> m_depth_stencil_buffer;
+        MsPtr<ID3D12Resource> m_depth_stencil_buffer{};
 
         MsPtr<ID3D12DescriptorHeap> m_rtv_heap{};
         MsPtr<ID3D12DescriptorHeap> m_dsv_heap{};
 
-        UINT m_rtv_decr_size = 0;
-        UINT m_dsv_decr_size = 0;
+        D3D12_VIEWPORT m_screen_viewport{};
+        D3D12_RECT m_scissor_rect{};
+
+        UINT m_rtv_descr_size = 0;
+        UINT m_dsv_descr_size = 0;
         UINT m_cbv_srv_uav_descr_size = 0;
 
         uint64_t m_current_fence = 0;

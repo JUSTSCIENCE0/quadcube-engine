@@ -5,6 +5,8 @@
 
 #include <qce/renders/render_dx12.hpp>
 
+#include <directx/d3dx12.h>
+
 namespace QCE {
     RenderDX12::RenderDX12(RenderConfig initial_config, HWND window) :
             RenderBase(std::move(initial_config)),
@@ -35,8 +37,8 @@ namespace QCE {
             return ErrorCode::E_DX12_CREATE_FENCE_FAILED;
         }
 
-        m_rtv_decr_size = m_d3d_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-        m_dsv_decr_size = m_d3d_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+        m_rtv_descr_size = m_d3d_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+        m_dsv_descr_size = m_d3d_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
         m_cbv_srv_uav_descr_size = m_d3d_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
         QCE_CRITICAL(CreateCommandObjects());
@@ -159,12 +161,85 @@ namespace QCE {
 
         m_current_back_buffer = 0;
 
-        //CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
-        //for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; i++) {
-        //    ThrowIfFailed(mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mSwapChainBuffer[i])));
-        //    md3dDevice->CreateRenderTargetView(mSwapChainBuffer[i].Get(), nullptr, rtvHeapHandle);
-        //    rtvHeapHandle.Offset(1, mRtvDescriptorSize);
-        //}
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_heap_handle(m_rtv_heap->GetCPUDescriptorHandleForHeapStart());
+        for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; i++) {
+            hr = m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&m_swap_chain_buffer[i]));
+            if (FAILED(hr))
+                return ErrorCode::E_DX12_SWAP_CHAIN_GET_BUFFER_FAILED;
+
+            m_d3d_device->CreateRenderTargetView(m_swap_chain_buffer[i].Get(), nullptr, rtv_heap_handle);
+            rtv_heap_handle.Offset(1, m_rtv_descr_size);
+        }
+
+        D3D12_RESOURCE_DESC depth_stencil_descr {
+            .Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
+            .Alignment = 0,
+            .Width = UINT64(m_config.width),
+            .Height = UINT64(m_config.height),
+            .DepthOrArraySize = 1,
+            .MipLevels = 1,
+            .Format = DXGI_FORMAT_R24G8_TYPELESS,
+            .SampleDesc { // TODO: MSAA
+                .Count = 1,
+                .Quality = 0
+            },
+            .Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
+            .Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
+        };
+        D3D12_CLEAR_VALUE opt_clear {
+            .Format = DEPTH_STENCIL_FORMAT,
+            .DepthStencil {
+                .Depth = 1.0f,
+                .Stencil = 0
+            }
+        };
+        CD3DX12_HEAP_PROPERTIES heap_props{ D3D12_HEAP_TYPE_DEFAULT };
+        hr = m_d3d_device->CreateCommittedResource(
+            &heap_props,
+            D3D12_HEAP_FLAG_NONE,
+            &depth_stencil_descr,
+            D3D12_RESOURCE_STATE_COMMON,
+            &opt_clear,
+            IID_PPV_ARGS(m_depth_stencil_buffer.GetAddressOf())
+        );
+        if (FAILED(hr))
+            return ErrorCode::E_DX12_CREATE_DS_BUFFER_FAILED;
+
+        D3D12_DEPTH_STENCIL_VIEW_DESC dsv_descr {
+            .Format = DEPTH_STENCIL_FORMAT,
+            .ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D,
+            .Flags = D3D12_DSV_FLAG_NONE,
+            .Texture2D {.MipSlice = 0 }
+        };
+        m_d3d_device->CreateDepthStencilView(m_depth_stencil_buffer.Get(), &dsv_descr, DepthStencilView());
+
+        auto rb_transiton = CD3DX12_RESOURCE_BARRIER::Transition(m_depth_stencil_buffer.Get(),
+            D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+        m_cmd_list->ResourceBarrier(1, &rb_transiton);
+
+        hr = m_cmd_list->Close();
+        if (FAILED(hr))
+            return E_DX12_CLOSE_COMMAND_LIST_FAILED;
+
+        ID3D12CommandList* cmdsLists[] = { m_cmd_list.Get() };
+        m_cmd_queue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+        QCE_CRITICAL(FlushCommandQueue());
+
+        m_screen_viewport = {
+            .TopLeftX = 0,
+            .TopLeftY = 0,
+            .Width = FLOAT(m_config.width),
+            .Height = FLOAT(m_config.height),
+            .MinDepth = 0.0f,
+            .MaxDepth = 1.0f
+        };
+        m_scissor_rect = {
+            .left = 0,
+            .top = 0,
+            .right = m_config.width,
+            .bottom = m_config.height
+        };
 
         return ErrorCode::SUCCESS;
     }
