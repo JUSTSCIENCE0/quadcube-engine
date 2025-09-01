@@ -50,7 +50,7 @@ namespace QCE {
             return ErrorCode::E_WINNT_INVALID_WINDOW_RECT;
         }
 
-        m_hwnd = CreateWindow(wc.lpszClassName, L"QCE Application" /* TODO: configurable*/,
+        m_hwnd = CreateWindow(wc.lpszClassName, m_config.caption.c_str(),
             WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, m_config.width, m_config.height, nullptr, nullptr, wc.hInstance, nullptr);
         if (!m_hwnd) {
             return ErrorCode::E_WINNT_CREATE_FAILED;

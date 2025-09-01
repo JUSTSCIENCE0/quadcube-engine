@@ -10,6 +10,12 @@ int main(int argc, char* argv[]) {
     FreeConsole();
 #endif
 
-    auto& app = QCE::Application::Get();
+    QCE::ApplicationConfig config{
+        .graphics_output {
+            .caption = L"QCE Game Demo"
+        }
+    };
+
+    auto& app = QCE::Application::Get(config);
     return app.Run();
 }

@@ -23,9 +23,12 @@ namespace QCE {
         Application& operator=(const Application&) = delete;
         Application& operator=(Application&&) = delete;
 
-        static Application& Get() {
-            static Application app{};
+        static Application& Get(ApplicationConfig initial_config) {
+            static Application app{ std::move(initial_config) };
             return app;
+        }
+        static Application& Get() {
+            return Get(ReadConfig());
         }
 
         ErrorCode Run() {
@@ -47,9 +50,9 @@ namespace QCE {
         }
 
     private:
-        Application() 
+        explicit Application(ApplicationConfig initial_config)
         try :
-            m_config(ReadConfig()),
+            m_config(std::move(initial_config)),
             m_graphics_output(m_config.graphics_output) {
 #ifdef WIN32
             auto window = m_graphics_output.GetHwnd();
@@ -73,7 +76,7 @@ namespace QCE {
             exit(-1);
         }
 
-        ApplicationConfig ReadConfig() {
+        static ApplicationConfig ReadConfig() {
             // TODO
             return {};
         }
