@@ -15,7 +15,7 @@ namespace QCE {
     class WinNtWindow final {
     public:
         explicit WinNtWindow(
-            WindowConfig initial_config,
+            GraphicsOutputConfig initial_config,
             std::wstring class_name = L"QceMainWindow");
         WinNtWindow(const WinNtWindow&) = delete;
         WinNtWindow(WinNtWindow&&) = delete;
@@ -23,7 +23,7 @@ namespace QCE {
         WinNtWindow& operator=(WinNtWindow&&) = delete;
         ~WinNtWindow() = default;
 
-        ErrorCode UpdateConfig(WindowConfig config);
+        ErrorCode UpdateConfig(GraphicsOutputConfig config);
 
         template <typename /*TODO: concept*/ TickConsumer>
         ErrorCode MainLoop(TickConsumer* app) {
@@ -49,7 +49,7 @@ namespace QCE {
 
         LRESULT MessageProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-        WindowConfig m_config{};
+        GraphicsOutputConfig m_config{};
         const std::wstring m_class_name;
 
         HWND m_hwnd = nullptr;

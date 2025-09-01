@@ -9,7 +9,7 @@
 
 namespace QCE {
     struct ApplicationConfig {
-        WindowConfig graphics_output{};
+        GraphicsOutputConfig graphics_output{};
         RenderConfig render{};
     };
 

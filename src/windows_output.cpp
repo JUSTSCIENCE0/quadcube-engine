@@ -7,14 +7,14 @@
 
 namespace QCE {
     WinNtWindow::WinNtWindow(
-                WindowConfig initial_config,
+                GraphicsOutputConfig initial_config,
                 std::wstring class_name) :
             m_config(std::move(initial_config)),
             m_class_name(std::move(class_name)) {
         QCE_THROW_CRITICAL(Init());
     }
 
-    ErrorCode WinNtWindow::UpdateConfig(WindowConfig config) {
+    ErrorCode WinNtWindow::UpdateConfig(GraphicsOutputConfig config) {
         m_config = std::move(config);
         return ErrorCode::SUCCESS;
     }

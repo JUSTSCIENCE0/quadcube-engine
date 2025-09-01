@@ -32,7 +32,7 @@ namespace QCE {
     static constexpr auto DEFAULT_RENDER_TYPE = RenderType::E_RENDER_VULKAN;
 #endif
 
-    struct WindowConfig {
+    struct GraphicsOutputConfig {
         WindowMode mode = WindowMode::E_REGULAR_WINDOW;
 
         int width = 1280;
