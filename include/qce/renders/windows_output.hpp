@@ -42,6 +42,12 @@ namespace QCE {
             return ErrorCode::SUCCESS;
         }
 
+        void ShowMessage(
+                const std::wstring& caption,
+                const std::wstring& text) {
+            MessageBox(nullptr, text.c_str(), caption.c_str(), 0);
+        }
+
         HWND GetHwnd() const noexcept { return m_hwnd; }
 
     private:

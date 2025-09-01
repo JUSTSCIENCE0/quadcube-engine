@@ -7,6 +7,8 @@
 
 #include <qce/render.hpp>
 
+#include <cu/string-utils.hpp>
+
 namespace QCE {
     struct ApplicationConfig {
         GraphicsOutputConfig graphics_output{};
@@ -36,15 +38,21 @@ namespace QCE {
                 return m_graphics_output.MainLoop(this);
             }
             catch (QCE::ErrorCodeException qce_ex) {
-                MessageBox(nullptr, L"QCE Exception", L"Error", 0);
+                m_graphics_output.ShowMessage(
+                    L"QCE Error",
+                    CU::str_to_wstr_simple(qce_ex.what()));
                 return qce_ex.code_value();
             }
             catch (std::exception ex) {
-                MessageBox(nullptr, L"General Exception", L"Error", 0);
+                m_graphics_output.ShowMessage(
+                    L"General Error",
+                    CU::str_to_wstr_simple(ex.what()));
                 return ErrorCode::E_ErrorCode_UNKNOWN;
             }
             catch (...) {
-                MessageBox(nullptr, L"Unknown Exception", L"Error", 0);
+                m_graphics_output.ShowMessage(
+                    L"Error",
+                    L"Unknown Error");
                 return ErrorCode::E_ErrorCode_UNKNOWN;
             }
         }
