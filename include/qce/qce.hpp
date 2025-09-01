@@ -72,15 +72,21 @@ namespace QCE {
             m_render = QCE::GetRender(m_config.render, window, app);
         }
         catch (QCE::ErrorCodeException qce_ex) {
-            MessageBox(nullptr, L"QCE Exception", L"Error", 0);
+            m_graphics_output.ShowMessage(
+                L"QCE Error",
+                CU::str_to_wstr_simple(qce_ex.what()));
             exit(qce_ex.code_value());
         }
         catch (std::exception ex) {
-            MessageBox(nullptr, L"General Exception", L"Error", 0);
+            m_graphics_output.ShowMessage(
+                L"General Error",
+                CU::str_to_wstr_simple(ex.what()));
             exit(-1);
         }
         catch (...) {
-            MessageBox(nullptr, L"Unknown Exception", L"Error", 0);
+            m_graphics_output.ShowMessage(
+                L"Error",
+                L"Unknown Error");
             exit(-1);
         }
 
