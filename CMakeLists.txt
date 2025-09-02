@@ -65,6 +65,9 @@ set(QCE_INTERFACE
     include/qce/math.hpp
     include/qce/render.hpp
     include/qce/about.hpp
+    include/qce/mesh.hpp
+    include/qce/model.hpp
+    include/qce/entity.hpp
 )
 
 set(QCE_MATH
