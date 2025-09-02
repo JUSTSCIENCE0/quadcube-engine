@@ -20,6 +20,7 @@
 #include <cmath>
 
 namespace QCE {
+    inline constexpr auto REQUIRED_ALIGNAS = 8;
 
     // vector type
     struct vector final

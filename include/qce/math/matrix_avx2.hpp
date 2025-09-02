@@ -17,7 +17,7 @@
 #include <qce/math/vector_avx2.hpp>
 
 namespace QCE {
-    struct alignas(32) matrix final {
+    struct alignas(REQUIRED_ALIGNAS) matrix final {
         __m256 v34;
         __m256 v12;
     };

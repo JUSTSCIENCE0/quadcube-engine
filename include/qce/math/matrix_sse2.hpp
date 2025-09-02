@@ -17,7 +17,7 @@
 #include <qce/math/vector_sse2.hpp>
 
 namespace QCE {
-    struct alignas(16) matrix final {
+    struct alignas(REQUIRED_ALIGNAS) matrix final {
         __m128 v1;
         __m128 v2;
         __m128 v3;
