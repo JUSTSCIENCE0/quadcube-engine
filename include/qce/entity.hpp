@@ -12,8 +12,8 @@ namespace QCE {
 
 
     private:
-        std::shared_ptr<Model> m_model;
+        std::shared_ptr<Model> m_model = nullptr;
 
-        Transform m_transform;
+        transform m_transform{};
     };
 }

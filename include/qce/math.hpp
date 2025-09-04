@@ -9,13 +9,22 @@
 #include <qce/matrix.hpp>
 
 namespace QCE {
-    struct alignas(REQUIRED_ALIGNAS) Vertex {
-        vector position;
+    struct coordinate {
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
     };
 
-    struct alignas(REQUIRED_ALIGNAS) Transform {
-        vector m_position;
-        vector m_rotation; // TODO: quaternion
-        vector m_scale;
+    struct vertex {
+        coordinate position{};
+    };
+
+    struct alignas(REQUIRED_ALIGNAS) transform {
+        // aligned
+        vector rotation = vector_zero(); // TODO: quaternion
+
+        // not aligned
+        coordinate position{};
+        coordinate scale{};
     };
 }

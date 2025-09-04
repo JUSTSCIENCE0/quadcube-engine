@@ -11,7 +11,7 @@
 
 namespace QCE {
     struct Mesh {
-        std::vector<Vertex>   vertices;
+        std::vector<vertex>   vertices;
         std::vector<uint32_t> indices;
     };
 }
