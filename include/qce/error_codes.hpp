@@ -44,6 +44,9 @@ namespace QCE {
         CU_ENUM_UNIT(E_DX12_RESET_COMMAND_ALLOCATOR_FAILED) \
         CU_ENUM_UNIT(E_DX12_PRESENT_SWAP_CHAIN_FAILED) \
         CU_VALUED_ENUM_UNIT(GROUP_VULKAN,  0x40000) \
+        CU_VALUED_ENUM_UNIT(GROUP_ENGINE,  0x50000) \
+        CU_ENUM_UNIT(E_ENG_UIDGEN_MULTIPLE_INIT) \
+        CU_ENUM_UNIT(E_ENG_TOO_MANY_UNIQUE_OBJECTS) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -65,6 +68,10 @@ namespace QCE {
         case ErrorCode::SUCCESS:
             result << "Everything is awesome";
             break;
+
+        /* Group Warning*/
+
+        /* Group Window*/
         case ErrorCode::E_WINNT_REGISRER_FAILED:
             result << "WinNTWindow - RegisterClass Failed";
             break;
@@ -74,6 +81,10 @@ namespace QCE {
         case ErrorCode::E_WINNT_INVALID_WINDOW_RECT:
             result << "WinNTWindow - AdjustWindowRect Failed";
             break;
+
+        /* Group Render*/
+
+        /* Group DX12*/
         case ErrorCode::E_DX12_CREATE_DXGI_FAILED:
             result << "DX12 - CreateDXGIFactory Failed";
             break;
@@ -131,6 +142,17 @@ namespace QCE {
         case ErrorCode::E_DX12_PRESENT_SWAP_CHAIN_FAILED:
             result << "DX12 - Present SwapChain Failed";
             break;
+
+        /* Group Vulkan*/
+
+        /* Group Engine*/
+        case ErrorCode::E_ENG_UIDGEN_MULTIPLE_INIT:
+            result << "Engine - UidGenerator already instantiated with another type";
+            break;
+        case ErrorCode::E_ENG_TOO_MANY_UNIQUE_OBJECTS:
+            result << "Engine - Limit of unique game session identifiers has been reached";
+            break;
+
         default:
             result << "Error has no description";
             break;

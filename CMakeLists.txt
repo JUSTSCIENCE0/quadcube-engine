@@ -69,6 +69,7 @@ set(QCE_INTERFACE
     include/qce/model.hpp
     include/qce/entity.hpp
     include/qce/figures.hpp
+    include/qce/identification.hpp
 )
 
 set(QCE_MATH
