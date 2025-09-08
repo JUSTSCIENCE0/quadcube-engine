@@ -59,12 +59,10 @@ list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")
 
 set(QCE_INTERFACE
     include/qce/qce.hpp
-    include/qce/error_codes.hpp
     include/qce/vector.hpp
     include/qce/matrix.hpp
     include/qce/math.hpp
     include/qce/render.hpp
-    include/qce/about.hpp
 )
 
 set(QCE_OBJECTS
@@ -99,6 +97,11 @@ set(QCE_RENDERS
     src/render_dx12.cpp
 )
 
+set(QCE_ANCILLARY
+    include/qce/ancillary/about.hpp
+    include/qce/ancillary/error_codes.hpp
+)
+
 set(QCE_OTHER
     src/about.cpp
 )
@@ -108,6 +111,7 @@ target_sources(${PROJECT_NAME}
     PUBLIC
         ${QCE_INTERFACE}
         ${QCE_OBJECTS}
+        ${QCE_ANCILLARY}
     PRIVATE
         ${QCE_MATH}
         ${QCE_RENDERS}
@@ -118,6 +122,7 @@ source_group("Interface" FILES ${QCE_INTERFACE})
 source_group("Math" FILES ${QCE_MATH})
 source_group("Objects" FILES ${QCE_OBJECTS})
 source_group("Renders" FILES ${QCE_RENDERS})
+source_group("Ancillary" FILES ${QCE_ANCILLARY})
 source_group("Other" FILES ${QCE_OTHER})
 
 target_include_directories(${PROJECT_NAME}

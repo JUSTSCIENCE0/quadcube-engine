@@ -3,7 +3,7 @@
 //
 // License: MIT
 
-#include <qce/about.hpp>
+#include <qce/ancillary/about.hpp>
 
 namespace QCE {
     const char* get_verion() {
