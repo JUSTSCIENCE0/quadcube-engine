@@ -9,7 +9,7 @@
 #  define QCE_UID_TYPE uint64_t
 #endif // !QCE_UID_TYPE
 
-#include <qce/error_codes.hpp>
+#include <qce/ancillary/error_codes.hpp>
 
 #include <stdint.h>
 #include <concepts>
