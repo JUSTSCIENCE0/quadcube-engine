@@ -65,11 +65,14 @@ set(QCE_INTERFACE
     include/qce/math.hpp
     include/qce/render.hpp
     include/qce/about.hpp
-    include/qce/mesh.hpp
-    include/qce/model.hpp
-    include/qce/entity.hpp
-    include/qce/figures.hpp
-    include/qce/identification.hpp
+)
+
+set(QCE_OBJECTS
+    include/qce/objects/entity.hpp
+    include/qce/objects/figures.hpp
+    include/qce/objects/identification.hpp
+    include/qce/objects/mesh.hpp
+    include/qce/objects/model.hpp
 )
 
 set(QCE_MATH
@@ -104,6 +107,7 @@ add_library(${PROJECT_NAME} STATIC)
 target_sources(${PROJECT_NAME}
     PUBLIC
         ${QCE_INTERFACE}
+        ${QCE_OBJECTS}
     PRIVATE
         ${QCE_MATH}
         ${QCE_RENDERS}
@@ -112,6 +116,7 @@ target_sources(${PROJECT_NAME}
 
 source_group("Interface" FILES ${QCE_INTERFACE})
 source_group("Math" FILES ${QCE_MATH})
+source_group("Objects" FILES ${QCE_OBJECTS})
 source_group("Renders" FILES ${QCE_RENDERS})
 source_group("Other" FILES ${QCE_OTHER})
 

@@ -5,12 +5,14 @@
 
 #pragma once
 
-#include <qce/mesh.hpp>
+#include <qce/objects/mesh.hpp>
 
 #include <memory>
 
 namespace QCE {
     struct Model {
-        std::shared_ptr<Mesh> mesh;
+        std::string id{};
+
+        std::shared_ptr<Mesh> mesh{};
     };
 }

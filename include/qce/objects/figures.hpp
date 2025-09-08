@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <qce/mesh.hpp>
+#include <qce/objects/mesh.hpp>
 #include <memory>
 
 namespace QCE {

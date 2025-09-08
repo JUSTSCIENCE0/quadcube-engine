@@ -5,13 +5,15 @@
 
 #pragma once
 
-#include <qce/model.hpp>
+#include <qce/objects/model.hpp>
 
 namespace QCE {
     class Entity {
 
 
     private:
+        std::string id;
+
         std::shared_ptr<Model> m_model = nullptr;
 
         transform m_transform{};
