@@ -9,39 +9,62 @@
 
 #include <memory>
 #include <iomanip>
+#include <variant>
 
 namespace QCE {
-    std::unique_ptr<Mesh> generate_cuboid(float length, float width, float height) {
-        std::stringstream ss_name;
-        ss_name << "Cuboid[" << std::fixed << std::setprecision(4)
+    struct CuboidParams {
+        float length = 1.0;
+        float width = 1.0;
+        float height = 1.0;
+        int   subdivisions = 1;
+    };
+    struct SphereParams {
+        float radius = 1.0;
+        int   subdivisions = 1;
+    };
+    using FigureParams = std::variant<CuboidParams, SphereParams>;
+
+    std::unique_ptr<Mesh> generate_cuboid(
+            float length, float width, float height,
+            /*TODO: int subdivisions = 1 ,*/
+            std::string name = "") {
+        if (name.empty()) {
+            std::stringstream ss_name;
+            ss_name << "Cuboid[" << std::fixed << std::setprecision(4)
                 << length << ";" << width << ";" << height << "]";
+            name = ss_name.str();
+        }
+
+        float l2 = length / 2.0f;
+        float w2 = width  / 2.0f;
+        float h2 = height / 2.0f;
 
         auto result = std::make_unique<Mesh>(
-            /*name*/ ss_name.str(),
+            /*name*/ std::move(name),
             /*vertices*/ std::vector<vertex>{
                 {
-                    .position = { -length / 2, -width / 2, -height / 2 }
+                    .position = { -l2, -w2, -h2 }
                 },
                 {
-                    .position = {  length / 2, -width / 2, -height / 2 }
+                    .position = {  l2, -w2, -h2 }
                 },
                 {
-                    .position = {  length / 2, -width / 2,  height / 2 }
+                    .position = {  l2, -w2,  h2 }
                 },
                 {
-                    .position = { -length / 2, -width / 2,  height / 2 }
+                    .position = { -l2, -w2,  h2 }
                 },
                 {
-                    .position = { -length / 2,  width / 2, -height / 2 }
+                    .position = { -l2,  w2, -h2 }
                 },
                 {
-                    .position = {  length / 2,  width / 2, -height / 2 }
+                    .position = {  l2,  w2, -h2 }
                 },
                 {
-                    .position = {  length / 2,  width / 2,  height / 2 }
+                    .position = {  l2,  w2,  h2 }
                 },
                 {
-                    .position = { -length / 2,  width / 2,  height / 2 }
+                    .position = { -l2,  w2,  h2 }
                 },
             },
             /*indices*/ std::vector<uint32_t>{
@@ -63,4 +86,22 @@ namespace QCE {
         return result;
     }
 
+    std::unique_ptr<Mesh> create_figure(const FigureParams& params, const std::string& name = "") {
+        if (std::holds_alternative<CuboidParams>(params)) {
+            const auto& cube_params = std::get<CuboidParams>(params);
+            return generate_cuboid(
+                cube_params.length,
+                cube_params.width,
+                cube_params.height,
+                name);
+        }
+
+        if (std::holds_alternative<SphereParams>(params)) {
+            // TODO
+            //const auto& sphere_params = std::get<SphereParams>(params);
+            return nullptr;
+        }
+
+        return nullptr;
+    }
 }
