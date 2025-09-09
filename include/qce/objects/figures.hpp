@@ -6,7 +6,9 @@
 #pragma once
 
 #include <qce/objects/mesh.hpp>
+
 #include <memory>
+#include <iomanip>
 
 namespace QCE {
     std::unique_ptr<Mesh> generate_cuboid(float length, float width, float height) {
