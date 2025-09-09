@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <qce/ancillary/error_codes.hpp>
 #include <qce/objects/model.hpp>
 #include <qce/objects/figures.hpp>
 
@@ -15,6 +16,7 @@
 namespace QCE {
     class ResourseManager final {
     public:
+        ResourseManager() = default;
         ResourseManager(const ResourseManager&) = delete;
         ResourseManager(ResourseManager&&) = delete;
         ResourseManager& operator=(const ResourseManager&) = delete;
@@ -22,11 +24,12 @@ namespace QCE {
 
         template<typename SharedMesh>
         requires std::same_as<std::remove_cvref_t<SharedMesh>, std::shared_ptr<Mesh>>
-        void AddMesh(SharedMesh&& mesh) {
+        ErrorCode AddMesh(SharedMesh&& mesh) {
             if (m_meshes.end() != m_meshes.find(mesh->m_id))
-                return;
+                return ErrorCode::E_RM_MESH_ID_COLLISION;
 
             m_meshes.emplace(mesh->m_id, std::forward<SharedMesh>(mesh));
+            return ErrorCode::SUCCESS;
         }
 
         // TODO:

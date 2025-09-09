@@ -16,14 +16,14 @@ namespace QCE {
 #define CU_ENUMS_DESCRIPTION \
     CU_BEGIN_ENUM(ErrorCode) \
         CU_ENUM_UNIT(SUCCESS) \
-        CU_VALUED_ENUM_UNIT(GROUP_WARNING, 0x1)     \
-        CU_VALUED_ENUM_UNIT(GROUP_ERROR,   0xFFFF)  \
-        CU_VALUED_ENUM_UNIT(GROUP_WINDOW,  0x10000) \
+        CU_VALUED_ENUM_UNIT(GROUP_WARNING,          0x1)     \
+        CU_VALUED_ENUM_UNIT(GROUP_ERROR,            0xFFFF)  \
+        CU_VALUED_ENUM_UNIT(GROUP_WINDOW,           0x10000) \
         CU_ENUM_UNIT(E_WINNT_REGISRER_FAILED) \
         CU_ENUM_UNIT(E_WINNT_INVALID_WINDOW_RECT) \
         CU_ENUM_UNIT(E_WINNT_CREATE_FAILED) \
-        CU_VALUED_ENUM_UNIT(GROUP_RENDER,  0x20000) \
-        CU_VALUED_ENUM_UNIT(GROUP_DX12,    0x30000) \
+        CU_VALUED_ENUM_UNIT(GROUP_RENDER,           0x20000) \
+        CU_VALUED_ENUM_UNIT(GROUP_DX12,             0x30000) \
         CU_ENUM_UNIT(E_DX12_CREATE_DXGI_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_DEVICE_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_FENCE_FAILED) \
@@ -43,8 +43,10 @@ namespace QCE {
         CU_ENUM_UNIT(E_DX12_CREATE_DS_BUFFER_FAILED) \
         CU_ENUM_UNIT(E_DX12_RESET_COMMAND_ALLOCATOR_FAILED) \
         CU_ENUM_UNIT(E_DX12_PRESENT_SWAP_CHAIN_FAILED) \
-        CU_VALUED_ENUM_UNIT(GROUP_VULKAN,  0x40000) \
-        CU_VALUED_ENUM_UNIT(GROUP_ENGINE,  0x50000) \
+        CU_VALUED_ENUM_UNIT(GROUP_VULKAN,           0x40000) \
+        CU_VALUED_ENUM_UNIT(GROUP_ENGINE,           0x50000) \
+        CU_VALUED_ENUM_UNIT(GROUP_RESOURCE_MANAGER, 0x60000) \
+        CU_ENUM_UNIT(E_RM_MESH_ID_COLLISION) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -144,6 +146,11 @@ namespace QCE {
         /* Group Vulkan*/
 
         /* Group Engine*/
+
+        /* Group Resource Manager*/
+        case ErrorCode::E_RM_MESH_ID_COLLISION:
+            result << "Resource Manager - Mesh with such Id already exitst";
+            break;
 
         default:
             result << "Error has no description";
