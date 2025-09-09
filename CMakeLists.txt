@@ -68,7 +68,6 @@ set(QCE_INTERFACE
 set(QCE_OBJECTS
     include/qce/objects/entity.hpp
     include/qce/objects/figures.hpp
-    include/qce/objects/identification.hpp
     include/qce/objects/mesh.hpp
     include/qce/objects/model.hpp
     include/qce/objects/resource_manager.hpp
