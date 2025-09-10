@@ -14,13 +14,13 @@
 #include <type_traits>
 
 namespace QCE {
-    class ResourseManager final {
+    class ResourceManager final {
     public:
-        ResourseManager() = default;
-        ResourseManager(const ResourseManager&) = delete;
-        ResourseManager(ResourseManager&&) = delete;
-        ResourseManager& operator=(const ResourseManager&) = delete;
-        ResourseManager& operator=(ResourseManager&&) = delete;
+        ResourceManager() = default;
+        ResourceManager(const ResourceManager&) = delete;
+        ResourceManager(ResourceManager&&) = delete;
+        ResourceManager& operator=(const ResourceManager&) = delete;
+        ResourceManager& operator=(ResourceManager&&) = delete;
 
         template<typename SharedMesh>
         requires std::same_as<std::remove_cvref_t<SharedMesh>, std::shared_ptr<Mesh>>
