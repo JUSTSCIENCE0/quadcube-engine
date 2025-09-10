@@ -71,6 +71,7 @@ set(QCE_OBJECTS
     include/qce/objects/mesh.hpp
     include/qce/objects/model.hpp
     include/qce/objects/resource_manager.hpp
+    include/qce/objects/scene.hpp
 )
 
 set(QCE_MATH
