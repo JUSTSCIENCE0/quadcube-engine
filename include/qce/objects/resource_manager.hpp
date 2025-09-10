@@ -32,6 +32,22 @@ namespace QCE {
             return ErrorCode::SUCCESS;
         }
 
+        ErrorCode AddModel(
+                const std::string& model_name,
+                const std::string& mesh_name) {
+            if (m_models.end() != m_models.find(model_name))
+                return ErrorCode::E_RM_MODEL_ID_COLLISION;
+
+            auto mesh_it = m_meshes.find(mesh_name);
+            if (m_meshes.end() == mesh_it)
+                return ErrorCode::E_RM_MESH_NOT_FOUND;
+
+            m_models[model_name] = std::make_shared<Model>(
+                model_name, mesh_it->second);
+
+            return ErrorCode::SUCCESS;
+        }
+
         // TODO:
         // Mesh
         //  Generate Mesh (Figure)

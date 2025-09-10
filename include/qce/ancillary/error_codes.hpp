@@ -47,6 +47,8 @@ namespace QCE {
         CU_VALUED_ENUM_UNIT(GROUP_ENGINE,           0x50000) \
         CU_VALUED_ENUM_UNIT(GROUP_RESOURCE_MANAGER, 0x60000) \
         CU_ENUM_UNIT(E_RM_MESH_ID_COLLISION) \
+        CU_ENUM_UNIT(E_RM_MODEL_ID_COLLISION) \
+        CU_ENUM_UNIT(E_RM_MESH_NOT_FOUND) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -150,6 +152,12 @@ namespace QCE {
         /* Group Resource Manager*/
         case ErrorCode::E_RM_MESH_ID_COLLISION:
             result << "Resource Manager - Mesh with such Id already exitst";
+            break;
+        case ErrorCode::E_RM_MODEL_ID_COLLISION:
+            result << "Resource Manager - Model with such Id already exitst";
+            break;
+        case ErrorCode::E_RM_MESH_NOT_FOUND:
+            result << "Resource Manager - Mesh with such Id not found";
             break;
 
         default:

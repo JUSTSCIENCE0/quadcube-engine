@@ -11,8 +11,18 @@
 
 namespace QCE {
     struct Model {
-        std::string id{};
+        explicit Model(
+                std::string           name,
+                std::shared_ptr<Mesh> mesh) :
+            m_id(std::move(name)),
+            m_mesh(std::move(mesh)) {}
 
-        std::shared_ptr<Mesh> mesh{};
+        Model(const Model&) = delete;
+        Model(Model&&) = default;
+        Model& operator=(const Model&) = delete;
+        Model& operator=(Model&&) = default;
+
+        const std::string     m_id{};
+        std::shared_ptr<Mesh> m_mesh{};
     };
 }
