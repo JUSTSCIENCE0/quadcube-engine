@@ -19,12 +19,7 @@ namespace QCE {
         Scene& operator=(const Scene&) = delete;
         Scene& operator=(Scene&&) = delete;
 
-        ErrorCode AddEntity(
-                const std::string name,
-                const std::string model) {
-            // TODO
-            return ErrorCode::SUCCESS;
-        }
+        ErrorCode AddEntity(const std::string name, const std::string model);
 
     private:
         ResourceManager& m_resource_manager;

@@ -86,16 +86,10 @@ set(QCE_MATH
 )
 
 set(QCE_RENDERS
-# headers
     include/qce/renders/windows_output.hpp
     include/qce/renders/render_base.hpp
     include/qce/renders/render_dx12.hpp
     # TODO: include/qce/renders/render_vulkan.hpp
-
-# sources
-    src/windows_output.cpp
-    src/render_base.cpp
-    src/render_dx12.cpp
 )
 
 set(QCE_ANCILLARY
@@ -103,7 +97,18 @@ set(QCE_ANCILLARY
     include/qce/ancillary/error_codes.hpp
 )
 
-set(QCE_OTHER
+set(QCE_IMPLEMENTATION
+    # objects
+    src/resource_manager.cpp
+    src/scene.cpp
+    src/figures.cpp
+
+    # renders
+    src/windows_output.cpp
+    src/render_base.cpp
+    src/render_dx12.cpp
+
+    #other
     src/about.cpp
 )
 
@@ -116,7 +121,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE
         ${QCE_MATH}
         ${QCE_RENDERS}
-        ${QCE_OTHER}
+        ${QCE_IMPLEMENTATION}
 )
 
 source_group("Interface" FILES ${QCE_INTERFACE})
@@ -124,7 +129,7 @@ source_group("Math" FILES ${QCE_MATH})
 source_group("Objects" FILES ${QCE_OBJECTS})
 source_group("Renders" FILES ${QCE_RENDERS})
 source_group("Ancillary" FILES ${QCE_ANCILLARY})
-source_group("Other" FILES ${QCE_OTHER})
+source_group("Implementation" FILES ${QCE_IMPLEMENTATION})
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
