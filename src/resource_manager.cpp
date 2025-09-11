@@ -21,4 +21,14 @@ namespace QCE {
 
         return ErrorCode::SUCCESS;
     }
+
+    std::shared_ptr<Model> ResourceManager::GetModel(const std::string& name) {
+        auto model_it = m_models.find(name);
+        if (m_models.end() == model_it) {
+            // TODO: log error and return error model
+            return nullptr;
+        }
+
+        return model_it->second;
+    }
 }

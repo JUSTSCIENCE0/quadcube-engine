@@ -31,12 +31,11 @@ namespace QCE {
             m_meshes.emplace(mesh->m_id, std::forward<SharedMesh>(mesh));
             return ErrorCode::SUCCESS;
         }
-
         ErrorCode AddModel(const std::string& model_name, const std::string& mesh_name);
 
+        std::shared_ptr<Model> GetModel(const std::string& name);
+
         // TODO:
-        // move implementation to cpp (scene too)
-        // GetModel(name)
         // Entity constructor
         // Entity storage + add entity ?
 
