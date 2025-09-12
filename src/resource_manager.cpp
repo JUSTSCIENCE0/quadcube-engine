@@ -29,6 +29,7 @@ namespace QCE {
         }
 
         auto mesh = generate_figure(params, mesh_name);
+        assert(mesh);
         if (m_meshes.end() != m_meshes.find(mesh->m_id))
             return ErrorCode::SUCCESS;
 
