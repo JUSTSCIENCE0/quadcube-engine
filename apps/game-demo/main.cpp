@@ -17,5 +17,14 @@ int main(int argc, char* argv[]) {
     };
 
     auto& app = QCE::Application::Get(config);
+
+    QCE::CuboidParams cuboid{
+        .length = 2.0f,
+        .width = 1.0f,
+        .height = 3.0f
+    };
+    app.Resources().AddFigure(cuboid, "cuboid");
+    app.Resources().AddModel("cuboid", "cuboid");
+
     return app.Run();
 }

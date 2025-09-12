@@ -12,6 +12,7 @@
 
 namespace QCE {
     class Scene {
+    public:
         explicit Scene(ResourceManager& rm) :
             m_resource_manager(rm) {}
         Scene(const Scene&) = delete;

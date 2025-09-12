@@ -39,7 +39,6 @@ namespace QCE {
 
         // TODO:
         // Entity storage + add entity ?
-        // Add RM and Scene to App
         // Scene - prepare to render
 
         // TODO:

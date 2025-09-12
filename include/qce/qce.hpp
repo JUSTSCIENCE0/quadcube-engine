@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/render.hpp>
+#include <qce/objects/scene.hpp>
 
 #include <cu/string-utils.hpp>
 
@@ -57,6 +58,9 @@ namespace QCE {
             }
         }
 
+        // for prototyping only
+        ResourceManager& Resources() { return m_rm; }
+
     private:
         explicit Application(ApplicationConfig initial_config)
         try :
@@ -105,6 +109,10 @@ namespace QCE {
         // TODO: additional graphics outputs
 
         std::shared_ptr<RenderBase> m_render{};
+
+        ResourceManager m_rm{};
+        Scene m_current_scene{m_rm};
+        // TODO: Level & World;
     };
 }
 
