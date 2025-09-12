@@ -28,20 +28,22 @@ namespace QCE {
             if (m_meshes.end() != m_meshes.find(mesh->m_id))
                 return ErrorCode::E_RM_MESH_ID_COLLISION;
 
-            m_meshes.emplace(mesh->m_id, std::forward<SharedMesh>(mesh));
+            auto key = mesh->m_id;
+            m_meshes.emplace(std::move(key), std::forward<SharedMesh>(mesh));
             return ErrorCode::SUCCESS;
         }
+        ErrorCode AddFigure(const FigureParams& params, const std::string& mesh_name="");
         ErrorCode AddModel(const std::string& model_name, const std::string& mesh_name);
 
         std::shared_ptr<Model> GetModel(const std::string& name);
 
         // TODO:
-        // Entity constructor
         // Entity storage + add entity ?
+        // Add RM and Scene to App
+        // Scene - prepare to render
 
         // TODO:
         // Mesh
-        //  Generate Mesh (Figure)
         //  Load Mesh (from file)
         // Model
         //  Load Model (from file)
