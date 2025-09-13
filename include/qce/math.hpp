@@ -25,6 +25,6 @@ namespace QCE {
 
         // not aligned
         coordinate position{};
-        coordinate scale{};
+        coordinate scale = { 1.0f, 1.0f, 1.0f };
     };
 }
