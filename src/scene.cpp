@@ -7,8 +7,9 @@
 
 namespace QCE {
     ErrorCode Scene::AddEntity(
-            const std::string name,
-            const std::string model) {
+            const std::string& name,
+            const std::string& model,
+            const transform& start_transform) {
         // TODO
         return ErrorCode::SUCCESS;
     }

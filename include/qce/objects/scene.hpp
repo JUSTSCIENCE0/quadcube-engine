@@ -20,11 +20,21 @@ namespace QCE {
         Scene& operator=(const Scene&) = delete;
         Scene& operator=(Scene&&) = delete;
 
-        ErrorCode AddEntity(const std::string name, const std::string model);
+        ErrorCode AddEntity(
+            const std::string& name,
+            const std::string& model,
+            const transform& start_transform = {});
 
     private:
         ResourceManager& m_resource_manager;
 
-        std::list<std::shared_ptr<Entity>> m_entities{};
+        using Entities = std::unordered_map<
+            std::string/*name*/,
+            std::unordered_map<
+                uid_t,
+                std::shared_ptr<Entity>
+            >
+        >;
+        Entities m_entities{};
     };
 }

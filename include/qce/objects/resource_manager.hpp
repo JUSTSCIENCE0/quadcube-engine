@@ -6,7 +6,7 @@
 #pragma once
 
 #include <qce/ancillary/error_codes.hpp>
-#include <qce/objects/model.hpp>
+#include <qce/objects/entity.hpp>
 #include <qce/objects/figures.hpp>
 
 #include <unordered_map>
@@ -33,26 +33,34 @@ namespace QCE {
             return ErrorCode::SUCCESS;
         }
         ErrorCode AddFigure(const FigureParams& params, const std::string& mesh_name="");
-        ErrorCode AddModel(const std::string& model_name, const std::string& mesh_name);
+        ErrorCode AddModel(
+            const std::string& model_name,
+            const std::string& mesh_name);
+        ErrorCode AddEntity(
+            const std::string& entity_name,
+            const std::string& model_name,
+            const transform& start_transform = {});
 
         std::shared_ptr<Model> GetModel(const std::string& name);
 
         // TODO:
-        // Entity storage + add entity ?
-        // Scene - prepare to render
-
-        // TODO:
         // Mesh
+        //  error mesh
+        //  GetMesh
         //  Load Mesh (from file)
         // Model
+        //  error model
         //  Load Model (from file)
         //  Add Model (as shared_ptr)
+        // Entity
+        //  Add Entity (as shared_ptr)
 
     private:
         template <typename T>
         using Storage = std::unordered_map<std::string, std::shared_ptr<T>>;
 
-        Storage<Mesh>  m_meshes{};
-        Storage<Model> m_models{};
+        Storage<Mesh>   m_meshes{};
+        Storage<Model>  m_models{};
+        Storage<Entity> m_entities{};
     };
 }

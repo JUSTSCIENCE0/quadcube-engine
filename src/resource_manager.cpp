@@ -16,8 +16,8 @@ namespace QCE {
         if (m_meshes.end() == mesh_it)
             return ErrorCode::E_RM_MESH_NOT_FOUND;
 
-        m_models[model_name] = std::make_shared<Model>(
-            model_name, mesh_it->second);
+        m_models.emplace(model_name, std::make_shared<Model>(
+            model_name, mesh_it->second));
 
         return ErrorCode::SUCCESS;
     }
@@ -44,5 +44,21 @@ namespace QCE {
         }
 
         return model_it->second;
+    }
+
+    ErrorCode ResourceManager::AddEntity(
+            const std::string& entity_name,
+            const std::string& model_name,
+            const transform& start_transform) {
+        auto model = GetModel(model_name);
+        assert(model);
+
+        auto entity = std::make_shared<Entity>(
+            entity_name, model, start_transform);
+
+        auto key = entity->m_id;
+        assert(m_entities.end() == m_entities.find(key));
+        m_entities.try_emplace(key, std::move(entity));
+        return ErrorCode::SUCCESS;
     }
 }
