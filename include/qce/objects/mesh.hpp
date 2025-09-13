@@ -22,9 +22,9 @@ namespace QCE {
             m_indices(std::move(indices)) {}
 
         Mesh(const Mesh& other) = delete;
-        Mesh(Mesh&& other) noexcept = default;
+        Mesh(Mesh&& other) = delete;
         Mesh& operator=(const Mesh& other) = delete;
-        Mesh& operator=(Mesh&& other) noexcept = default;
+        Mesh& operator=(Mesh&& other) = delete;
 
         const std::string     m_id{};
         std::vector<vertex>   m_vertices{};
