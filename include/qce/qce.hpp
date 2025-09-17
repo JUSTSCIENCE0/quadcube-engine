@@ -60,6 +60,8 @@ namespace QCE {
 
         // for prototyping only
         ResourceManager& Resources() { return m_rm; }
+        // for prototyping only
+        Scene& CurrentScene() { return m_current_scene; }
 
     private:
         explicit Application(ApplicationConfig initial_config)

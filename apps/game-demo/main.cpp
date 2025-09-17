@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
     };
     app.Resources().AddFigure(cuboid, "cuboid");
     app.Resources().AddModel("cuboid", "cuboid");
+    app.CurrentScene().AddEntity("cuboid", "cuboid");
 
     return app.Run();
 }
