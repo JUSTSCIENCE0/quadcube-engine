@@ -41,6 +41,11 @@ namespace QCE {
             const std::string& model_name,
             const transform& start_transform = {});
 
+        std::shared_ptr<Entity> AddAndGetEntity(
+            const std::string& entity_name,
+            const std::string& model_name,
+            const transform& start_transform = {});
+
         std::shared_ptr<Model> GetModel(const std::string& name);
 
         // TODO:

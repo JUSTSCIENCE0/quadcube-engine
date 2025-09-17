@@ -50,6 +50,18 @@ namespace QCE {
             const std::string& entity_name,
             const std::string& model_name,
             const transform& start_transform) {
+        [[maybe_unused]] auto entity = AddAndGetEntity(
+            entity_name,
+            model_name,
+            start_transform);
+        assert(entity);
+        return ErrorCode::SUCCESS;
+    }
+
+    std::shared_ptr<Entity> ResourceManager::AddAndGetEntity(
+            const std::string& entity_name,
+            const std::string& model_name,
+            const transform& start_transform) {
         auto model = GetModel(model_name);
         assert(model);
 
@@ -58,7 +70,7 @@ namespace QCE {
 
         auto key = entity->m_id;
         assert(m_entities.end() == m_entities.find(key));
-        m_entities.try_emplace(key, std::move(entity));
-        return ErrorCode::SUCCESS;
+        m_entities.try_emplace(key, entity);
+        return entity;
     }
 }
