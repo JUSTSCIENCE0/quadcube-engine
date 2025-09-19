@@ -13,6 +13,17 @@
 namespace QCE {
     class Scene {
     public:
+        using Entities = std::unordered_map<
+            std::string/*name*/,
+            std::unordered_map<
+                uid_t,
+                std::shared_ptr<Entity>
+            >
+        >;
+        struct Description {
+            Entities& entities;
+        };
+
         explicit Scene(ResourceManager& rm) :
             m_resource_manager(rm) {}
         Scene(const Scene&) = delete;
@@ -25,16 +36,15 @@ namespace QCE {
             const std::string& model,
             const transform& start_transform = {});
 
+        Description GetDescription() {
+            return {
+                .entities = m_entities
+            };
+        }
+
     private:
         ResourceManager& m_resource_manager;
 
-        using Entities = std::unordered_map<
-            std::string/*name*/,
-            std::unordered_map<
-                uid_t,
-                std::shared_ptr<Entity>
-            >
-        >;
         Entities m_entities{};
     };
 }

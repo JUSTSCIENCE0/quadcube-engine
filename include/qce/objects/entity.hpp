@@ -33,5 +33,7 @@ namespace QCE {
         const std::string m_id;
         std::shared_ptr<Model> m_model = nullptr;
         transform m_transform{};
+
+        // TODO: subentities tree or parent entity
     };
 }

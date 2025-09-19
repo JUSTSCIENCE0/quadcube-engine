@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/ancillary/error_codes.hpp>
+#include <qce/objects/scene.hpp>
 
 #include <utility>
 #include <cstring>
@@ -66,6 +67,10 @@ namespace QCE {
             return DerivedDraw(this);
         }
 
+        void SetCurrentScene(Scene* scene) {
+            m_current_scene = scene;
+        }
+
     protected:
         template <typename /*TODO: concept*/ DerivedRender>
         explicit RenderBase(std::in_place_type_t<DerivedRender>, RenderConfig initial_config) :
@@ -74,6 +79,8 @@ namespace QCE {
         }
 
         RenderConfig m_config{};
+
+        Scene* m_current_scene = nullptr;
 
     private:
         ErrorCode(*DerivedDraw)(void*) = nullptr;

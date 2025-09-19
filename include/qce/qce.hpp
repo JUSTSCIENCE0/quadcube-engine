@@ -36,6 +36,7 @@ namespace QCE {
 
         ErrorCode Run() {
             try {
+                QCE_CRITICAL(PreRun());
                 return m_graphics_output.MainLoop(this);
             }
             catch (QCE::ErrorCodeException qce_ex) {
@@ -99,6 +100,12 @@ namespace QCE {
         static ApplicationConfig ReadConfig() {
             // TODO
             return {};
+        }
+
+        ErrorCode PreRun() {
+            assert(m_render);
+            m_render->SetCurrentScene(&m_current_scene);
+            return ErrorCode::SUCCESS;
         }
 
         ErrorCode StepForward() {
