@@ -112,6 +112,10 @@ set(QCE_IMPLEMENTATION
     src/about.cpp
 )
 
+set(QCE_SHADERS
+    shaders/simple_color.hlsl
+)
+
 add_library(${PROJECT_NAME} STATIC)
 target_sources(${PROJECT_NAME}
     PUBLIC
@@ -122,6 +126,7 @@ target_sources(${PROJECT_NAME}
         ${QCE_MATH}
         ${QCE_RENDERS}
         ${QCE_IMPLEMENTATION}
+        ${QCE_SHADERS}
 )
 
 source_group("Interface" FILES ${QCE_INTERFACE})
@@ -130,6 +135,9 @@ source_group("Objects" FILES ${QCE_OBJECTS})
 source_group("Renders" FILES ${QCE_RENDERS})
 source_group("Ancillary" FILES ${QCE_ANCILLARY})
 source_group("Implementation" FILES ${QCE_IMPLEMENTATION})
+source_group("Shaders" FILES ${QCE_SHADERS})
+
+set_source_files_properties(${QCE_SHADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
