@@ -43,6 +43,8 @@ namespace QCE {
         CU_ENUM_UNIT(E_DX12_CREATE_DS_BUFFER_FAILED) \
         CU_ENUM_UNIT(E_DX12_RESET_COMMAND_ALLOCATOR_FAILED) \
         CU_ENUM_UNIT(E_DX12_PRESENT_SWAP_CHAIN_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_DEFAULT_BUFFER_RESOURCE_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_UPLOAD_BUFFER_RESOURCE_FAILED) \
         CU_VALUED_ENUM_UNIT(GROUP_VULKAN,           0x40000) \
         CU_VALUED_ENUM_UNIT(GROUP_ENGINE,           0x50000) \
         CU_VALUED_ENUM_UNIT(GROUP_RESOURCE_MANAGER, 0x60000) \
@@ -143,6 +145,12 @@ namespace QCE {
             break;
         case ErrorCode::E_DX12_PRESENT_SWAP_CHAIN_FAILED:
             result << "DX12 - Present SwapChain Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_DEFAULT_BUFFER_RESOURCE_FAILED:
+            result << "DX12 - CreateCommittedResource HEAP_TYPE_DEFAULT Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_UPLOAD_BUFFER_RESOURCE_FAILED:
+            result << "DX12 - CreateCommittedResource HEAP_TYPE_UPLOAD Failed";
             break;
 
         /* Group Vulkan*/

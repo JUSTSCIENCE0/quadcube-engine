@@ -8,6 +8,57 @@
 #include <DirectXColors.h>
 
 namespace QCE {
+    // Utils
+
+    ErrorCode dx12_create_default_buffer(
+            ID3D12Device* device,
+            ID3D12GraphicsCommandList* cmd_list,
+            const void* init_data,
+            size_t size,
+            Microsoft::WRL::ComPtr<ID3D12Resource>& result,
+            Microsoft::WRL::ComPtr<ID3D12Resource>& upload_buffer) {
+        using namespace Microsoft::WRL;
+
+        auto heap_props1 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+        auto resource_desc1 = CD3DX12_RESOURCE_DESC::Buffer(size);
+        if (FAILED(device->CreateCommittedResource(
+                &heap_props1,
+                D3D12_HEAP_FLAG_NONE,
+                &resource_desc1,
+                D3D12_RESOURCE_STATE_COMMON,
+                nullptr,
+                IID_PPV_ARGS(result.GetAddressOf())))) {
+            return ErrorCode::E_DX12_CREATE_DEFAULT_BUFFER_RESOURCE_FAILED;
+        }
+
+        auto heap_props2 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+        auto resource_desc2 = CD3DX12_RESOURCE_DESC::Buffer(size);
+        if (FAILED(device->CreateCommittedResource(
+                &heap_props2,
+                D3D12_HEAP_FLAG_NONE,
+                &resource_desc2,
+                D3D12_RESOURCE_STATE_GENERIC_READ,
+                nullptr,
+                IID_PPV_ARGS(result.GetAddressOf())))) {
+            return ErrorCode::E_DX12_CREATE_UPLOAD_BUFFER_RESOURCE_FAILED;
+        }
+
+        D3D12_SUBRESOURCE_DATA sub_resource_data = {};
+        sub_resource_data.pData = init_data;
+        sub_resource_data.RowPitch = size;
+        sub_resource_data.SlicePitch = sub_resource_data.RowPitch;
+
+        auto trans_descr1 = CD3DX12_RESOURCE_BARRIER::Transition(result.Get(),
+            D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+        cmd_list->ResourceBarrier(1, &trans_descr1);
+        UpdateSubresources<1>(cmd_list, result.Get(), upload_buffer.Get(), 0, 0, 1, &sub_resource_data);
+        auto trans_descr2 = CD3DX12_RESOURCE_BARRIER::Transition(result.Get(),
+            D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+        cmd_list->ResourceBarrier(1, &trans_descr2);
+
+        return ErrorCode::SUCCESS;
+    }
+
     RenderDX12::RenderDX12(RenderConfig initial_config, HWND window) :
         RenderBase(std::in_place_type<RenderDX12>, std::move(initial_config)),
             m_window(window) {
