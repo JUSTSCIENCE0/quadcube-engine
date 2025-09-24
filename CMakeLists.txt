@@ -89,6 +89,7 @@ set(QCE_RENDERS
     include/qce/renders/windows_output.hpp
     include/qce/renders/render_base.hpp
     include/qce/renders/render_dx12.hpp
+    include/qce/renders/render_dx12_helpers.hpp
     # TODO: include/qce/renders/render_vulkan.hpp
 )
 
