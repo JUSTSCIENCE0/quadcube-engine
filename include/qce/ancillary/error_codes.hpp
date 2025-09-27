@@ -46,8 +46,12 @@ namespace QCE {
         CU_ENUM_UNIT(E_DX12_CREATE_DEFAULT_BUFFER_RESOURCE_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_UPLOAD_BUFFER_RESOURCE_FAILED) \
         CU_ENUM_UNIT(E_DX12_MAP_UPLOAD_BUFFER_FAILED) \
+        CU_ENUM_UNIT(E_DX12_SHADER_COMPILATION_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_BLOB_FAILED) \
         CU_VALUED_ENUM_UNIT(GROUP_VULKAN,           0x40000) \
         CU_VALUED_ENUM_UNIT(GROUP_ENGINE,           0x50000) \
+        CU_ENUM_UNIT(E_ENG_FILE_OPEN_FAILED) \
+        CU_ENUM_UNIT(E_ENG_FILE_READ_FAILED) \
         CU_VALUED_ENUM_UNIT(GROUP_RESOURCE_MANAGER, 0x60000) \
         CU_ENUM_UNIT(E_RM_MESH_ID_COLLISION) \
         CU_ENUM_UNIT(E_RM_MODEL_ID_COLLISION) \
@@ -156,10 +160,22 @@ namespace QCE {
         case ErrorCode::E_DX12_MAP_UPLOAD_BUFFER_FAILED:
             result << "DX12 - Upload Buffer Map Failed";
             break;
+        case ErrorCode::E_DX12_SHADER_COMPILATION_FAILED:
+            result << "DX12 - Shader compilation Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_BLOB_FAILED:
+            result << "DX12 - Create blob Failed";
+            break;
 
         /* Group Vulkan*/
 
         /* Group Engine*/
+        case ErrorCode::E_ENG_FILE_OPEN_FAILED:
+            result << "ENGINE - File open Failed";
+            break;
+        case ErrorCode::E_ENG_FILE_READ_FAILED:
+            result << "ENGINE - Reading from file Failed";
+            break;
 
         /* Group Resource Manager*/
         case ErrorCode::E_RM_MESH_ID_COLLISION:

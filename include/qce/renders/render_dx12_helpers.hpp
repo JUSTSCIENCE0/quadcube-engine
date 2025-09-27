@@ -10,8 +10,11 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <directx/d3dx12.h>
-
+#include <D3Dcompiler.h>
 #include <DirectXColors.h>
+
+#include <iostream>
+#include <fstream>
 
 namespace QCE {
     static ErrorCode dx12_create_default_buffer(
@@ -72,6 +75,57 @@ namespace QCE {
             return ((size / CONSTANT_BUFFER_SIZE_ALIGNMENT) + 1) * CONSTANT_BUFFER_SIZE_ALIGNMENT;
         else
             return size;
+    }
+
+    static ErrorCode dx12_compile_shader(
+            const std::wstring& source_code,
+            const D3D_SHADER_MACRO* defines,
+            const std::string& entrypoint,
+            const std::string& target,
+            Microsoft::WRL::ComPtr<ID3DBlob>& result) {
+        using namespace Microsoft::WRL;
+
+        UINT compiler_flags = 0;
+#if !defined(NDEBUG)
+        compiler_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+        ComPtr<ID3DBlob> errors = nullptr;
+        auto hr = D3DCompileFromFile(source_code.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+            entrypoint.c_str(), target.c_str(), compiler_flags, 0, &result, &errors);
+
+        if (errors != nullptr) {
+            // TODO: use log system
+            std::cout << reinterpret_cast<char*>(errors->GetBufferPointer()) << std::endl;
+        }
+
+        if FAILED(hr) {
+            return ErrorCode::E_DX12_SHADER_COMPILATION_FAILED;
+        }
+
+        return ErrorCode::SUCCESS;
+    }
+
+    static ErrorCode dx12_load_precompiled_shader(
+            const std::wstring& binary_file,
+            Microsoft::WRL::ComPtr<ID3DBlob>& result) {
+        std::ifstream freader(binary_file, std::ios::binary | std::ios::ate);
+        if (!freader)
+            return ErrorCode::E_ENG_FILE_OPEN_FAILED;
+
+        auto size = freader.tellg();
+        freader.seekg(0, std::ios_base::beg);
+        if (!size || !freader)
+            return ErrorCode::E_ENG_FILE_READ_FAILED;
+
+        if (FAILED(D3DCreateBlob(size, result.GetAddressOf())))
+            return ErrorCode::E_DX12_CREATE_BLOB_FAILED;
+
+        if (!freader.read(reinterpret_cast<char*>(result->GetBufferPointer()), size)) {
+            return ErrorCode::E_ENG_FILE_READ_FAILED;
+        }
+
+        return ErrorCode::SUCCESS;
     }
 
     template<typename T>
