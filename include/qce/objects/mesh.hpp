@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/math.hpp>
+#include <qce/objects/index.hpp>
 
 #include <string>
 #include <vector>
@@ -26,8 +27,8 @@ namespace QCE {
         Mesh& operator=(const Mesh& other) = delete;
         Mesh& operator=(Mesh&& other) = delete;
 
-        const std::string     m_id{};
-        std::vector<vertex>   m_vertices{};
-        std::vector<uint32_t> m_indices{};
+        const std::string    m_id{};
+        std::vector<vertex>  m_vertices{};
+        std::vector<index_t> m_indices{};
     };
 }
