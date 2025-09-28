@@ -49,6 +49,19 @@ namespace QCE {
         int height = 720;
     };
 
+    struct RenderUnit {
+        uint32_t indeces_count = 0;
+        uint32_t index_offset  = 0;
+        uint32_t vertex_offset = 0;
+    };
+
+    struct RenderSceneCPU {
+        std::vector<vertex>  vertex_buffer;
+        std::vector<index_t> index_buffer;
+
+        std::unordered_map<std::string, RenderUnit> units;
+    };
+
     class RenderBase {
     public:
         RenderBase(const RenderBase&) = delete;
@@ -67,23 +80,33 @@ namespace QCE {
             return DerivedDraw(this);
         }
 
-        void SetCurrentScene(Scene* scene) {
+        ErrorCode SetCurrentScene(Scene* scene) {
             m_current_scene = scene;
+
+            QCE_CRITICAL(UpdateCpuScene());
+
+            assert(UpdateGpuScene);
+            return UpdateGpuScene(this);
         }
 
     protected:
         template <typename /*TODO: concept*/ DerivedRender>
         explicit RenderBase(std::in_place_type_t<DerivedRender>, RenderConfig initial_config) :
             m_config(std::move(initial_config)),
-            DerivedDraw([](void* ptr) { return static_cast<DerivedRender*>(ptr)->Draw(); }) {
+            DerivedDraw([](void* ptr) { return static_cast<DerivedRender*>(ptr)->Draw(); }),
+            UpdateGpuScene([](void* ptr) { return static_cast<DerivedRender*>(ptr)->UpdateGpuScene(); }) {
         }
 
         RenderConfig m_config{};
 
         Scene* m_current_scene = nullptr;
+        RenderSceneCPU m_scene_cpu{};
 
     private:
+        ErrorCode UpdateCpuScene();
+
         ErrorCode(*DerivedDraw)(void*) = nullptr;
+        ErrorCode(*UpdateGpuScene)(void*) = nullptr;
     };
 
     std::shared_ptr<RenderBase> GetRender(RenderConfig config, void* window, void* app);

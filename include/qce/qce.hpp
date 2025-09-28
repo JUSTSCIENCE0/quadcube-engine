@@ -104,7 +104,7 @@ namespace QCE {
 
         ErrorCode PreRun() {
             assert(m_render);
-            m_render->SetCurrentScene(&m_current_scene);
+            QCE_CRITICAL(m_render->SetCurrentScene(&m_current_scene));
             return ErrorCode::SUCCESS;
         }
 

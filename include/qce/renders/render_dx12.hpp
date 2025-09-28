@@ -20,6 +20,7 @@ namespace QCE {
     class RenderDX12 final :
             public RenderBase {
     public:
+        friend class RenderBase;
         friend std::shared_ptr<RenderBase> GetRender(RenderConfig config, void* window, void* app);
 
         ErrorCode Draw();
@@ -44,6 +45,9 @@ namespace QCE {
         ErrorCode CreateSwapChain();
         ErrorCode CreateRtvAndDsvDescriptorHeaps();
         ErrorCode InitBuffersAndDescriptors();
+
+        // Scene
+        ErrorCode UpdateGpuScene();
 
         // Utils
         ErrorCode FlushCommandQueue();
