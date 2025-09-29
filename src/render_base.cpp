@@ -37,16 +37,23 @@ namespace QCE {
     }
 
     ErrorCode RenderBase::UpdateCpuScene() {
+        // reset
         m_scene_cpu.units.clear();
         m_scene_cpu.index_buffer.clear();
         m_scene_cpu.vertex_buffer.clear();
 
         auto scene = m_current_scene->GetDescription();
         for (const auto& [name, entities_group] : scene.entities) {
-            const auto& entity = entities_group.begin()->second;
-            const auto& mesh = entity->m_model->m_mesh;
+            entities_group.begin()->second->m_model->m_mesh->m_render_unit_index.reset();
+        }
 
-            if (m_scene_cpu.units.end() != m_scene_cpu.units.find(mesh->m_id))
+        size_t unit_index = 0;
+
+        for (const auto& [name, entities_group] : scene.entities) {
+            const auto& entity = entities_group.begin()->second;
+            auto& mesh = entity->m_model->m_mesh;
+
+            if (mesh->m_render_unit_index.has_value())
                 continue;
 
             RenderUnit unit{
@@ -59,7 +66,10 @@ namespace QCE {
                 m_scene_cpu.index_buffer.end(), mesh->m_indices.begin(), mesh->m_indices.end());
             m_scene_cpu.vertex_buffer.insert(
                 m_scene_cpu.vertex_buffer.end(), mesh->m_vertices.begin(), mesh->m_vertices.end());
-            m_scene_cpu.units.emplace(mesh->m_id, std::move(unit));
+            m_scene_cpu.units.push_back(std::move(unit));
+
+            mesh->m_render_unit_index = unit_index;
+            unit_index++;
         }
 
         return ErrorCode::SUCCESS;

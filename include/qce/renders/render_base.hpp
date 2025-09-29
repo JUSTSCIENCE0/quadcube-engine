@@ -59,7 +59,7 @@ namespace QCE {
         std::vector<vertex>  vertex_buffer;
         std::vector<index_t> index_buffer;
 
-        std::unordered_map<std::string, RenderUnit> units;
+        std::vector<RenderUnit> units;
     };
 
     class RenderBase {

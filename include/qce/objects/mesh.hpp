@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <optional>
 
 namespace QCE {
     struct Mesh {
@@ -30,5 +31,7 @@ namespace QCE {
         const std::string    m_id{};
         std::vector<vertex>  m_vertices{};
         std::vector<index_t> m_indices{};
+
+        std::optional<size_t> m_render_unit_index;
     };
 }
