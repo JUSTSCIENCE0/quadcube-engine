@@ -10,14 +10,15 @@ namespace QCE {
             const std::string& name,
             const std::string& model,
             const transform& start_transform) {
+        if (m_entities.end() != m_entities.find(name))
+            return ErrorCode::E_ENG_ENTITY_ALREADY_EXISTS;
+
         auto entity = m_resource_manager.AddAndGetEntity(
             name, model, start_transform);
         assert(entity);
         assert(entity->m_name == name);
 
-        auto uid = entity->m_uid;
-        assert(m_entities[name].end() == m_entities[name].find(uid));
-        m_entities[name].try_emplace(uid, std::move(entity));
+        m_entities[name].push_back(std::move(entity));
         return ErrorCode::SUCCESS;
     }
 }

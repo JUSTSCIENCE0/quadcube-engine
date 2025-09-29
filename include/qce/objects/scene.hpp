@@ -15,10 +15,7 @@ namespace QCE {
     public:
         using Entities = std::unordered_map<
             std::string/*name*/,
-            std::unordered_map<
-                uid_t,
-                std::shared_ptr<Entity>
-            >
+            std::vector<std::shared_ptr<Entity>>
         >;
         struct Description {
             Entities& entities;
@@ -35,6 +32,11 @@ namespace QCE {
             const std::string& name,
             const std::string& model,
             const transform& start_transform = {});
+
+        // TODO:
+        // ErrorCode AddEntityDuplicate(
+        //    const std::string& name,
+        //    const transform& start_transform = {});
 
         Description GetDescription() {
             return {
