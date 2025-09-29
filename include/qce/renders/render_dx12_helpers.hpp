@@ -17,6 +17,24 @@
 #include <fstream>
 
 namespace QCE {
+    constexpr static DXGI_FORMAT dx12_get_index_format() {
+        switch (QCE_INDEX_WIDTH) {
+        case IndexWidth::INDEX_WIDTH_1:
+            return DXGI_FORMAT_R8_UINT;
+        case IndexWidth::INDEX_WIDTH_2:
+            return DXGI_FORMAT_R16_UINT;
+        case IndexWidth::INDEX_WIDTH_4:
+            return DXGI_FORMAT_R32_UINT;
+        default:
+            static_assert(
+                QCE_INDEX_WIDTH == IndexWidth::INDEX_WIDTH_1 ||
+                QCE_INDEX_WIDTH == IndexWidth::INDEX_WIDTH_2 ||
+                QCE_INDEX_WIDTH == IndexWidth::INDEX_WIDTH_4,
+                "Unknown index format");
+            return DXGI_FORMAT_UNKNOWN;
+        }
+    }
+
     static ErrorCode dx12_create_default_buffer(
         ID3D12Device* device,
         ID3D12GraphicsCommandList* cmd_list,

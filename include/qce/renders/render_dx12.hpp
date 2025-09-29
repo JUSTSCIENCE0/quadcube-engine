@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/renders/render_base.hpp>
+#include <qce/renders/render_dx12_helpers.hpp>
 
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
@@ -63,6 +64,17 @@ namespace QCE {
                 m_current_back_buffer,
                 m_rtv_descr_size);
         }
+
+        /// Structs
+        struct RenderSceneGPU {
+            MsPtr<ID3D12Resource> vertex_buffer = nullptr;
+            MsPtr<ID3D12Resource> index_buffer = nullptr;
+
+            MsPtr<ID3D12Resource> vertex_buffer_uploader = nullptr;
+            MsPtr<ID3D12Resource> index_buffer_uploader = nullptr;
+
+            constexpr static DXGI_FORMAT INDEX_FORMAT = dx12_get_index_format();
+        };
 
         /// Attributes
         const HWND m_window;
