@@ -4,11 +4,8 @@
 // License: MIT
 
 #include <qce/renders/render_dx12.hpp>
-#include <qce/renders/render_dx12_helpers.hpp>
 
 namespace QCE {
-    // Utils
-
     RenderDX12::RenderDX12(RenderConfig initial_config, HWND window) :
         RenderBase(std::in_place_type<RenderDX12>, std::move(initial_config)),
             m_window(window) {
@@ -317,5 +314,27 @@ namespace QCE {
         m_current_back_buffer = (m_current_back_buffer + 1) % SWAP_CHAIN_BUFFER_COUNT;
 
         return FlushCommandQueue();
+    }
+
+    ErrorCode RenderDX12::UpdateGpuScene() { 
+        m_scene_gpu.DisposeUploaders();
+
+        QCE_CRITICAL(dx12_create_default_buffer(
+            m_d3d_device.Get(),
+            m_cmd_list.Get(),
+            m_scene_cpu.vertex_buffer.data(),
+            m_scene_cpu.vertex_buffer_size,
+            m_scene_gpu.vertex_buffer,
+            m_scene_gpu.vertex_buffer_uploader));
+
+        QCE_CRITICAL(dx12_create_default_buffer(
+            m_d3d_device.Get(),
+            m_cmd_list.Get(),
+            m_scene_cpu.index_buffer.data(),
+            m_scene_cpu.index_buffer_size,
+            m_scene_gpu.index_buffer,
+            m_scene_gpu.index_buffer_uploader));
+
+        return ErrorCode::SUCCESS;
     }
 }

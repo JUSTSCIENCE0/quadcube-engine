@@ -41,6 +41,8 @@ namespace QCE {
         m_scene_cpu.units.clear();
         m_scene_cpu.index_buffer.clear();
         m_scene_cpu.vertex_buffer.clear();
+        m_scene_cpu.index_buffer_size = 0;
+        m_scene_cpu.vertex_buffer_size = 0;
 
         auto scene = m_current_scene->GetDescription();
         for (const auto& [name, entities_group] : scene.entities) {
@@ -75,6 +77,8 @@ namespace QCE {
             unit_index++;
         }
 
+        m_scene_cpu.vertex_buffer_size = uint32_t(m_scene_cpu.vertex_buffer.size()) * m_scene_cpu.VERTEX_STRIDE;
+        m_scene_cpu.index_buffer_size = uint32_t(m_scene_cpu.index_buffer.size()) * sizeof(index_t);
         return ErrorCode::SUCCESS;
     }
 }
