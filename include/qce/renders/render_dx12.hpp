@@ -32,6 +32,20 @@ namespace QCE {
 
         /// types
         template<typename T> using MsPtr = Microsoft::WRL::ComPtr<T>;
+        struct RenderSceneGPU {
+            MsPtr<ID3D12Resource> vertex_buffer = nullptr;
+            MsPtr<ID3D12Resource> index_buffer = nullptr;
+
+            MsPtr<ID3D12Resource> vertex_buffer_uploader = nullptr;
+            MsPtr<ID3D12Resource> index_buffer_uploader = nullptr;
+
+            constexpr static DXGI_FORMAT INDEX_FORMAT = dx12_get_index_format();
+
+            void DisposeUploaders() {
+                vertex_buffer_uploader = nullptr;
+                index_buffer_uploader = nullptr;
+            }
+        };
 
         /// consts
         static constexpr int SWAP_CHAIN_BUFFER_COUNT = 2;
@@ -64,17 +78,26 @@ namespace QCE {
                 m_current_back_buffer,
                 m_rtv_descr_size);
         }
+        D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() const {
+            assert(m_scene_gpu.vertex_buffer);
+            assert(m_scene_cpu.vertex_buffer_size);
 
-        /// Structs
-        struct RenderSceneGPU {
-            MsPtr<ID3D12Resource> vertex_buffer = nullptr;
-            MsPtr<ID3D12Resource> index_buffer = nullptr;
+            D3D12_VERTEX_BUFFER_VIEW vbv;
+            vbv.BufferLocation = m_scene_gpu.vertex_buffer->GetGPUVirtualAddress();
+            vbv.StrideInBytes = m_scene_cpu.VERTEX_STRIDE;
+            vbv.SizeInBytes = m_scene_cpu.vertex_buffer_size;
+            return vbv;
+        }
+        D3D12_INDEX_BUFFER_VIEW GetIndexBufferView() const {
+            assert(m_scene_gpu.index_buffer);
+            assert(m_scene_cpu.index_buffer_size);
 
-            MsPtr<ID3D12Resource> vertex_buffer_uploader = nullptr;
-            MsPtr<ID3D12Resource> index_buffer_uploader = nullptr;
-
-            constexpr static DXGI_FORMAT INDEX_FORMAT = dx12_get_index_format();
-        };
+            D3D12_INDEX_BUFFER_VIEW ibv;
+            ibv.BufferLocation = m_scene_gpu.index_buffer->GetGPUVirtualAddress();
+            ibv.Format = m_scene_gpu.INDEX_FORMAT;
+            ibv.SizeInBytes = m_scene_cpu.index_buffer_size;
+            return ibv;
+        }
 
         /// Attributes
         const HWND m_window;
@@ -98,6 +121,8 @@ namespace QCE {
 
         D3D12_VIEWPORT m_screen_viewport{};
         D3D12_RECT     m_scissor_rect{};
+
+        RenderSceneGPU m_scene_gpu{};
 
         UINT m_rtv_descr_size = 0;
         UINT m_dsv_descr_size = 0;

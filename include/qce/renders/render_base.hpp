@@ -59,6 +59,10 @@ namespace QCE {
         std::vector<vertex>  vertex_buffer;
         std::vector<index_t> index_buffer;
 
+        uint32_t vertex_buffer_size = 0;
+        uint32_t index_buffer_size = 0;
+        constexpr static uint32_t VERTEX_STRIDE = sizeof(vertex);
+
         std::vector<RenderUnit> units;
     };
 
