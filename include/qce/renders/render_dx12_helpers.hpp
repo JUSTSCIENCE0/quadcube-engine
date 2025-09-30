@@ -64,7 +64,7 @@ namespace QCE {
             &resource_desc2,
             D3D12_RESOURCE_STATE_GENERIC_READ,
             nullptr,
-            IID_PPV_ARGS(result.GetAddressOf())))) {
+            IID_PPV_ARGS(upload_buffer.GetAddressOf())))) {
             return ErrorCode::E_DX12_CREATE_UPLOAD_BUFFER_RESOURCE_FAILED;
         }
 
