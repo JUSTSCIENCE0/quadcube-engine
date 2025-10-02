@@ -114,8 +114,9 @@ set(QCE_IMPLEMENTATION
     src/about.cpp
 )
 
+set(QCE_SHADERS_DIR shaders)
 set(QCE_SHADERS
-    shaders/simple_color.hlsl
+    ${QCE_SHADERS_DIR}/hlsl/simple_color.hlsl
 )
 
 add_library(${PROJECT_NAME} STATIC)
@@ -171,6 +172,22 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
             DXGI.lib
     )
 endif()
+
+# Utils
+# Copy default QCE shaders to application build directory
+function(use_qce_shaders target_name)
+    if (NOT TARGET ${target_name})
+        message(FATAL_ERROR "Target ${target_name} does not exist")
+    endif()
+
+    add_custom_command(
+        TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/${QCE_SHADERS_DIR}"
+            "$<TARGET_FILE_DIR:${target_name}>/shaders"
+        COMMENT "Copying shaders for target ${target_name}"
+    )
+endfunction()
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY INCLUDE_DIR_POSTFIX "qce")
 

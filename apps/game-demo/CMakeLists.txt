@@ -21,6 +21,8 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
+use_qce_shaders(${PROJECT_NAME})
+
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps")
 target_interface_group(common-utils)
 target_interface_group(quadcube-engine)
