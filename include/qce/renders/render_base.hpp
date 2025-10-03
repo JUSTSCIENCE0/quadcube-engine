@@ -7,6 +7,7 @@
 
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/objects/scene.hpp>
+#include <qce/renders/render_type.hpp>
 
 #include <utility>
 #include <cstring>
@@ -19,19 +20,9 @@ namespace QCE {
         CU_ENUM_UNIT(E_REGULAR_WINDOW) \
         CU_ENUM_UNIT(E_FRAMELESS_WINDOW) \
         CU_ENUM_UNIT(E_FULLSCREEN_WINDOW) \
-    CU_END_ENUM(WindowMode) \
-    CU_BEGIN_ENUM(RenderType) \
-        CU_ENUM_UNIT(E_RENDER_DIRECTX12) \
-        CU_ENUM_UNIT(E_RENDER_VULKAN) \
-    CU_END_ENUM(RenderType)
+    CU_END_ENUM(WindowMode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
-
-#ifdef WIN32
-    static constexpr auto DEFAULT_RENDER_TYPE = RenderType::E_RENDER_DIRECTX12;
-#else
-    static constexpr auto DEFAULT_RENDER_TYPE = RenderType::E_RENDER_VULKAN;
-#endif
 
     struct GraphicsOutputConfig {
         WindowMode mode = WindowMode::E_REGULAR_WINDOW;

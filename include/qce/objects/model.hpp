@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/objects/mesh.hpp>
+#include <qce/objects/shader.hpp>
 
 #include <memory>
 

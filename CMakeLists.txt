@@ -73,6 +73,7 @@ set(QCE_OBJECTS
     include/qce/objects/resource_manager.hpp
     include/qce/objects/scene.hpp
     include/qce/objects/figures.hpp
+    include/qce/objects/shader.hpp
 )
 
 set(QCE_MATH
@@ -88,6 +89,7 @@ set(QCE_MATH
 
 set(QCE_RENDERS
     include/qce/renders/windows_output.hpp
+    include/qce/renders/render_type.hpp
     include/qce/renders/render_base.hpp
     include/qce/renders/render_dx12.hpp
     include/qce/renders/render_dx12_helpers.hpp
