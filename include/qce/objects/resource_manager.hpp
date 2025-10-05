@@ -22,7 +22,9 @@ namespace QCE {
                 RenderType render_type,
                 const std::string& resources_directory) :
             m_render_type(render_type),
-            m_resources_directory(GetResourcesDirectory(resources_directory)) {}
+            m_resources_directory(GetResourcesDirectory(resources_directory)),
+            m_shaders_source_directory(m_resources_directory / SHADERS_SOURCE_SUBDIRECTORY),
+            m_shaders_binary_directory(m_resources_directory / SHADERS_BINARY_SUBDIRECTORY) {}
 
         ResourceManager(const ResourceManager&) = delete;
         ResourceManager(ResourceManager&&) = delete;
@@ -76,7 +78,9 @@ namespace QCE {
         using Storage = std::unordered_map<std::string, std::shared_ptr<T>>;
 
         /// consts
-        static constexpr inline auto DEFAULT_RESOURCES_DIRECTORY = "resources";
+        static constexpr auto DEFAULT_RESOURCES_DIRECTORY = "resources";
+        static constexpr auto SHADERS_SOURCE_SUBDIRECTORY = "shaders/source";
+        static constexpr auto SHADERS_BINARY_SUBDIRECTORY = "shaders/binary";
 
         /// methods
         static std::filesystem::path GetResourcesDirectory(const std::string& resources_directory);
@@ -84,6 +88,8 @@ namespace QCE {
         /// attributes
         RenderType m_render_type = DEFAULT_RENDER_TYPE;
         const std::filesystem::path m_resources_directory;
+        const std::filesystem::path m_shaders_source_directory;
+        const std::filesystem::path m_shaders_binary_directory;
 
         Storage<Mesh>   m_meshes{};
         Storage<Model>  m_models{};

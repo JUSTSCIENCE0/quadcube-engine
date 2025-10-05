@@ -23,6 +23,8 @@ int main(int argc, char* argv[]) {
         .width = 1.0f,
         .height = 3.0f
     };
+    app.Resources().AddShader("simple_color", "VS");
+    app.Resources().AddShader("simple_color", "PS");
     app.Resources().AddFigure(cuboid, "cuboid");
     app.Resources().AddModel("cuboid", "cuboid");
     app.CurrentScene().AddEntity("cuboid", "cuboid");
