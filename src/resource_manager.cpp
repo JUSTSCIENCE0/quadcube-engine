@@ -6,6 +6,22 @@
 #include <qce/objects/resource_manager.hpp>
 
 namespace QCE {
+    std::filesystem::path ResourceManager::GetResourcesDirectory(
+            const std::string& resources_directory) {
+        std::filesystem::path result = CU::get_current_module_directory();
+
+        if (resources_directory.empty())
+            result.append(DEFAULT_RESOURCES_DIRECTORY);
+        else
+            result.append(resources_directory);
+
+        if (!std::filesystem::exists(result) ||
+            !std::filesystem::is_directory(result))
+            throw ErrorCodeException(E_RM_WRONG_RESOURCES_DIRECTORY);
+
+        return result;
+    }
+
     ErrorCode ResourceManager::AddModel(
             const std::string& model_name,
             const std::string& mesh_name) {
@@ -55,6 +71,21 @@ namespace QCE {
             model_name,
             start_transform);
         assert(entity);
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode ResourceManager::AddShader(
+            const std::string& shader_name,
+            const std::string& entry_point) {
+        try {
+            /*auto shader = std::make_shared<Shader>(
+                
+            );*/
+        }
+        catch (ErrorCodeException err) {
+            return err.code_value();
+        }
+
         return ErrorCode::SUCCESS;
     }
 

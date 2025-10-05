@@ -9,6 +9,8 @@
 #include <qce/objects/entity.hpp>
 #include <qce/objects/figures.hpp>
 
+#include <cu/file-utils.hpp>
+
 #include <unordered_map>
 #include <concepts>
 #include <type_traits>
@@ -16,7 +18,12 @@
 namespace QCE {
     class ResourceManager final {
     public:
-        ResourceManager() = default;
+        ResourceManager(
+                RenderType render_type,
+                const std::string& resources_directory) :
+            m_render_type(render_type),
+            m_resources_directory(GetResourcesDirectory(resources_directory)) {}
+
         ResourceManager(const ResourceManager&) = delete;
         ResourceManager(ResourceManager&&) = delete;
         ResourceManager& operator=(const ResourceManager&) = delete;
@@ -40,6 +47,9 @@ namespace QCE {
             const std::string& entity_name,
             const std::string& model_name,
             const transform& start_transform = {});
+        ErrorCode AddShader(
+            const std::string& shader_name,
+            const std::string& entry_point);
 
         std::shared_ptr<Entity> AddAndGetEntity(
             const std::string& entity_name,
@@ -61,11 +71,23 @@ namespace QCE {
         //  Add Entity (as shared_ptr)
 
     private:
+        /// types
         template <typename T>
         using Storage = std::unordered_map<std::string, std::shared_ptr<T>>;
+
+        /// consts
+        static constexpr inline auto DEFAULT_RESOURCES_DIRECTORY = "resources";
+
+        /// methods
+        static std::filesystem::path GetResourcesDirectory(const std::string& resources_directory);
+
+        /// attributes
+        RenderType m_render_type = DEFAULT_RENDER_TYPE;
+        const std::filesystem::path m_resources_directory;
 
         Storage<Mesh>   m_meshes{};
         Storage<Model>  m_models{};
         Storage<Entity> m_entities{};
+        Storage<Shader> m_shaders{};
     };
 }

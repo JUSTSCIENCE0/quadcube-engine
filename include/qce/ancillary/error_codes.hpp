@@ -59,6 +59,8 @@ namespace QCE {
         CU_ENUM_UNIT(E_RM_MESH_ID_COLLISION) \
         CU_ENUM_UNIT(E_RM_MODEL_ID_COLLISION) \
         CU_ENUM_UNIT(E_RM_MESH_NOT_FOUND) \
+        CU_ENUM_UNIT(E_RM_SHADER_ALREADY_EXISTS) \
+        CU_ENUM_UNIT(E_RM_WRONG_RESOURCES_DIRECTORY) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -198,6 +200,12 @@ namespace QCE {
             break;
         case ErrorCode::E_RM_MESH_NOT_FOUND:
             result << "Resource Manager - Mesh with such Id not found";
+            break;
+        case ErrorCode::E_RM_SHADER_ALREADY_EXISTS:
+            result << "Resource Manager - Shader with such name and entry point already exists";
+            break;
+        case ErrorCode::E_RM_WRONG_RESOURCES_DIRECTORY:
+            result << "Resource Manager - Selected resources directory not exists";
             break;
 
         default:
