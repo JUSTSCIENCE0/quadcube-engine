@@ -6,6 +6,8 @@
 #pragma once
 
 #include <qce/renders/render_type.hpp>
+#include <qce/ancillary/error_codes.hpp>
+#include <cu/file-utils.hpp>
 
 #include <stdint.h>
 #include <string>
@@ -39,7 +41,12 @@ namespace QCE {
             m_entry_point(std::move(entry)),
             m_source_file(make_shader_filepath(source_dir, m_id, render_type)),
             m_binary_file(make_shader_filepath(binary_dir, m_id, render_type)) {
-            // TODO: load binary cache if exists else load source cache
+            m_binary_cache = CU::load_data_from_file<uint8_t>(m_binary_file);
+            // TODO: load m_binary_metadata
+
+            if (m_binary_cache.empty()) {
+                QCE_THROW_CRITICAL(LoadSource());
+            }
         }
 
         const std::string m_id;
@@ -51,6 +58,13 @@ namespace QCE {
         std::vector<uint8_t> m_source_cache{};
         std::vector<uint8_t> m_binary_cache{};
         // TODO: m_binary_metadata
+
+        ErrorCode LoadSource() {
+            m_source_cache = CU::load_data_from_file<uint8_t>(m_source_file);
+            return m_source_cache.empty() ?
+                ErrorCode::E_ENG_SHADER_SOURCE_NOT_FOUND :
+                ErrorCode::SUCCESS;
+        }
 
     private:
         static std::filesystem::path make_shader_filepath(
