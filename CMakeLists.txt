@@ -117,9 +117,19 @@ set(QCE_IMPLEMENTATION
 )
 
 set(QCE_SHADERS_DIR shaders)
-set(QCE_SHADERS
-    ${QCE_SHADERS_DIR}/hlsl/simple_color.hlsl
+set(QCE_HLSL_SHADERS_DIR ${QCE_SHADERS_DIR}/hlsl)
+set(QCE_HLSL_VS ${QCE_HLSL_SHADERS_DIR}/simple_vs.hlsl)
+set(QCE_HLSL_PS ${QCE_HLSL_SHADERS_DIR}/simple_ps.hlsl)
+set(QCE_HLSL_SHADERS
+    ${QCE_HLSL_VS}
+    ${QCE_HLSL_PS}
 )
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(QCE_SHADERS
+        ${QCE_SHADERS}
+        ${QCE_HLSL_SHADERS}
+    )
+endif() # Windows
 
 add_library(${PROJECT_NAME} STATIC)
 target_sources(${PROJECT_NAME}
@@ -140,9 +150,33 @@ source_group("Objects" FILES ${QCE_OBJECTS})
 source_group("Renders" FILES ${QCE_RENDERS})
 source_group("Ancillary" FILES ${QCE_ANCILLARY})
 source_group("Implementation" FILES ${QCE_IMPLEMENTATION})
-source_group("Shaders" FILES ${QCE_SHADERS})
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    source_group("Shaders/HLSL" FILES ${QCE_HLSL_SHADERS})
+endif() # Windows
 
 set_source_files_properties(${QCE_SHADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
+
+# add HLSL shaders compilation
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        set(QCE_HLSL_BINARY_FILENAME "${CMAKE_CURRENT_BINARY_DIR}/shaders/hlsl/%(Filename).cso")
+        set(QCE_HLSL_SHADER_MODEL 5.1) # TODO: make it option?
+        set_source_files_properties(${QCE_HLSL_VS} PROPERTIES
+            HEADER_FILE_ONLY FALSE
+            VS_SHADER_TYPE Vertex
+            VS_SHADER_MODEL ${QCE_HLSL_SHADER_MODEL}
+            VS_SHADER_OBJECT_FILE_NAME ${QCE_HLSL_BINARY_FILENAME}
+        )
+        set_source_files_properties(${QCE_HLSL_PS} PROPERTIES
+            HEADER_FILE_ONLY FALSE
+            VS_SHADER_TYPE Pixel
+            VS_SHADER_MODEL ${QCE_HLSL_SHADER_MODEL}
+            VS_SHADER_OBJECT_FILE_NAME ${QCE_HLSL_BINARY_FILENAME}
+        )
+    else()
+        message(WARNING "HLSL shader auto-compilation implemented only for MSVC")
+    endif() # MSVC
+endif() # Windows
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
