@@ -116,6 +116,9 @@ set(QCE_IMPLEMENTATION
     src/about.cpp
 )
 
+set(QCE_CMAKE_UTILS
+    cmake/ResourcesUtils.cmake)
+
 set(QCE_SHADERS_DIR shaders)
 set(QCE_HLSL_SHADERS_DIR ${QCE_SHADERS_DIR}/hlsl)
 set(QCE_HLSL_VS ${QCE_HLSL_SHADERS_DIR}/simple_vs.hlsl)
@@ -155,11 +158,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif() # Windows
 
 set_source_files_properties(${QCE_SHADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
+set(QCE_SHADERS_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/shaders")
 
 # add HLSL shaders compilation
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-        set(QCE_HLSL_BINARY_FILENAME "${CMAKE_CURRENT_BINARY_DIR}/shaders/hlsl/%(Filename).cso")
+        set(QCE_HLSL_BINARY_FILENAME "${QCE_SHADERS_BINARY_DIR}/hlsl/%(Filename).cso")
         set(QCE_HLSL_SHADER_MODEL 5.1) # TODO: make it option?
         set_source_files_properties(${QCE_HLSL_VS} PROPERTIES
             HEADER_FILE_ONLY FALSE
@@ -209,53 +213,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     )
 endif()
 
-# Utils
-# Copy default QCE shaders to application build directory
-function(use_qce_shaders target_name directory_suffix)
-    if (NOT TARGET ${target_name})
-        message(FATAL_ERROR "Target ${target_name} does not exist")
-    endif()
-
-    add_custom_command(
-        TARGET ${target_name} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory
-                "$<TARGET_FILE_DIR:${target_name}>/${directory_suffix}/hlsl"
-        COMMAND ${CMAKE_COMMAND} -E make_directory
-                "$<TARGET_FILE_DIR:${target_name}>/${directory_suffix}/glsl"
-    )
-
-    set(shaders_list ${ARGN})
-    set(QCE_HLSL_PREFIX ${QCE_SHADERS_DIR}/hlsl)
-    set(QCE_GLSL_PREFIX ${QCE_SHADERS_DIR}/glsl)
-
-    foreach(file IN LISTS shaders_list)
-        # copy HLSL
-        set(hlsl_path "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/${QCE_HLSL_PREFIX}/${file}.hlsl")
-        if (EXISTS "${hlsl_path}")
-            add_custom_command(
-                TARGET ${target_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                        "${hlsl_path}"
-                        "$<TARGET_FILE_DIR:${target_name}>/${directory_suffix}/hlsl/"
-            )
-        else()
-            message(WARNING "HLSL shader ${file} not found, path ${hlsl_path}")
-        endif()
-
-        # copy GLSL
-        set(glsl_path "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/${QCE_GLSL_PREFIX}/${file}.glsl")
-        if (EXISTS "${glsl_path}")
-            add_custom_command(
-                TARGET ${target_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                        "${glsl_path}"
-                        "$<TARGET_FILE_DIR:${target_name}>/${directory_suffix}/glsl/"
-            )
-        else()
-            message(WARNING "GLSL shader ${file} not found, path ${hlsl_path}")
-        endif()
-    endforeach()
-endfunction()
+# QCE CMake utils
+include(${QCE_CMAKE_UTILS})
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY INCLUDE_DIR_POSTFIX "qce")
 

@@ -21,10 +21,12 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
-set(SHADERS_DIR "resources/shaders/source")
+qce_create_resources_directory(${PROJECT_NAME})
 set(SHADERS_QCE
-    simple_color)
-use_qce_shaders(${PROJECT_NAME} ${SHADERS_DIR} ${SHADERS_QCE})
+    simple_vs
+    simple_ps
+)
+use_qce_shaders(${PROJECT_NAME} ${SHADERS_QCE})
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps")
 target_interface_group(common-utils)
