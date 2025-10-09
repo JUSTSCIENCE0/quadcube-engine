@@ -71,8 +71,8 @@ namespace QCE {
 
     ErrorCode ResourceManager::AddShader(
             const std::string& shader_name,
-            const std::string& entry_point) {
-        const auto id = shader_name + "_" + entry_point;
+        ShaderType shader_type) {
+        const auto id = shader_name + "_" + get_shader_type_suffix(shader_type);
         if (m_shaders.end() != m_shaders.find(id))
             return ErrorCode::E_RM_SHADER_ALREADY_EXISTS;
 
@@ -80,9 +80,8 @@ namespace QCE {
         try {
             shader = std::make_shared<Shader>(
                 shader_name,
-                entry_point,
-                m_shaders_source_directory,
-                m_shaders_binary_directory,
+                shader_type,
+                m_shaders_bytecode_directory,
                 m_render_type
             );
         }

@@ -23,11 +23,11 @@ int main(int argc, char* argv[]) {
         .width = 1.0f,
         .height = 3.0f
     };
-    app.Resources().AddShader("simple_color", "VS");
-    app.Resources().AddShader("simple_color", "PS");
-    app.Resources().AddFigure(cuboid, "cuboid");
-    app.Resources().AddModel("cuboid", "cuboid");
-    app.CurrentScene().AddEntity("cuboid", "cuboid");
+    QCE_CRITICAL(app.Resources().AddShader("simple", QCE::ShaderType::E_VERTEX_SHADER));
+    QCE_CRITICAL(app.Resources().AddShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
+    QCE_CRITICAL(app.Resources().AddFigure(cuboid, "cuboid"));
+    QCE_CRITICAL(app.Resources().AddModel("cuboid", "cuboid"));
+    QCE_CRITICAL(app.CurrentScene().AddEntity("cuboid", "cuboid"));
 
     return app.Run();
 }

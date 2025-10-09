@@ -16,6 +16,21 @@
 #include <cassert>
 
 namespace QCE {
+#define CU_ENUMS_DESCRIPTION \
+    CU_BEGIN_ENUM(ShaderType) \
+        CU_ENUM_UNIT(E_VERTEX_SHADER) \
+        CU_ENUM_UNIT(E_PIXEL_SHADER) \
+    CU_END_ENUM(ShaderType)
+    /*
+    TODO:
+        E_TESSELLATION_CONTROL_SHADER
+        E_TESSELLATION_EVALUATION_SHADER
+        E_GEOMETRY_SHADER
+        E_MESH_SHADER
+    */
+#include <cu/enum-utils.hpp>
+#undef CU_ENUMS_DESCRIPTION
+
     static inline const char* get_shader_language(RenderType render_type) {
         switch (render_type) {
         case RenderType::E_RENDER_DIRECTX12:
@@ -30,50 +45,70 @@ namespace QCE {
         return "";
     }
 
+    static inline const char* get_shader_bytecode_type(RenderType render_type) {
+        switch (render_type) {
+        case RenderType::E_RENDER_DIRECTX12:
+            return "cso";
+        case RenderType::E_RENDER_VULKAN:
+            return "spv";
+        default:
+            assert(!"Unexpected behavior");
+            break;
+        }
+
+        return "";
+    }
+
+    static inline const char* get_shader_type_suffix(ShaderType shader_type) {
+        switch (shader_type) {
+        case ShaderType::E_VERTEX_SHADER:
+            return "vs";
+        case ShaderType::E_PIXEL_SHADER:
+            return "ps";
+        default:
+            assert(!"Unexpected behavior");
+            break;
+        }
+
+        return "";
+    }
+
     struct Shader {
         Shader(
-                std::string name,
-                std::string entry,
-                const std::filesystem::path& source_dir,
-                const std::filesystem::path& binary_dir,
+                const std::string& name,
+                ShaderType shader_type,
+                const std::filesystem::path& bytecode_dir,
                 RenderType render_type) :
-            m_id(std::move(name)),
-            m_entry_point(std::move(entry)),
-            m_source_file(make_shader_filepath(source_dir, m_id, render_type)),
-            m_binary_file(make_shader_filepath(binary_dir, m_id, render_type)) {
-            m_binary_cache = CU::load_data_from_file<uint8_t>(m_binary_file);
-            // TODO: load m_binary_metadata
+            m_id(make_shader_id(name, shader_type)),
+            m_type(shader_type),
+            m_bytecode_file(make_shader_bytecode_filepath(bytecode_dir, m_id, render_type)) {
+            m_bytecode_cache = CU::load_data_from_file<uint8_t>(m_bytecode_file);
 
-            if (m_binary_cache.empty()) {
-                QCE_THROW_CRITICAL(LoadSource());
+            if (m_bytecode_cache.empty()) {
+                throw ErrorCodeException(ErrorCode::E_ENG_SHADER_BYTECODE_NOT_FOUND);
             }
         }
 
         const std::string m_id;
-        const std::string m_entry_point;
+        const ShaderType m_type;
+        const std::filesystem::path m_bytecode_file;
 
-        const std::filesystem::path m_source_file;
-        const std::filesystem::path m_binary_file;
-
-        std::vector<uint8_t> m_source_cache{};
-        std::vector<uint8_t> m_binary_cache{};
-        // TODO: m_binary_metadata
-
-        ErrorCode LoadSource() {
-            m_source_cache = CU::load_data_from_file<uint8_t>(m_source_file);
-            return m_source_cache.empty() ?
-                ErrorCode::E_ENG_SHADER_SOURCE_NOT_FOUND :
-                ErrorCode::SUCCESS;
-        }
+        std::vector<uint8_t> m_bytecode_cache{};
 
     private:
-        static std::filesystem::path make_shader_filepath(
-                const std::filesystem::path& dir,
+        static std::string make_shader_id(
                 const std::string& name,
+                ShaderType shader_type) {
+            return name + "_" + get_shader_type_suffix(shader_type);
+        }
+
+        static std::filesystem::path make_shader_bytecode_filepath(
+                const std::filesystem::path& dir,
+                const std::string& id,
                 RenderType render_type) {
             std::filesystem::path result = dir;
             const char* lang = get_shader_language(render_type);
-            std::string filename = name + "." + lang;
+            std::string filename = id + "." + get_shader_bytecode_type(render_type);
             result.append(lang);
             result.append(filename);
 

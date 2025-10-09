@@ -22,8 +22,7 @@ namespace QCE {
                 RenderType render_type) :
             m_render_type(render_type),
             m_resources_directory(GetResourcesDirectory()),
-            m_shaders_source_directory(m_resources_directory / SHADERS_SOURCE_SUBDIRECTORY),
-            m_shaders_binary_directory(m_resources_directory / SHADERS_BINARY_SUBDIRECTORY) {}
+            m_shaders_bytecode_directory(m_resources_directory / SHADERS_BYTECODE_SUBDIRECTORY) {}
 
         ResourceManager(const ResourceManager&) = delete;
         ResourceManager(ResourceManager&&) = delete;
@@ -50,7 +49,7 @@ namespace QCE {
             const transform& start_transform = {});
         ErrorCode AddShader(
             const std::string& shader_name,
-            const std::string& entry_point);
+            ShaderType shader_type);
 
         std::shared_ptr<Entity> AddAndGetEntity(
             const std::string& entity_name,
@@ -78,17 +77,15 @@ namespace QCE {
 
         /// consts
         static constexpr auto RESOURCES_DIRECTORY = "resources";
-        static constexpr auto SHADERS_SOURCE_SUBDIRECTORY = "shaders/source";
-        static constexpr auto SHADERS_BINARY_SUBDIRECTORY = "shaders/binary";
+        static constexpr auto SHADERS_BYTECODE_SUBDIRECTORY = "shaders";
 
         /// methods
         static std::filesystem::path GetResourcesDirectory();
 
         /// attributes
         RenderType m_render_type = DEFAULT_RENDER_TYPE;
-        const std::filesystem::path m_resources_directory{ RESOURCES_DIRECTORY };
-        const std::filesystem::path m_shaders_source_directory;
-        const std::filesystem::path m_shaders_binary_directory;
+        const std::filesystem::path m_resources_directory;
+        const std::filesystem::path m_shaders_bytecode_directory;
 
         Storage<Mesh>   m_meshes{};
         Storage<Model>  m_models{};
