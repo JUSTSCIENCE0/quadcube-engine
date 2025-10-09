@@ -27,16 +27,14 @@ namespace QCE {
         Application& operator=(Application&&) = delete;
 
         static Application& Get(
-                const ApplicationConfig& initial_config,
-                const std::string& resources_directory = "") {
+                const ApplicationConfig& initial_config) {
             static Application app {
-                initial_config,
-                resources_directory
+                initial_config
             };
             return app;
         }
-        static Application& Get(const std::string& resources_directory = "") {
-            return Get(ReadConfig(), resources_directory);
+        static Application& Get() {
+            return Get(ReadConfig());
         }
 
         ErrorCode Run() {
@@ -71,10 +69,8 @@ namespace QCE {
 
     private:
         explicit Application(
-                const ApplicationConfig& initial_config,
-                const std::string& resources_directory)
+                const ApplicationConfig& initial_config)
         try :
-            m_resources_directory(resources_directory),
             m_config(initial_config),
             m_graphics_output(m_config.graphics_output) {
 #ifdef WIN32
@@ -121,8 +117,6 @@ namespace QCE {
             return m_render->Draw();
         }
 
-        const std::string m_resources_directory;
-
         ApplicationConfig m_config{};
         GraphicsOutput m_graphics_output;
         // TODO: additional graphics outputs
@@ -131,7 +125,6 @@ namespace QCE {
 
         ResourceManager m_rm {
             m_config.render.render_type,
-            m_resources_directory
         };
         Scene m_current_scene{m_rm};
         // TODO: Level & World;

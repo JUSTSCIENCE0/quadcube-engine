@@ -60,7 +60,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_RM_MODEL_ID_COLLISION) \
         CU_ENUM_UNIT(E_RM_MESH_NOT_FOUND) \
         CU_ENUM_UNIT(E_RM_SHADER_ALREADY_EXISTS) \
-        CU_ENUM_UNIT(E_RM_WRONG_RESOURCES_DIRECTORY) \
+        CU_ENUM_UNIT(E_RM_BAD_RESOURCES_DIRECTORY) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -204,8 +204,8 @@ namespace QCE {
         case ErrorCode::E_RM_SHADER_ALREADY_EXISTS:
             result << "Resource Manager - Shader with such name and entry point already exists";
             break;
-        case ErrorCode::E_RM_WRONG_RESOURCES_DIRECTORY:
-            result << "Resource Manager - Selected resources directory not exists";
+        case ErrorCode::E_RM_BAD_RESOURCES_DIRECTORY:
+            result << "Resource Manager - Resources directory not exists";
             break;
 
         default:

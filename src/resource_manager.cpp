@@ -6,18 +6,13 @@
 #include <qce/objects/resource_manager.hpp>
 
 namespace QCE {
-    std::filesystem::path ResourceManager::GetResourcesDirectory(
-            const std::string& resources_directory) {
+    std::filesystem::path ResourceManager::GetResourcesDirectory() {
         std::filesystem::path result = CU::get_current_module_directory();
-
-        if (resources_directory.empty())
-            result.append(DEFAULT_RESOURCES_DIRECTORY);
-        else
-            result.append(resources_directory);
+        result.append(RESOURCES_DIRECTORY);
 
         if (!std::filesystem::exists(result) ||
             !std::filesystem::is_directory(result))
-            throw ErrorCodeException(E_RM_WRONG_RESOURCES_DIRECTORY);
+            throw ErrorCodeException(E_RM_BAD_RESOURCES_DIRECTORY);
 
         return result;
     }
