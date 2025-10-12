@@ -58,7 +58,7 @@ namespace QCE {
         ErrorCode Init();
         ErrorCode CreateCommandObjects();
         ErrorCode CreateSwapChain();
-        ErrorCode CreateRtvAndDsvDescriptorHeaps();
+        ErrorCode CreateDescriptorHeaps();
         ErrorCode InitBuffersAndDescriptors();
 
         // Scene

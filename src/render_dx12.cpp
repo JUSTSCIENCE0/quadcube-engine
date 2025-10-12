@@ -41,7 +41,7 @@ namespace QCE {
 
         QCE_CRITICAL(CreateCommandObjects());
         QCE_CRITICAL(CreateSwapChain());
-        QCE_CRITICAL(CreateRtvAndDsvDescriptorHeaps());
+        QCE_CRITICAL(CreateDescriptorHeaps());
         QCE_CRITICAL(InitBuffersAndDescriptors());
 
         return ErrorCode::SUCCESS;
@@ -108,7 +108,7 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode RenderDX12::CreateRtvAndDsvDescriptorHeaps() {
+    ErrorCode RenderDX12::CreateDescriptorHeaps() {
         D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
         rtvHeapDesc.NumDescriptors = SWAP_CHAIN_BUFFER_COUNT;
         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -128,6 +128,17 @@ namespace QCE {
             &dsvHeapDesc, IID_PPV_ARGS(m_dsv_heap.GetAddressOf()));
         if (FAILED(hr))
             return ErrorCode::E_DX12_CREATE_RTV_HEAP_FAILED;
+
+        D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
+        cbvHeapDesc.NumDescriptors = 1;
+        cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        cbvHeapDesc.NodeMask = 0;
+
+        hr = m_d3d_device->CreateDescriptorHeap(
+            &cbvHeapDesc, IID_PPV_ARGS(m_cbv_heap.GetAddressOf()));
+        if (FAILED(hr))
+            return ErrorCode::E_DX12_CREATE_CBV_HEAP_FAILED;
 
         return ErrorCode::SUCCESS;
     }
