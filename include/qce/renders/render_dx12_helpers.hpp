@@ -136,6 +136,10 @@ namespace QCE {
             return m_upload_buffer.Get();
         }
 
+        UINT ElementSize() const {
+            return m_element_size;
+        }
+
         void CopyData(int elementIndex, const T& data) {
             memcpy(&m_mapped_data[elementIndex * m_element_size], &data, sizeof(T));
         }

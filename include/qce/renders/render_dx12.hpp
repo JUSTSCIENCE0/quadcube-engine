@@ -39,6 +39,8 @@ namespace QCE {
             MsPtr<ID3D12Resource> vertex_buffer_uploader = nullptr;
             MsPtr<ID3D12Resource> index_buffer_uploader = nullptr;
 
+            std::unique_ptr<Dx12UploadBuffer<UnitConstants>> m_units_constant_buffers{};
+
             constexpr static DXGI_FORMAT INDEX_FORMAT = dx12_get_index_format();
 
             void DisposeUploaders() {
@@ -63,7 +65,9 @@ namespace QCE {
 
         // Scene
         ErrorCode UpdateGpuScene();
-        ErrorCode UpdateRootSignature();
+        ErrorCode CreateRootSignature();
+        ErrorCode CreateCBVDescriptorHeap();
+        ErrorCode CreateConstantBuffers();
 
         // Utils
         ErrorCode FlushCommandQueue();

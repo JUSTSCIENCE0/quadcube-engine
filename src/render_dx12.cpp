@@ -129,17 +129,6 @@ namespace QCE {
         if (FAILED(hr))
             return ErrorCode::E_DX12_CREATE_RTV_HEAP_FAILED;
 
-        D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
-        cbvHeapDesc.NumDescriptors = 1;
-        cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        cbvHeapDesc.NodeMask = 0;
-
-        hr = m_d3d_device->CreateDescriptorHeap(
-            &cbvHeapDesc, IID_PPV_ARGS(m_cbv_heap.GetAddressOf()));
-        if (FAILED(hr))
-            return ErrorCode::E_DX12_CREATE_CBV_HEAP_FAILED;
-
         return ErrorCode::SUCCESS;
     }
 
@@ -346,11 +335,14 @@ namespace QCE {
             m_scene_gpu.index_buffer,
             m_scene_gpu.index_buffer_uploader));
 
-        QCE_CRITICAL(UpdateRootSignature());
+        QCE_CRITICAL(CreateCBVDescriptorHeap());
+        QCE_CRITICAL(CreateConstantBuffers());
+        QCE_CRITICAL(CreateRootSignature());
+
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode RenderDX12::UpdateRootSignature() {
+    ErrorCode RenderDX12::CreateRootSignature() {
         CD3DX12_ROOT_PARAMETER slotRootParameter{};
 
         CD3DX12_DESCRIPTOR_RANGE cbvTable{};
@@ -378,6 +370,51 @@ namespace QCE {
                     serializedRootSig->GetBufferSize(),
                     IID_PPV_ARGS(&m_root_signature))))
             return ErrorCode::E_DX12_CREATE_ROOT_SIGNATURE_FAILED;
+
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::CreateCBVDescriptorHeap() {
+        // TODO: const auto render_units_count = m_scene_cpu.units.size();
+
+        D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
+        cbvHeapDesc.NumDescriptors = 1;
+        cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        cbvHeapDesc.NodeMask = 0;
+
+        auto hr = m_d3d_device->CreateDescriptorHeap(
+            &cbvHeapDesc, IID_PPV_ARGS(m_cbv_heap.GetAddressOf()));
+        if (FAILED(hr))
+            return ErrorCode::E_DX12_CREATE_CBV_HEAP_FAILED;
+
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::CreateConstantBuffers() {
+        auto& cb = m_scene_gpu.m_units_constant_buffers;
+        const auto units_count = UINT(m_scene_cpu.units.size());
+
+        cb = std::make_unique<Dx12UploadBuffer<UnitConstants>>(
+                m_d3d_device.Get(), units_count, true);
+
+        int heap_index = 0;
+        const auto cb_unit_size = cb->ElementSize();
+        D3D12_GPU_VIRTUAL_ADDRESS cb_address = cb->Resource()->GetGPUVirtualAddress();
+
+        for (UINT index = 0; index < units_count; index++) {
+            auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetCPUDescriptorHandleForHeapStart());
+            handle.Offset(heap_index, m_cbv_srv_uav_descr_size);
+
+            D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_descr;
+            cbv_descr.BufferLocation = cb_address;
+            cbv_descr.SizeInBytes = cb_unit_size;
+
+            m_d3d_device->CreateConstantBufferView(&cbv_descr, handle);
+
+            heap_index++;
+            cb_address += cb_unit_size;
+        }
 
         return ErrorCode::SUCCESS;
     }
