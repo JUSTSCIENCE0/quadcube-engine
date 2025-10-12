@@ -335,6 +335,39 @@ namespace QCE {
             m_scene_gpu.index_buffer,
             m_scene_gpu.index_buffer_uploader));
 
+        QCE_CRITICAL(UpdateRootSignature());
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::UpdateRootSignature() {
+        CD3DX12_ROOT_PARAMETER slotRootParameter{};
+
+        CD3DX12_DESCRIPTOR_RANGE cbvTable{};
+        cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+        slotRootParameter.InitAsDescriptorTable(1, &cbvTable);
+
+        CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(1, &slotRootParameter, 0, nullptr,
+            D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+        MsPtr<ID3DBlob> serializedRootSig = nullptr;
+        MsPtr<ID3DBlob> errorBlob = nullptr;
+        auto hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,
+            serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+
+        if (errorBlob) {
+            // use log system
+            std::cout << reinterpret_cast<char*>(errorBlob->GetBufferPointer()) << std::endl;
+        }
+        if (FAILED(hr))
+            return ErrorCode::E_DX12_SERIALIZE_ROOT_SIGNATURE_FAILED;
+
+        if (FAILED(m_d3d_device->CreateRootSignature(
+                    0,
+                    serializedRootSig->GetBufferPointer(),
+                    serializedRootSig->GetBufferSize(),
+                    IID_PPV_ARGS(&m_root_signature))))
+            return ErrorCode::E_DX12_CREATE_ROOT_SIGNATURE_FAILED;
+
         return ErrorCode::SUCCESS;
     }
 }

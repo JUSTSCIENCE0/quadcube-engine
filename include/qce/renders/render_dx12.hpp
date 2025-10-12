@@ -63,6 +63,7 @@ namespace QCE {
 
         // Scene
         ErrorCode UpdateGpuScene();
+        ErrorCode UpdateRootSignature();
 
         // Utils
         ErrorCode FlushCommandQueue();
@@ -116,8 +117,11 @@ namespace QCE {
         MsPtr<ID3D12Resource> m_swap_chain_buffer[SWAP_CHAIN_BUFFER_COUNT];
         MsPtr<ID3D12Resource> m_depth_stencil_buffer{};
 
+        MsPtr<ID3D12RootSignature> m_root_signature{};
+
         MsPtr<ID3D12DescriptorHeap> m_rtv_heap{};
         MsPtr<ID3D12DescriptorHeap> m_dsv_heap{};
+        MsPtr<ID3D12DescriptorHeap> m_cbv_heap{};
 
         D3D12_VIEWPORT m_screen_viewport{};
         D3D12_RECT     m_scissor_rect{};

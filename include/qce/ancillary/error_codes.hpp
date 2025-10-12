@@ -48,6 +48,8 @@ namespace QCE {
         CU_ENUM_UNIT(E_DX12_MAP_UPLOAD_BUFFER_FAILED) \
         CU_ENUM_UNIT(E_DX12_SHADER_COMPILATION_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_BLOB_FAILED) \
+        CU_ENUM_UNIT(E_DX12_SERIALIZE_ROOT_SIGNATURE_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_ROOT_SIGNATURE_FAILED) \
         CU_VALUED_ENUM_UNIT(GROUP_VULKAN,           0x40000) \
         CU_VALUED_ENUM_UNIT(GROUP_ENGINE,           0x50000) \
         CU_ENUM_UNIT(E_ENG_FILE_OPEN_FAILED) \
@@ -172,6 +174,12 @@ namespace QCE {
             break;
         case ErrorCode::E_DX12_CREATE_BLOB_FAILED:
             result << "DX12 - Create blob Failed";
+            break;
+        case ErrorCode::E_DX12_SERIALIZE_ROOT_SIGNATURE_FAILED:
+            result << "DX12 - Serialize Root Signature Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_ROOT_SIGNATURE_FAILED:
+            result << "DX12 - Create Root Signature Failed";
             break;
 
         /* Group Vulkan*/
