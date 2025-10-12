@@ -9,6 +9,7 @@
 #include <qce/objects/resource_manager.hpp>
 
 #include <list>
+#include <array>
 
 namespace QCE {
     class Scene {
@@ -17,8 +18,12 @@ namespace QCE {
             std::string/*name*/,
             std::vector<std::shared_ptr<Entity>>
         >;
+        using Shaders = std::array<
+            std::shared_ptr<Shader>,
+            ShaderType::E_SHADERS_TYPE_COUNT>;
         struct Description {
             Entities& entities;
+            Shaders& shaders;
         };
 
         explicit Scene(ResourceManager& rm) :
@@ -38,9 +43,12 @@ namespace QCE {
         //    const std::string& name,
         //    const transform& start_transform = {});
 
+        ErrorCode UseShader(const std::string& name, ShaderType type);
+
         Description GetDescription() {
             return {
-                .entities = m_entities
+                .entities = m_entities,
+                .shaders = m_shaders
             };
         }
 
@@ -48,5 +56,6 @@ namespace QCE {
         ResourceManager& m_resource_manager;
 
         Entities m_entities{};
+        Shaders m_shaders{};
     };
 }

@@ -108,4 +108,16 @@ namespace QCE {
         m_entities.try_emplace(key, entity);
         return entity;
     }
+
+    std::shared_ptr<Shader> ResourceManager::GetShader(
+            const std::string& shader_name,
+            ShaderType shader_type) {
+        const auto id = shader_name + "_" + get_shader_type_suffix(shader_type);
+        auto shader_it = m_shaders.find(id);
+        if (m_shaders.end() == shader_it) {
+            return nullptr;
+        }
+
+        return shader_it->second;
+    }
 }

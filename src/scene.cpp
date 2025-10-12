@@ -21,4 +21,15 @@ namespace QCE {
         m_entities[name].push_back(std::move(entity));
         return ErrorCode::SUCCESS;
     }
+
+    ErrorCode Scene::UseShader(const std::string& name, ShaderType type) {
+        if (m_shaders[type])
+            return ErrorCode::E_ENG_SHADER_ALREADY_SELECTED;
+        auto shader = m_resource_manager.GetShader(name, type);
+        if (!shader)
+            return ErrorCode::E_ENG_SHADER_NOT_FOUND;
+
+        m_shaders[type] = std::move(shader);
+        return ErrorCode::SUCCESS;
+    }
 }

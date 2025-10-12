@@ -55,6 +55,8 @@ namespace QCE {
         CU_ENUM_UNIT(E_ENG_ENTITY_ALREADY_EXISTS) \
         CU_ENUM_UNIT(E_ENG_ENTITY_NOT_FOUND) \
         CU_ENUM_UNIT(E_ENG_SHADER_BYTECODE_NOT_FOUND) \
+        CU_ENUM_UNIT(E_ENG_SHADER_NOT_FOUND) \
+        CU_ENUM_UNIT(E_ENG_SHADER_ALREADY_SELECTED) \
         CU_VALUED_ENUM_UNIT(GROUP_RESOURCE_MANAGER, 0x60000) \
         CU_ENUM_UNIT(E_RM_MESH_ID_COLLISION) \
         CU_ENUM_UNIT(E_RM_MODEL_ID_COLLISION) \
@@ -188,7 +190,13 @@ namespace QCE {
             result << "ENGINE - Entity with such name not found";
             break;
         case ErrorCode::E_ENG_SHADER_BYTECODE_NOT_FOUND:
-            result << "ENGINE - Source code for shader not found";
+            result << "ENGINE - Byte code for shader not found";
+            break;
+        case ErrorCode::E_ENG_SHADER_NOT_FOUND:
+            result << "ENGINE - Shader with such name and type not found";
+            break;
+        case ErrorCode::E_ENG_SHADER_ALREADY_SELECTED:
+            result << "ENGINE - Shader with such name and type not found";
             break;
 
         /* Group Resource Manager*/
@@ -202,7 +210,7 @@ namespace QCE {
             result << "Resource Manager - Mesh with such Id not found";
             break;
         case ErrorCode::E_RM_SHADER_ALREADY_EXISTS:
-            result << "Resource Manager - Shader with such name and entry point already exists";
+            result << "Resource Manager - Shader with such name and type already exists";
             break;
         case ErrorCode::E_RM_BAD_RESOURCES_DIRECTORY:
             result << "Resource Manager - Resources directory not exists";

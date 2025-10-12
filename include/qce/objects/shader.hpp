@@ -20,6 +20,7 @@ namespace QCE {
     CU_BEGIN_ENUM(ShaderType) \
         CU_ENUM_UNIT(E_VERTEX_SHADER) \
         CU_ENUM_UNIT(E_PIXEL_SHADER) \
+        CU_ENUM_ANCILLARY_UNITS(E_SHADERS_TYPE) \
     CU_END_ENUM(ShaderType)
     /*
     TODO:

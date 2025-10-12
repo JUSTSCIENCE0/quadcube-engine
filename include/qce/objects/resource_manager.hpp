@@ -57,6 +57,7 @@ namespace QCE {
             const transform& start_transform = {});
 
         std::shared_ptr<Model> GetModel(const std::string& name);
+        std::shared_ptr<Shader> GetShader(const std::string& shader_name, ShaderType shader_type);
 
         // TODO:
         // Mesh
