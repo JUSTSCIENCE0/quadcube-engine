@@ -40,23 +40,6 @@ namespace QCE {
         int height = 720;
     };
 
-    struct RenderUnit {
-        uint32_t indeces_count = 0;
-        uint32_t index_offset  = 0;
-        uint32_t vertex_offset = 0;
-    };
-
-    struct RenderSceneCPU {
-        std::vector<vertex>  vertex_buffer;
-        std::vector<index_t> index_buffer;
-
-        uint32_t vertex_buffer_size = 0;
-        uint32_t index_buffer_size = 0;
-        constexpr static uint32_t VERTEX_STRIDE = sizeof(vertex);
-
-        std::vector<RenderUnit> units;
-    };
-
     class RenderBase {
     public:
         RenderBase(const RenderBase&) = delete;
@@ -85,6 +68,27 @@ namespace QCE {
         }
 
     protected:
+        struct RenderSceneCPU {
+            struct Unit {
+                uint32_t indeces_count = 0;
+                uint32_t index_offset = 0;
+                uint32_t vertex_offset = 0;
+            };
+
+            std::vector<vertex>  vertex_buffer;
+            std::vector<index_t> index_buffer;
+
+            uint32_t vertex_buffer_size = 0;
+            uint32_t index_buffer_size = 0;
+            constexpr static uint32_t VERTEX_STRIDE = sizeof(vertex);
+
+            std::vector<Unit> units;
+        };
+
+        struct UnitConstants {
+            float world_matrix[16];
+        };
+
         template <typename /*TODO: concept*/ DerivedRender>
         explicit RenderBase(std::in_place_type_t<DerivedRender>, RenderConfig initial_config) :
             m_config(std::move(initial_config)),

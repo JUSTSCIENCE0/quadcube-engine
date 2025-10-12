@@ -61,7 +61,7 @@ namespace QCE {
             if (mesh->m_render_unit_index.has_value())
                 continue;
 
-            RenderUnit unit{
+            RenderSceneCPU::Unit unit{
                 .indeces_count = uint32_t(mesh->m_indices.size()),
                 .index_offset = uint32_t(m_scene_cpu.index_buffer.size()),
                 .vertex_offset = uint32_t(m_scene_cpu.vertex_buffer.size())
