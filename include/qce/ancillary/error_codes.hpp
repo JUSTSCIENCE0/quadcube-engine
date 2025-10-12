@@ -51,6 +51,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_DX12_CREATE_BLOB_FAILED) \
         CU_ENUM_UNIT(E_DX12_SERIALIZE_ROOT_SIGNATURE_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_ROOT_SIGNATURE_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_PSO_FAILED) \
         CU_VALUED_ENUM_UNIT(GROUP_VULKAN,           0x40000) \
         CU_VALUED_ENUM_UNIT(GROUP_ENGINE,           0x50000) \
         CU_ENUM_UNIT(E_ENG_FILE_OPEN_FAILED) \
@@ -60,6 +61,8 @@ namespace QCE {
         CU_ENUM_UNIT(E_ENG_SHADER_BYTECODE_NOT_FOUND) \
         CU_ENUM_UNIT(E_ENG_SHADER_NOT_FOUND) \
         CU_ENUM_UNIT(E_ENG_SHADER_ALREADY_SELECTED) \
+        CU_ENUM_UNIT(E_ENG_SCENE_VS_NOT_SELECTED) \
+        CU_ENUM_UNIT(E_ENG_SCENE_PS_NOT_SELECTED) \
         CU_VALUED_ENUM_UNIT(GROUP_RESOURCE_MANAGER, 0x60000) \
         CU_ENUM_UNIT(E_RM_MESH_ID_COLLISION) \
         CU_ENUM_UNIT(E_RM_MODEL_ID_COLLISION) \
@@ -185,6 +188,9 @@ namespace QCE {
         case ErrorCode::E_DX12_CREATE_ROOT_SIGNATURE_FAILED:
             result << "DX12 - Create Root Signature Failed";
             break;
+        case ErrorCode::E_DX12_CREATE_PSO_FAILED:
+            result << "DX12 - Create Graphics Pipeline State Failed";
+            break;
 
         /* Group Vulkan*/
 
@@ -209,6 +215,12 @@ namespace QCE {
             break;
         case ErrorCode::E_ENG_SHADER_ALREADY_SELECTED:
             result << "ENGINE - Shader with such name and type not found";
+            break;
+        case ErrorCode::E_ENG_SCENE_VS_NOT_SELECTED:
+            result << "ENGINE - No vertex shader is specified for the current scene";
+            break;
+        case ErrorCode::E_ENG_SCENE_PS_NOT_SELECTED:
+            result << "ENGINE - No pixel shader is specified for the current scene";
             break;
 
         /* Group Resource Manager*/

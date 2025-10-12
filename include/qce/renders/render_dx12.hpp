@@ -68,6 +68,8 @@ namespace QCE {
         ErrorCode CreateRootSignature();
         ErrorCode CreateCBVDescriptorHeap();
         ErrorCode CreateConstantBuffers();
+        ErrorCode CreateInputLayout();
+        ErrorCode CreatePSO();
 
         // Utils
         ErrorCode FlushCommandQueue();
@@ -131,6 +133,8 @@ namespace QCE {
         D3D12_RECT     m_scissor_rect{};
 
         RenderSceneGPU m_scene_gpu{};
+        std::vector<D3D12_INPUT_ELEMENT_DESC> m_input_layout;
+        MsPtr<ID3D12PipelineState> m_PSO{};
 
         UINT m_rtv_descr_size = 0;
         UINT m_dsv_descr_size = 0;

@@ -338,6 +338,8 @@ namespace QCE {
         QCE_CRITICAL(CreateCBVDescriptorHeap());
         QCE_CRITICAL(CreateConstantBuffers());
         QCE_CRITICAL(CreateRootSignature());
+        QCE_CRITICAL(CreateInputLayout());
+        QCE_CRITICAL(CreatePSO());
 
         return ErrorCode::SUCCESS;
     }
@@ -415,6 +417,58 @@ namespace QCE {
             heap_index++;
             cb_address += cb_unit_size;
         }
+
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::CreateInputLayout() {
+        // TODO: configurable IL from Shader's props
+        m_input_layout = {
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+        };
+
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::CreatePSO() {
+        assert(m_current_scene);
+        auto scene = m_current_scene->GetDescription();
+        auto& vs = scene.shaders[ShaderType::E_VERTEX_SHADER];
+        auto& ps = scene.shaders[ShaderType::E_PIXEL_SHADER];
+        if (!vs)
+            return ErrorCode::E_ENG_SCENE_VS_NOT_SELECTED;
+        if (!ps)
+            return ErrorCode::E_ENG_SCENE_PS_NOT_SELECTED;
+
+        D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_descr{};
+        ZeroMemory(&pso_descr, sizeof(pso_descr));
+        pso_descr.InputLayout = { m_input_layout.data(), UINT(m_input_layout.size()) };
+        pso_descr.pRootSignature = m_root_signature.Get();
+        pso_descr.VS =
+        {
+            vs->m_bytecode_cache.data(),
+            vs->m_bytecode_cache.size()
+        };
+        pso_descr.PS =
+        {
+            ps->m_bytecode_cache.data(),
+            ps->m_bytecode_cache.size()
+        };
+        pso_descr.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+        pso_descr.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+        pso_descr.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+        pso_descr.SampleMask = UINT_MAX;
+        pso_descr.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        pso_descr.NumRenderTargets = 1;
+        pso_descr.RTVFormats[0] = BACK_BUFFER_FORMAT;
+        // TODO: MSAA
+        pso_descr.SampleDesc.Count = 1;
+        pso_descr.SampleDesc.Quality = 0;
+        pso_descr.DSVFormat = DEPTH_STENCIL_FORMAT;
+
+        if (FAILED(m_d3d_device->CreateGraphicsPipelineState(&pso_descr, IID_PPV_ARGS(&m_PSO))))
+            return ErrorCode::E_DX12_CREATE_PSO_FAILED;
 
         return ErrorCode::SUCCESS;
     }
