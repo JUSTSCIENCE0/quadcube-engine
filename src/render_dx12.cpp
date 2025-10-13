@@ -362,6 +362,15 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::UpdateGpuScene() { 
+        auto hr = m_cmd_list->Reset(m_cmd_alloc.Get(), nullptr);
+        if (FAILED(hr))
+            return ErrorCode::E_DX12_RESET_COMMAND_LIST_FAILED;
+
+        QCE_CRITICAL(CreateCBVDescriptorHeap());
+        QCE_CRITICAL(CreateConstantBuffers());
+        QCE_CRITICAL(CreateRootSignature());
+        QCE_CRITICAL(CreateInputLayout());
+        
         m_scene_gpu.DisposeUploaders();
 
         QCE_CRITICAL(dx12_create_default_buffer(
@@ -380,13 +389,15 @@ namespace QCE {
             m_scene_gpu.index_buffer,
             m_scene_gpu.index_buffer_uploader));
 
-        QCE_CRITICAL(CreateCBVDescriptorHeap());
-        QCE_CRITICAL(CreateConstantBuffers());
-        QCE_CRITICAL(CreateRootSignature());
-        QCE_CRITICAL(CreateInputLayout());
         QCE_CRITICAL(CreatePSO());
 
-        return ErrorCode::SUCCESS;
+        hr = m_cmd_list->Close();
+        if (FAILED(hr))
+            return ErrorCode::E_DX12_CLOSE_COMMAND_LIST_FAILED;
+
+        ID3D12CommandList* cmds_lists[] = { m_cmd_list.Get() };
+        m_cmd_queue->ExecuteCommandLists(_countof(cmds_lists), cmds_lists);
+        return FlushCommandQueue();;
     }
 
     ErrorCode RenderDX12::CreateRootSignature() {

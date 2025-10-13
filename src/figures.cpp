@@ -52,7 +52,7 @@ namespace QCE {
                     .position = { -l2,  w2,  h2 }
                 },
         },
-            /*indices*/ std::vector<uint32_t>{
+            /*indices*/ std::vector<index_t>{
             0, 1, 2,
                 0, 2, 3,
                 1, 5, 6,

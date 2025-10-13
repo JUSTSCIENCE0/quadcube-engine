@@ -18,7 +18,7 @@ namespace QCE {
         explicit Mesh(
                 std::string           name,
                 std::vector<vertex>   vertices = {},
-                std::vector<uint32_t> indices = {}) :
+                std::vector<index_t>  indices = {}) :
             m_id(std::move(name)),
             m_vertices(std::move(vertices)),
             m_indices(std::move(indices)) {}

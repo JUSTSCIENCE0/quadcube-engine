@@ -35,7 +35,7 @@ namespace QCE {
                     DispatchMessage(&msg);
                 }
                 else {
-                    app->StepForward();
+                    QCE_CRITICAL(app->StepForward());
                 }
             }
 

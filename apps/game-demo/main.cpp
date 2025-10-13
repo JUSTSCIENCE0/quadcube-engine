@@ -19,9 +19,9 @@ int main(int argc, char* argv[]) {
     auto& app = QCE::Application::Get(config);
 
     QCE::CuboidParams cuboid{
-        .length = 2.0f,
+        .length = 1.0f,
         .width = 1.0f,
-        .height = 3.0f
+        .height = 1.0f
     };
     QCE_CRITICAL(app.Resources().AddShader("simple", QCE::ShaderType::E_VERTEX_SHADER));
     QCE_CRITICAL(app.Resources().AddShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
