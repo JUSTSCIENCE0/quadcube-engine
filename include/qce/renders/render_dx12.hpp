@@ -70,6 +70,7 @@ namespace QCE {
         ErrorCode CreateConstantBuffers();
         ErrorCode CreateInputLayout();
         ErrorCode CreatePSO();
+        ErrorCode UpdateConstantBuffers();
 
         // Utils
         ErrorCode FlushCommandQueue();

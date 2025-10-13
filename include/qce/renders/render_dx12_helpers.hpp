@@ -103,6 +103,7 @@ namespace QCE {
                 UINT elements_count,
                 bool is_constant_buffer = false) :
             m_is_constant_buffer(is_constant_buffer),
+            m_elements_count(elements_count),
             m_element_size(calculate_element_size(is_constant_buffer)) {
 
             auto heap_props = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -136,13 +137,13 @@ namespace QCE {
             return m_upload_buffer.Get();
         }
 
-        UINT ElementSize() const {
-            return m_element_size;
-        }
-
         void CopyData(int elementIndex, const T& data) {
             memcpy(&m_mapped_data[elementIndex * m_element_size], &data, sizeof(T));
         }
+
+        const bool m_is_constant_buffer;
+        const UINT m_elements_count;
+        const UINT m_element_size;
 
     private:
         static UINT calculate_element_size(bool is_constant_buffer) {
@@ -154,9 +155,6 @@ namespace QCE {
 
         Microsoft::WRL::ComPtr<ID3D12Resource> m_upload_buffer;
         BYTE* m_mapped_data = nullptr;
-
-        const bool m_is_constant_buffer;
-        const UINT m_element_size;
     };
 }
 

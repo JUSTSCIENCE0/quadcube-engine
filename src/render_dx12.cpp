@@ -16,6 +16,14 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::Init() {
+//#if defined(DEBUG) || defined(_DEBUG) 
+//        {
+//            MsPtr<ID3D12Debug> debug_controller;
+//            D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller));
+//            debug_controller->EnableDebugLayer();
+//        }
+//#endif
+
         auto hr = CreateDXGIFactory(IID_PPV_ARGS(&m_dxgi_factory));
         if (FAILED(hr)) {
             return ErrorCode::E_DX12_CREATE_DXGI_FAILED;
@@ -268,13 +276,33 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
+    ErrorCode RenderDX12::UpdateConstantBuffers() {
+        // TODO: real calculation
+        static constexpr UnitConstants wvp{
+            .world_matrix = {
+                1.469475870f,  0.000000000f, -1.05788946f, 0.00000000f,
+                0.499737620f,  2.257614140f, 0.694167435f, 0.00000000f,
+                0.546905100f, -0.354647994f, 0.759685934f, 4.00400400f,
+                0.546358168f, -0.354293346f, 0.758926272f, 5.00000000f,
+            }
+        };
+
+        for (UINT index = 0; index < m_scene_gpu.m_units_constant_buffers->m_elements_count; index++) {
+            m_scene_gpu.m_units_constant_buffers->CopyData(index, wvp);
+        }
+
+        return ErrorCode::SUCCESS;
+    }
+
     ErrorCode RenderDX12::Draw() {
+        QCE_CRITICAL(UpdateConstantBuffers());
+
         auto hr = m_cmd_alloc->Reset();
         if (FAILED(hr)) {
             return ErrorCode::E_DX12_RESET_COMMAND_ALLOCATOR_FAILED;
         }
 
-        hr = m_cmd_list->Reset(m_cmd_alloc.Get(), nullptr);
+        hr = m_cmd_list->Reset(m_cmd_alloc.Get(), m_PSO.Get());
         if (FAILED(hr)) {
             return ErrorCode::E_DX12_RESET_COMMAND_LIST_FAILED;
         }
@@ -294,6 +322,23 @@ namespace QCE {
 
         auto dsv = DepthStencilView();
         m_cmd_list->OMSetRenderTargets(1, &current_bbv, true, &dsv);
+
+        ID3D12DescriptorHeap* descr_heaps[] = { m_cbv_heap.Get() };
+        m_cmd_list->SetDescriptorHeaps(_countof(descr_heaps), descr_heaps);
+
+        m_cmd_list->SetGraphicsRootSignature(m_root_signature.Get());
+
+        auto vbv = GetVertexBufferView();
+        auto ibv = GetIndexBufferView();
+        m_cmd_list->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        m_cmd_list->IASetVertexBuffers(0, 1, &vbv);
+        m_cmd_list->IASetIndexBuffer(&ibv);
+
+        m_cmd_list->SetGraphicsRootDescriptorTable(0, m_cbv_heap->GetGPUDescriptorHandleForHeapStart());
+
+        m_cmd_list->DrawIndexedInstanced(
+            m_scene_cpu.units[0].indeces_count,
+            1, 0, 0, 0);
 
         auto barrier_tp = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
             D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -401,7 +446,7 @@ namespace QCE {
                 m_d3d_device.Get(), units_count, true);
 
         int heap_index = 0;
-        const auto cb_unit_size = cb->ElementSize();
+        const auto cb_unit_size = cb->m_element_size;
         D3D12_GPU_VIRTUAL_ADDRESS cb_address = cb->Resource()->GetGPUVirtualAddress();
 
         for (UINT index = 0; index < units_count; index++) {
@@ -424,8 +469,7 @@ namespace QCE {
     ErrorCode RenderDX12::CreateInputLayout() {
         // TODO: configurable IL from Shader's props
         m_input_layout = {
-            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
         };
 
         return ErrorCode::SUCCESS;
