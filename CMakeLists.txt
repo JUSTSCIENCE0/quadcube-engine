@@ -63,6 +63,7 @@ set(QCE_INTERFACE
     include/qce/matrix.hpp
     include/qce/math.hpp
     include/qce/render.hpp
+    include/qce/transform.hpp
 )
 
 set(QCE_OBJECTS

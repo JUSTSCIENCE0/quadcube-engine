@@ -36,7 +36,7 @@ namespace QCE {
         ErrorCode AddEntity(
             const std::string& name,
             const std::string& model,
-            const transform& start_transform = {});
+            const Transform& start_transform = {});
 
         // TODO:
         // ErrorCode AddEntityDuplicate(

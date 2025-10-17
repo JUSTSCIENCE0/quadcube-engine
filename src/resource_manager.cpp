@@ -60,7 +60,7 @@ namespace QCE {
     ErrorCode ResourceManager::AddEntity(
             const std::string& entity_name,
             const std::string& model_name,
-            const transform& start_transform) {
+            const Transform& start_transform) {
         [[maybe_unused]] auto entity = AddAndGetEntity(
             entity_name,
             model_name,
@@ -96,7 +96,7 @@ namespace QCE {
     std::shared_ptr<Entity> ResourceManager::AddAndGetEntity(
             const std::string& entity_name,
             const std::string& model_name,
-            const transform& start_transform) {
+            const Transform& start_transform) {
         auto model = GetModel(model_name);
         assert(model);
 

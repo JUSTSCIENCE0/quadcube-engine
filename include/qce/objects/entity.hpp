@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/objects/model.hpp>
+#include <qce/transform.hpp>
 
 #include <cu/id-utils.hpp>
 
@@ -17,7 +18,7 @@ namespace QCE {
         explicit Entity(
                 std::string name,
                 std::shared_ptr<Model> model,
-                transform start_transform) :
+                Transform start_transform) :
             m_name(std::move(name)),
             m_uid(CU::get_uid()),
             m_id(CU::concat_with_uid(m_name, m_uid)),
@@ -32,7 +33,7 @@ namespace QCE {
         const CU::uid_t m_uid;
         const std::string m_id;
         std::shared_ptr<Model> m_model = nullptr;
-        transform m_transform{};
+        Transform m_transform{};
 
         // TODO: subentities tree or parent entity
     };

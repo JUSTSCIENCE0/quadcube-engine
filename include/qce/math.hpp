@@ -9,22 +9,27 @@
 #include <qce/matrix.hpp>
 
 namespace QCE {
-    struct coordinate3d {
+    struct float3d {
         float x = 0.0f;
         float y = 0.0f;
         float z = 0.0f;
     };
 
-    struct vertex {
-        coordinate3d position{};
+    struct float4d {
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+        float w = 0.0f;
     };
 
-    struct alignas(REQUIRED_ALIGNAS) transform {
-        // aligned
-        vector rotation = vector_zero(); // TODO: quaternion
+    struct float4x4 {
+        union {
+            float arr[16];
+            float4d rows[4];
+        };
+    };
 
-        // not aligned
-        coordinate3d position{};
-        coordinate3d scale = { 1.0f, 1.0f, 1.0f };
+    struct vertex {
+        float3d position{};
     };
 }
