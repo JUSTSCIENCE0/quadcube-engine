@@ -73,7 +73,7 @@ CU_CONFORMANCE_TEST_SIMD(
     SOURCE_FILE,
     "matrix4x4_float32_quaternion_to_rotation.bin",
     QCE::matrix_from_quaternion,
-    (def)
+    (def, sse2)
 )
 
 #if !defined(CU_COMPILER_GCC)

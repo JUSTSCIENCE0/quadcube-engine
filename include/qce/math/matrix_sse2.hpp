@@ -267,7 +267,47 @@ namespace QCE {
     }
 
     static inline matrix VECTOR_CALL quaternion_to_rotation_matrix(vector q) noexcept {
-        // TODO
-        return matrix_identity();
+        auto result = matrix_identity();
+
+        // v1
+        auto tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 0, 0, 1)); // y x x z
+        auto tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 2, 1, 1)); // y y z z
+        auto mul1_v = _mm_mul_ps(tmp0_v, tmp1_v);
+
+        tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 3, 3, 2)); // z w w z
+        tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 1, 2, 2)); // z z y z
+        auto mul2_v = _mm_mul_ps(tmp0_v, tmp1_v);
+        mul2_v = _mm_mul_ps(mul2_v, _mm_set_ps(-1.0f, 1.0f, -1.0f, 1.0f));
+        mul1_v = _mm_add_ps(mul1_v, mul2_v);
+        mul1_v = _mm_mul_ps(mul1_v, _mm_set_ps(0.0f, 2.0f, 2.0f, -2.0f));
+        result.v1 = _mm_add_ps(result.v1, mul1_v);
+
+        // v2
+        tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 1, 0, 0)); // x x y z
+        tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 2, 0, 1)); // y x z z
+        mul1_v = _mm_mul_ps(tmp0_v, tmp1_v);
+
+        tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 3, 2, 3)); // w z w z
+        tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 0, 2, 2)); // z z x z
+        mul2_v = _mm_mul_ps(tmp0_v, tmp1_v);
+        mul2_v = _mm_mul_ps(mul2_v, _mm_set_ps(-1.0f, -1.0f, 1.0f, 1.0f));
+        mul1_v = _mm_add_ps(mul1_v, mul2_v);
+        mul1_v = _mm_mul_ps(mul1_v, _mm_set_ps(0.0f, 2.0f, -2.0f, 2.0f));
+        result.v2 = _mm_add_ps(result.v2, mul1_v);
+
+        // v3
+        tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 0, 1, 0)); // x y x z
+        tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 0, 2, 2)); // z z x z
+        mul1_v = _mm_mul_ps(tmp0_v, tmp1_v);
+
+        tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 1, 3, 3)); // w w y z
+        tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 1, 0, 1)); // y x y z
+        mul2_v = _mm_mul_ps(tmp0_v, tmp1_v);
+        mul2_v = _mm_mul_ps(mul2_v, _mm_set_ps(-1.0f, 1.0f, 1.0f, -1.0f));
+        mul1_v = _mm_add_ps(mul1_v, mul2_v);
+        mul1_v = _mm_mul_ps(mul1_v, _mm_set_ps(0.0f, -2.0f, 2.0f, 2.0f));
+        result.v3 = _mm_add_ps(result.v3, mul1_v);
+
+        return result;
     }
 }
