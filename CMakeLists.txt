@@ -86,6 +86,8 @@ set(QCE_MATH
     include/qce/math/matrix_sse2.hpp
     include/qce/math/matrix_avx2.hpp
     include/qce/math/matrix_avx512.hpp
+
+    src/transform.cpp
 )
 
 set(QCE_RENDERS

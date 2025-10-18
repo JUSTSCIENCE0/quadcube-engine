@@ -8,11 +8,43 @@
 #include <qce/math.hpp>
 
 namespace QCE {
-    class Transform {
+    class Transform final {
     public:
+        using quaternion = float4d;
+
+        Transform() = default;
+        Transform(const float4x4& start_matrix);
+        Transform(
+            const quaternion& quaternion,
+            const float3d& position,
+            const float3d& scale);
+        // Transform(
+        //    const float3d& rotation,
+        //    const float3d& position,
+        //    const float3d& scale) { /*TODO*/ }
+
+        /// Add transform to current
+        // void Move(const float3d& translation) { /*TODO*/ }
+        // void Rotate(const float3d& angles) { /*TODO*/ }
+        // void Scale(const float3d& scale) { /*TODO*/ }
+
+        /// Overwrite transform
+        // void MoveTo(const float3d& position) { /*TODO*/ }
+        // void Rotate(const quaternion& rotation) { /*TODO*/ }
+        // void Rescale(const float3d& scale) { /*TODO*/ }
+
+        /// Getters
+        const float4x4& Matrix() const { return m_matrix; }
+        // float3d Rotation() const;
+        // const quaternion& RotationQuaternion() const;
+        // const float3d& Position() const;
+        // const float3d& Scale() const;
 
     private:
-        float4x4 transform_matrix{
+        void UpdateMatrix(bool check_normalized = false);
+        void UpdateSRT();
+
+        float4x4 m_matrix{
             .arr = {
                 1.0f, 0.0f, 0.0f, 0.0f,
                 0.0f, 1.0f, 0.0f, 0.0f,
@@ -21,8 +53,13 @@ namespace QCE {
             }
         };
 
-        float4d rotation{};
-        float3d position{};
-        float3d scale = { 1.0f, 1.0f, 1.0f };
+        // cache
+        mutable quaternion m_rotation{};
+        mutable float3d    m_position{};
+        mutable float3d    m_scale = { 1.0f, 1.0f, 1.0f };
+
+        mutable bool m_need_update_rotation = false;
+        mutable bool m_need_update_position = false;
+        mutable bool m_need_update_scale = false;
     };
 }
