@@ -56,10 +56,10 @@ namespace QCE {
 
     static inline matrix VECTOR_CALL matrix_identity() noexcept {
         return {
-            _mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f),
-            _mm_set_ps(0.0f, 1.0f, 0.0f, 0.0f),
+            _mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f),
             _mm_set_ps(0.0f, 0.0f, 1.0f, 0.0f),
-            _mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f)
+            _mm_set_ps(0.0f, 1.0f, 0.0f, 0.0f),
+            _mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f)
         };
     }
 
