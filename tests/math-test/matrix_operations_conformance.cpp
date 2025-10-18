@@ -67,6 +67,15 @@ CU_CONFORMANCE_TEST_SIMD(
     (def, sse2, avx2, avx512)
 )
 
+CU_CONFORMANCE_TEST_SIMD(
+    MatrixFromQuaternion,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    "matrix4x4_float32_quaternion_to_rotation.bin",
+    QCE::matrix_from_quaternion,
+    (def)
+)
+
 #if !defined(CU_COMPILER_GCC)
 CU_CONFORMANCE_TEST_SIMD(
     MatrixDeterminant,

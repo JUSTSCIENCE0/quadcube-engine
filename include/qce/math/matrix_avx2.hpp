@@ -327,4 +327,9 @@ namespace QCE {
             .v12 = res1
         };
     }
+
+    static inline matrix VECTOR_CALL quaternion_to_rotation_matrix(vector q) noexcept {
+        // TODO
+        return matrix_identity();
+    }
 }

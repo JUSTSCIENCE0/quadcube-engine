@@ -263,4 +263,25 @@ namespace QCE {
             .w4 =  (m.x1 * A1203 - m.x2 * A0203 + m.x3 * A0103) / det
         };
     }
+
+    static inline matrix quaternion_to_rotation_matrix(const vector& q) noexcept {
+        return matrix_init(
+            1.0f - 2.0f * (q.y * q.y + q.z * q.z),
+                   2.0f * (q.x * q.y - q.w * q.z),
+                   2.0f * (q.x * q.z + q.w * q.y),
+            0.0f,
+
+                   2.0f * (q.x * q.y + q.w * q.z),
+            1.0f - 2.0f * (q.x * q.x + q.z * q.z),
+                   2.0f * (q.y * q.z - q.w * q.x),
+            0.0f,
+
+                   2.0f * (q.x * q.z - q.w * q.y),
+                   2.0f * (q.y * q.z + q.w * q.x),
+            1.0f - 2.0f * (q.x * q.x + q.y * q.y),
+            0.0f,
+
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
+    }
 }
