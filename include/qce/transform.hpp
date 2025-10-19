@@ -41,7 +41,7 @@ namespace QCE {
         // const float3d& Scale() const;
 
     private:
-        void UpdateMatrix(bool check_normalized = false);
+        void UpdateMatrix(bool is_rotation_normalized = true);
         void UpdateSRT();
 
         float4x4 m_matrix{
