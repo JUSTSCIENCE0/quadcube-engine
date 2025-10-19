@@ -329,7 +329,46 @@ namespace QCE {
     }
 
     static inline matrix VECTOR_CALL quaternion_to_rotation_matrix(vector q) noexcept {
-        // TODO
-        return matrix_identity();
+        auto result = matrix_identity();
+
+        // v12
+        auto tmp0_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 1, 0, 0, 2, 0, 0, 1));
+        auto tmp1_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 2, 0, 1, 2, 2, 1, 1));
+        auto mul1_v = _mm256_mul_ps(tmp0_v, tmp1_v);
+
+        tmp0_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 3, 2, 3, 2, 3, 3, 2));
+        tmp1_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 0, 2, 2, 2, 1, 2, 2));
+        auto mul2_v = _mm256_mul_ps(tmp0_v, tmp1_v);
+        mul2_v = _mm256_mul_ps(mul2_v,
+            _mm256_set_ps(-1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+        mul1_v = _mm256_add_ps(mul1_v, mul2_v);
+        mul1_v = _mm256_mul_ps(mul1_v,
+            _mm256_set_ps(0.0f, 2.0f, -2.0f, 2.0f, 0.0f, 2.0f, 2.0f, -2.0f));
+        result.v12 = _mm256_add_ps(result.v12, mul1_v);
+
+        // v34
+        tmp0_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 2, 2, 2, 2, 0, 1, 0));
+        tmp1_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 2, 2, 2, 2, 0, 2, 2));
+        mul1_v = _mm256_mul_ps(tmp0_v, tmp1_v);
+
+        tmp0_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 2, 2, 2, 2, 1, 3, 3));
+        tmp1_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 2, 2, 2, 2, 1, 0, 1));
+        mul2_v = _mm256_mul_ps(tmp0_v, tmp1_v);
+        mul2_v = _mm256_mul_ps(mul2_v,
+            _mm256_set_ps(-1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f));
+        mul1_v = _mm256_add_ps(mul1_v, mul2_v);
+        mul1_v = _mm256_mul_ps(mul1_v,
+            _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f));
+        result.v34 = _mm256_add_ps(result.v34, mul1_v);
+
+        return result;
     }
 }

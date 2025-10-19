@@ -9,6 +9,8 @@
 #  define SOURCE_FILE "4000000_float32.bin"
 #endif
 
+#define CU_PRINT_PERFORMANCE_TEST_RESULT
+
 #include <cu/test-utils.hpp>
 
 #include "matrix_operations.hpp"
@@ -75,4 +77,15 @@ CU_PERFORMANCE_TEST_SIMD(
     SOURCE_FILE,
     QCE::matrix_calc_inverse,
     (def, sse2, avx2, avx512)
+)
+
+CU_PERFORMANCE_TEST_SIMD_CONFIGURABLE(
+    MatrixFromQuaternion,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    4, 1,  // result_size_scale: 4/1
+    100,   // repeats_count
+    false, // strong_less
+    QCE::matrix_from_quaternion,
+    (def, sse2, avx2) /*TODO avx512*/
 )
