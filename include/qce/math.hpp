@@ -10,16 +10,20 @@
 
 namespace QCE {
     struct float3d {
-        float x = 0.0f;
-        float y = 0.0f;
-        float z = 0.0f;
+        float arr[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+        float& x() noexcept { return arr[0]; }
+        float& y() noexcept { return arr[1]; }
+        float& z() noexcept { return arr[2]; }
+
+        const float& x() const noexcept { return arr[0]; }
+        const float& y() const noexcept { return arr[1]; }
+        const float& z() const noexcept { return arr[2]; }
     };
 
-    struct float4d {
-        float x = 0.0f;
-        float y = 0.0f;
-        float z = 0.0f;
-        float w = 0.0f;
+    struct float4d : public float3d {
+        float& w() noexcept { return arr[3]; }
+        const float& w() const noexcept { return arr[3]; }
     };
 
     struct float4x4 {
