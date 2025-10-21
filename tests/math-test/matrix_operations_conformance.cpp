@@ -133,3 +133,36 @@ CU_CONFORMANCE_TEST_SIMD_WEAK(
     (avx512)
 )
 #endif
+
+#include <qce/math.hpp>
+#include <cstring>
+
+namespace QCE {
+    static inline void matrix_to_quaternion_to_matrix(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 16 == 0);
+
+        while (count > 0) {
+            float4x4 m{};
+            std::memcpy(m.arr, values, 16 * sizeof(float));
+
+            auto q = rotation_matrix_to_quaternion(m);
+            auto res = quaternion_to_rotation_matrix(vector_init(q.arr));
+            matrix_copy(res, results);
+
+            count -= 16;
+            values += 16;
+            results += 16;
+        }
+    }
+}
+
+CU_CONFORMANCE_TEST_CONFIGURABLE(
+    true,
+    MatrixQuaternionMatrix,
+    QCE_TEST_DATA_PATH,
+    "matrix4x4_float32_quaternion_to_rotation.bin",
+    "matrix4x4_float32_quaternion_to_rotation.bin",
+    ( QCE::matrix_to_quaternion_to_matrix)
+)
+
