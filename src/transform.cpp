@@ -67,6 +67,23 @@ namespace QCE {
     }
 
     void Transform::UpdateSRT() {
-        // TODO
+        m_position.x() = m_matrix(0, 3);
+        m_position.y() = m_matrix(1, 3);
+        m_position.z() = m_matrix(2, 3);
+
+        auto vector_x = vector_init(m_matrix(0, 0), m_matrix(1, 0), m_matrix(2, 0), 0.0f);
+        auto vector_y = vector_init(m_matrix(0, 1), m_matrix(1, 1), m_matrix(2, 1), 0.0f);
+        auto vector_z = vector_init(m_matrix(0, 2), m_matrix(1, 2), m_matrix(2, 2), 0.0f);
+
+        m_scale.x() = vector_length(vector_x);
+        m_scale.y() = vector_length(vector_y);
+        m_scale.z() = vector_length(vector_z);
+
+        float4x4 rotation_matrix{};
+        vector_copy(vector_x / m_scale.x(), rotation_matrix.arr);
+        vector_copy(vector_y / m_scale.y(), rotation_matrix.arr + 4);
+        vector_copy(vector_z / m_scale.z(), rotation_matrix.arr + 8);
+
+        // TODO rotation matrix to quaternion
     }
 }
