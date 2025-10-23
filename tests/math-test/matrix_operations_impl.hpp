@@ -146,5 +146,21 @@ namespace QCE {
             results += 16;
         }
     }
+
+    void CU_SIMD(matrix_to_quaternion)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 16 == 0);
+
+        while (count > 0) {
+            auto val = matrix_init(values);
+
+            auto res = rotation_matrix_to_quaternion(val);
+            vector_copy(res, results);
+
+            count -= 16;
+            values += 16;
+            results += 4;
+        }
+    }
 }
 

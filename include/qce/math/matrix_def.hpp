@@ -284,4 +284,55 @@ namespace QCE {
             0.0f, 0.0f, 0.0f, 1.0f
         );
     }
+
+    static inline vector rotation_matrix_to_quaternion(const matrix& m) noexcept {
+        // thanks to Mike Day, Insomniac Games
+        // mday@insomniacgames.com
+        // article "Converting a Rotation Matrix to a Quaternion"
+
+        vector q{};
+
+        float t = 0;
+
+        if (m.z3 < 0) {
+            if (m.x1 > m.y2) {
+                t = 1.0f + m.x1 - m.y2 - m.z3;
+                q.x = t;
+                q.y = m.x2 + m.y1;
+                q.z = m.z1 + m.x3;
+                q.w = m.y3 - m.z2;
+            }
+            else {
+                t = 1.0f - m.x1 + m.y2 - m.z3;
+                q.x = m.x2 + m.y1;
+                q.y = t;
+                q.z = m.y3 + m.z2;
+                q.w = m.z1 - m.x3;
+            }
+        }
+        else {
+            if (m.x1 < (-1.0f * m.y2)) {
+                t = 1.0f - m.x1 - m.y2 + m.z3;
+                q.x = m.z1 + m.x3;
+                q.y = m.y3 + m.z2;
+                q.z = t;
+                q.w = m.x2 - m.y1;
+            }
+            else {
+                t = 1.0f + m.x1 + m.y2 + m.z3;
+                q.x = m.y3 - m.z2;
+                q.y = m.z1 - m.x3;
+                q.z = m.x2 - m.y1;
+                q.w = t;
+            }
+        }
+
+        auto k = 0.5f / std::sqrtf(t);
+        q.x *= k;
+        q.y *= k;
+        q.z *= k;
+        q.w *= k;
+
+        return q;
+    }
 }

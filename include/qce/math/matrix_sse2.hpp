@@ -310,4 +310,9 @@ namespace QCE {
 
         return result;
     }
+
+    static inline vector VECTOR_CALL rotation_matrix_to_quaternion(matrix m) noexcept {
+        // TODO
+        return vector_zero();
+    }
 }

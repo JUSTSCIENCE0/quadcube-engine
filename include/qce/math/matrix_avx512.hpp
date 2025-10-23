@@ -201,4 +201,9 @@ namespace QCE {
         // TODO
         return matrix_identity();
     }
+
+    static inline vector VECTOR_CALL rotation_matrix_to_quaternion(matrix m) noexcept {
+        // TODO
+        return vector_zero();
+    }
 }
