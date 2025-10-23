@@ -312,7 +312,41 @@ namespace QCE {
     }
 
     static inline vector VECTOR_CALL rotation_matrix_to_quaternion(matrix m) noexcept {
+        auto res = vector_one();
+
+        // calc t
+        auto vec = _mm_shuffle_ps(m.v1, m.v1, _MM_SHUFFLE(0, 0, 0, 0)); // m00
+        auto tmp = _mm_mul_ps(vec, _mm_set_ps(1.0f, -1.0f, -1.0f, 1.0f));
+        res = _mm_add_ps(res, tmp);
+
+        vec = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(1, 1, 1, 1)); // m11
+        tmp = _mm_mul_ps(vec, _mm_set_ps(1.0f, -1.0f, 1.0f, -1.0f));
+        res = _mm_add_ps(res, tmp);
+
+        vec = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(2, 2, 2, 2)); // m22
+        tmp = _mm_mul_ps(vec, _mm_set_ps(1.0f, 1.0f, -1.0f, -1.0f));
+        res = _mm_add_ps(res, tmp);
+
+        auto cmp1 = _mm_cmplt_ps(vec, vector_zero());
+        vec = _mm_shuffle_ps(m.v2, m.v1, _MM_SHUFFLE(0, 0, 1, 1));
+        tmp = _mm_shuffle_ps(m.v1, m.v2, _MM_SHUFFLE(1, 1, 0, 0));
+        tmp = _mm_mul_ps(tmp, _mm_set_ps(-1.0f, -1.0f, 1.0f, 1.0f));
+        auto cmp2 = _mm_cmplt_ps(vec, tmp);
+
+        tmp = _mm_xor_ps(cmp1, _mm_castsi128_ps(_mm_set_epi32(-1, -1, 0, 0)));
+        vec = _mm_xor_ps(cmp2, _mm_castsi128_ps(_mm_set_epi32(-1, 0, -1, 0)));
+        tmp = _mm_and_ps(tmp, vec);
+        res = _mm_and_ps(res, tmp);
+
+        // calc m10_m01
         // TODO
-        return vector_zero();
+
+        // calc m02_m20
+        // TODO
+
+        // calc m21_m12
+        // TODO
+
+        return res;
     }
 }
