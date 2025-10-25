@@ -95,5 +95,5 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE_TEST_DATA_PATH,
     "matrix4x4_float32_quaternion_to_rotation.bin",
     QCE::matrix_to_quaternion,
-    (def, sse2)  /*TODO avx2, avx512*/
+    (def, sse2, avx2)  /*TODO avx512*/
 )

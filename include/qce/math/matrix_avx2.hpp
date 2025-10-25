@@ -389,14 +389,12 @@ namespace QCE {
         vec = _mm256_add_ps(tmp, vec);
         tmp = _mm256_permutevar8x32_ps(m.v12, _mm256_set_epi32(5, 5, 0, 0, 3, 3, 3, 3));
         tmp = _mm256_mul_ps(tmp, _mm256_set_ps(-1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f));
-        auto cmp = _mm256_cmp_ps(vec, tmp, _CMP_LT_OQ);
+        vec = _mm256_cmp_ps(vec, tmp, _CMP_LT_OQ);
 
-        auto cmp1 = _mm256_xor_ps(cmp,
+        auto cmp = _mm256_xor_ps(vec,
             _mm256_castsi256_ps(_mm256_set_epi32(0, -1, 0, -1, -1, -1, 0, 0)));
-        auto cmp2 = _mm256_permute2f128_ps(cmp, cmp, 0x01);
-        cmp2 = _mm256_xor_ps(cmp2,
-            _mm256_castsi256_ps(_mm256_set_epi32(-1, -1, 0, 0, -1, 0, -1, 0)));
-        vec = _mm256_and_ps(cmp1, cmp2);
+        tmp = _mm256_permutevar8x32_ps(cmp, _mm256_set_epi32(3, 2, 1, 0, 6, 7, 4, 5));
+        vec = _mm256_and_ps(cmp, tmp);
         res = _mm256_and_ps(res, vec);
 
         // store k
@@ -409,8 +407,21 @@ namespace QCE {
         k = _mm256_div_ps(_mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.5f), k);
 
         // m02_m20 & m21_m12
-        // TODO
-        //vec = 
+        vec = _mm256_permutevar8x32_ps(m.v12, _mm256_set_epi32(6, 6, 6, 6, 2, 2, 2, 2));
+        vec = _mm256_mul_ps(vec, _mm256_set_ps(-1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+        tmp = _mm256_permutevar8x32_ps(m.v34, _mm256_set_epi32(1, 1, 1, 1, 0, 0, 0, 0));
+        tmp = _mm256_mul_ps(tmp, _mm256_set_ps(1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+        vec = _mm256_add_ps(vec, tmp);
+
+        tmp = _mm256_permutevar8x32_ps(cmp, _mm256_set_epi32(5, 4, 7, 6, 1, 0, 3, 2));
+        cmp = _mm256_permutevar8x32_ps(cmp, _mm256_set_epi32(1, 0, 3, 2, 4, 5, 6 ,7));
+        tmp = _mm256_and_ps(cmp, tmp);
+        vec = _mm256_and_ps(vec, tmp);
+
+        res = _mm256_add_ps(res, vec);
+        vec = _mm256_permute2f128_ps(res, res, 0x01);
+        res = _mm256_add_ps(res, vec);
+        res = _mm256_mul_ps(res, k);
 
         return res;
     }
