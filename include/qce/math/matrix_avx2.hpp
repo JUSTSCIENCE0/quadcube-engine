@@ -373,7 +373,45 @@ namespace QCE {
     }
 
     static inline vector VECTOR_CALL rotation_matrix_to_quaternion(matrix m) noexcept {
+        // t & m10_m01
+        auto vec = _mm256_permutevar8x32_ps(m.v12, _mm256_set_epi32(4, 4, 4, 4, 0, 0, 0, 0));
+        vec = _mm256_mul_ps(vec, _mm256_set_ps(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f));
+        vec = _mm256_add_ps(vec, _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+        auto tmp = _mm256_permutevar8x32_ps(m.v12, _mm256_set_epi32(1, 1, 1, 1, 5, 5, 5, 5));
+        tmp = _mm256_mul_ps(tmp, _mm256_set_ps(-1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f));
+        vec = _mm256_add_ps(vec, tmp);
+        tmp = _mm256_permutevar8x32_ps(m.v34, _mm256_set_epi32(3, 3, 3, 3, 2, 2, 2, 2));
+        auto res = _mm256_mul_ps(tmp, _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, -1.0f, -1.0f));
+        res = _mm256_add_ps(vec, res);
+
+        // mask
+        vec = _mm256_permutevar8x32_ps(m.v12, _mm256_set_epi32(0, 0, 5, 5, 3, 3, 3, 3));
+        vec = _mm256_add_ps(tmp, vec);
+        tmp = _mm256_permutevar8x32_ps(m.v12, _mm256_set_epi32(5, 5, 0, 0, 3, 3, 3, 3));
+        tmp = _mm256_mul_ps(tmp, _mm256_set_ps(-1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+        auto cmp = _mm256_cmp_ps(vec, tmp, _CMP_LT_OQ);
+
+        auto cmp1 = _mm256_xor_ps(cmp,
+            _mm256_castsi256_ps(_mm256_set_epi32(0, -1, 0, -1, -1, -1, 0, 0)));
+        auto cmp2 = _mm256_permute2f128_ps(cmp, cmp, 0x01);
+        cmp2 = _mm256_xor_ps(cmp2,
+            _mm256_castsi256_ps(_mm256_set_epi32(-1, -1, 0, 0, -1, 0, -1, 0)));
+        vec = _mm256_and_ps(cmp1, cmp2);
+        res = _mm256_and_ps(res, vec);
+
+        // store k
+        auto k = _mm256_shuffle_ps(res, res, _MM_SHUFFLE(2, 3, 0, 1));
+        k = _mm256_add_ps(k, res);
+        tmp = _mm256_shuffle_ps(k, k, _MM_SHUFFLE(0, 1, 2, 3));
+        k = _mm256_add_ps(k, tmp);
+        k = _mm256_blend_ps(k, _mm256_set1_ps(1.0f), 0b11110000);
+        k = _mm256_sqrt_ps(k);
+        k = _mm256_div_ps(_mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.5f), k);
+
+        // m02_m20 & m21_m12
         // TODO
-        return vector_zero();
+        //vec = 
+
+        return res;
     }
 }
