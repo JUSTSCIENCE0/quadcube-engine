@@ -82,7 +82,7 @@ CU_CONFORMANCE_TEST_SIMD(
     "matrix4x4_float32_quaternion_to_rotation.bin",
     "quaternions.bin",
     QCE::matrix_to_quaternion,
-    (def)  /*TODO sse2, avx2, avx512*/
+    (def, sse2)  /*TODO avx2, avx512*/
 )
 
 #if !defined(CU_COMPILER_GCC)

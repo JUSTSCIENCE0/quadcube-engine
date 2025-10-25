@@ -333,20 +333,51 @@ namespace QCE {
         tmp = _mm_mul_ps(tmp, _mm_set_ps(-1.0f, -1.0f, 1.0f, 1.0f));
         auto cmp2 = _mm_cmplt_ps(vec, tmp);
 
-        tmp = _mm_xor_ps(cmp1, _mm_castsi128_ps(_mm_set_epi32(-1, -1, 0, 0)));
-        vec = _mm_xor_ps(cmp2, _mm_castsi128_ps(_mm_set_epi32(-1, 0, -1, 0)));
-        tmp = _mm_and_ps(tmp, vec);
-        res = _mm_and_ps(res, tmp);
+        m.v4 = _mm_xor_ps(cmp1, _mm_castsi128_ps(_mm_set_epi32(-1, -1, 0, 0)));
+        auto cmp3 = _mm_xor_ps(cmp2, _mm_castsi128_ps(_mm_set_epi32(-1, 0, -1, 0)));
+        tmp  = _mm_and_ps(m.v4, cmp3);
+        res  = _mm_and_ps(res, tmp);
+
+        // store k
+        auto k = _mm_shuffle_ps(res, res, _MM_SHUFFLE(2, 3, 0, 1));
+        k = _mm_add_ps(k, res);
+        tmp = _mm_shuffle_ps(k, k, _MM_SHUFFLE(0, 1, 2, 3));
+        k = _mm_add_ps(k, tmp);
+        k = _mm_sqrt_ps(k);
+        k = _mm_div_ps(_mm_set_ps1(0.5f), k);
 
         // calc m10_m01
-        // TODO
+        vec = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(0, 0, 0, 0));
+        tmp = _mm_shuffle_ps(m.v1, m.v1, _MM_SHUFFLE(1, 1, 1, 1));
+        tmp = _mm_mul_ps(tmp, _mm_set_ps(-1.0f, -1.0f, 1.0f, 1.0f));
+        vec = _mm_add_ps(vec, tmp);
+        cmp2 = _mm_xor_ps(cmp2, _mm_castsi128_ps(_mm_set_epi32(0, -1, 0, -1)));
+        tmp = _mm_and_ps(m.v4, cmp2);
+        vec = _mm_and_ps(vec, tmp);
+        res = _mm_add_ps(res, vec);
 
         // calc m02_m20
-        // TODO
+        vec = _mm_shuffle_ps(m.v1, m.v1, _MM_SHUFFLE(2, 2, 2, 2));
+        tmp = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(0, 0, 0, 0));
+        tmp = _mm_mul_ps(tmp, _mm_set_ps(-1.0f, 1.0f, -1.0f, 1.0f));
+        vec = _mm_add_ps(vec, tmp);
+        m.v4 = _mm_xor_ps(cmp1, _mm_castsi128_ps(_mm_set_epi32(0, 0, -1, -1)));
+        cmp3 = _mm_shuffle_ps(cmp3, cmp3, _MM_SHUFFLE(1, 0, 3, 2));
+        tmp = _mm_and_ps(m.v4, cmp3);
+        vec = _mm_and_ps(vec, tmp);
+        res = _mm_add_ps(res, vec);
 
         // calc m21_m12
-        // TODO
+        vec = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(1, 1, 1, 1));
+        tmp = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(2, 2, 2, 2));
+        tmp = _mm_mul_ps(tmp, _mm_set_ps(-1.0f, 1.0f, 1.0f, -1.0f));
+        vec = _mm_add_ps(vec, tmp);
+        cmp2 = _mm_shuffle_ps(cmp2, cmp2, _MM_SHUFFLE(1, 0, 3, 2));
+        tmp = _mm_and_ps(m.v4, cmp2);
+        vec = _mm_and_ps(vec, tmp);
+        res = _mm_add_ps(res, vec);
 
+        res = _mm_mul_ps(res, k);
         return res;
     }
 }
