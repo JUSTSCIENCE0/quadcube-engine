@@ -79,11 +79,13 @@ namespace QCE {
         m_scale.y() = vector_length(vector_y);
         m_scale.z() = vector_length(vector_z);
 
-        float4x4 rotation_matrix{};
-        vector_copy(vector_x / m_scale.x(), rotation_matrix.arr);
-        vector_copy(vector_y / m_scale.y(), rotation_matrix.arr + 4);
-        vector_copy(vector_z / m_scale.z(), rotation_matrix.arr + 8);
+        vector_x /= m_scale.x();
+        vector_y /= m_scale.y();
+        vector_z /= m_scale.z();
 
-        // TODO rotation matrix to quaternion
+        auto rotation_matrix = matrix_init(
+            vector_x, vector_y, vector_z, vector_init(0.0f, 0.0f, 0.0f, 1.0f));
+        auto quat = rotation_matrix_to_quaternion(rotation_matrix);
+        vector_copy(quat, m_rotation.arr);
     }
 }
