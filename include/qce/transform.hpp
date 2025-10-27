@@ -29,8 +29,10 @@ namespace QCE {
         // void Scale(const float3d& scale) { /*TODO*/ }
 
         /// Overwrite transform
+        // void SetMatrix() { /*TODO*/ }
         // void MoveTo(const float3d& position) { /*TODO*/ }
-        // void Rotate(const quaternion& rotation) { /*TODO*/ }
+        // void SetRotation(const float3d& angles) { /*TODO*/ }
+        // void SetRotation(const quaternion& rotation) { /*TODO*/ }
         // void Rescale(const float3d& scale) { /*TODO*/ }
 
         /// Getters

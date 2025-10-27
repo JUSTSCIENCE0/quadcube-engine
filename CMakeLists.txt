@@ -75,6 +75,7 @@ set(QCE_OBJECTS
     include/qce/objects/scene.hpp
     include/qce/objects/figures.hpp
     include/qce/objects/shader.hpp
+    include/qce/objects/camera.hpp
 )
 
 set(QCE_MATH
@@ -109,6 +110,7 @@ set(QCE_IMPLEMENTATION
     src/resource_manager.cpp
     src/scene.cpp
     src/figures.cpp
+    src/camera.cpp
 
     # renders
     src/windows_output.cpp
