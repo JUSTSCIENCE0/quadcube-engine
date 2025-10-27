@@ -26,10 +26,17 @@ namespace QCE {
         m_rotation(rotation),
         m_position(position),
         m_scale(scale) {
-        UpdateMatrix(false);
+        NormalizeRotation();
+        UpdateMatrix();
     }
 
-    void Transform::UpdateMatrix(bool is_rotation_normalized) {
+    void Transform::NormalizeRotation() {
+        auto rotation_quat = vector_init(m_rotation.arr);
+        rotation_quat = vector_normalize(rotation_quat);
+        vector_copy(rotation_quat, m_rotation.arr);
+    }
+
+    void Transform::UpdateMatrix() const {
         // scale
         auto S = matrix_init(
             m_scale.arr[0], 0.0f, 0.0f, 0.0f,
@@ -40,15 +47,7 @@ namespace QCE {
 
         // rotation
         auto rotation_quat = vector_init(m_rotation.arr);
-
-        if (!is_rotation_normalized) {
-            rotation_quat = vector_normalize(rotation_quat);
-            vector_copy(rotation_quat, m_rotation.arr);
-        }
-        else {
-            assert(CU::is_equal(1.0f, vector_length(rotation_quat)));
-        }
-
+        assert(CU::is_equal(1.0f, vector_length(rotation_quat)));
         auto R = quaternion_to_rotation_matrix(rotation_quat);
 
         // transition
@@ -63,6 +62,7 @@ namespace QCE {
         auto M = matrix_mul(T, R);
         M = matrix_mul(M, S);
 
+        m_need_recalc_matrix = false;
         matrix_copy(M, m_matrix.arr);
     }
 

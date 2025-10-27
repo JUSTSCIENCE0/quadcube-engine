@@ -19,7 +19,7 @@ namespace QCE {
             const float3d& position,
             const float3d& scale);
         // Transform(
-        //    const float3d& rotation,
+        //    const float3d& angles,
         //    const float3d& position,
         //    const float3d& scale) { /*TODO*/ }
 
@@ -41,10 +41,12 @@ namespace QCE {
         // const float3d& Scale() const;
 
     private:
-        void UpdateMatrix(bool is_rotation_normalized = true);
+        void NormalizeRotation();
+        void UpdateMatrix() const;
         void UpdateSRT();
 
-        float4x4 m_matrix{
+        // cache
+        mutable float4x4 m_matrix{
             .arr = {
                 1.0f, 0.0f, 0.0f, 0.0f,
                 0.0f, 1.0f, 0.0f, 0.0f,
@@ -52,14 +54,10 @@ namespace QCE {
                 0.0f, 0.0f, 0.0f, 1.0f
             }
         };
+        mutable bool m_need_recalc_matrix = false;
 
-        // cache
-        mutable quaternion m_rotation{};
-        mutable float3d    m_position{};
-        mutable float3d    m_scale = { 1.0f, 1.0f, 1.0f };
-
-        mutable bool m_need_update_rotation = false;
-        mutable bool m_need_update_position = false;
-        mutable bool m_need_update_scale = false;
+        quaternion m_rotation{};
+        float3d    m_position{};
+        float3d    m_scale = { 1.0f, 1.0f, 1.0f };
     };
 }
