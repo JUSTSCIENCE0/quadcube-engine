@@ -206,4 +206,12 @@ namespace QCE {
         // TODO
         return vector_zero();
     }
+
+    static inline matrix VECTOR_CALL camera_look_to_lh_matrix(
+            vector position,
+            vector target,
+            vector up) noexcept {
+        // TODO
+        return matrix_identity();
+    }
 }

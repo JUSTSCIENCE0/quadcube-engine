@@ -162,5 +162,23 @@ namespace QCE {
             results += 4;
         }
     }
+
+    void CU_SIMD(camera_to_lh_view)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 16 == 0);
+
+        while (count > 0) {
+            auto position = vector_init(values[0], values[1], values[2], 0.0f);
+            auto target   = vector_init(values[4], values[5], values[6], 0.0f);
+            auto up       = vector_init(values[8], values[9], values[10], 0.0f);
+
+            auto res = camera_look_to_lh_matrix(position, target, up);
+            matrix_copy(res, results);
+
+            count -= 16;
+            values += 16;
+            results += 16;
+        }
+    }
 }
 

@@ -335,4 +335,23 @@ namespace QCE {
 
         return q;
     }
+
+    static inline matrix camera_look_to_lh_matrix(
+            const vector& position,
+            const vector& target,
+            const vector& up) noexcept {
+        auto forward = vector_normalize(target - position);
+        auto right = vector_normalize(vector_cross_product(up, forward));
+        auto up_real = vector_cross_product(forward, right);
+
+        return matrix_init(
+            right.x, up_real.x, forward.x, 0.0f,
+            right.y, up_real.y, forward.y, 0.0f,
+            right.z, up_real.z, forward.z, 0.0f,
+            -1.0f * vector_dot_product(position, right),
+            -1.0f * vector_dot_product(position, up_real),
+            -1.0f * vector_dot_product(position, forward),
+            1.0f
+        );
+    }
 }
