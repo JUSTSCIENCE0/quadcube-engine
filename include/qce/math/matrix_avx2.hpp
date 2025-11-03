@@ -430,7 +430,35 @@ namespace QCE {
             vector position,
             vector target,
             vector up) noexcept {
-        // TODO
-        return matrix_identity();
+        auto forward = vector_normalize(target - position);
+        auto right = vector_normalize(vector_cross_product(up, forward));
+        auto up_real = vector_cross_product(forward, right);
+
+        matrix tmp{
+            .v34 = _mm256_insertf128_ps(forward, _mm_setzero_ps(), 1),
+            .v12 = _mm256_insertf128_ps(right, _mm256_castps256_ps128(up_real), 1)
+        };
+
+        auto result = matrix_transpose(tmp);
+
+        auto vec_tmp = _mm256_insertf128_ps(position, _mm256_castps256_ps128(position), 1);
+        tmp.v12 = _mm256_mul_ps(tmp.v12, vec_tmp);
+        tmp.v34 = _mm256_mul_ps(tmp.v34, position);
+
+        tmp = matrix_transpose(tmp);
+
+        vec_tmp = _mm256_permute2f128_ps(tmp.v12, tmp.v12, 0x01);
+        tmp.v12 = _mm256_add_ps(tmp.v12, vec_tmp);
+        tmp.v12 = _mm256_add_ps(tmp.v12, tmp.v34);
+        tmp.v12 = _mm256_permute2f128_ps(tmp.v12, tmp.v12, 0x01);
+
+        tmp.v34 = _mm256_set_ps(1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        tmp.v12 = _mm256_mul_ps(tmp.v12, tmp.v34);
+
+        result.v34 = _mm256_add_ps(tmp.v12, result.v34);
+        tmp.v12 = _mm256_set_ps(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        result.v34 = _mm256_add_ps(tmp.v12, result.v34);
+
+        return result;
     }
 }

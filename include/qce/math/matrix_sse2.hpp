@@ -385,7 +385,23 @@ namespace QCE {
             vector position,
             vector target,
             vector up) noexcept {
-        // TODO
-        return matrix_identity();
+        auto forward = vector_normalize(target - position);
+        auto right   = vector_normalize(vector_cross_product(up, forward));
+        auto up_real = vector_cross_product(forward, right);
+
+        auto result = matrix_init(right, up_real, forward, vector_zero());
+        result = matrix_transpose(result);
+
+        right   *= position;
+        up_real *= position;
+        forward *= position;
+
+        auto tmp = matrix_init(right, up_real, forward, vector_init(0.0f, 0.0f, 0.0f, 1.0f));
+        tmp = matrix_transpose(tmp);
+
+        result.v4 = (tmp.v1 + tmp.v2) + (tmp.v3 + tmp.v4);
+        result.v4 *= vector_init(-1.0f, -1.0f, -1.0f, 1.0f);
+
+        return result;
     }
 }

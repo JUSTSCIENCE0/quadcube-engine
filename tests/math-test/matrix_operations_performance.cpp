@@ -97,3 +97,11 @@ CU_PERFORMANCE_TEST_SIMD(
     QCE::matrix_to_quaternion,
     (def, sse2, avx2)  /*TODO avx512*/
 )
+
+CU_PERFORMANCE_TEST_SIMD(
+    CameraToLhView,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    QCE::camera_to_lh_view,
+    (def, sse2, avx2) /*TODO avx512*/
+)
