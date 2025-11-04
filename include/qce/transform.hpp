@@ -36,7 +36,11 @@ namespace QCE {
         // void Rescale(const float3d& scale) { /*TODO*/ }
 
         /// Getters
-        const float4x4& Matrix() const { return m_matrix; }
+        const float4x4& GetMatrix() const {
+            if (m_need_recalc_matrix)
+                UpdateMatrix();
+            return m_matrix;
+        }
         // float3d Rotation() const;
         // const quaternion& RotationQuaternion() const;
         // const float3d& Position() const;
@@ -58,8 +62,8 @@ namespace QCE {
         };
         mutable bool m_need_recalc_matrix = false;
 
-        quaternion m_rotation{};
-        float3d    m_position{};
-        float3d    m_scale = { 1.0f, 1.0f, 1.0f };
+        quaternion m_rotation = { 0.0f, 0.0f, 0.0f };
+        float3d    m_position = { 0.0f, 0.0f, 0.0f };
+        float3d    m_scale    = { 1.0f, 1.0f, 1.0f };
     };
 }
