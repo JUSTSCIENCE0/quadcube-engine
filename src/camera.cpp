@@ -10,18 +10,8 @@
 #include <qce/objects/camera.hpp>
 
 namespace QCE {
-    Camera::Camera(
-            const float3d& position,
-            const float3d& target,
-            const float3d& up,
-            bool LH):
-        m_position(position),
-        m_target(target),
-        m_up_direction(up),
-        m_is_LH(LH) {
-        UpdateViewMatrix();
-        UpdateProjMatrix();
-    }
+    Camera::Camera(bool LH):
+        m_is_LH(LH) {}
 
     void Camera::UpdateViewMatrix() const {
         assert(m_is_LH && "Only LH implemented");

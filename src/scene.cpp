@@ -22,6 +22,34 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
+    ErrorCode Scene::AddCamera(
+            float aspect,
+            float fov_rad,
+            float znear,
+            float zfar,
+            const float3d& position,
+            const float3d& target,
+            const float3d& up) {
+        Camera camera{ m_render_type == RenderType::E_RENDER_DIRECTX12 };
+
+        if (aspect <= 0.0f)
+            return ErrorCode::E_ENG_WRONG_ASPECT;
+        if (fov_rad < deg_to_rad(MIN_FOV_DEG))
+            return ErrorCode::E_ENG_WRONG_FOV;
+        if (zfar <= znear)
+            return ErrorCode::E_ENG_WRONG_ZLIMITS;
+
+        camera.SetAspect(aspect);
+        camera.SetFoV(fov_rad);
+        camera.SetZLimits(znear, zfar);
+        camera.SetPosition(position);
+        camera.SetTarget(target);
+        camera.SetUp(up);
+
+        m_cameras.push_back(std::move(camera));
+        return ErrorCode::SUCCESS;
+    }
+
     ErrorCode Scene::UseShader(const std::string& name, ShaderType type) {
         if (m_shaders[type])
             return ErrorCode::E_ENG_SHADER_ALREADY_SELECTED;

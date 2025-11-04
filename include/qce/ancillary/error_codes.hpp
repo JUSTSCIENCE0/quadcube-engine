@@ -63,6 +63,9 @@ namespace QCE {
         CU_ENUM_UNIT(E_ENG_SHADER_ALREADY_SELECTED) \
         CU_ENUM_UNIT(E_ENG_SCENE_VS_NOT_SELECTED) \
         CU_ENUM_UNIT(E_ENG_SCENE_PS_NOT_SELECTED) \
+        CU_ENUM_UNIT(E_ENG_WRONG_FOV) \
+        CU_ENUM_UNIT(E_ENG_WRONG_ASPECT) \
+        CU_ENUM_UNIT(E_ENG_WRONG_ZLIMITS) \
         CU_VALUED_ENUM_UNIT(GROUP_RESOURCE_MANAGER, 0x60000) \
         CU_ENUM_UNIT(E_RM_MESH_ID_COLLISION) \
         CU_ENUM_UNIT(E_RM_MODEL_ID_COLLISION) \
@@ -221,6 +224,15 @@ namespace QCE {
             break;
         case ErrorCode::E_ENG_SCENE_PS_NOT_SELECTED:
             result << "ENGINE - No pixel shader is specified for the current scene";
+            break;
+        case ErrorCode::E_ENG_WRONG_FOV:
+            result << "ENGINE - Selected invalid FOV";
+            break;
+        case ErrorCode::E_ENG_WRONG_ASPECT:
+            result << "ENGINE - Selected invalid aspect";
+            break;
+        case ErrorCode::E_ENG_WRONG_ZLIMITS:
+            result << "ENGINE - Selected invalid Z-limits";
             break;
 
         /* Group Resource Manager*/

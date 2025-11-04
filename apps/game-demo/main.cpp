@@ -28,6 +28,8 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.Resources().AddFigure(cuboid, "cuboid"));
     QCE_CRITICAL(app.Resources().AddModel("cuboid", "cuboid"));
 
+    QCE_CRITICAL(app.CurrentScene().AddCamera());
+
     QCE_CRITICAL(app.CurrentScene().AddEntity("cuboid", "cuboid"));
     QCE_CRITICAL(app.CurrentScene().UseShader("simple", QCE::ShaderType::E_VERTEX_SHADER));
     QCE_CRITICAL(app.CurrentScene().UseShader("simple", QCE::ShaderType::E_PIXEL_SHADER));

@@ -10,10 +10,7 @@
 namespace QCE {
     class Camera {
     public:
-        Camera(const float3d& position,
-               const float3d& target,
-               const float3d& up,
-               bool LH = true);
+        explicit Camera(bool LH = true);
         //Camera(const Transform& transform, bool LH = true);
 
         void SetFoV(float fov_rad) {
@@ -41,9 +38,18 @@ namespace QCE {
         //void RotateAround(const float3d& angels); // move position
 
         /// Overwrite transform
-        //void SetPosition(const float3d& position);
-        //void SetTarget(const float3d& target);
-        //void SetUp(const float3d& up);
+        void SetPosition(const float3d& position) {
+            m_position = position;
+            m_need_recalc_view = true;
+        }
+        void SetTarget(const float3d& target) {
+            m_target = target;
+            m_need_recalc_view = true;
+        }
+        void SetUp(const float3d& up) {
+            m_up_direction = up;
+            m_need_recalc_view = true;
+        }
 
         const float4x4& GetView() const;
         const float4x4& GetProj() const;
@@ -52,14 +58,14 @@ namespace QCE {
         void UpdateViewMatrix() const;
         void UpdateProjMatrix() const;
 
-        float3d m_position{};
-        float3d m_target{};
-        float3d m_up_direction{ 0.0f, 1.0f, 0.0f };
+        float3d m_position     = { 2.0f, 2.0f, -2.0f };
+        float3d m_target       = { 0.0f, 0.0f, 0.0f };
+        float3d m_up_direction = { 0.0f, 1.0f, 0.0f };
 
         float m_fov_rad = deg_to_rad(60);
-        float m_aspect = 16.0f / 9.0f;
-        float m_znear = 1.0f;
-        float m_zfar = 1000.0f;
+        float m_aspect  = 16.0f / 9.0f;
+        float m_znear   = 1.0f;
+        float m_zfar    = 1000.0f;
 
         bool m_is_LH = true;
 
@@ -72,10 +78,10 @@ namespace QCE {
                 0.0f, 0.0f, 0.0f, 1.0f
             }
         };
-        mutable bool m_need_recalc_view = false;
+        mutable bool m_need_recalc_view = true;
 
         mutable Transform m_transform{};
-        mutable bool m_need_update_transform = false;
+        mutable bool m_need_update_transform = true;
 
         mutable float4x4 m_proj_matrix{
             .arr = {
@@ -85,7 +91,7 @@ namespace QCE {
                 0.0f, 0.0f, 1.0f, 0.0f
             }
         };
-        mutable bool m_need_recalc_proj = false;
+        mutable bool m_need_recalc_proj = true;
     };
 }
 

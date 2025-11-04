@@ -126,7 +126,10 @@ namespace QCE {
         ResourceManager m_rm {
             m_config.render.render_type,
         };
-        Scene m_current_scene{m_rm};
+        Scene m_current_scene{
+            m_config.render.render_type,
+            m_rm
+        };
         // TODO: Level & World;
     };
 }
