@@ -10,10 +10,11 @@
 namespace QCE {
     class Camera {
     public:
-        //Camera(const float3d& position,
-        //       const float3d& target,
-        //       const float3d& up);
-        //Camera(const Transform& transform);
+        Camera(const float3d& position,
+               const float3d& target,
+               const float3d& up,
+               bool LH = true);
+        //Camera(const Transform& transform, bool LH = true);
 
         /// Add transform to current
         //void Move(const float3d& translation); // both target & position
@@ -28,9 +29,13 @@ namespace QCE {
         //void SetUp(const float3d& up);
 
     private:
+        void UpdateViewMatrix() const;
+
         float3d m_position{};
         float3d m_target{};
         float3d m_up_direction{ 0.0f, 1.0f, 0.0f };
+
+        bool m_is_LH = true;
 
         // cache
         mutable float4x4 m_view_matrix{
