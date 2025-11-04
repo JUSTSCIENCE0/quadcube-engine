@@ -11,6 +11,9 @@
 #include <cmath>
 
 namespace QCE {
+    static constexpr float PI     = 3.1415926535f;
+    static constexpr float PI_DEG = 180.0f;
+
     struct float3d {
         float arr[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
@@ -42,4 +45,11 @@ namespace QCE {
     struct vertex {
         float3d position{};
     };
+
+    static inline float constexpr deg_to_rad(float deg) {
+        return (deg / PI_DEG) * PI;
+    }
+    static inline float constexpr rad_to_deg(float rad) {
+        return (rad / PI) * PI_DEG;
+    }
 }
