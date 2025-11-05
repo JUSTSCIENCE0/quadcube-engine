@@ -277,18 +277,28 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::UpdateConstantBuffers() {
-        // TODO: real calculation
-        static constexpr UnitConstants wvp{
-            .world_matrix = {
-                1.469475870f,  0.000000000f, -1.05788946f, 0.00000000f,
-                0.499737620f,  2.257614140f, 0.694167435f, 0.00000000f,
-                0.546905100f, -0.354647994f, 0.759685934f, 4.00400400f,
-                0.546358168f, -0.354293346f, 0.758926272f, 5.00000000f,
-            }
-        };
+        assert(m_current_scene);
+
+        const auto& entities = m_current_scene->GetDescription().entities;
+        assert(entities.size() == 1); // TODO: support more than one entity
+        const auto& cameras = m_current_scene->GetDescription().cameras;
+        assert(cameras.size() == 1); // TODO: support more than one camera
+
+        const auto& entity = entities.begin()->second[0];
+        auto world = entity->m_transform.GetMatrix();
+        auto view = cameras[0].GetView();
+        auto proj = cameras[0].GetProj();
+
+        UnitConstants transform{};
+        auto w = matrix_init(world.arr);
+        auto v = matrix_init(view.arr);
+        auto p = matrix_init(proj.arr);
+        auto wvp = matrix_mul(matrix_mul(w, v), p);
+        wvp = matrix_transpose(wvp);
+        matrix_copy(wvp, transform.world_matrix);
 
         for (UINT index = 0; index < m_scene_gpu.m_units_constant_buffers->m_elements_count; index++) {
-            m_scene_gpu.m_units_constant_buffers->CopyData(index, wvp);
+            m_scene_gpu.m_units_constant_buffers->CopyData(index, transform);
         }
 
         return ErrorCode::SUCCESS;
