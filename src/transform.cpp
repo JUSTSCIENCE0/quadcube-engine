@@ -52,15 +52,17 @@ namespace QCE {
 
         // transition
         auto T = matrix_init(
-            1.0f, 0.0f, 0.0f, m_position.arr[0],
-            0.0f, 1.0f, 0.0f, m_position.arr[1],
-            0.0f, 0.0f, 1.0f, m_position.arr[2],
-            0.0f, 0.0f, 0.0f, 1.0f
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            m_position.arr[0], 
+            m_position.arr[1], 
+            m_position.arr[2], 1.0f
         );
 
-        // M = T * R * S
-        auto M = matrix_mul(T, R);
-        M = matrix_mul(M, S);
+        // M = S * R * T
+        auto M = matrix_mul(S, R);
+        M = matrix_mul(M, T);
 
         m_need_recalc_matrix = false;
         matrix_copy(M, m_matrix.arr);
