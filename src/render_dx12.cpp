@@ -279,29 +279,68 @@ namespace QCE {
     ErrorCode RenderDX12::UpdateConstantBuffers() {
         assert(m_current_scene);
 
-        const auto& entities = m_current_scene->GetDescription().entities;
-        assert(entities.size() == 1); // TODO: support more than one entity
         const auto& cameras = m_current_scene->GetDescription().cameras;
         assert(cameras.size() == 1); // TODO: support more than one camera
-
-        const auto& entity = entities.begin()->second[0];
-        auto world = entity->m_transform.GetMatrix();
         auto view = cameras[0].GetView();
         auto proj = cameras[0].GetProj();
+        auto vp = matrix_mul(
+            matrix_init(view.arr),
+            matrix_init(proj.arr)
+        );
 
-        UnitConstants transform{};
-        auto w = matrix_init(world.arr);
-        auto v = matrix_init(view.arr);
-        auto p = matrix_init(proj.arr);
-        auto wvp = matrix_mul(matrix_mul(w, v), p);
-        wvp = matrix_transpose(wvp);
-        matrix_copy(wvp, transform.world_matrix);
+        const auto& entities = m_current_scene->GetDescription().entities;
 
-        for (UINT index = 0; index < m_scene_gpu.m_units_constant_buffers->m_elements_count; index++) {
-            m_scene_gpu.m_units_constant_buffers->CopyData(index, transform);
+        UINT index = 0;
+        for (const auto& [_, chunk] : entities) {
+            for (const auto& entity : chunk) {
+                auto world = entity->m_transform.GetMatrix();
+                auto w = matrix_init(world.arr);
+                auto wvp = matrix_mul(w, vp);
+                wvp = matrix_transpose(wvp);
+
+                UnitConstants transform{};
+                matrix_copy(wvp, transform.world_matrix);
+
+                m_scene_gpu.m_units_constant_buffers->CopyData(index, transform);
+                index++;
+            }
         }
 
         return ErrorCode::SUCCESS;
+    }
+
+    void RenderDX12::DrawSceneEntities() {
+        auto vbv = GetVertexBufferView();
+        auto ibv = GetIndexBufferView();
+        m_cmd_list->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        m_cmd_list->IASetVertexBuffers(0, 1, &vbv);
+        m_cmd_list->IASetIndexBuffer(&ibv);
+
+        assert(m_current_scene);
+        const auto& entities = m_current_scene->GetDescription().entities;
+
+        UINT entity_index = 0;
+        for (const auto& [_, chunk] : entities) {
+            for (const auto& entity : chunk) {
+                assert(entity->m_model->m_mesh->m_render_unit_index.has_value());
+                auto index = entity->m_model->m_mesh->m_render_unit_index.value();
+                const auto& unit_descr = m_scene_cpu.units[index];
+
+                auto cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetGPUDescriptorHandleForHeapStart());
+                cbv_handle.Offset(entity_index, m_cbv_srv_uav_descr_size);
+                m_cmd_list->SetGraphicsRootDescriptorTable(0, cbv_handle);
+
+                m_cmd_list->DrawIndexedInstanced(
+                    unit_descr.indeces_count,
+                    1,
+                    unit_descr.index_offset,
+                    unit_descr.vertex_offset,
+                    0
+                );
+
+                entity_index++;
+            }
+        }
     }
 
     ErrorCode RenderDX12::Draw() {
@@ -338,17 +377,7 @@ namespace QCE {
 
         m_cmd_list->SetGraphicsRootSignature(m_root_signature.Get());
 
-        auto vbv = GetVertexBufferView();
-        auto ibv = GetIndexBufferView();
-        m_cmd_list->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        m_cmd_list->IASetVertexBuffers(0, 1, &vbv);
-        m_cmd_list->IASetIndexBuffer(&ibv);
-
-        m_cmd_list->SetGraphicsRootDescriptorTable(0, m_cbv_heap->GetGPUDescriptorHandleForHeapStart());
-
-        m_cmd_list->DrawIndexedInstanced(
-            m_scene_cpu.units[0].indeces_count,
-            1, 0, 0, 0);
+        DrawSceneEntities();
 
         auto barrier_tp = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
             D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -443,10 +472,11 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::CreateCBVDescriptorHeap() {
-        // TODO: const auto render_units_count = m_scene_cpu.units.size();
+        assert(m_current_scene);
+        const auto units_count = UINT(m_current_scene->GetEntitiesCount());
 
         D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
-        cbvHeapDesc.NumDescriptors = 1;
+        cbvHeapDesc.NumDescriptors = units_count + 1;
         cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         cbvHeapDesc.NodeMask = 0;
@@ -460,27 +490,25 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::CreateConstantBuffers() {
-        auto& cb = m_scene_gpu.m_units_constant_buffers;
-        const auto units_count = UINT(m_scene_cpu.units.size());
+        assert(m_current_scene);
+        const auto units_count = UINT(m_current_scene->GetEntitiesCount());
 
+        auto& cb = m_scene_gpu.m_units_constant_buffers;
         cb = std::make_unique<Dx12UploadBuffer<UnitConstants>>(
                 m_d3d_device.Get(), units_count, true);
 
-        int heap_index = 0;
         const auto cb_unit_size = cb->m_element_size;
         D3D12_GPU_VIRTUAL_ADDRESS cb_address = cb->Resource()->GetGPUVirtualAddress();
 
         for (UINT index = 0; index < units_count; index++) {
             auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetCPUDescriptorHandleForHeapStart());
-            handle.Offset(heap_index, m_cbv_srv_uav_descr_size);
+            handle.Offset(index, m_cbv_srv_uav_descr_size);
 
             D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_descr;
             cbv_descr.BufferLocation = cb_address;
             cbv_descr.SizeInBytes = cb_unit_size;
 
             m_d3d_device->CreateConstantBufferView(&cbv_descr, handle);
-
-            heap_index++;
             cb_address += cb_unit_size;
         }
 

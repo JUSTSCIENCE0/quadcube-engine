@@ -19,6 +19,7 @@ namespace QCE {
         assert(entity->m_name == name);
 
         m_entities[name].push_back(std::move(entity));
+        m_entities_count++;
         return ErrorCode::SUCCESS;
     }
 

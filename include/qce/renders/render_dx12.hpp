@@ -64,6 +64,7 @@ namespace QCE {
         ErrorCode InitBuffersAndDescriptors();
 
         // Scene
+        void DrawSceneEntities();
         ErrorCode UpdateGpuScene();
         ErrorCode CreateRootSignature();
         ErrorCode CreateCBVDescriptorHeap();

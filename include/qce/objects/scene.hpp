@@ -70,6 +70,8 @@ namespace QCE {
             };
         }
 
+        size_t GetEntitiesCount() const noexcept { return m_entities_count; }
+
     private:
         static constexpr float MIN_FOV_DEG = 30.0f;
 
@@ -80,5 +82,7 @@ namespace QCE {
         Entities m_entities{};
         Shaders  m_shaders{};
         Cameras  m_cameras{};
+
+        size_t   m_entities_count = 0;
     };
 }
