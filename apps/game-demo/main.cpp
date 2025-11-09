@@ -30,7 +30,14 @@ int main(int argc, char* argv[]) {
 
     QCE_CRITICAL(app.CurrentScene().AddCamera());
 
-    QCE_CRITICAL(app.CurrentScene().AddEntity("cuboid", "cuboid"));
+    QCE_CRITICAL(app.CurrentScene().AddEntity(
+        "cuboid",
+        "cuboid",
+        QCE::Transform(
+            { 0.0f, 0.3826834f, 0.0f, 0.9238795f },
+            {2.0f, 0.0f, 2.0f},
+            {1.0f, 1.0f, 1.0f}
+        )));
     QCE_CRITICAL(app.CurrentScene().UseShader("simple", QCE::ShaderType::E_VERTEX_SHADER));
     QCE_CRITICAL(app.CurrentScene().UseShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
 
