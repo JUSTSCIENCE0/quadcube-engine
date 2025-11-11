@@ -103,6 +103,7 @@ set(QCE_RENDERS
 set(QCE_ANCILLARY
     include/qce/ancillary/about.hpp
     include/qce/ancillary/error_codes.hpp
+    include/qce/ancillary/timer.hpp
 )
 
 set(QCE_IMPLEMENTATION

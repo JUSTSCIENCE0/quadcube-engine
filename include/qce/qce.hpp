@@ -7,6 +7,7 @@
 
 #include <qce/render.hpp>
 #include <qce/objects/scene.hpp>
+#include <qce/ancillary/timer.hpp>
 
 #include <cu/string-utils.hpp>
 
@@ -113,6 +114,8 @@ namespace QCE {
         }
 
         ErrorCode StepForward() {
+            FrameTime::Get().NextFrame();
+
             assert(m_render);
             return m_render->Draw();
         }
