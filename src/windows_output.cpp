@@ -99,6 +99,11 @@ namespace QCE {
         case WM_MOUSEMOVE:
             // TODO - handle
             return 0;
+        case WM_KEYDOWN:
+            if (HIWORD(lParam) & KF_REPEAT)
+                return 0; // ignore repeated signals from a pressed key
+            // TODO - handle
+            return 0;
         case WM_KEYUP:
             // TODO - handle
             return 0;
