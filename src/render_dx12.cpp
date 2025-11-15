@@ -31,7 +31,7 @@ namespace QCE {
 
         hr = D3D12CreateDevice(
             nullptr,
-            D3D_FEATURE_LEVEL_12_2,
+            D3D_FEATURE_LEVEL_12_0,
             IID_PPV_ARGS(&m_d3d_device));
         if (FAILED(hr)) {
             return ErrorCode::E_DX12_CREATE_DEVICE_FAILED;
