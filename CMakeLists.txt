@@ -87,8 +87,6 @@ set(QCE_MATH
     include/qce/math/matrix_sse2.hpp
     include/qce/math/matrix_avx2.hpp
     include/qce/math/matrix_avx512.hpp
-
-    src/transform.cpp
 )
 
 set(QCE_RENDERS
@@ -98,6 +96,10 @@ set(QCE_RENDERS
     include/qce/renders/render_dx12.hpp
     include/qce/renders/render_dx12_helpers.hpp
     # TODO: include/qce/renders/render_vulkan.hpp
+)
+
+set(QCE_HID
+    include/qce/hid/events.hpp
 )
 
 set(QCE_ANCILLARY
@@ -117,6 +119,9 @@ set(QCE_IMPLEMENTATION
     src/windows_output.cpp
     src/render_base.cpp
     src/render_dx12.cpp
+
+    # math
+    src/transform.cpp
 
     #other
     src/about.cpp
@@ -151,12 +156,14 @@ target_sources(${PROJECT_NAME}
         ${QCE_RENDERS}
         ${QCE_IMPLEMENTATION}
         ${QCE_SHADERS}
+        ${QCE_HID}
 )
 
 source_group("Interface" FILES ${QCE_INTERFACE})
 source_group("Math" FILES ${QCE_MATH})
 source_group("Objects" FILES ${QCE_OBJECTS})
 source_group("Renders" FILES ${QCE_RENDERS})
+source_group("HID" FILES ${QCE_HID})
 source_group("Ancillary" FILES ${QCE_ANCILLARY})
 source_group("Implementation" FILES ${QCE_IMPLEMENTATION})
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
