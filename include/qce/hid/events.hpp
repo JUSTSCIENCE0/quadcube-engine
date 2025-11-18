@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <array>
+
 namespace QCE {
     /*
     Events: 
@@ -90,7 +92,19 @@ namespace QCE {
                    CU_ENUM_UNIT(E_HEC_KEYBOARD_CLOSE_BRACKET) /* ]} */ \
                    CU_ENUM_UNIT(E_HEC_KEYBOARD_MINUS)         /* -_ */ \
                    CU_ENUM_UNIT(E_HEC_KEYBOARD_PLUS)          /* =+ */ \
+                   CU_ENUM_ANCILLARY_UNITS(E_HEC) \
         CU_END_ENUM(HidEventCode)
     #include <cu/enum-utils.hpp>
     #undef CU_ENUMS_DESCRIPTION
+
+    static inline constexpr auto generate_event_param_types() {
+        std::array<HidEventParamType, HidEventCode::E_HEC_COUNT> result{};
+#define HID_EVENT_PARAM_TYPE(Code, ParamType) result[Code] = ParamType;
+
+        // TODO
+
+#undef HID_EVENT_PARAM_TYPE
+
+        return result;
+    }
 }
