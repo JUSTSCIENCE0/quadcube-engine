@@ -102,7 +102,7 @@ namespace QCE {
     #include <cu/enum-utils.hpp>
     #undef CU_ENUMS_DESCRIPTION
 
-    static_assert(HidEventCode::E_HEC_COUNT < 256, "HidEventCode count must be less than 256");
+    static_assert(HidEventCode::E_HEC_COUNT < 128, "HidEventCode count must be less than 128");
 
     static inline constexpr auto hid_event_code_is_valid(HidEventCode code) noexcept {
         if (code >= 7 && code <= 12) {
@@ -251,11 +251,11 @@ namespace QCE {
     /// HidEvent structure and helpers
 
     struct HidEvent {
-        int32_t descriptor = 255; // 0..7 - HidEventCode, 8..15 - reserved,
-                                  // 16 - is button, 17 - is button up (0) or down (1)
-        static constexpr int32_t CODE_MASK      = 0x000000FF;
-        static constexpr int32_t IS_BUTTON_MASK = 0x00010000;
-        static constexpr int32_t IS_DOWN_MASK   = 0x00020000;
+        int32_t descriptor = 255; // 0..6 - HidEventCode
+                                  // 8 - is button, 7 - is button up (0) or down (1)
+        static constexpr int32_t CODE_MASK      = 0x0000007F;
+        static constexpr int32_t IS_BUTTON_MASK = 0x00000100;
+        static constexpr int32_t IS_DOWN_MASK   = 0x00000080;
 
         float    param1 = 0.0f;
         float    param2 = 0.0f;
