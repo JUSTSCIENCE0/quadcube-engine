@@ -104,10 +104,10 @@ namespace QCE {
         for (int event = HidEventCode::E_HEC_MOUSE_LB; event <= HidEventCode::E_HEC_MOUSE_B5; event++) {
             HID_EVENT_PARAM_TYPE(event, HidEventParamType::E_HEPT_COORDINATES);
         }
-        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_MOUSE_SCROLL, HidEventParamType::E_HEPT_INTENSITY);
-        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_MOUSE_MOVE, HidEventParamType::E_HEPT_DISPLACEMENT);
-        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_GAMEPAD_LTRIGGER, HidEventParamType::E_HEPT_INTENSITY);
-        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_GAMEPAD_RTRIGGER, HidEventParamType::E_HEPT_INTENSITY);
+        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_MOUSE_SCROLL,        HidEventParamType::E_HEPT_INTENSITY);
+        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_MOUSE_MOVE,          HidEventParamType::E_HEPT_DISPLACEMENT);
+        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_GAMEPAD_LTRIGGER,    HidEventParamType::E_HEPT_INTENSITY);
+        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_GAMEPAD_RTRIGGER,    HidEventParamType::E_HEPT_INTENSITY);
         HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_GAMEPAD_LSTICK_MOVE, HidEventParamType::E_HEPT_DISPLACEMENT);
         HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE, HidEventParamType::E_HEPT_DISPLACEMENT);
 
