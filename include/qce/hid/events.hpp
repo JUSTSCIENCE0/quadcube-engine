@@ -23,9 +23,9 @@ namespace QCE {
     #define CU_ENUMS_DESCRIPTION \
         CU_BEGIN_ENUM(HidEventParamType) \
             CU_ENUM_UNIT(E_HEPT_NONE) \
-            CU_ENUM_UNIT(E_HEPT_COORDINATES) \
-            CU_ENUM_UNIT(E_HEPT_INTENSITY) \
-            CU_ENUM_UNIT(E_HEPT_DISPLACEMENT) \
+            CU_ENUM_UNIT(E_HEPT_COORDINATES)  /* X, Y */ \
+            CU_ENUM_UNIT(E_HEPT_INTENSITY)    /*  Val */ \
+            CU_ENUM_UNIT(E_HEPT_DISPLACEMENT) /* X, Y */ \
         CU_END_ENUM(HidEventParamType) \
         CU_BEGIN_ENUM(HidEventCode) \
             /* free: 7...12, 119...127 */ \
@@ -101,10 +101,20 @@ namespace QCE {
         std::array<HidEventParamType, HidEventCode::E_HEC_COUNT> result{};
 #define HID_EVENT_PARAM_TYPE(Code, ParamType) result[Code] = ParamType;
 
-        // TODO
+        for (int event = HidEventCode::E_HEC_MOUSE_LB; event <= HidEventCode::E_HEC_MOUSE_B5; event++) {
+            HID_EVENT_PARAM_TYPE(event, HidEventParamType::E_HEPT_COORDINATES);
+        }
+        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_MOUSE_SCROLL, HidEventParamType::E_HEPT_INTENSITY);
+        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_MOUSE_MOVE, HidEventParamType::E_HEPT_DISPLACEMENT);
+        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_GAMEPAD_LTRIGGER, HidEventParamType::E_HEPT_INTENSITY);
+        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_GAMEPAD_RTRIGGER, HidEventParamType::E_HEPT_INTENSITY);
+        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_GAMEPAD_LSTICK_MOVE, HidEventParamType::E_HEPT_DISPLACEMENT);
+        HID_EVENT_PARAM_TYPE(HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE, HidEventParamType::E_HEPT_DISPLACEMENT);
 
 #undef HID_EVENT_PARAM_TYPE
 
         return result;
     }
+
+    static inline constexpr auto HID_EVENT_PARAM_TYPES = generate_event_param_types();
 }
