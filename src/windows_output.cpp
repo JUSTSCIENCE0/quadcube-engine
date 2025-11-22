@@ -4,6 +4,9 @@
 // License: MIT
 
 #include <qce/renders/windows_output.hpp>
+#include <qce/hid/win_events.hpp>
+
+#include <windowsx.h>
 
 namespace QCE {
     WinNtWindow::WinNtWindow(
@@ -67,6 +70,12 @@ namespace QCE {
     LRESULT WinNtWindow::MessageProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         assert(hwnd == m_hwnd);
 
+        auto get_mouse_position = [this](LPARAM lp) noexcept -> std::pair<float, float> {
+            float x = float(GET_X_LPARAM(lp)) / float(m_config.width);
+            float y = 1.0f - (float(GET_Y_LPARAM(lp)) / float(m_config.height));
+            return { x, y };
+        };
+
         switch (msg) {
         case WM_ACTIVATE:
             // WM_ACTIVATE is sent when the window is activated or deactivated
@@ -89,24 +98,107 @@ namespace QCE {
         case WM_LBUTTONDOWN:
         case WM_MBUTTONDOWN:
         case WM_RBUTTONDOWN:
+        case WM_XBUTTONDOWN:
+        {
+            auto event_code = hid_event_code_from_win_mouse_button(msg, wParam);
+            if (!event_code.has_value()) {
+                // TODO: use log system
+                std::cout << "WM_BUTTONDOWN: skip unknown button code 0x" <<
+                     std::hex << msg << " , param 0x" << wParam << std::dec << std::endl;
+                break; // def win proc
+            }
+            auto [x, y] = get_mouse_position(lParam);
+            auto event = hid_event_on_mouse_button_down(event_code.value(), x, y);
             // TODO - handle
+            std::cout << hid_event_describe(event) << std::endl;
             return 0;
+        }
         case WM_LBUTTONUP:
         case WM_MBUTTONUP:
         case WM_RBUTTONUP:
+        case WM_XBUTTONUP:
+        {
+            auto event_code = hid_event_code_from_win_mouse_button(msg, wParam);
+            if (!event_code.has_value()) {
+                // TODO: use log system
+                std::cout << "WM_BUTTONUP: skip unknown button code 0x" <<
+                    std::hex << msg << " , param 0x" << wParam << std::dec << std::endl;
+                break; // def win proc
+            }
+            auto [x, y] = get_mouse_position(lParam);
+            auto event = hid_event_on_mouse_button_up(event_code.value(), x, y);
             // TODO - handle
+            std::cout << hid_event_describe(event) << std::endl;
             return 0;
+        }
+        case WM_MOUSEWHEEL:
+        {
+            int zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+            float intensity = float(zDelta) / float(WHEEL_DELTA);
+            auto event = hid_event_on_scroll(intensity);
+            // TODO - handle
+            std::cout << hid_event_describe(event) << std::endl;
+            return 0;
+        }
         case WM_MOUSEMOVE:
+        {
+            auto [x, y] = get_mouse_position(lParam);
+            float dx = x - m_prev_mouse_x;
+            float dy = y - m_prev_mouse_y;
+            m_prev_mouse_x = x;
+            m_prev_mouse_y = y;
+
+            if (!m_handle_next_mouse_move) {
+                m_handle_next_mouse_move = true;
+                return 0;
+            }
+
+            auto event = hid_event_on_mouse_move(dx, dy);
             // TODO - handle
+            // std::cout << hid_event_describe(event) << std::endl;
+
+            // TODO - separate method & config flag
+            //POINT pt {
+            //    .x = LONG(m_config.width / 2),
+            //    .y = LONG(m_config.height / 2)
+            //};
+            //ClientToScreen(hwnd, &pt);
+            //SetCursorPos(pt.x, pt.y);
+            //m_handle_next_mouse_move = false;
             return 0;
+        }
         case WM_KEYDOWN:
+        {
             if (HIWORD(lParam) & KF_REPEAT)
                 return 0; // ignore repeated signals from a pressed key
+            auto event_code = hid_event_code_from_win_event(wParam);
+            if (!event_code.has_value()) {
+                // TODO: use log system
+                std::cout << "WM_KEYDOWN: skip unknown key 0x" <<
+                    std::hex << wParam << std::dec << std::endl;
+                break; // def win proc
+            }
+            auto event = hid_event_on_button_down(event_code.value());
+
             // TODO - handle
+            std::cout << hid_event_describe(event) << "\n";
             return 0;
+        }
         case WM_KEYUP:
+        {
+            auto event_code = hid_event_code_from_win_event(wParam);
+            if (!event_code.has_value()) {
+                // TODO: use log system
+                std::cout << "WM_KEYUP: skip unknown key 0x" <<
+                    std::hex << wParam << std::dec << std::endl;
+                break; // def win proc
+            }
+            auto event = hid_event_on_button_up(event_code.value());
+
             // TODO - handle
+            std::cout << hid_event_describe(event) << "\n";
             return 0;
+        }
         }
 
         return DefWindowProc(hwnd, msg, wParam, lParam);

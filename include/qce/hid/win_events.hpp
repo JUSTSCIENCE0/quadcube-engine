@@ -110,4 +110,32 @@ namespace QCE {
         }
         return std::nullopt;
     }
+
+    static inline constexpr std::optional<HidEventCode>
+            hid_event_code_from_win_mouse_button(UINT msg, WPARAM wp) noexcept {
+        switch (msg) {
+        case WM_LBUTTONDOWN:
+        case WM_LBUTTONUP:
+            return HidEventCode::E_HEC_MOUSE_LB;
+        case WM_RBUTTONDOWN:
+        case WM_RBUTTONUP:
+            return HidEventCode::E_HEC_MOUSE_RB;
+        case WM_MBUTTONDOWN:
+        case WM_MBUTTONUP:
+            return HidEventCode::E_HEC_MOUSE_MB;
+        case WM_XBUTTONDOWN:
+        case WM_XBUTTONUP:
+            if (GET_XBUTTON_WPARAM(wp) == XBUTTON1) {
+                return HidEventCode::E_HEC_MOUSE_B4;
+            }
+            else if (GET_XBUTTON_WPARAM(wp) == XBUTTON2) {
+                return HidEventCode::E_HEC_MOUSE_B5;
+            }
+            else {
+                return std::nullopt;
+            }
+        default:
+            return std::nullopt;
+        }
+    }
 }

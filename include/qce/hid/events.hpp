@@ -219,7 +219,7 @@ namespace QCE {
                     std::to_string(code - E_HEC_KEYBOARD_NUMPAD_START);
             }
             else {
-                auto key_name = to_string(code) + sizeof("E_HEC_KEYBOARD_");
+                auto key_name = to_string(code) + sizeof("E_HEC_KEYBOARD");
                 result += key_name;
             }
         }
@@ -229,7 +229,7 @@ namespace QCE {
             if (hid_event_is_button(code)) {
                 result += "key: ";
             }
-            auto key_name = to_string(code) + sizeof("E_HEC_MOUSE_");
+            auto key_name = to_string(code) + sizeof("E_HEC_MOUSE");
             result += key_name;
         }
         else if (hid_event_is_gamepad(code)) {
@@ -237,7 +237,7 @@ namespace QCE {
             if (hid_event_is_button(code)) {
                 result += "key: ";
             }
-            auto key_name = to_string(code) + sizeof("E_HEC_GAMEPAD_");
+            auto key_name = to_string(code) + sizeof("E_HEC_GAMEPAD");
             result += key_name;
         }
         else {
@@ -263,6 +263,7 @@ namespace QCE {
 
     static inline constexpr HidEvent hid_event_on_button_up(HidEventCode code) noexcept {
         assert(hid_event_is_button(code));
+        assert(!hid_event_is_mouse(code));
         assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_NONE);
 
         return {
@@ -272,10 +273,33 @@ namespace QCE {
 
     static inline constexpr HidEvent hid_event_on_button_down(HidEventCode code) noexcept {
         assert(hid_event_is_button(code));
+        assert(!hid_event_is_mouse(code));
         assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_NONE);
 
         return {
             .descriptor = code | HidEvent::IS_BUTTON_MASK | HidEvent::IS_DOWN_MASK
+        };
+    }
+
+    static inline constexpr HidEvent hid_event_on_mouse_button_up(HidEventCode code, float x, float y) noexcept {
+        assert(hid_event_is_button(code));
+        assert(hid_event_is_mouse(code));
+        assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_COORDINATES);
+        return {
+            .descriptor = code | HidEvent::IS_BUTTON_MASK,
+            .param1     = x,
+            .param2     = y
+        };
+    }
+
+    static inline constexpr HidEvent hid_event_on_mouse_button_down(HidEventCode code, float x, float y) noexcept {
+        assert(hid_event_is_button(code));
+        assert(hid_event_is_mouse(code));
+        assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_COORDINATES);
+        return {
+            .descriptor = code | HidEvent::IS_BUTTON_MASK | HidEvent::IS_DOWN_MASK,
+            .param1     = x,
+            .param2     = y
         };
     }
 

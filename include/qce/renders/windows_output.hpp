@@ -59,6 +59,10 @@ namespace QCE {
         const std::wstring m_class_name;
 
         HWND m_hwnd = nullptr;
+
+        bool  m_handle_next_mouse_move = false;
+        float m_prev_mouse_x = 0.0f;
+        float m_prev_mouse_y = 0.0f;
     };
 }
 
