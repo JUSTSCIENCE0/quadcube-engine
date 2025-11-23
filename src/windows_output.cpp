@@ -209,6 +209,12 @@ namespace QCE {
     void WinNtWindow::GamepadsProcess() noexcept {
         // TODO - check do we need this handler and early exit if we don't
 
+        auto now = clock::now();
+        if ((now - m_prev_gamepad_update) < std::chrono::milliseconds(GAMEPAD_UPDATE_INTERVAL_MS)) {
+            return;
+        }
+        m_prev_gamepad_update = now;
+
         for (auto& gamepad : m_gamepads) {
             gamepad.Update();
         }

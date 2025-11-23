@@ -55,6 +55,10 @@ namespace QCE {
         HWND GetHwnd() const noexcept { return m_hwnd; }
 
     private:
+        using clock = std::chrono::steady_clock;
+
+        static constexpr auto GAMEPAD_UPDATE_INTERVAL_MS = 1; // 1000 Hz
+
         ErrorCode Init();
 
         LRESULT MessageProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -75,6 +79,7 @@ namespace QCE {
             XInputGamepad(2),
             XInputGamepad(3)
         };
+        clock::time_point m_prev_gamepad_update = clock::now();
     };
 }
 

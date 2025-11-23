@@ -20,12 +20,6 @@ namespace QCE {
             m_id(id) {}
 
         void Update() noexcept {
-            auto now = clock::now();
-            if ((now - m_last_poll_time) < std::chrono::milliseconds(GAMEPAD_POLL_INTERVAL_MS)) {
-                return;
-            }
-            m_last_poll_time = now;
-
             XINPUT_STATE state{};
             DWORD res = XInputGetState(m_id, &state);
             if (res != ERROR_SUCCESS) {
@@ -114,16 +108,10 @@ namespace QCE {
         }
 
     private:
-        using clock = std::chrono::steady_clock;
-
-        static constexpr auto GAMEPAD_POLL_INTERVAL_MS = 1; // 1000 Hz
-
         const uint8_t m_id;
 
         bool m_is_connected = false;
         WORD m_prev_buttons_state = 0;
-
-        clock::time_point m_last_poll_time = clock::now();
 
         // TODO: event handler
     };
