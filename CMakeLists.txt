@@ -100,7 +100,9 @@ set(QCE_RENDERS
 
 set(QCE_HID
     include/qce/hid/events.hpp
+
     include/qce/hid/win_events.hpp
+    include/qce/hid/win_gamepad.hpp
 )
 
 set(QCE_ANCILLARY
@@ -224,6 +226,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
             D3D12.lib
             DXGI.lib
+
+            xinput.lib
     )
 endif()
 

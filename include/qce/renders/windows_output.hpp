@@ -6,6 +6,9 @@
 #pragma once
 
 #include <qce/renders/render_base.hpp>
+#include <qce/hid/win_gamepad.hpp>
+
+#include <array>
 
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
@@ -35,6 +38,7 @@ namespace QCE {
                     DispatchMessage(&msg);
                 }
                 else {
+                    GamepadsProcess();
                     QCE_CRITICAL(app->StepForward());
                 }
             }
@@ -54,6 +58,7 @@ namespace QCE {
         ErrorCode Init();
 
         LRESULT MessageProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+        void GamepadsProcess() noexcept;
 
         GraphicsOutputConfig m_config{};
         const std::wstring m_class_name;
@@ -63,6 +68,13 @@ namespace QCE {
         bool  m_handle_next_mouse_move = false;
         float m_prev_mouse_x = 0.0f;
         float m_prev_mouse_y = 0.0f;
+
+        std::array<XInputGamepad, XUSER_MAX_COUNT> m_gamepads{
+            XInputGamepad(0),
+            XInputGamepad(1),
+            XInputGamepad(2),
+            XInputGamepad(3)
+        };
     };
 }
 

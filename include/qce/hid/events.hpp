@@ -9,6 +9,7 @@
 #include <cassert>
 #include <string>
 #include <sstream>
+#include <chrono>
 
 #include <stdint.h>
 
@@ -41,7 +42,7 @@ namespace QCE {
                    CU_ENUM_UNIT(E_HEC_MOUSE_B5) \
                    CU_ENUM_UNIT(E_HEC_MOUSE_SCROLL) /* wo UP/DOWN */ \
                    CU_ENUM_UNIT(E_HEC_MOUSE_MOVE)   /* wo UP/DOWN */ \
-            CU_VALUED_ENUM_UNIT(E_HEC_GAMEPAD_LOGO, 13) \
+            CU_VALUED_ENUM_UNIT(E_HEC_GAMEPAD_CONNECTED, 13) /* wo DOWN(1) - on, UP(0) - off */ \
                    CU_ENUM_UNIT(E_HEC_GAMEPAD_START) \
                    CU_ENUM_UNIT(E_HEC_GAMEPAD_SELECT) \
                    CU_ENUM_UNIT(E_HEC_GAMEPAD_LPAD_UP) \
@@ -158,6 +159,7 @@ namespace QCE {
 
         if ((code == HidEventCode::E_HEC_MOUSE_SCROLL) ||
             (code == HidEventCode::E_HEC_MOUSE_MOVE)   ||
+            (code == HidEventCode::E_HEC_GAMEPAD_CONNECTED) ||
             (code == HidEventCode::E_HEC_GAMEPAD_LTRIGGER) ||
             (code == HidEventCode::E_HEC_GAMEPAD_RTRIGGER) ||
             (code == HidEventCode::E_HEC_GAMEPAD_LSTICK_MOVE) ||
@@ -196,7 +198,7 @@ namespace QCE {
     }
 
     static inline constexpr bool hid_event_is_gamepad(HidEventCode code) noexcept {
-        return (code >= HidEventCode::E_HEC_GAMEPAD_LOGO) &&
+        return (code >= HidEventCode::E_HEC_GAMEPAD_CONNECTED) &&
                (code <= HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE);
     }
 
@@ -253,31 +255,53 @@ namespace QCE {
     struct HidEvent {
         int32_t descriptor = 255; // 0..6 - HidEventCode
                                   // 8 - is button, 7 - is button up (0) or down (1)
+                                  // 12..15 - device id
         static constexpr int32_t CODE_MASK      = 0x0000007F;
         static constexpr int32_t IS_BUTTON_MASK = 0x00000100;
         static constexpr int32_t IS_DOWN_MASK   = 0x00000080;
+        static constexpr int32_t DEVICE_ID_MASK = 0x0000F000;
+
+        static constexpr int DEVICE_ID_OFFSET = 12;
 
         float    param1 = 0.0f;
         float    param2 = 0.0f;
+
+        // TODO: timepoint
+
+        constexpr int32_t GetDeviceId() const noexcept {
+            return (descriptor & DEVICE_ID_MASK) >> DEVICE_ID_OFFSET;
+        }
     };
 
-    static inline constexpr HidEvent hid_event_on_button_up(HidEventCode code) noexcept {
+    static inline constexpr HidEvent hid_event_on_button_up(HidEventCode code, uint8_t device_id = 0) noexcept {
         assert(hid_event_is_button(code));
         assert(!hid_event_is_mouse(code));
         assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_NONE);
 
+        int event_descriptor = code | HidEvent::IS_BUTTON_MASK;
+        if (hid_event_is_gamepad(code)) {
+            assert(device_id < 16);
+            event_descriptor |= (device_id << HidEvent::DEVICE_ID_OFFSET);
+        }
+
         return {
-            .descriptor = code | HidEvent::IS_BUTTON_MASK
+            .descriptor = event_descriptor
         };
     }
 
-    static inline constexpr HidEvent hid_event_on_button_down(HidEventCode code) noexcept {
+    static inline constexpr HidEvent hid_event_on_button_down(HidEventCode code, uint8_t device_id = 0) noexcept {
         assert(hid_event_is_button(code));
         assert(!hid_event_is_mouse(code));
         assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_NONE);
 
+        int event_descriptor = code | HidEvent::IS_BUTTON_MASK | HidEvent::IS_DOWN_MASK;
+        if (hid_event_is_gamepad(code)) {
+            assert(device_id < 16);
+            event_descriptor |= (device_id << HidEvent::DEVICE_ID_OFFSET);
+        }
+
         return {
-            .descriptor = code | HidEvent::IS_BUTTON_MASK | HidEvent::IS_DOWN_MASK
+            .descriptor = event_descriptor
         };
     }
 
@@ -327,25 +351,36 @@ namespace QCE {
         };
     }
 
+    static inline constexpr HidEvent hid_event_on_gamepad_connection(uint8_t device_id, bool is_connected) noexcept {
+        static_assert(
+            HID_EVENT_PARAM_TYPES[HidEventCode::E_HEC_GAMEPAD_CONNECTED] == HidEventParamType::E_HEPT_NONE,
+            "Gamepad (dis)connection doesn't have any params");
+
+        return {
+            .descriptor = HidEventCode::E_HEC_GAMEPAD_CONNECTED | (device_id << HidEvent::DEVICE_ID_OFFSET) |
+                          (is_connected ? HidEvent::IS_DOWN_MASK : 0)
+        };
+    }
+
     static inline constexpr HidEvent hid_event_on_trigger(
-            HidEventCode code, float intensity) noexcept {
+            uint8_t device_id, HidEventCode code, float intensity) noexcept {
         assert((code == HidEventCode::E_HEC_GAMEPAD_LTRIGGER) || (code == HidEventCode::E_HEC_GAMEPAD_RTRIGGER));
         assert(intensity >= 0.0f && intensity <= 1.0f);
         assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_INTENSITY);
 
         return {
-            .descriptor = code,
+            .descriptor = code | (device_id << HidEvent::DEVICE_ID_OFFSET),
             .param1 = intensity
         };
     }
 
     static inline constexpr HidEvent hid_event_on_stick(
-            HidEventCode code, float delta_x, float delta_y) noexcept {
+            uint8_t device_id, HidEventCode code, float delta_x, float delta_y) noexcept {
         assert((code == HidEventCode::E_HEC_GAMEPAD_LSTICK_MOVE) || (code == HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE));
         assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_DISPLACEMENT);
 
         return {
-            .descriptor = code,
+            .descriptor = code | (device_id << HidEvent::DEVICE_ID_OFFSET),
             .param1     = delta_x,
             .param2     = delta_y
         };
@@ -356,7 +391,13 @@ namespace QCE {
         bool is_button = hid_event.descriptor & HidEvent::IS_BUTTON_MASK;
         assert(is_button == hid_event_is_button(code));
 
-        auto result = hid_event_describe(code);
+        std::string result = "";
+        if (hid_event_is_gamepad(code)) {
+            auto device_id = hid_event.GetDeviceId();
+            result = "Device ID: " + std::to_string(device_id) + ", ";
+        }
+
+        result += hid_event_describe(code);
         if (is_button) {
             bool is_down = hid_event.descriptor & HidEvent::IS_DOWN_MASK;
             result += is_down ? " DOWN" : " UP";
@@ -370,9 +411,14 @@ namespace QCE {
             result += " intensity: " + std::to_string(hid_event.param1);
         }
         if (hid_event_has_displacement(code)) {
-            result += " displacement: " + 
+            result += " displacement: " +
                 std::to_string(hid_event.param1) + ", " +
                 std::to_string(hid_event.param2);
+        }
+
+        if (HidEventCode::E_HEC_GAMEPAD_CONNECTED == code) {
+            bool is_down = hid_event.descriptor & HidEvent::IS_DOWN_MASK;
+            result += is_down ? " connected" : " disconnected";
         }
 
         return result;

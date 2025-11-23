@@ -142,6 +142,8 @@ namespace QCE {
         }
         case WM_MOUSEMOVE:
         {
+            // TODO - check do we need this handler and early exit if we don't
+
             auto [x, y] = get_mouse_position(lParam);
             float dx = x - m_prev_mouse_x;
             float dy = y - m_prev_mouse_y;
@@ -202,5 +204,13 @@ namespace QCE {
         }
 
         return DefWindowProc(hwnd, msg, wParam, lParam);
+    }
+
+    void WinNtWindow::GamepadsProcess() noexcept {
+        // TODO - check do we need this handler and early exit if we don't
+
+        for (auto& gamepad : m_gamepads) {
+            gamepad.Update();
+        }
     }
 }
