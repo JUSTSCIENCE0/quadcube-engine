@@ -14,16 +14,6 @@
 #include <stdint.h>
 
 namespace QCE {
-    /*
-    Events: 
-        Button Down
-        Button Up
-        Wheel Scroll
-        Mouse Move
-        Trigger Press
-        Stick Move
-    */
-
     static constexpr auto FUNC_KEYS_COUNT = 12;
 
     #define CU_ENUMS_DESCRIPTION \
@@ -138,6 +128,11 @@ namespace QCE {
     static inline constexpr bool hid_event_has_parameters(HidEventCode code) noexcept {
         assert(hid_event_code_is_valid(code));
         return HID_EVENT_PARAM_TYPES[code] != HidEventParamType::E_HEPT_NONE;
+    }
+
+    static inline constexpr HidEventParamType hid_event_get_param_type(HidEventCode code) noexcept {
+        assert(hid_event_code_is_valid(code));
+        return HID_EVENT_PARAM_TYPES[code];
     }
 
     static inline constexpr bool hid_event_has_coordinates(HidEventCode code) noexcept {
@@ -271,6 +266,9 @@ namespace QCE {
 
         clock::time_point timestamp = clock::now();
 
+        constexpr HidEventCode GetCode() const noexcept {
+            return HidEventCode(descriptor & CODE_MASK);
+        }
         constexpr int32_t GetDeviceId() const noexcept {
             return (descriptor & DEVICE_ID_MASK) >> DEVICE_ID_OFFSET;
         }
@@ -390,7 +388,7 @@ namespace QCE {
     }
 
     static inline std::string hid_event_describe(const HidEvent& hid_event) noexcept {
-        auto code = HidEventCode(hid_event.descriptor & HidEvent::CODE_MASK);
+        auto code = hid_event.GetCode();
         bool is_button = hid_event.descriptor & HidEvent::IS_BUTTON_MASK;
         assert(is_button == hid_event_is_button(code));
 

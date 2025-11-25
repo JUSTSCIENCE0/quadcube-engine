@@ -7,6 +7,7 @@
 
 #include <qce/renders/render_base.hpp>
 #include <qce/hid/win_gamepad.hpp>
+#include <qce/hid/events_handler.hpp>
 
 #include <array>
 
@@ -19,6 +20,7 @@ namespace QCE {
     public:
         explicit WinNtWindow(
             GraphicsOutputConfig initial_config,
+            HidEventsManager& hid_events_manager,
             std::wstring class_name = L"QceMainWindow");
         WinNtWindow(const WinNtWindow&) = delete;
         WinNtWindow(WinNtWindow&&) = delete;
@@ -73,13 +75,13 @@ namespace QCE {
         float m_prev_mouse_x = 0.0f;
         float m_prev_mouse_y = 0.0f;
 
+        HidEventsManager& m_hid_events_manager;
         std::array<XInputGamepad, XUSER_MAX_COUNT> m_gamepads{
-            XInputGamepad(0),
-            XInputGamepad(1),
-            XInputGamepad(2),
-            XInputGamepad(3)
+            XInputGamepad(0, m_hid_events_manager),
+            XInputGamepad(1, m_hid_events_manager),
+            XInputGamepad(2, m_hid_events_manager),
+            XInputGamepad(3, m_hid_events_manager)
         };
         clock::time_point m_prev_gamepad_update = clock::now();
     };
 }
-

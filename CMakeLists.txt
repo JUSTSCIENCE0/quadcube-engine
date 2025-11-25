@@ -100,6 +100,7 @@ set(QCE_RENDERS
 
 set(QCE_HID
     include/qce/hid/events.hpp
+    include/qce/hid/events_handler.hpp
 
     include/qce/hid/win_events.hpp
     include/qce/hid/win_gamepad.hpp

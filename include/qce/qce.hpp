@@ -73,7 +73,9 @@ namespace QCE {
                 const ApplicationConfig& initial_config)
         try :
             m_config(initial_config),
-            m_graphics_output(m_config.graphics_output) {
+            m_graphics_output(
+                m_config.graphics_output,
+                m_hid_events_manager) {
 #ifdef WIN32
             auto window = m_graphics_output.GetHwnd();
             auto app = nullptr;
@@ -116,15 +118,13 @@ namespace QCE {
         ErrorCode StepForward() {
             FrameTime::Get().NextFrame();
 
+            m_hid_events_manager.Process();
+
             assert(m_render);
             return m_render->Draw();
         }
 
         ApplicationConfig m_config{};
-        GraphicsOutput m_graphics_output;
-        // TODO: additional graphics outputs
-
-        std::shared_ptr<RenderBase> m_render{};
 
         ResourceManager m_rm {
             m_config.render.render_type,
@@ -134,6 +134,13 @@ namespace QCE {
             m_rm
         };
         // TODO: Level & World;
+
+        HidEventsManager m_hid_events_manager{};
+
+        GraphicsOutput m_graphics_output;
+        // TODO: additional graphics outputs
+
+        std::shared_ptr<RenderBase> m_render{};
     };
 }
 
