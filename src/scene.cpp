@@ -13,7 +13,7 @@ namespace QCE {
         if (m_entities.end() != m_entities.find(name))
             return ErrorCode::E_ENG_ENTITY_ALREADY_EXISTS;
 
-        auto entity = m_resource_manager.AddAndGetEntity(
+        auto entity = ResourceManager::Get().AddAndGetEntity(
             name, model, start_transform);
         assert(entity);
         assert(entity->m_name == name);
@@ -54,7 +54,7 @@ namespace QCE {
     ErrorCode Scene::UseShader(const std::string& name, ShaderType type) {
         if (m_shaders[type])
             return ErrorCode::E_ENG_SHADER_ALREADY_SELECTED;
-        auto shader = m_resource_manager.GetShader(name, type);
+        auto shader = ResourceManager::Get().GetShader(name, type);
         if (!shader)
             return ErrorCode::E_ENG_SHADER_NOT_FOUND;
 

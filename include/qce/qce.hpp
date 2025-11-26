@@ -64,7 +64,7 @@ namespace QCE {
         }
 
         // for prototyping only
-        ResourceManager& Resources() { return m_rm; }
+        ResourceManager& Resources() { return ResourceManager::Get(); }
         // for prototyping only
         Scene& CurrentScene() { return m_current_scene; }
 
@@ -76,6 +76,8 @@ namespace QCE {
             m_graphics_output(
                 m_config.graphics_output,
                 m_hid_events_manager) {
+            ResourceManager::Initialize(m_config.render.render_type);
+
 #ifdef WIN32
             auto window = m_graphics_output.GetHwnd();
             auto app = nullptr;
@@ -125,13 +127,8 @@ namespace QCE {
         }
 
         ApplicationConfig m_config{};
-
-        ResourceManager m_rm {
-            m_config.render.render_type,
-        };
         Scene m_current_scene{
-            m_config.render.render_type,
-            m_rm
+            m_config.render.render_type
         };
         // TODO: Level & World;
 

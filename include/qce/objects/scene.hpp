@@ -30,11 +30,8 @@ namespace QCE {
             Cameras& cameras;
         };
 
-        explicit Scene(
-                RenderType render_type,
-                ResourceManager& rm) :
-            m_render_type(render_type),
-            m_resource_manager(rm) {}
+        explicit Scene(RenderType render_type):
+            m_render_type(render_type) {}
         Scene(const Scene&) = delete;
         Scene(Scene&&) = delete;
         Scene& operator=(const Scene&) = delete;
@@ -76,8 +73,6 @@ namespace QCE {
         static constexpr float MIN_FOV_DEG = 30.0f;
 
         RenderType m_render_type = DEFAULT_RENDER_TYPE;
-
-        ResourceManager& m_resource_manager;
 
         Entities m_entities{};
         Shaders  m_shaders{};

@@ -14,20 +14,26 @@
 #include <unordered_map>
 #include <concepts>
 #include <type_traits>
+#include <memory>
 
 namespace QCE {
     class ResourceManager final {
     public:
-        ResourceManager(
-                RenderType render_type) :
-            m_render_type(render_type),
-            m_resources_directory(GetResourcesDirectory()),
-            m_shaders_bytecode_directory(m_resources_directory / SHADERS_BYTECODE_SUBDIRECTORY) {}
-
         ResourceManager(const ResourceManager&) = delete;
         ResourceManager(ResourceManager&&) = delete;
         ResourceManager& operator=(const ResourceManager&) = delete;
         ResourceManager& operator=(ResourceManager&&) = delete;
+
+        // singleton access
+        static void Initialize(RenderType render_type) {
+            assert(m_instance == nullptr);
+            m_instance = std::unique_ptr<ResourceManager>(
+                new ResourceManager(render_type));
+        }
+        static ResourceManager& Get() {
+            assert(m_instance != nullptr);
+            return *m_instance;
+        }
 
         template<typename SharedMesh>
         requires std::same_as<std::remove_cvref_t<SharedMesh>, std::shared_ptr<Mesh>>
@@ -72,6 +78,16 @@ namespace QCE {
         //  Add Entity (as shared_ptr)
 
     private:
+        /// ctor
+        explicit ResourceManager(
+            RenderType render_type) :
+                m_render_type(render_type),
+                m_resources_directory(GetResourcesDirectory()),
+                m_shaders_bytecode_directory(m_resources_directory / SHADERS_BYTECODE_SUBDIRECTORY) {}
+
+        /// singleton
+        static inline std::unique_ptr<ResourceManager> m_instance = nullptr;
+
         /// types
         template <typename T>
         using Storage = std::unordered_map<std::string, std::shared_ptr<T>>;
