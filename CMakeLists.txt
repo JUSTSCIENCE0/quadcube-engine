@@ -76,6 +76,7 @@ set(QCE_OBJECTS
     include/qce/objects/figures.hpp
     include/qce/objects/shader.hpp
     include/qce/objects/camera.hpp
+    include/qce/objects/command.hpp
 )
 
 set(QCE_MATH
