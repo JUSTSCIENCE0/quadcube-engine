@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <qce/objects/command.hpp>
+
 #include <array>
 #include <cassert>
 #include <string>
@@ -247,7 +249,13 @@ namespace QCE {
 
     /// HidEvent structure and helpers
 
-    struct HidEvent {
+    struct HidEvent : CommandContext {
+        HidEvent(int32_t descr = 255, float p1 = 0.0f, float p2 = 0.0f):
+            CommandContext(CommandContextType::E_CCT_HID_EVENT),
+            descriptor(descr),
+            param1(p1),
+            param2(p2) {}
+
         using clock = std::chrono::steady_clock;
 
         static constexpr int32_t CODE_MASK      = 0x0000007F;
@@ -285,9 +293,7 @@ namespace QCE {
             event_descriptor |= (device_id << HidEvent::DEVICE_ID_OFFSET);
         }
 
-        return {
-            .descriptor = event_descriptor
-        };
+        return { event_descriptor };
     }
 
     static inline HidEvent hid_event_on_button_down(HidEventCode code, uint8_t device_id = 0) noexcept {
@@ -301,31 +307,21 @@ namespace QCE {
             event_descriptor |= (device_id << HidEvent::DEVICE_ID_OFFSET);
         }
 
-        return {
-            .descriptor = event_descriptor
-        };
+        return { event_descriptor };
     }
 
     static inline HidEvent hid_event_on_mouse_button_up(HidEventCode code, float x, float y) noexcept {
         assert(hid_event_is_button(code));
         assert(hid_event_is_mouse(code));
         assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_COORDINATES);
-        return {
-            .descriptor = code | HidEvent::IS_BUTTON_MASK,
-            .param1     = x,
-            .param2     = y
-        };
+        return { code | HidEvent::IS_BUTTON_MASK, x, y };
     }
 
     static inline HidEvent hid_event_on_mouse_button_down(HidEventCode code, float x, float y) noexcept {
         assert(hid_event_is_button(code));
         assert(hid_event_is_mouse(code));
         assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_COORDINATES);
-        return {
-            .descriptor = code | HidEvent::IS_BUTTON_MASK | HidEvent::IS_DOWN_MASK,
-            .param1     = x,
-            .param2     = y
-        };
+        return { code | HidEvent::IS_BUTTON_MASK | HidEvent::IS_DOWN_MASK, x, y };
     }
 
     static inline HidEvent hid_event_on_scroll(float intensity) noexcept {
@@ -334,10 +330,7 @@ namespace QCE {
             "Mouse scroll have to include intensity");
 
         assert(intensity >= -1.0f && intensity <= 1.0f);
-        return {
-            .descriptor = HidEventCode::E_HEC_MOUSE_SCROLL,
-            .param1     = intensity
-        };
+        return { HidEventCode::E_HEC_MOUSE_SCROLL, intensity };
     }
 
     static inline HidEvent hid_event_on_mouse_move(float delta_x, float delta_y) noexcept {
@@ -345,11 +338,7 @@ namespace QCE {
             HID_EVENT_PARAM_TYPES[HidEventCode::E_HEC_MOUSE_MOVE] == HidEventParamType::E_HEPT_DISPLACEMENT,
             "Mouse move have to include displacement");
 
-        return {
-            .descriptor = HidEventCode::E_HEC_MOUSE_MOVE,
-            .param1     = delta_x,
-            .param2     = delta_y
-        };
+        return { HidEventCode::E_HEC_MOUSE_MOVE, delta_x, delta_y };
     }
 
     static inline HidEvent hid_event_on_gamepad_connection(uint8_t device_id, bool is_connected) noexcept {
@@ -357,9 +346,10 @@ namespace QCE {
             HID_EVENT_PARAM_TYPES[HidEventCode::E_HEC_GAMEPAD_CONNECTED] == HidEventParamType::E_HEPT_NONE,
             "Gamepad (dis)connection doesn't have any params");
 
-        return {
-            .descriptor = HidEventCode::E_HEC_GAMEPAD_CONNECTED | (device_id << HidEvent::DEVICE_ID_OFFSET) |
-                          (is_connected ? HidEvent::IS_DOWN_MASK : 0)
+        return { 
+            HidEventCode::E_HEC_GAMEPAD_CONNECTED |
+            (device_id << HidEvent::DEVICE_ID_OFFSET) |
+            (is_connected ? HidEvent::IS_DOWN_MASK : 0)
         };
     }
 
@@ -369,10 +359,7 @@ namespace QCE {
         assert(intensity >= 0.0f && intensity <= 1.0f);
         assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_INTENSITY);
 
-        return {
-            .descriptor = code | (device_id << HidEvent::DEVICE_ID_OFFSET),
-            .param1 = intensity
-        };
+        return { code | (device_id << HidEvent::DEVICE_ID_OFFSET), intensity };
     }
 
     static inline HidEvent hid_event_on_stick(
@@ -380,11 +367,7 @@ namespace QCE {
         assert((code == HidEventCode::E_HEC_GAMEPAD_LSTICK_MOVE) || (code == HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE));
         assert(HID_EVENT_PARAM_TYPES[code] == HidEventParamType::E_HEPT_DISPLACEMENT);
 
-        return {
-            .descriptor = code | (device_id << HidEvent::DEVICE_ID_OFFSET),
-            .param1     = delta_x,
-            .param2     = delta_y
-        };
+        return { code | (device_id << HidEvent::DEVICE_ID_OFFSET), delta_x, delta_y };
     }
 
     static inline std::string hid_event_describe(const HidEvent& hid_event) noexcept {
