@@ -17,10 +17,8 @@ namespace QCE {
     class XInputGamepad final {
     public:
         explicit XInputGamepad(
-                uint8_t id,
-                HidEventsManager& hid_events_manager) noexcept :
-            m_id(id),
-            m_hid_events_manager(hid_events_manager) {}
+                uint8_t id) noexcept :
+            m_id(id) {}
 
         void Update() noexcept {
             XINPUT_STATE state{};
@@ -52,7 +50,7 @@ namespace QCE {
                     auto event = (g.wButtons & ButtonConst) ? \
                         hid_event_on_button_down(EventCode, m_id) : \
                         hid_event_on_button_up(EventCode, m_id); \
-                    m_hid_events_manager.PushEvent(event); \
+                    HidEventsManager::Get().PushEvent(event); \
                 }
 
                 HANDLE_GAMEPAD_BUTTON(XINPUT_GAMEPAD_A, HidEventCode::E_HEC_GAMEPAD_RPAD_DOWN)
@@ -80,12 +78,12 @@ namespace QCE {
 
             if (g.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD) {
                 float intensity = float(g.bLeftTrigger) / 255.0f;
-                m_hid_events_manager.PushEvent(
+                HidEventsManager::Get().PushEvent(
                     hid_event_on_trigger(m_id, HidEventCode::E_HEC_GAMEPAD_LTRIGGER, intensity));
             }
             if (g.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD) {
                 float intensity = float(g.bRightTrigger) / 255.0f;
-                m_hid_events_manager.PushEvent(
+                HidEventsManager::Get().PushEvent(
                     hid_event_on_trigger(m_id, HidEventCode::E_HEC_GAMEPAD_RTRIGGER, intensity));
             }
 
@@ -93,14 +91,14 @@ namespace QCE {
                 (std::abs(g.sThumbLY) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)) {
                 float dx = float(g.sThumbLX) / 32767.0f;
                 float dy = float(g.sThumbLY) / 32767.0f;
-                m_hid_events_manager.PushEvent(
+                HidEventsManager::Get().PushEvent(
                     hid_event_on_stick(m_id, HidEventCode::E_HEC_GAMEPAD_LSTICK_MOVE, dx, dy));
             }
             if ((std::abs(g.sThumbRX) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) ||
                 (std::abs(g.sThumbRY) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)) {
                 float dx = float(g.sThumbRX) / 32767.0f;
                 float dy = float(g.sThumbRY) / 32767.0f;
-                m_hid_events_manager.PushEvent(
+                HidEventsManager::Get().PushEvent(
                     hid_event_on_stick(m_id, HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE, dx, dy));
             }
         }
@@ -110,7 +108,5 @@ namespace QCE {
 
         bool m_is_connected = false;
         WORD m_prev_buttons_state = 0;
-
-        HidEventsManager& m_hid_events_manager;
     };
 }

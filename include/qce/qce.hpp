@@ -67,6 +67,8 @@ namespace QCE {
         ResourceManager& Resources() { return ResourceManager::Get(); }
         // for prototyping only
         Scene& CurrentScene() { return m_current_scene; }
+        // for prototyping only
+        HidEventsManager& HidManager() { return HidEventsManager::Get(); }
 
     private:
         explicit Application(
@@ -74,8 +76,7 @@ namespace QCE {
         try :
             m_config(initial_config),
             m_graphics_output(
-                m_config.graphics_output,
-                m_hid_events_manager) {
+                m_config.graphics_output) {
             ResourceManager::Initialize(m_config.render.render_type);
 
 #ifdef WIN32
@@ -120,7 +121,7 @@ namespace QCE {
         ErrorCode StepForward() {
             FrameTime::Get().NextFrame();
 
-            m_hid_events_manager.Process();
+            HidEventsManager::Get().Process();
 
             assert(m_render);
             return m_render->Draw();
@@ -131,8 +132,6 @@ namespace QCE {
             m_config.render.render_type
         };
         // TODO: Level & World;
-
-        HidEventsManager m_hid_events_manager{};
 
         GraphicsOutput m_graphics_output;
         // TODO: additional graphics outputs

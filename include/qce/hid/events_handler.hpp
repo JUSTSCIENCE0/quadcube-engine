@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/hid/events.hpp>
+#include <qce/objects/resource_manager.hpp>
 
 #include <deque>
 #include <optional>
@@ -39,17 +40,37 @@ namespace QCE {
     };
     // TODO - HidAccordEvent, HidComboEvent
 
+    struct HidDescribe : Command {
+        HidDescribe() :
+            Command("HidDescribe") {}
+        ErrorCode Execute(const CommandContext* context) override {
+            assert(context);
+            assert(context->type == CommandContextType::E_CCT_HID_EVENT);
+            auto hid_event = static_cast<const HidEvent*>(context);
+
+            // TODO - use log system
+            std::cout << hid_event_describe(hid_event->GetCode()) << std::endl;
+            return ErrorCode::SUCCESS;
+        }
+    };
+
     class HidEventsManager {
     public:
         using Config = std::vector<std::unique_ptr<HidEventDescriptor>>;
+
+        static HidEventsManager& Get() {
+            static HidEventsManager instance{};
+            return instance;
+        }
 
         ErrorCode Setup(const Config& config) {
             for (const auto& descr : config) {
                 assert(descr);
                 switch (descr->type) {
                 case HidEventType::E_HET_SINGLE: {
-                    // auto single_descr = static_cast<const HidSingleEvent*>(descr.get());
-                    //m_single_event_handlers[single_descr->code] = Get from ResourceManager
+                    auto single_descr = static_cast<const HidSingleEvent*>(descr.get());
+                    m_single_event_handlers[single_descr->code] =
+                        ResourceManager::Get().GetCommand(single_descr->handler);
                     break;
                 }
                 case HidEventType::E_HET_ACCORD: {
@@ -87,13 +108,22 @@ namespace QCE {
 
     private:
         using HidEventsQueue = std::deque<HidEvent>;
-        using SingleEventHandlersMap = std::array<std::unique_ptr<Command>, HidEventCode::E_HEC_COUNT>;
+        using SingleEventHandlersMap = std::array<std::shared_ptr<Command>, HidEventCode::E_HEC_COUNT>;
+
+        HidEventsManager() {
+            // register default handler
+            QCE_THROW_CRITICAL(
+                ResourceManager::Get().AddCommand(
+                    std::make_unique<HidDescribe>()
+                )
+            );
+        }
 
         void ProcessSingleEvents() {
             for (const auto& event : m_events_queue) {
-                
-                // TODO - handle
-                std::cout << hid_event_describe(event) << std::endl;
+                auto& handler = m_single_event_handlers[event.GetCode()];
+                if (handler)
+                    handler->Execute(&event);
             }
             m_events_queue.clear();
         }
