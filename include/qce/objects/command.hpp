@@ -23,14 +23,17 @@ namespace QCE {
             CommandContextType::E_CommandContextType_UNKNOWN;
     };
 
-    class Command {
-    public:
+    struct Command {
+        explicit Command(std::string name) :
+            m_name(std::move(name)) {}
         Command(const Command&) = delete;
         Command(Command&&) = delete;
         Command& operator=(const Command&) = delete;
         Command& operator=(Command&&) = delete;
         virtual ~Command() = default;
 
-        virtual ErrorCode Execute(CommandContext* context) = 0;
+        virtual ErrorCode Execute(const CommandContext* context) = 0;
+
+        const std::string m_name;
     };
 }

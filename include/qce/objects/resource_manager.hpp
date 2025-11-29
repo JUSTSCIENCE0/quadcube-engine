@@ -8,6 +8,7 @@
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/objects/entity.hpp>
 #include <qce/objects/figures.hpp>
+#include <qce/objects/command.hpp>
 
 #include <cu/file-utils.hpp>
 
@@ -56,6 +57,7 @@ namespace QCE {
         ErrorCode AddShader(
             const std::string& shader_name,
             ShaderType shader_type);
+        ErrorCode AddCommand(std::unique_ptr<Command>&& command);
 
         std::shared_ptr<Entity> AddAndGetEntity(
             const std::string& entity_name,
@@ -64,6 +66,7 @@ namespace QCE {
 
         std::shared_ptr<Model> GetModel(const std::string& name);
         std::shared_ptr<Shader> GetShader(const std::string& shader_name, ShaderType shader_type);
+        std::shared_ptr<Command> GetCommand(const std::string& command_name);
 
         // TODO:
         // Mesh
@@ -104,9 +107,10 @@ namespace QCE {
         const std::filesystem::path m_resources_directory;
         const std::filesystem::path m_shaders_bytecode_directory;
 
-        Storage<Mesh>   m_meshes{};
-        Storage<Model>  m_models{};
-        Storage<Entity> m_entities{};
-        Storage<Shader> m_shaders{};
+        Storage<Mesh>    m_meshes{};
+        Storage<Model>   m_models{};
+        Storage<Entity>  m_entities{};
+        Storage<Shader>  m_shaders{};
+        Storage<Command> m_commands{};
     };
 }
