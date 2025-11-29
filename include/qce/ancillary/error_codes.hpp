@@ -73,6 +73,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_RM_SHADER_ALREADY_EXISTS) \
         CU_ENUM_UNIT(E_RM_BAD_RESOURCES_DIRECTORY) \
         CU_ENUM_UNIT(E_RM_COMMAND_ALREADY_EXISTS) \
+        CU_ENUM_UNIT(E_RM_COMMAND_NOT_FOUND) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -251,6 +252,12 @@ namespace QCE {
             break;
         case ErrorCode::E_RM_BAD_RESOURCES_DIRECTORY:
             result << "Resource Manager - Resources directory not exists";
+            break;
+        case ErrorCode::E_RM_COMMAND_ALREADY_EXISTS:
+            result << "Resource Manager - Command with such Id already exitst";
+            break;
+        case ErrorCode::E_RM_COMMAND_NOT_FOUND:
+            result << "Resource Manager - Command with such Id not found";
             break;
 
         default:
