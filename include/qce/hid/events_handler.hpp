@@ -49,7 +49,7 @@ namespace QCE {
             auto hid_event = static_cast<const HidEvent*>(context);
 
             // TODO - use log system
-            std::cout << hid_event_describe(hid_event->GetCode()) << std::endl;
+            std::cout << hid_event_describe(*hid_event) << std::endl;
             return ErrorCode::SUCCESS;
         }
     };
@@ -71,6 +71,8 @@ namespace QCE {
                     auto single_descr = static_cast<const HidSingleEvent*>(descr.get());
                     m_single_event_handlers[single_descr->code] =
                         ResourceManager::Get().GetCommand(single_descr->handler);
+                    if (!m_single_event_handlers[single_descr->code])
+                        return ErrorCode::E_RM_COMMAND_NOT_FOUND;
                     break;
                 }
                 case HidEventType::E_HET_ACCORD: {
@@ -120,6 +122,14 @@ namespace QCE {
         }
 
         void ProcessSingleEvents() {
+            if (m_single_event_handlers[HidEventCode::E_HEC_MOUSE_MOVE] &&
+                m_move_event.has_value()) {
+                auto& handler = m_single_event_handlers[HidEventCode::E_HEC_MOUSE_MOVE];
+                if (handler)
+                    handler->Execute(&m_move_event.value());
+                m_move_event.reset();
+            }
+
             for (const auto& event : m_events_queue) {
                 auto& handler = m_single_event_handlers[event.GetCode()];
                 if (handler)
