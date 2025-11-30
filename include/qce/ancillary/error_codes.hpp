@@ -66,6 +66,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_ENG_WRONG_FOV) \
         CU_ENUM_UNIT(E_ENG_WRONG_ASPECT) \
         CU_ENUM_UNIT(E_ENG_WRONG_ZLIMITS) \
+        CU_ENUM_UNIT(E_ENG_UNSUPPORTED_EVENT_TYPE) \
         CU_VALUED_ENUM_UNIT(GROUP_RESOURCE_MANAGER, 0x60000) \
         CU_ENUM_UNIT(E_RM_MESH_ID_COLLISION) \
         CU_ENUM_UNIT(E_RM_MODEL_ID_COLLISION) \
@@ -235,6 +236,9 @@ namespace QCE {
             break;
         case ErrorCode::E_ENG_WRONG_ZLIMITS:
             result << "ENGINE - Selected invalid Z-limits";
+            break;
+        case ErrorCode::E_ENG_UNSUPPORTED_EVENT_TYPE:
+            result << "ENGINE - Unsupported event type";
             break;
 
         /* Group Resource Manager*/
