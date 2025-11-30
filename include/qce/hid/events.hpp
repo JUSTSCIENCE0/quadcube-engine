@@ -280,6 +280,10 @@ namespace QCE {
         constexpr int32_t GetDeviceId() const noexcept {
             return (descriptor & DEVICE_ID_MASK) >> DEVICE_ID_OFFSET;
         }
+        constexpr bool IsButtonDown() const noexcept {
+            assert(descriptor & IS_BUTTON_MASK);
+            return (descriptor & IS_DOWN_MASK) != 0;
+        }
     };
 
     static inline HidEvent hid_event_on_button_up(HidEventCode code, uint8_t device_id = 0) noexcept {
