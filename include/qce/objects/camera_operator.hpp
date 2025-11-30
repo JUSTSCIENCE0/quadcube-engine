@@ -28,22 +28,38 @@ namespace QCE {
 
     class CameraOperator {
     public:
-        explicit CameraOperator(std::string id, Camera& camera):
+        explicit CameraOperator(std::string id, std::weak_ptr<Camera> camera):
             m_name(std::move(id)),
-            m_camera(camera) {}
+            m_camera(std::move(camera)) {}
+        CameraOperator(const CameraOperator&) = delete;
+        CameraOperator(CameraOperator&&) = delete;
+        CameraOperator& operator=(const CameraOperator&) = delete;
+        CameraOperator& operator=(CameraOperator&&) = delete;
         virtual ~CameraOperator() = default;
+
+        virtual void Update() = 0;
     protected:
         const std::string m_name;
-        Camera& m_camera;
+        std::weak_ptr<Camera> m_camera;
     };
 
     class FirstPersonCameraOperator: public CameraOperator {
     public:
-        explicit FirstPersonCameraOperator(std::string id, Camera& camera)
-            : CameraOperator(std::move(id), camera) {}
+        explicit FirstPersonCameraOperator(std::string id, std::weak_ptr<Camera> camera):
+                CameraOperator(std::move(id), std::move(camera)) {
+            QCE_THROW_CRITICAL(RegisterEventHandlers());
+        }
+        ~FirstPersonCameraOperator() {
+            // TODO: UnregisterEventHandlers
+        }
+
+        void Update() override {
+            // TODO
+        }
 
     private:
         class MoveCommand : public Command {
+        public:
             MoveCommand(std::string name, CameraDirection direction, FirstPersonCameraOperator& fpco):
                 Command(std::move(name)),
                 m_fpco(fpco),
@@ -55,9 +71,8 @@ namespace QCE {
             FirstPersonCameraOperator& m_fpco;
             const CameraDirection m_direction;
         };
+        friend class MoveCommand;
 
-        void RegisterEventHandlers() {
-            // TODO
-        }
+        ErrorCode RegisterEventHandlers();
     };
 }

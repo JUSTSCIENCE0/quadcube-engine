@@ -7,7 +7,7 @@
 
 #include <qce/objects/entity.hpp>
 #include <qce/objects/resource_manager.hpp>
-#include <qce/objects/camera.hpp>
+#include <qce/objects/camera_operator.hpp>
 
 #include <list>
 #include <array>
@@ -23,7 +23,20 @@ namespace QCE {
         using Shaders = std::array<
             std::shared_ptr<Shader>,
             ShaderType::E_SHADERS_TYPE_COUNT>;
-        using Cameras = std::vector<Camera>;
+        struct CameraUnit {
+            std::shared_ptr<Camera> camera;
+            std::unique_ptr<CameraOperator> camera_operator;
+
+            const float4x4& GetView() const {
+                assert(camera);
+                return camera->GetView();
+            }
+            const float4x4& GetProj() const {
+                assert(camera);
+                return camera->GetProj();
+            }
+        };
+        using Cameras = std::vector<CameraUnit>;
         struct Description {
             Entities& entities;
             Shaders& shaders;
@@ -49,7 +62,8 @@ namespace QCE {
             float zfar = 1000.0f,
             const float3d& position = { 2.0f, 2.0f, -2.0f },
             const float3d& target = { 0.0f, 0.0f, 0.0f },
-            const float3d& up = { 0.0f, 1.0f, 0.0f }
+            const float3d& up = { 0.0f, 1.0f, 0.0f },
+            CameraOperatorType operator_type = E_CAMERA_OPERATOR_FIRST_PERSON
         );
 
         // TODO:

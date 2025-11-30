@@ -28,20 +28,6 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.Resources().AddFigure(cuboid, "cuboid"));
     QCE_CRITICAL(app.Resources().AddModel("cuboid", "cuboid"));
 
-    QCE::HidEventsManager::Config hid_events_config{};
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('W'), "HidDescribe"));
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('A'), "HidDescribe"));
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('S'), "HidDescribe"));
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('D'), "HidDescribe"));
-    //hid_events_config.emplace_back(
-    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_MOUSE_MOVE, "HidDescribe"));
-
-    QCE_CRITICAL(app.HidManager().Setup(hid_events_config));
-
     QCE_CRITICAL(app.CurrentScene().AddCamera());
 
     QCE_CRITICAL(app.CurrentScene().AddEntity(
@@ -62,6 +48,19 @@ int main(int argc, char* argv[]) {
         )));
     QCE_CRITICAL(app.CurrentScene().UseShader("simple", QCE::ShaderType::E_VERTEX_SHADER));
     QCE_CRITICAL(app.CurrentScene().UseShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
+
+    QCE::HidEventsManager::Config hid_events_config{};
+    hid_events_config.emplace_back(
+        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('W'), "CameraOperator0.MoveForward"));
+    hid_events_config.emplace_back(
+        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('A'), "CameraOperator0.MoveLeft"));
+    hid_events_config.emplace_back(
+        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('S'), "CameraOperator0.MoveBack"));
+    hid_events_config.emplace_back(
+        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('D'), "CameraOperator0.MoveRight"));
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_MOUSE_MOVE, "HidDescribe"));
+    QCE_CRITICAL(app.HidManager().Setup(hid_events_config));
 
     return app.Run();
 }

@@ -18,6 +18,7 @@ namespace QCE {
             if (is_button) {
                 bool is_down = hid_event->IsButtonDown();
                 if (is_down) {
+                    std::cout << to_string(m_direction) << std::endl;
                     // TODO: set movement state
                 }
                 else {
@@ -38,6 +39,27 @@ namespace QCE {
         default:
             return ErrorCode::E_ENG_UNSUPPORTED_EVENT_TYPE;
         }
+
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode FirstPersonCameraOperator::RegisterEventHandlers() {
+        auto forward_move = std::make_unique<MoveCommand>(
+            m_name + ".MoveForward", CameraDirection::E_CAMERA_DIRECTION_FORWARD, *this
+        );
+        auto back_move = std::make_unique<MoveCommand>(
+            m_name + ".MoveBack", CameraDirection::E_CAMERA_DIRECTION_BACK, *this
+        );
+        auto left_move = std::make_unique<MoveCommand>(
+            m_name + ".MoveLeft", CameraDirection::E_CAMERA_DIRECTION_LEFT, *this
+        );
+        auto right_move = std::make_unique<MoveCommand>(
+            m_name + ".MoveRight", CameraDirection::E_CAMERA_DIRECTION_RIGHT, *this
+        );
+        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(forward_move)));
+        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(back_move)));
+        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(left_move)));
+        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(right_move)));
 
         return ErrorCode::SUCCESS;
     }

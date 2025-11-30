@@ -30,8 +30,10 @@ namespace QCE {
             float zfar,
             const float3d& position,
             const float3d& target,
-            const float3d& up) {
-        Camera camera{ m_render_type == RenderType::E_RENDER_DIRECTX12 };
+            const float3d& up,
+            CameraOperatorType operator_type) {
+        bool is_LH_system = (m_render_type == RenderType::E_RENDER_DIRECTX12);
+        auto camera = std::make_shared<Camera>(is_LH_system);
 
         if (aspect <= 0.0f)
             return ErrorCode::E_ENG_WRONG_ASPECT;
@@ -40,14 +42,24 @@ namespace QCE {
         if (zfar <= znear)
             return ErrorCode::E_ENG_WRONG_ZLIMITS;
 
-        camera.SetAspect(aspect);
-        camera.SetFoV(fov_rad);
-        camera.SetZLimits(znear, zfar);
-        camera.SetPosition(position);
-        camera.SetTarget(target);
-        camera.SetUp(up);
+        camera->SetAspect(aspect);
+        camera->SetFoV(fov_rad);
+        camera->SetZLimits(znear, zfar);
+        camera->SetPosition(position);
+        camera->SetTarget(target);
+        camera->SetUp(up);
 
-        m_cameras.push_back(std::move(camera));
+        std::unique_ptr<CameraOperator> camera_operator = nullptr;
+        switch (operator_type) {
+        case CameraOperatorType::E_CAMERA_OPERATOR_FIRST_PERSON:
+            camera_operator = std::make_unique<FirstPersonCameraOperator>(
+                "CameraOperator" + std::to_string(m_cameras.size()), camera);
+            break;
+        default:
+            break;
+        }
+
+        m_cameras.emplace_back(CameraUnit{ std::move(camera), std::move(camera_operator) });
         return ErrorCode::SUCCESS;
     }
 
