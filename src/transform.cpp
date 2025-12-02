@@ -7,7 +7,7 @@
 #  define CU_BUILD_SPECIFIC_SIMD sse2
 #endif // !CU_BUILD_SPECIFIC_SIMD
 
-#include <qce/transform.hpp>
+#include <qce/transform/transform.hpp>
 
 #include <cu/math-utils.hpp>
 

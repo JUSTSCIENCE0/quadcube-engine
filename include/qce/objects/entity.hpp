@@ -6,7 +6,7 @@
 #pragma once
 
 #include <qce/objects/model.hpp>
-#include <qce/transform.hpp>
+#include <qce/transform/transform.hpp>
 
 #include <cu/id-utils.hpp>
 

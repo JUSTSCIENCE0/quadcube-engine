@@ -63,7 +63,6 @@ set(QCE_INTERFACE
     include/qce/matrix.hpp
     include/qce/math.hpp
     include/qce/render.hpp
-    include/qce/transform.hpp
 )
 
 set(QCE_OBJECTS
@@ -89,6 +88,10 @@ set(QCE_MATH
     include/qce/math/matrix_sse2.hpp
     include/qce/math/matrix_avx2.hpp
     include/qce/math/matrix_avx512.hpp
+)
+
+set(QCE_TRANSFORMS
+    include/qce/transform/transform.hpp
 )
 
 set(QCE_RENDERS
@@ -127,7 +130,7 @@ set(QCE_IMPLEMENTATION
     src/render_base.cpp
     src/render_dx12.cpp
 
-    # math
+    # transforms
     src/transform.cpp
 
     #other
@@ -160,6 +163,7 @@ target_sources(${PROJECT_NAME}
         ${QCE_ANCILLARY}
     PRIVATE
         ${QCE_MATH}
+        ${QCE_TRANSFORMS}
         ${QCE_RENDERS}
         ${QCE_IMPLEMENTATION}
         ${QCE_SHADERS}
@@ -168,6 +172,7 @@ target_sources(${PROJECT_NAME}
 
 source_group("Interface" FILES ${QCE_INTERFACE})
 source_group("Math" FILES ${QCE_MATH})
+source_group("Transforms" FILES ${QCE_TRANSFORMS})
 source_group("Objects" FILES ${QCE_OBJECTS})
 source_group("Renders" FILES ${QCE_RENDERS})
 source_group("HID" FILES ${QCE_HID})

@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <qce/transform.hpp>
+#include <qce/transform/transform.hpp>
 
 namespace QCE {
     class Camera {
