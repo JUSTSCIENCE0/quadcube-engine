@@ -37,7 +37,7 @@ namespace QCE {
         CameraOperator& operator=(CameraOperator&&) = delete;
         virtual ~CameraOperator() = default;
 
-        virtual void Update() = 0;
+        virtual ErrorCode Update() = 0;
     protected:
         const std::string m_name;
         std::weak_ptr<Camera> m_camera;
@@ -53,9 +53,7 @@ namespace QCE {
             // TODO: UnregisterEventHandlers
         }
 
-        void Update() override {
-            // TODO
-        }
+        ErrorCode Update() override;
 
     private:
         class MoveCommand : public Command {
@@ -74,5 +72,7 @@ namespace QCE {
         friend class MoveCommand;
 
         ErrorCode RegisterEventHandlers();
+
+        Velocity m_velocity{1.0f};
     };
 }

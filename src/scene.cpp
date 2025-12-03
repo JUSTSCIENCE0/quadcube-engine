@@ -73,4 +73,18 @@ namespace QCE {
         m_shaders[type] = std::move(shader);
         return ErrorCode::SUCCESS;
     }
+
+    ErrorCode Scene::Update() {
+        // update entities
+        // TODO
+
+        // update cameras
+        for (auto & camera_unit : m_cameras) {
+            if (camera_unit.camera_operator) {
+                QCE_CRITICAL(camera_unit.camera_operator->Update());
+            }
+        }
+
+        return ErrorCode::SUCCESS;
+    }
 }

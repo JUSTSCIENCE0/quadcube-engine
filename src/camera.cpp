@@ -39,6 +39,10 @@ namespace QCE {
         m_need_recalc_proj = false;
     }
 
+    void Camera::MoveForward(Velocity velocity, float delta_time) {
+
+    }
+
     const float4x4& Camera::GetView() const {
         if (m_need_recalc_view)
             UpdateViewMatrix();

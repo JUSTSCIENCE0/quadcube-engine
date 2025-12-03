@@ -92,6 +92,7 @@ set(QCE_MATH
 
 set(QCE_TRANSFORMS
     include/qce/transform/transform.hpp
+    include/qce/transform/movement.hpp
 )
 
 set(QCE_RENDERS

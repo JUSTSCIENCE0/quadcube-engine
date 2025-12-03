@@ -17,13 +17,37 @@ namespace QCE {
             auto is_button = hid_event_is_button(event_code);
             if (is_button) {
                 bool is_down = hid_event->IsButtonDown();
-                if (is_down) {
-                    std::cout << to_string(m_direction) << std::endl;
-                    // TODO: set movement state
+                switch (m_direction) {
+                case CameraDirection::E_CAMERA_DIRECTION_FORWARD:
+                    if (is_down)
+                        m_fpco.m_velocity.MoveForward(true);
+                    else
+                        m_fpco.m_velocity.StopForward();
+                    break;
+                case CameraDirection::E_CAMERA_DIRECTION_BACK:
+                    if (is_down)
+                        m_fpco.m_velocity.MoveForward(false);
+                    else
+                        m_fpco.m_velocity.StopForward();
+                    break;
+                case CameraDirection::E_CAMERA_DIRECTION_LEFT:
+                    if (is_down)
+                        m_fpco.m_velocity.MoveSide(true);
+                    else
+                        m_fpco.m_velocity.StopSide();
+                    break;
+                case CameraDirection::E_CAMERA_DIRECTION_RIGHT:
+                    if (is_down)
+                        m_fpco.m_velocity.MoveSide(false);
+                    else
+                        m_fpco.m_velocity.StopSide();
+                    break;
+                default:
+                    assert(!"Unsupported direction");
+                    break;
                 }
-                else {
-                    // TODO: reset movement state
-                }
+                std::cout << m_fpco.m_velocity.Get().z() << " " <<
+                    m_fpco.m_velocity.Get().x() << std::endl;
             }
             else {
                 bool has_displacement = hid_event_has_displacement(event_code);
@@ -40,6 +64,11 @@ namespace QCE {
             return ErrorCode::E_ENG_UNSUPPORTED_EVENT_TYPE;
         }
 
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode FirstPersonCameraOperator::Update() {
+        // TODO
         return ErrorCode::SUCCESS;
     }
 

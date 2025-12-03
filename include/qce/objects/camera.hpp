@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/transform/transform.hpp>
+#include <qce/transform/movement.hpp>
 
 namespace QCE {
     class Camera {
@@ -29,6 +30,8 @@ namespace QCE {
             m_zfar = zfar;
             m_need_recalc_proj = true;
         }
+
+        void MoveForward(Velocity velocity, float delta_time);
 
         /// Add transform to current
         //void Move(const float3d& translation); // both target & position
@@ -67,7 +70,7 @@ namespace QCE {
         float m_znear   = 1.0f;
         float m_zfar    = 1000.0f;
 
-        bool m_is_LH = true;
+        const bool m_is_LH = true;
 
         // cache
         mutable float4x4 m_view_matrix{

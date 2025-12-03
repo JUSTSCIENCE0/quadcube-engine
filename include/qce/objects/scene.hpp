@@ -83,6 +83,8 @@ namespace QCE {
 
         size_t GetEntitiesCount() const noexcept { return m_entities_count; }
 
+        ErrorCode Update();
+
     private:
         static constexpr float MIN_FOV_DEG = 30.0f;
 
