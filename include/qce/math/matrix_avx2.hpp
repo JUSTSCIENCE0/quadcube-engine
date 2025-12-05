@@ -428,12 +428,9 @@ namespace QCE {
 
     static inline matrix VECTOR_CALL camera_look_to_lh_matrix(
             vector position,
-            vector target,
-            vector up) noexcept {
-        auto forward = vector_normalize(target - position);
-        auto right = vector_normalize(vector_cross_product(up, forward));
-        auto up_real = vector_cross_product(forward, right);
-
+            vector forward,
+            vector right,
+            vector up_real) noexcept {
         matrix tmp{
             .v34 = _mm256_insertf128_ps(forward, _mm_setzero_ps(), 1),
             .v12 = _mm256_insertf128_ps(right, _mm256_castps256_ps128(up_real), 1)
@@ -460,5 +457,16 @@ namespace QCE {
         result.v34 = _mm256_add_ps(tmp.v12, result.v34);
 
         return result;
+    }
+
+    static inline matrix VECTOR_CALL camera_look_to_lh_matrix(
+            vector position,
+            vector target,
+            vector up) noexcept {
+        auto forward = vector_normalize(target - position);
+        auto right = vector_normalize(vector_cross_product(up, forward));
+        auto up_real = vector_cross_product(forward, right);
+
+        return camera_look_to_lh_matrix(position, forward, right, up_real);
     }
 }

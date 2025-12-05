@@ -338,12 +338,9 @@ namespace QCE {
 
     static inline matrix camera_look_to_lh_matrix(
             const vector& position,
-            const vector& target,
-            const vector& up) noexcept {
-        auto forward = vector_normalize(target - position);
-        auto right = vector_normalize(vector_cross_product(up, forward));
-        auto up_real = vector_cross_product(forward, right);
-
+            const vector& forward,
+            const vector& right,
+            const vector& up_real) noexcept {
         return matrix_init(
             right.x, up_real.x, forward.x, 0.0f,
             right.y, up_real.y, forward.y, 0.0f,
@@ -353,5 +350,16 @@ namespace QCE {
             -1.0f * vector_dot_product(position, forward),
             1.0f
         );
+    }
+
+    static inline matrix camera_look_to_lh_matrix(
+            const vector& position,
+            const vector& target,
+            const vector& up) noexcept {
+        auto forward = vector_normalize(target - position);
+        auto right = vector_normalize(vector_cross_product(up, forward));
+        auto up_real = vector_cross_product(forward, right);
+
+        return camera_look_to_lh_matrix(position, forward, right, up_real);
     }
 }
