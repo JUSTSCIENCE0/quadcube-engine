@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/objects/camera_operator.hpp>
+#include <qce/ancillary/timer.hpp>
 
 namespace QCE {
     ErrorCode FirstPersonCameraOperator::MoveCommand::Execute(const CommandContext* context) {
@@ -46,8 +47,6 @@ namespace QCE {
                     assert(!"Unsupported direction");
                     break;
                 }
-                std::cout << m_fpco.m_velocity.Get().z() << " " <<
-                    m_fpco.m_velocity.Get().x() << std::endl;
             }
             else {
                 bool has_displacement = hid_event_has_displacement(event_code);
@@ -68,7 +67,9 @@ namespace QCE {
     }
 
     ErrorCode FirstPersonCameraOperator::Update() {
-        // TODO
+        assert(m_camera);
+
+        m_camera->Move(m_velocity, FrameTime::Get().Elapsed());
         return ErrorCode::SUCCESS;
     }
 

@@ -28,7 +28,7 @@ namespace QCE {
 
     class CameraOperator {
     public:
-        explicit CameraOperator(std::string id, std::weak_ptr<Camera> camera):
+        explicit CameraOperator(std::string id, std::shared_ptr<Camera> camera):
             m_name(std::move(id)),
             m_camera(std::move(camera)) {}
         CameraOperator(const CameraOperator&) = delete;
@@ -40,12 +40,12 @@ namespace QCE {
         virtual ErrorCode Update() = 0;
     protected:
         const std::string m_name;
-        std::weak_ptr<Camera> m_camera;
+        std::shared_ptr<Camera> m_camera;
     };
 
     class FirstPersonCameraOperator: public CameraOperator {
     public:
-        explicit FirstPersonCameraOperator(std::string id, std::weak_ptr<Camera> camera):
+        explicit FirstPersonCameraOperator(std::string id, std::shared_ptr<Camera> camera):
                 CameraOperator(std::move(id), std::move(camera)) {
             QCE_THROW_CRITICAL(RegisterEventHandlers());
         }

@@ -14,19 +14,29 @@ namespace QCE {
             m_direction(std::move(direction)),
             m_speed(speed) {}
 
-        const float3d& Get() const {
+        float3d GetMovement(double time) const {
+            float3d result;
+
             if (m_need_recal) {
+                m_need_recal = false;
                 vector dir = vector_init(m_direction.arr);
                 float dir_len = vector_length(dir);
                 if (dir_len > 0.0f) {
                     dir = dir / dir_len;
-                    vector_copy(dir * m_speed, m_velocity.arr);
+                    auto vel = dir * m_speed;
+                    vector_copy(vel, m_velocity.arr);
+                    vector_copy(vel * static_cast<float>(time), result.arr);
+                    return result;
                 }
                 else {
                     m_velocity = {};
+                    return {};
                 }
             }
-            return m_velocity;
+
+            vector vel = vector_init(m_velocity.arr);
+            vector_copy(vel * static_cast<float>(time), result.arr);
+            return result;
         }
 
         void SetDirection(const float3d& direction) {

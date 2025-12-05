@@ -58,6 +58,16 @@ int main(int argc, char* argv[]) {
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('S'), "CameraOperator0.MoveBack"));
     hid_events_config.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('D'), "CameraOperator0.MoveRight"));
+
+    hid_events_config.emplace_back(
+        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_UP, "CameraOperator0.MoveForward"));
+    hid_events_config.emplace_back(
+        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_LEFT, "CameraOperator0.MoveLeft"));
+    hid_events_config.emplace_back(
+        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_DOWN, "CameraOperator0.MoveBack"));
+    hid_events_config.emplace_back(
+        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_RIGHT, "CameraOperator0.MoveRight"));
+
     //hid_events_config.emplace_back(
     //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_MOUSE_MOVE, "HidDescribe"));
     QCE_CRITICAL(app.HidManager().Setup(hid_events_config));

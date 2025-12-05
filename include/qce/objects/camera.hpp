@@ -31,10 +31,9 @@ namespace QCE {
             m_need_recalc_proj = true;
         }
 
-        void MoveForward(Velocity velocity, float delta_time);
+        void Move(Velocity velocity, double delta_time);
 
         /// Add transform to current
-        //void Move(const float3d& translation); // both target & position
         //void MovePosition(const float3d& translation);
         //void MoveTarget(const float3d& translation);
         //void RotateView(const float3d& angels); // move target
@@ -60,6 +59,8 @@ namespace QCE {
     private:
         void UpdateViewMatrix() const;
         void UpdateProjMatrix() const;
+        void UpdateFRU(
+            vector& position, vector& forward, vector& right, vector& up_real) const;
 
         float3d m_position     = { 2.0f, 2.0f, -2.0f };
         float3d m_target       = { 0.0f, 0.0f, 0.0f };
@@ -83,9 +84,6 @@ namespace QCE {
         };
         mutable bool m_need_recalc_view = true;
 
-        mutable Transform m_transform{};
-        mutable bool m_need_update_transform = true;
-
         mutable float4x4 m_proj_matrix{
             .arr = {
                 1.0f, 0.0f, 0.0f, 0.0f,
@@ -95,6 +93,14 @@ namespace QCE {
             }
         };
         mutable bool m_need_recalc_proj = true;
+
+        mutable float3d m_forward = {};
+        mutable float3d m_right = {};
+        mutable float3d m_actual_up = {};
+        mutable bool m_need_recalc_fru = true;
+
+        mutable Transform m_transform{};
+        mutable bool m_need_update_transform = true;
     };
 }
 
