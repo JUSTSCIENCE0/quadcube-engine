@@ -39,6 +39,14 @@ namespace QCE {
             return result;
         }
 
+        void SetVelocity(const float3d& velocity) {
+            m_velocity = velocity;
+            auto dir = vector_init(velocity.arr);
+            m_speed = vector_length(dir);
+            dir = dir / m_speed;
+            vector_copy(dir, m_direction.arr);
+        }
+
         void SetDirection(const float3d& direction) {
             m_direction = direction;
             m_need_recal = true;

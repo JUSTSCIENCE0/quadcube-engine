@@ -74,5 +74,6 @@ namespace QCE {
         ErrorCode RegisterEventHandlers();
 
         Velocity m_velocity{1.0f};
+        bool m_need_reset_velocity = false;
     };
 }

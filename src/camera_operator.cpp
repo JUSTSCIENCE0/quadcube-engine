@@ -54,7 +54,14 @@ namespace QCE {
                     return ErrorCode::E_ENG_UNSUPPORTED_EVENT_TYPE;
                 }
 
-                // TODO: set movement state
+                float3d velocity{
+                    hid_event->param1,
+                    0.0f,
+                    hid_event->param2,
+                    0.0f
+                };
+                m_fpco.m_velocity.SetVelocity(velocity);
+                m_fpco.m_need_reset_velocity = true;
             }
 
             break;
@@ -70,6 +77,10 @@ namespace QCE {
         assert(m_camera);
 
         m_camera->Move(m_velocity, FrameTime::Get().Elapsed());
+        if (m_need_reset_velocity) {
+            m_velocity.SetDirection({ 0.0f, 0.0f, 0.0f });
+            m_need_reset_velocity = false;
+        }
         return ErrorCode::SUCCESS;
     }
 
