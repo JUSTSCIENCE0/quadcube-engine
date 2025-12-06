@@ -32,6 +32,7 @@ namespace QCE {
         }
 
         void Move(Velocity velocity, double delta_time);
+        void RotateView(float d_yaw, float d_pitch);
 
         /// Add transform to current
         //void MovePosition(const float3d& translation);
@@ -42,15 +43,15 @@ namespace QCE {
         /// Overwrite transform
         void SetPosition(const float3d& position) {
             m_position = position;
-            m_need_recalc_view = true;
+            m_need_recalc_fru = true;
         }
         void SetTarget(const float3d& target) {
             m_target = target;
-            m_need_recalc_view = true;
+            m_need_recalc_fru = true;
         }
         void SetUp(const float3d& up) {
             m_up_direction = up;
-            m_need_recalc_view = true;
+            m_need_recalc_fru = true;
         }
 
         const float4x4& GetView() const;
@@ -59,8 +60,8 @@ namespace QCE {
     private:
         void UpdateViewMatrix() const;
         void UpdateProjMatrix() const;
-        void UpdateFRU(
-            vector& position, vector& forward, vector& right, vector& up_real) const;
+        void LoadParams(
+            vector& position, vector& target, vector& forward, vector& right, vector& up_real) const;
 
         float3d m_position     = { 2.0f, 2.0f, -2.0f };
         float3d m_target       = { 0.0f, 0.0f, 0.0f };
@@ -101,6 +102,10 @@ namespace QCE {
 
         mutable Transform m_transform{};
         mutable bool m_need_update_transform = true;
+
+        float m_yaw = 0.0f;
+        float m_pitch = 0.0f;
+        mutable bool m_need_update_yaw_pitch = true;
     };
 }
 

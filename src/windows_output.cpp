@@ -154,13 +154,13 @@ namespace QCE {
             HidEventsManager::Get().PushMouseMoveEvent(hid_event_on_mouse_move(dx, dy));
 
             // TODO - separate method & config flag
-            //POINT pt {
-            //    .x = LONG(m_config.width / 2),
-            //    .y = LONG(m_config.height / 2)
-            //};
-            //ClientToScreen(hwnd, &pt);
-            //SetCursorPos(pt.x, pt.y);
-            //m_handle_next_mouse_move = false;
+            POINT pt {
+                .x = LONG(m_config.width / 2),
+                .y = LONG(m_config.height / 2)
+            };
+            ClientToScreen(hwnd, &pt);
+            SetCursorPos(pt.x, pt.y);
+            m_handle_next_mouse_move = false;
             return 0;
         }
         case WM_KEYDOWN:

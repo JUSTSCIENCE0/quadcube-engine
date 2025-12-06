@@ -69,11 +69,30 @@ namespace QCE {
             FirstPersonCameraOperator& m_fpco;
             const CameraDirection m_direction;
         };
+
+        class RotateCommand : public Command {
+        public:
+            RotateCommand(std::string name, CameraDirection direction, FirstPersonCameraOperator& fpco) :
+                Command(std::move(name)),
+                m_fpco(fpco),
+                m_direction(direction) {
+            }
+
+        private:
+            ErrorCode Execute(const CommandContext* context) override;
+
+            FirstPersonCameraOperator& m_fpco;
+            const CameraDirection m_direction;
+        };
+
         friend class MoveCommand;
+        friend class RotateCommand;
 
         ErrorCode RegisterEventHandlers();
 
         Velocity m_velocity{1.0f};
         bool m_need_reset_velocity = false;
+        float3d m_target_move{};
+        bool m_need_reset_target_move = false;
     };
 }

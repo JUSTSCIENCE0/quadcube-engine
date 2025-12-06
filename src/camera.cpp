@@ -15,37 +15,39 @@ namespace QCE {
     Camera::Camera(bool LH):
         m_is_LH(LH) {}
 
-    void Camera::UpdateFRU(
-            vector& position, vector& forward, vector& right, vector& up_real) const {
+    void Camera::LoadParams(
+            vector& position, vector& target, vector& forward, vector& right, vector& up_real) const {
+        target = vector_init(m_target.arr);
         position = vector_init(m_position.arr);
-        auto target = vector_init(m_target.arr);
-        auto up = vector_init(m_up_direction.arr);
 
-        forward = vector_normalize(target - position);
-        right = vector_normalize(vector_cross_product(up, forward));
-        up_real = vector_cross_product(forward, right);
+        if (m_need_recalc_fru) {
+            auto up = vector_init(m_up_direction.arr);
 
-        vector_copy(forward, m_forward.arr);
-        vector_copy(right, m_right.arr);
-        vector_copy(up_real, m_actual_up.arr);
+            forward = vector_normalize(target - position);
+            right = vector_normalize(vector_cross_product(up, forward));
+            up_real = vector_cross_product(forward, right);
 
-        m_need_recalc_fru = false;
+            vector_copy(forward, m_forward.arr);
+            m_need_update_yaw_pitch = true;
+
+            vector_copy(right, m_right.arr);
+            vector_copy(up_real, m_actual_up.arr);
+
+            m_need_recalc_fru = false;
+            m_need_recalc_view = true;
+        }
+        else {
+            forward = vector_init(m_forward.arr);
+            right = vector_init(m_right.arr);
+            up_real = vector_init(m_actual_up.arr);
+        }
     }
 
     void Camera::UpdateViewMatrix() const {
         assert(m_is_LH && "Only LH implemented");
 
-        vector position, forward, right, up_real;
-
-        if (m_need_recalc_fru) {
-            UpdateFRU(position, forward, right, up_real);
-        }
-        else {
-            position = vector_init(m_position.arr);
-            forward = vector_init(m_forward.arr);
-            right = vector_init(m_right.arr);
-            up_real = vector_init(m_actual_up.arr);
-        }
+        vector position, target, forward, right, up_real;
+        LoadParams(position, target, forward, right, up_real);
 
         auto view = camera_look_to_lh_matrix(position, forward, right, up_real);
         matrix_copy(view, m_view_matrix.arr);
@@ -72,26 +74,47 @@ namespace QCE {
         if (!move.x() && !move.z())
             return;
 
-        vector position, forward, right, up_real;
-
-        if (m_need_recalc_fru) {
-            UpdateFRU(position, forward, right, up_real);
-        }
-        else {
-            position = vector_init(m_position.arr);
-            forward = vector_init(m_forward.arr);
-            right = vector_init(m_right.arr);
-            up_real = vector_init(m_actual_up.arr);
-        }
+        vector position, target, forward, right, up_real;
+        LoadParams(position, target, forward, right, up_real);
 
         auto delta = (forward * move.z()) + (right * move.x());
         position += delta;
         vector_copy(position, m_position.arr);
-        m_need_recalc_view = true;
 
-        //std::cout << "Camera move: " <<
-        //    move.x() << " " <<
-        //    move.z() << std::endl;
+        target += delta;
+        vector_copy(target, m_target.arr);
+
+        m_need_recalc_view = true;
+    }
+
+    void Camera::RotateView(float d_yaw, float d_pitch) {
+        vector position, target, forward, right, up_real;
+        LoadParams(position, target, forward, right, up_real);
+
+        if (m_need_update_yaw_pitch) {
+            assert(!m_need_recalc_fru);
+
+            m_pitch = asinf(m_forward.y());
+            m_yaw = atan2(m_forward.x(), m_forward.z());
+
+            m_need_update_yaw_pitch = false;
+        }
+
+        m_pitch += d_pitch;
+        m_yaw += d_yaw;
+
+        m_forward.x() = cosf(m_pitch) * sinf(m_yaw);
+        m_forward.y() = sinf(m_pitch);
+        m_forward.z() = cosf(m_pitch) * cosf(m_yaw);
+
+        forward = vector_init(m_forward.arr);
+        forward = vector_normalize(forward);
+
+        float dist = vector_length(target - position);
+        target = position + (forward * dist);
+        vector_copy(target, m_target.arr);
+
+        m_need_recalc_fru = true;
     }
 
     const float4x4& Camera::GetView() const {
