@@ -31,6 +31,8 @@ namespace QCE {
         int height = 720;
 
         std::wstring caption = L"QCE Application";
+
+        bool is_first_person = false;
     };
 
     struct RenderConfig {

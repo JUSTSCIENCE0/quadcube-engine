@@ -64,6 +64,9 @@ namespace QCE {
         ShowWindow(m_hwnd, SW_SHOW);
         UpdateWindow(m_hwnd);
 
+        if (m_config.is_first_person)
+            ShowCursor(FALSE);
+
         return ErrorCode::SUCCESS;
     }
 
@@ -153,14 +156,8 @@ namespace QCE {
 
             HidEventsManager::Get().PushMouseMoveEvent(hid_event_on_mouse_move(dx, dy));
 
-            // TODO - separate method & config flag
-            POINT pt {
-                .x = LONG(m_config.width / 2),
-                .y = LONG(m_config.height / 2)
-            };
-            ClientToScreen(hwnd, &pt);
-            SetCursorPos(pt.x, pt.y);
-            m_handle_next_mouse_move = false;
+            if (m_config.is_first_person)
+                CenterCursor();
             return 0;
         }
         case WM_KEYDOWN:
@@ -209,5 +206,15 @@ namespace QCE {
         for (auto& gamepad : m_gamepads) {
             gamepad.Update();
         }
+    }
+
+    void WinNtWindow::CenterCursor() {
+        POINT pt{
+            .x = LONG(m_config.width / 2),
+            .y = LONG(m_config.height / 2)
+        };
+        ClientToScreen(m_hwnd, &pt);
+        SetCursorPos(pt.x, pt.y);
+        m_handle_next_mouse_move = false;
     }
 }

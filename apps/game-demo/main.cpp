@@ -12,7 +12,8 @@ int main(int argc, char* argv[]) {
 
     QCE::ApplicationConfig config{
         .graphics_output {
-            .caption = L"QCE Game Demo"
+            .caption = L"QCE Game Demo",
+            .is_first_person = true
         }
     };
 

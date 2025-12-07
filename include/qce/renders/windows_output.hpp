@@ -64,6 +64,7 @@ namespace QCE {
 
         LRESULT MessageProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
         void GamepadsProcess() noexcept;
+        void CenterCursor();
 
         GraphicsOutputConfig m_config{};
         const std::wstring m_class_name;
