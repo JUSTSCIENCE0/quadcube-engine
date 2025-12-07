@@ -20,6 +20,7 @@
 #include <cmath>
 
 namespace QCE {
+    inline constexpr auto REQUIRED_ALIGNAS = 8;
 
     // vector type
     struct vector final
@@ -78,7 +79,7 @@ namespace QCE {
         auto sqr_y = value.y * value.y;
         auto sqr_z = value.z * value.z;
         auto sqr_w = value.w * value.w;
-        return std::sqrt(sqr_x + sqr_y + sqr_z + sqr_w);
+        return std::sqrt((sqr_x + sqr_y) + (sqr_z + sqr_w));
     }
 
     static inline vector vector_normalize(const vector& value) noexcept {

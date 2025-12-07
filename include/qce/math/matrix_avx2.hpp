@@ -17,7 +17,7 @@
 #include <qce/math/vector_avx2.hpp>
 
 namespace QCE {
-    struct alignas(32) matrix final {
+    struct alignas(REQUIRED_ALIGNAS) matrix final {
         __m256 v34;
         __m256 v12;
     };
@@ -326,5 +326,147 @@ namespace QCE {
             .v34 = res2,
             .v12 = res1
         };
+    }
+
+    static inline matrix VECTOR_CALL quaternion_to_rotation_matrix(vector q) noexcept {
+        auto result = matrix_identity();
+
+        // v12
+        auto tmp0_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 1, 0, 0, 2, 0, 0, 1));
+        auto tmp1_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 2, 0, 1, 2, 2, 1, 1));
+        auto mul1_v = _mm256_mul_ps(tmp0_v, tmp1_v);
+
+        tmp0_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 3, 2, 3, 2, 3, 3, 2));
+        tmp1_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 0, 2, 2, 2, 1, 2, 2));
+        auto mul2_v = _mm256_mul_ps(tmp0_v, tmp1_v);
+        mul2_v = _mm256_mul_ps(mul2_v,
+            _mm256_set_ps(-1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+        mul1_v = _mm256_add_ps(mul1_v, mul2_v);
+        mul1_v = _mm256_mul_ps(mul1_v,
+            _mm256_set_ps(0.0f, 2.0f, -2.0f, 2.0f, 0.0f, 2.0f, 2.0f, -2.0f));
+        result.v12 = _mm256_add_ps(result.v12, mul1_v);
+
+        // v34
+        tmp0_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 2, 2, 2, 2, 0, 1, 0));
+        tmp1_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 2, 2, 2, 2, 0, 2, 2));
+        mul1_v = _mm256_mul_ps(tmp0_v, tmp1_v);
+
+        tmp0_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 2, 2, 2, 2, 1, 3, 3));
+        tmp1_v = _mm256_permutevar8x32_ps(q,
+            _mm256_set_epi32(2, 2, 2, 2, 2, 1, 0, 1));
+        mul2_v = _mm256_mul_ps(tmp0_v, tmp1_v);
+        mul2_v = _mm256_mul_ps(mul2_v,
+            _mm256_set_ps(-1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f));
+        mul1_v = _mm256_add_ps(mul1_v, mul2_v);
+        mul1_v = _mm256_mul_ps(mul1_v,
+            _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -2.0f, 2.0f, 2.0f));
+        result.v34 = _mm256_add_ps(result.v34, mul1_v);
+
+        return result;
+    }
+
+    static inline vector VECTOR_CALL rotation_matrix_to_quaternion(matrix m) noexcept {
+        // t & m10_m01
+        auto vec = _mm256_permutevar8x32_ps(m.v12, _mm256_set_epi32(4, 4, 4, 4, 0, 0, 0, 0));
+        vec = _mm256_mul_ps(vec, _mm256_set_ps(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f));
+        vec = _mm256_add_ps(vec, _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+        auto tmp = _mm256_permutevar8x32_ps(m.v12, _mm256_set_epi32(1, 1, 1, 1, 5, 5, 5, 5));
+        tmp = _mm256_mul_ps(tmp, _mm256_set_ps(-1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f));
+        vec = _mm256_add_ps(vec, tmp);
+        tmp = _mm256_permutevar8x32_ps(m.v34, _mm256_set_epi32(3, 3, 3, 3, 2, 2, 2, 2));
+        auto res = _mm256_mul_ps(tmp, _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, -1.0f, -1.0f));
+        res = _mm256_add_ps(vec, res);
+
+        // mask
+        vec = _mm256_permutevar8x32_ps(m.v12, _mm256_set_epi32(0, 0, 5, 5, 3, 3, 3, 3));
+        vec = _mm256_add_ps(tmp, vec);
+        tmp = _mm256_permutevar8x32_ps(m.v12, _mm256_set_epi32(5, 5, 0, 0, 3, 3, 3, 3));
+        tmp = _mm256_mul_ps(tmp, _mm256_set_ps(-1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+        vec = _mm256_cmp_ps(vec, tmp, _CMP_LT_OQ);
+
+        auto cmp = _mm256_xor_ps(vec,
+            _mm256_castsi256_ps(_mm256_set_epi32(0, -1, 0, -1, -1, -1, 0, 0)));
+        tmp = _mm256_permutevar8x32_ps(cmp, _mm256_set_epi32(3, 2, 1, 0, 6, 7, 4, 5));
+        vec = _mm256_and_ps(cmp, tmp);
+        res = _mm256_and_ps(res, vec);
+
+        // store k
+        auto k = _mm256_shuffle_ps(res, res, _MM_SHUFFLE(2, 3, 0, 1));
+        k = _mm256_add_ps(k, res);
+        tmp = _mm256_shuffle_ps(k, k, _MM_SHUFFLE(0, 1, 2, 3));
+        k = _mm256_add_ps(k, tmp);
+        k = _mm256_blend_ps(k, _mm256_set1_ps(1.0f), 0b11110000);
+        k = _mm256_sqrt_ps(k);
+        k = _mm256_div_ps(_mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.5f), k);
+
+        // m02_m20 & m21_m12
+        vec = _mm256_permutevar8x32_ps(m.v12, _mm256_set_epi32(6, 6, 6, 6, 2, 2, 2, 2));
+        vec = _mm256_mul_ps(vec, _mm256_set_ps(-1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+        tmp = _mm256_permutevar8x32_ps(m.v34, _mm256_set_epi32(1, 1, 1, 1, 0, 0, 0, 0));
+        tmp = _mm256_mul_ps(tmp, _mm256_set_ps(1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+        vec = _mm256_add_ps(vec, tmp);
+
+        tmp = _mm256_permutevar8x32_ps(cmp, _mm256_set_epi32(5, 4, 7, 6, 1, 0, 3, 2));
+        cmp = _mm256_permutevar8x32_ps(cmp, _mm256_set_epi32(1, 0, 3, 2, 4, 5, 6 ,7));
+        tmp = _mm256_and_ps(cmp, tmp);
+        vec = _mm256_and_ps(vec, tmp);
+
+        res = _mm256_add_ps(res, vec);
+        vec = _mm256_permute2f128_ps(res, res, 0x01);
+        res = _mm256_add_ps(res, vec);
+        res = _mm256_mul_ps(res, k);
+
+        return res;
+    }
+
+    static inline matrix VECTOR_CALL camera_look_to_lh_matrix(
+            vector position,
+            vector forward,
+            vector right,
+            vector up_real) noexcept {
+        matrix tmp{
+            .v34 = _mm256_insertf128_ps(forward, _mm_setzero_ps(), 1),
+            .v12 = _mm256_insertf128_ps(right, _mm256_castps256_ps128(up_real), 1)
+        };
+
+        auto result = matrix_transpose(tmp);
+
+        auto vec_tmp = _mm256_insertf128_ps(position, _mm256_castps256_ps128(position), 1);
+        tmp.v12 = _mm256_mul_ps(tmp.v12, vec_tmp);
+        tmp.v34 = _mm256_mul_ps(tmp.v34, position);
+
+        tmp = matrix_transpose(tmp);
+
+        vec_tmp = _mm256_permute2f128_ps(tmp.v12, tmp.v12, 0x01);
+        tmp.v12 = _mm256_add_ps(tmp.v12, vec_tmp);
+        tmp.v12 = _mm256_add_ps(tmp.v12, tmp.v34);
+        tmp.v12 = _mm256_permute2f128_ps(tmp.v12, tmp.v12, 0x01);
+
+        tmp.v34 = _mm256_set_ps(1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        tmp.v12 = _mm256_mul_ps(tmp.v12, tmp.v34);
+
+        result.v34 = _mm256_add_ps(tmp.v12, result.v34);
+        tmp.v12 = _mm256_set_ps(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        result.v34 = _mm256_add_ps(tmp.v12, result.v34);
+
+        return result;
+    }
+
+    static inline matrix VECTOR_CALL camera_look_to_lh_matrix(
+            vector position,
+            vector target,
+            vector up) noexcept {
+        auto forward = vector_normalize(target - position);
+        auto right = vector_normalize(vector_cross_product(up, forward));
+        auto up_real = vector_cross_product(forward, right);
+
+        return camera_look_to_lh_matrix(position, forward, right, up_real);
     }
 }

@@ -26,8 +26,9 @@
 #include <cassert>
 
 namespace QCE {
-    // vector type
+    inline constexpr auto REQUIRED_ALIGNAS = 16;
 
+    // vector type
     using vector = __m128;
 
 // GCC & CLang already have operators for __m128

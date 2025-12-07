@@ -196,4 +196,22 @@ namespace QCE {
 
         return res;
     }
+
+    static inline matrix VECTOR_CALL quaternion_to_rotation_matrix(vector q) noexcept {
+        // TODO
+        return matrix_identity();
+    }
+
+    static inline vector VECTOR_CALL rotation_matrix_to_quaternion(matrix m) noexcept {
+        // TODO
+        return vector_zero();
+    }
+
+    static inline matrix VECTOR_CALL camera_look_to_lh_matrix(
+            vector position,
+            vector target,
+            vector up) noexcept {
+        // TODO
+        return matrix_identity();
+    }
 }

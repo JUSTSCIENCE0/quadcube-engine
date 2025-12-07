@@ -17,7 +17,7 @@
 #include <qce/math/vector_sse2.hpp>
 
 namespace QCE {
-    struct alignas(16) matrix final {
+    struct alignas(REQUIRED_ALIGNAS) matrix final {
         __m128 v1;
         __m128 v2;
         __m128 v3;
@@ -56,10 +56,10 @@ namespace QCE {
 
     static inline matrix VECTOR_CALL matrix_identity() noexcept {
         return {
-            _mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f),
-            _mm_set_ps(0.0f, 1.0f, 0.0f, 0.0f),
+            _mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f),
             _mm_set_ps(0.0f, 0.0f, 1.0f, 0.0f),
-            _mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f)
+            _mm_set_ps(0.0f, 1.0f, 0.0f, 0.0f),
+            _mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f)
         };
     }
 
@@ -264,5 +264,152 @@ namespace QCE {
         m.v4 = _mm_div_ps(m.v4, tmp07);
 
         return m;
+    }
+
+    static inline matrix VECTOR_CALL quaternion_to_rotation_matrix(vector q) noexcept {
+        auto result = matrix_identity();
+
+        // v1
+        auto tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 0, 0, 1)); // y x x z
+        auto tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 2, 1, 1)); // y y z z
+        auto mul1_v = _mm_mul_ps(tmp0_v, tmp1_v);
+
+        tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 3, 3, 2)); // z w w z
+        tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 1, 2, 2)); // z z y z
+        auto mul2_v = _mm_mul_ps(tmp0_v, tmp1_v);
+        mul2_v = _mm_mul_ps(mul2_v, _mm_set_ps(-1.0f, 1.0f, -1.0f, 1.0f));
+        mul1_v = _mm_add_ps(mul1_v, mul2_v);
+        mul1_v = _mm_mul_ps(mul1_v, _mm_set_ps(0.0f, 2.0f, 2.0f, -2.0f));
+        result.v1 = _mm_add_ps(result.v1, mul1_v);
+
+        // v2
+        tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 1, 0, 0)); // x x y z
+        tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 2, 0, 1)); // y x z z
+        mul1_v = _mm_mul_ps(tmp0_v, tmp1_v);
+
+        tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 3, 2, 3)); // w z w z
+        tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 0, 2, 2)); // z z x z
+        mul2_v = _mm_mul_ps(tmp0_v, tmp1_v);
+        mul2_v = _mm_mul_ps(mul2_v, _mm_set_ps(-1.0f, -1.0f, 1.0f, 1.0f));
+        mul1_v = _mm_add_ps(mul1_v, mul2_v);
+        mul1_v = _mm_mul_ps(mul1_v, _mm_set_ps(0.0f, 2.0f, -2.0f, 2.0f));
+        result.v2 = _mm_add_ps(result.v2, mul1_v);
+
+        // v3
+        tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 0, 1, 0)); // x y x z
+        tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 0, 2, 2)); // z z x z
+        mul1_v = _mm_mul_ps(tmp0_v, tmp1_v);
+
+        tmp0_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 1, 3, 3)); // w w y z
+        tmp1_v = _mm_shuffle_ps(q, q, _MM_SHUFFLE(2, 1, 0, 1)); // y x y z
+        mul2_v = _mm_mul_ps(tmp0_v, tmp1_v);
+        mul2_v = _mm_mul_ps(mul2_v, _mm_set_ps(-1.0f, 1.0f, 1.0f, -1.0f));
+        mul1_v = _mm_add_ps(mul1_v, mul2_v);
+        mul1_v = _mm_mul_ps(mul1_v, _mm_set_ps(0.0f, -2.0f, 2.0f, 2.0f));
+        result.v3 = _mm_add_ps(result.v3, mul1_v);
+
+        return result;
+    }
+
+    static inline vector VECTOR_CALL rotation_matrix_to_quaternion(matrix m) noexcept {
+        auto res = vector_one();
+
+        // calc t
+        auto vec = _mm_shuffle_ps(m.v1, m.v1, _MM_SHUFFLE(0, 0, 0, 0)); // m00
+        auto tmp = _mm_mul_ps(vec, _mm_set_ps(1.0f, -1.0f, -1.0f, 1.0f));
+        res = _mm_add_ps(res, tmp);
+
+        vec = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(1, 1, 1, 1)); // m11
+        tmp = _mm_mul_ps(vec, _mm_set_ps(1.0f, -1.0f, 1.0f, -1.0f));
+        res = _mm_add_ps(res, tmp);
+
+        vec = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(2, 2, 2, 2)); // m22
+        tmp = _mm_mul_ps(vec, _mm_set_ps(1.0f, 1.0f, -1.0f, -1.0f));
+        res = _mm_add_ps(res, tmp);
+
+        auto cmp1 = _mm_cmplt_ps(vec, vector_zero());
+        vec = _mm_shuffle_ps(m.v2, m.v1, _MM_SHUFFLE(0, 0, 1, 1));
+        tmp = _mm_shuffle_ps(m.v1, m.v2, _MM_SHUFFLE(1, 1, 0, 0));
+        tmp = _mm_mul_ps(tmp, _mm_set_ps(-1.0f, -1.0f, 1.0f, 1.0f));
+        auto cmp2 = _mm_cmplt_ps(vec, tmp);
+
+        m.v4 = _mm_xor_ps(cmp1, _mm_castsi128_ps(_mm_set_epi32(-1, -1, 0, 0)));
+        auto cmp3 = _mm_xor_ps(cmp2, _mm_castsi128_ps(_mm_set_epi32(-1, 0, -1, 0)));
+        tmp  = _mm_and_ps(m.v4, cmp3);
+        res  = _mm_and_ps(res, tmp);
+
+        // store k
+        auto k = _mm_shuffle_ps(res, res, _MM_SHUFFLE(2, 3, 0, 1));
+        k = _mm_add_ps(k, res);
+        tmp = _mm_shuffle_ps(k, k, _MM_SHUFFLE(0, 1, 2, 3));
+        k = _mm_add_ps(k, tmp);
+        k = _mm_sqrt_ps(k);
+        k = _mm_div_ps(_mm_set_ps1(0.5f), k);
+
+        // calc m10_m01
+        vec = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(0, 0, 0, 0));
+        tmp = _mm_shuffle_ps(m.v1, m.v1, _MM_SHUFFLE(1, 1, 1, 1));
+        tmp = _mm_mul_ps(tmp, _mm_set_ps(-1.0f, -1.0f, 1.0f, 1.0f));
+        vec = _mm_add_ps(vec, tmp);
+        cmp2 = _mm_xor_ps(cmp2, _mm_castsi128_ps(_mm_set_epi32(0, -1, 0, -1)));
+        tmp = _mm_and_ps(m.v4, cmp2);
+        vec = _mm_and_ps(vec, tmp);
+        res = _mm_add_ps(res, vec);
+
+        // calc m02_m20
+        vec = _mm_shuffle_ps(m.v1, m.v1, _MM_SHUFFLE(2, 2, 2, 2));
+        tmp = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(0, 0, 0, 0));
+        tmp = _mm_mul_ps(tmp, _mm_set_ps(-1.0f, 1.0f, -1.0f, 1.0f));
+        vec = _mm_add_ps(vec, tmp);
+        m.v4 = _mm_xor_ps(cmp1, _mm_castsi128_ps(_mm_set_epi32(0, 0, -1, -1)));
+        cmp3 = _mm_shuffle_ps(cmp3, cmp3, _MM_SHUFFLE(1, 0, 3, 2));
+        tmp = _mm_and_ps(m.v4, cmp3);
+        vec = _mm_and_ps(vec, tmp);
+        res = _mm_add_ps(res, vec);
+
+        // calc m21_m12
+        vec = _mm_shuffle_ps(m.v3, m.v3, _MM_SHUFFLE(1, 1, 1, 1));
+        tmp = _mm_shuffle_ps(m.v2, m.v2, _MM_SHUFFLE(2, 2, 2, 2));
+        tmp = _mm_mul_ps(tmp, _mm_set_ps(-1.0f, 1.0f, 1.0f, -1.0f));
+        vec = _mm_add_ps(vec, tmp);
+        cmp2 = _mm_shuffle_ps(cmp2, cmp2, _MM_SHUFFLE(1, 0, 3, 2));
+        tmp = _mm_and_ps(m.v4, cmp2);
+        vec = _mm_and_ps(vec, tmp);
+        res = _mm_add_ps(res, vec);
+
+        res = _mm_mul_ps(res, k);
+        return res;
+    }
+
+    static inline matrix VECTOR_CALL camera_look_to_lh_matrix(
+            vector position,
+            vector forward,
+            vector right,
+            vector up_real) noexcept {
+        auto result = matrix_init(right, up_real, forward, vector_zero());
+        result = matrix_transpose(result);
+
+        right *= position;
+        up_real *= position;
+        forward *= position;
+
+        auto tmp = matrix_init(right, up_real, forward, vector_init(0.0f, 0.0f, 0.0f, 1.0f));
+        tmp = matrix_transpose(tmp);
+
+        result.v4 = (tmp.v1 + tmp.v2) + (tmp.v3 + tmp.v4);
+        result.v4 *= vector_init(-1.0f, -1.0f, -1.0f, 1.0f);
+
+        return result;
+    }
+
+    static inline matrix VECTOR_CALL camera_look_to_lh_matrix(
+            vector position,
+            vector target,
+            vector up) noexcept {
+        auto forward = vector_normalize(target - position);
+        auto right   = vector_normalize(vector_cross_product(up, forward));
+        auto up_real = vector_cross_product(forward, right);
+
+        return camera_look_to_lh_matrix(position, forward, right, up_real);
     }
 }

@@ -25,4 +25,10 @@ namespace QCE {
         (const float* values, int64_t count, float* results);
     void CU_SIMD_IFACE(matrix_calc_inverse)
         (const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(matrix_from_quaternion)
+        (const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(matrix_to_quaternion)
+        (const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(camera_to_lh_view)
+        (const float* values, int64_t count, float* results);
 }

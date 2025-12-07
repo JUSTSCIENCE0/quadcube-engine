@@ -3,19 +3,20 @@
 //
 // License: MIT
 
-#include <qce/about.hpp>
+#include <qce/ancillary/about.hpp>
 
-QCE_API const char* get_verion() {
-    // TODO: use git tag - common-utils
-    return "0.0.0";
-}
+namespace QCE {
+    const char* get_verion() {
+        // TODO: use git tag - common-utils
+        return "0.0.0";
+    }
 
-QCE_API const char* get_author() {
-    return "Yakov Usoltsev, yakovmen62@gmail.com";
-}
+    const char* get_author() {
+        return "Yakov Usoltsev, yakovmen62@gmail.com";
+    }
 
-QCE_API const char* get_licence() {
-    return  "MIT License\n\n"
+    const char* get_licence() {
+        return  "MIT License\n\n"
             "Copyright(c) 2025, Yakov Usoltsev\n\n"
             "Permission is hereby granted, free of charge, to any person obtaining a copy "
             "of this software and associated documentation files(the \"Software\"), to deal "
@@ -32,4 +33,5 @@ QCE_API const char* get_licence() {
             "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, "
             "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE "
             "SOFTWARE. \n";
+    }
 }

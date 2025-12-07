@@ -67,6 +67,33 @@ CU_CONFORMANCE_TEST_SIMD(
     (def, sse2, avx2, avx512)
 )
 
+CU_CONFORMANCE_TEST_SIMD(
+    MatrixFromQuaternion,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    "matrix4x4_float32_quaternion_to_rotation.bin",
+    QCE::matrix_from_quaternion,
+    (def, sse2, avx2) /*TODO avx512*/
+)
+
+CU_CONFORMANCE_TEST_SIMD(
+    QuaternionFromMatrix,
+    QCE_TEST_DATA_PATH,
+    "matrix4x4_float32_quaternion_to_rotation.bin",
+    "quaternions.bin",
+    QCE::matrix_to_quaternion,
+    (def, sse2, avx2)  /*TODO avx512*/
+)
+
+CU_CONFORMANCE_TEST_SIMD(
+    CameraToLhView,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    "matrix4x4_float32_lh_view_matrices.bin",
+    QCE::camera_to_lh_view,
+    (def, sse2, avx2) /*TODO avx512*/
+)
+
 #if !defined(CU_COMPILER_GCC)
 CU_CONFORMANCE_TEST_SIMD(
     MatrixDeterminant,
@@ -124,3 +151,4 @@ CU_CONFORMANCE_TEST_SIMD_WEAK(
     (avx512)
 )
 #endif
+

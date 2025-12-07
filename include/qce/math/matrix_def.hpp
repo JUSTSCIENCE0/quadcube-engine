@@ -263,4 +263,103 @@ namespace QCE {
             .w4 =  (m.x1 * A1203 - m.x2 * A0203 + m.x3 * A0103) / det
         };
     }
+
+    static inline matrix quaternion_to_rotation_matrix(const vector& q) noexcept {
+        return matrix_init(
+            1.0f - 2.0f * (q.y * q.y + q.z * q.z),
+                   2.0f * (q.x * q.y - q.w * q.z),
+                   2.0f * (q.x * q.z + q.w * q.y),
+            0.0f,
+
+                   2.0f * (q.x * q.y + q.w * q.z),
+            1.0f - 2.0f * (q.x * q.x + q.z * q.z),
+                   2.0f * (q.y * q.z - q.w * q.x),
+            0.0f,
+
+                   2.0f * (q.x * q.z - q.w * q.y),
+                   2.0f * (q.y * q.z + q.w * q.x),
+            1.0f - 2.0f * (q.x * q.x + q.y * q.y),
+            0.0f,
+
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
+    }
+
+    static inline vector rotation_matrix_to_quaternion(const matrix& m) noexcept {
+        // thanks to Mike Day, Insomniac Games
+        // mday@insomniacgames.com
+        // article "Converting a Rotation Matrix to a Quaternion"
+
+        vector q{};
+
+        float t = 0;
+
+        if (m.z3 < 0) {
+            if (m.x1 > m.y2) {
+                t = 1.0f + m.x1 - m.y2 - m.z3;
+                q.x = t;
+                q.y = m.x2 + m.y1;
+                q.z = m.z1 + m.x3;
+                q.w = m.y3 - m.z2;
+            }
+            else {
+                t = 1.0f - m.x1 + m.y2 - m.z3;
+                q.x = m.x2 + m.y1;
+                q.y = t;
+                q.z = m.y3 + m.z2;
+                q.w = m.z1 - m.x3;
+            }
+        }
+        else {
+            if (m.x1 < (-1.0f * m.y2)) {
+                t = 1.0f - m.x1 - m.y2 + m.z3;
+                q.x = m.z1 + m.x3;
+                q.y = m.y3 + m.z2;
+                q.z = t;
+                q.w = m.x2 - m.y1;
+            }
+            else {
+                t = 1.0f + m.x1 + m.y2 + m.z3;
+                q.x = m.y3 - m.z2;
+                q.y = m.z1 - m.x3;
+                q.z = m.x2 - m.y1;
+                q.w = t;
+            }
+        }
+
+        auto k = 0.5f / std::sqrtf(t);
+        q.x *= k;
+        q.y *= k;
+        q.z *= k;
+        q.w *= k;
+
+        return q;
+    }
+
+    static inline matrix camera_look_to_lh_matrix(
+            const vector& position,
+            const vector& forward,
+            const vector& right,
+            const vector& up_real) noexcept {
+        return matrix_init(
+            right.x, up_real.x, forward.x, 0.0f,
+            right.y, up_real.y, forward.y, 0.0f,
+            right.z, up_real.z, forward.z, 0.0f,
+            -1.0f * vector_dot_product(position, right),
+            -1.0f * vector_dot_product(position, up_real),
+            -1.0f * vector_dot_product(position, forward),
+            1.0f
+        );
+    }
+
+    static inline matrix camera_look_to_lh_matrix(
+            const vector& position,
+            const vector& target,
+            const vector& up) noexcept {
+        auto forward = vector_normalize(target - position);
+        auto right = vector_normalize(vector_cross_product(up, forward));
+        auto up_real = vector_cross_product(forward, right);
+
+        return camera_look_to_lh_matrix(position, forward, right, up_real);
+    }
 }

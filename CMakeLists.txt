@@ -47,7 +47,7 @@ include(FetchContent)
 FetchContent_Declare(
     common-utils
     GIT_REPOSITORY https://github.com/JUSTSCIENCE0/common-utils.git
-    GIT_TAG        main # TODO: use commit hash when it will be ready
+    GIT_TAG        4482c2fd48d4b14f8408ae717b5afa1137db94e6 # main, 07.12.2025
 )
 if (BUILD_QCE_TEST)
     set(ENABLE_CU_TEST_UTILS ON CACHE BOOL "" FORCE)
@@ -58,11 +58,25 @@ set_property(TARGET common-utils PROPERTY FOLDER "externals")
 list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")
 
 set(QCE_INTERFACE
-    include/qce/about.hpp
-    include/qce/common.hpp
+    include/qce/qce.hpp
     include/qce/vector.hpp
     include/qce/matrix.hpp
     include/qce/math.hpp
+    include/qce/render.hpp
+)
+
+set(QCE_OBJECTS
+    include/qce/objects/index.hpp
+    include/qce/objects/mesh.hpp
+    include/qce/objects/model.hpp
+    include/qce/objects/entity.hpp
+    include/qce/objects/resource_manager.hpp
+    include/qce/objects/scene.hpp
+    include/qce/objects/figures.hpp
+    include/qce/objects/shader.hpp
+    include/qce/objects/camera.hpp
+    include/qce/objects/camera_operator.hpp
+    include/qce/objects/command.hpp
 )
 
 set(QCE_MATH
@@ -76,22 +90,123 @@ set(QCE_MATH
     include/qce/math/matrix_avx512.hpp
 )
 
-set(QCE_OTHER
+set(QCE_TRANSFORMS
+    include/qce/transform/transform.hpp
+    include/qce/transform/movement.hpp
+)
+
+set(QCE_RENDERS
+    include/qce/renders/windows_output.hpp
+    include/qce/renders/render_type.hpp
+    include/qce/renders/render_base.hpp
+    include/qce/renders/render_dx12.hpp
+    include/qce/renders/render_dx12_helpers.hpp
+    # TODO: include/qce/renders/render_vulkan.hpp
+)
+
+set(QCE_HID
+    include/qce/hid/events.hpp
+    include/qce/hid/events_handler.hpp
+
+    include/qce/hid/win_events.hpp
+    include/qce/hid/win_gamepad.hpp
+)
+
+set(QCE_ANCILLARY
+    include/qce/ancillary/about.hpp
+    include/qce/ancillary/error_codes.hpp
+    include/qce/ancillary/timer.hpp
+)
+
+set(QCE_IMPLEMENTATION
+    # objects
+    src/resource_manager.cpp
+    src/scene.cpp
+    src/figures.cpp
+    src/camera.cpp
+    src/camera_operator.cpp
+
+    # renders
+    src/windows_output.cpp
+    src/render_base.cpp
+    src/render_dx12.cpp
+
+    # transforms
+    src/transform.cpp
+
+    #other
     src/about.cpp
 )
 
-add_library(${PROJECT_NAME} SHARED)
+set(QCE_CMAKE_UTILS
+    cmake/ResourcesUtils.cmake)
+
+set(QCE_SHADERS_DIR shaders)
+set(QCE_HLSL_SHADERS_DIR ${QCE_SHADERS_DIR}/hlsl)
+set(QCE_HLSL_VS ${QCE_HLSL_SHADERS_DIR}/simple_vs.hlsl)
+set(QCE_HLSL_PS ${QCE_HLSL_SHADERS_DIR}/simple_ps.hlsl)
+set(QCE_HLSL_SHADERS
+    ${QCE_HLSL_VS}
+    ${QCE_HLSL_PS}
+)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(QCE_SHADERS
+        ${QCE_SHADERS}
+        ${QCE_HLSL_SHADERS}
+    )
+endif() # Windows
+
+add_library(${PROJECT_NAME} STATIC)
 target_sources(${PROJECT_NAME}
     PUBLIC
         ${QCE_INTERFACE}
+        ${QCE_OBJECTS}
+        ${QCE_ANCILLARY}
     PRIVATE
         ${QCE_MATH}
-        ${QCE_OTHER}
+        ${QCE_TRANSFORMS}
+        ${QCE_RENDERS}
+        ${QCE_IMPLEMENTATION}
+        ${QCE_SHADERS}
+        ${QCE_HID}
 )
 
 source_group("Interface" FILES ${QCE_INTERFACE})
 source_group("Math" FILES ${QCE_MATH})
-source_group("Other" FILES ${QCE_OTHER})
+source_group("Transforms" FILES ${QCE_TRANSFORMS})
+source_group("Objects" FILES ${QCE_OBJECTS})
+source_group("Renders" FILES ${QCE_RENDERS})
+source_group("HID" FILES ${QCE_HID})
+source_group("Ancillary" FILES ${QCE_ANCILLARY})
+source_group("Implementation" FILES ${QCE_IMPLEMENTATION})
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    source_group("Shaders/HLSL" FILES ${QCE_HLSL_SHADERS})
+endif() # Windows
+
+set_source_files_properties(${QCE_SHADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
+set(QCE_SHADERS_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/shaders")
+
+# add HLSL shaders compilation
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        set(QCE_HLSL_BINARY_FILENAME "${QCE_SHADERS_BINARY_DIR}/hlsl/%(Filename).cso")
+        set(QCE_HLSL_SHADER_MODEL 5.1) # TODO: make it option?
+        set_source_files_properties(${QCE_HLSL_VS} PROPERTIES
+            HEADER_FILE_ONLY FALSE
+            VS_SHADER_TYPE Vertex
+            VS_SHADER_MODEL ${QCE_HLSL_SHADER_MODEL}
+            VS_SHADER_OBJECT_FILE_NAME ${QCE_HLSL_BINARY_FILENAME}
+        )
+        set_source_files_properties(${QCE_HLSL_PS} PROPERTIES
+            HEADER_FILE_ONLY FALSE
+            VS_SHADER_TYPE Pixel
+            VS_SHADER_MODEL ${QCE_HLSL_SHADER_MODEL}
+            VS_SHADER_OBJECT_FILE_NAME ${QCE_HLSL_BINARY_FILENAME}
+        )
+    else()
+        message(WARNING "HLSL shader auto-compilation implemented only for MSVC")
+    endif() # MSVC
+endif() # Windows
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
@@ -102,6 +217,32 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
         common-utils
 )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    FetchContent_Declare(
+        DirectX-Headers
+        GIT_REPOSITORY https://github.com/microsoft/DirectX-Headers.git
+        GIT_TAG        c94b9b23aaadc2034dd1cad656a5a69f1526f98a # v1.616.0
+    )
+    set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(DirectX-Headers)
+
+    set_property(TARGET DirectX-Headers DirectX-Guids PROPERTY FOLDER "externals")
+
+    target_link_libraries(${PROJECT_NAME}
+        PUBLIC
+            DirectX-Headers
+            DirectX-Guids
+
+            D3D12.lib
+            DXGI.lib
+
+            xinput.lib
+    )
+endif()
+
+# QCE CMake utils
+include(${QCE_CMAKE_UTILS})
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY INCLUDE_DIR_POSTFIX "qce")
 

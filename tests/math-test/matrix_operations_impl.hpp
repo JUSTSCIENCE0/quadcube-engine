@@ -131,5 +131,54 @@ namespace QCE {
             results += 16;
         }
     }
+
+    void CU_SIMD(matrix_from_quaternion)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 4 == 0);
+        while (count > 0) {
+            auto val = vector_init(values);
+            val = vector_normalize(val);
+            auto res = quaternion_to_rotation_matrix(val);
+            matrix_copy(res, results);
+
+            values += 4;
+            count -= 4;
+            results += 16;
+        }
+    }
+
+    void CU_SIMD(matrix_to_quaternion)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 16 == 0);
+
+        while (count > 0) {
+            auto val = matrix_init(values);
+
+            auto res = rotation_matrix_to_quaternion(val);
+            vector_copy(res, results);
+
+            count -= 16;
+            values += 16;
+            results += 4;
+        }
+    }
+
+    void CU_SIMD(camera_to_lh_view)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 16 == 0);
+
+        while (count > 0) {
+            auto position = vector_init(values[0], values[1], values[2], 0.0f);
+            auto target   = vector_init(values[4], values[5], values[6], 0.0f);
+            auto up       = vector_init(values[8], values[9], values[10], 0.0f);
+
+            auto res = camera_look_to_lh_matrix(position, target, up);
+            matrix_copy(res, results);
+
+            count -= 16;
+            values += 16;
+            results += 16;
+        }
+    }
 }
 
