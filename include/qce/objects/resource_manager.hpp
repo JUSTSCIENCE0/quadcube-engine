@@ -82,11 +82,12 @@ namespace QCE {
 
     private:
         /// ctor
-        explicit ResourceManager(
-            RenderType render_type) :
-                m_render_type(render_type),
-                m_resources_directory(GetResourcesDirectory()),
-                m_shaders_bytecode_directory(m_resources_directory / SHADERS_BYTECODE_SUBDIRECTORY) {}
+        explicit ResourceManager(RenderType render_type) :
+            m_render_type(render_type),
+            m_resources_directory(GetResourcesDirectory()),
+            m_shaders_bytecode_directory(m_resources_directory / SHADERS_BYTECODE_SUBDIRECTORY) {
+            RegisterDefaultCommands();
+        }
 
         /// singleton
         static inline std::unique_ptr<ResourceManager> m_instance = nullptr;
@@ -101,6 +102,7 @@ namespace QCE {
 
         /// methods
         static std::filesystem::path GetResourcesDirectory();
+        void RegisterDefaultCommands();
 
         /// attributes
         RenderType m_render_type = DEFAULT_RENDER_TYPE;

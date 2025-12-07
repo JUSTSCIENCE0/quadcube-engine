@@ -36,4 +36,14 @@ namespace QCE {
 
         const std::string m_name;
     };
+
+    // default commands
+    struct ExitCommand : public Command {
+        ExitCommand() :
+            Command("Exit") {};
+
+        ErrorCode Execute(const CommandContext* context) {
+            std::exit(0);
+        }
+    };
 }

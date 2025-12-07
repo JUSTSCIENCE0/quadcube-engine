@@ -75,6 +75,9 @@ int main(int argc, char* argv[]) {
     hid_events_config.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE, "CameraOperator0.RotateUp"));
 
+    hid_events_config.emplace_back(
+        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_ESC, "Exit"));
+
     QCE_CRITICAL(app.HidManager().Setup(hid_events_config));
 
     return app.Run();

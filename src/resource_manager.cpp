@@ -17,6 +17,10 @@ namespace QCE {
         return result;
     }
 
+    void ResourceManager::RegisterDefaultCommands() {
+        AddCommand(std::make_unique<ExitCommand>());
+    }
+
     ErrorCode ResourceManager::AddModel(
             const std::string& model_name,
             const std::string& mesh_name) {
