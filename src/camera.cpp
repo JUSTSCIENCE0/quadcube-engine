@@ -101,6 +101,11 @@ namespace QCE {
         }
 
         m_pitch += d_pitch;
+        if (m_pitch > MAX_PITCH_ABS)
+            m_pitch = MAX_PITCH_ABS;
+        if (m_pitch < -MAX_PITCH_ABS)
+            m_pitch = -MAX_PITCH_ABS;
+
         m_yaw += d_yaw;
 
         m_forward.x() = cosf(m_pitch) * sinf(m_yaw);

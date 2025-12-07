@@ -106,6 +106,7 @@ namespace QCE {
         float m_yaw = 0.0f;
         float m_pitch = 0.0f;
         mutable bool m_need_update_yaw_pitch = true;
+        static constexpr float MAX_PITCH_ABS = deg_to_rad(89);
     };
 }
 
