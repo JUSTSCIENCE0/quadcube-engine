@@ -59,7 +59,6 @@ list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")
 
 set(QCE_INTERFACE
     include/qce/qce.hpp
-    include/qce/render.hpp
 )
 
 set(QCE_OBJECTS
@@ -97,13 +96,19 @@ set(QCE_TRANSFORMS
     include/qce/transform/movement.hpp
 )
 
-set(QCE_RENDERS
+set(QCE_RENDERS_HDRS
+    include/qce/renders/render.hpp
     include/qce/renders/windows_output.hpp
     include/qce/renders/render_type.hpp
     include/qce/renders/render_base.hpp
     include/qce/renders/render_dx12.hpp
     include/qce/renders/render_dx12_helpers.hpp
     # TODO: include/qce/renders/render_vulkan.hpp
+)
+set(QCE_RENDERS_IMPL
+    src/windows_output.cpp
+    src/render_base.cpp
+    src/render_dx12.cpp
 )
 
 set(QCE_HID
@@ -127,11 +132,6 @@ set(QCE_IMPLEMENTATION
     src/figures.cpp
     src/camera.cpp
     src/camera_operator.cpp
-
-    # renders
-    src/windows_output.cpp
-    src/render_base.cpp
-    src/render_dx12.cpp
 
     # transforms
     src/transform.cpp
@@ -168,6 +168,9 @@ target_sources(${PROJECT_NAME}
         ${QCE_MATH_HDRS}
         ${QCE_MATH_IMPL}
 
+        ${QCE_RENDERS_HDRS}
+        ${QCE_RENDERS_IMPL}
+
         ${QCE_TRANSFORMS}
         ${QCE_RENDERS}
         ${QCE_IMPLEMENTATION}
@@ -175,14 +178,14 @@ target_sources(${PROJECT_NAME}
         ${QCE_HID}
 )
 
-source_group("Interface" FILES ${QCE_INTERFACE})
-
-source_group("Math/Headers" FILES ${QCE_MATH_HDRS})
-source_group("Math/Implementation" FILES ${QCE_MATH_IMPL})
+source_group("Interface"              FILES ${QCE_INTERFACE})
+source_group("Math/Headers"           FILES ${QCE_MATH_HDRS})
+source_group("Math/Implementation"    FILES ${QCE_MATH_IMPL})
+source_group("Renders/Headers"        FILES ${QCE_RENDERS_HDRS})
+source_group("Renders/Implementation" FILES ${QCE_RENDERS_IMPL})
 
 source_group("Transforms" FILES ${QCE_TRANSFORMS})
 source_group("Objects" FILES ${QCE_OBJECTS})
-source_group("Renders" FILES ${QCE_RENDERS})
 source_group("HID" FILES ${QCE_HID})
 source_group("Ancillary" FILES ${QCE_ANCILLARY})
 source_group("Implementation" FILES ${QCE_IMPLEMENTATION})
