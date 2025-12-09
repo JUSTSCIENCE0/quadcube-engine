@@ -91,9 +91,12 @@ set(QCE_MATH_IMPL
     include/qce/math/impl/matrix_avx512.hpp
 )
 
-set(QCE_TRANSFORMS
-    include/qce/transform/transform.hpp
-    include/qce/transform/movement.hpp
+set(QCE_COMPONENTS_HDRS
+    include/qce/components/transform.hpp
+    include/qce/components/movement.hpp
+)
+set(QCE_COMPONENTS_IMPL
+    src/transform.cpp
 )
 
 set(QCE_RENDERS_HDRS
@@ -101,6 +104,7 @@ set(QCE_RENDERS_HDRS
     include/qce/renders/windows_output.hpp
     include/qce/renders/render_type.hpp
     include/qce/renders/render_base.hpp
+    # TODO: DX12 - Windows only
     include/qce/renders/render_dx12.hpp
     include/qce/renders/render_dx12_helpers.hpp
     # TODO: include/qce/renders/render_vulkan.hpp
@@ -108,13 +112,15 @@ set(QCE_RENDERS_HDRS
 set(QCE_RENDERS_IMPL
     src/windows_output.cpp
     src/render_base.cpp
+    # TODO: DX12 - Windows only
     src/render_dx12.cpp
 )
 
-set(QCE_HID
+set(QCE_HID_HDRS
     include/qce/hid/events.hpp
     include/qce/hid/events_handler.hpp
 
+    # TODO: Windows only
     include/qce/hid/win_events.hpp
     include/qce/hid/win_gamepad.hpp
 )
@@ -132,9 +138,6 @@ set(QCE_IMPLEMENTATION
     src/figures.cpp
     src/camera.cpp
     src/camera_operator.cpp
-
-    # transforms
-    src/transform.cpp
 
     #other
     src/about.cpp
@@ -171,22 +174,31 @@ target_sources(${PROJECT_NAME}
         ${QCE_RENDERS_HDRS}
         ${QCE_RENDERS_IMPL}
 
-        ${QCE_TRANSFORMS}
+        ${QCE_HID_HDRS}
+
+        ${QCE_COMPONENTS_HDRS}
+        ${QCE_COMPONENTS_IMPL}
+
         ${QCE_RENDERS}
         ${QCE_IMPLEMENTATION}
         ${QCE_SHADERS}
-        ${QCE_HID}
 )
 
-source_group("Interface"              FILES ${QCE_INTERFACE})
-source_group("Math/Headers"           FILES ${QCE_MATH_HDRS})
-source_group("Math/Implementation"    FILES ${QCE_MATH_IMPL})
-source_group("Renders/Headers"        FILES ${QCE_RENDERS_HDRS})
-source_group("Renders/Implementation" FILES ${QCE_RENDERS_IMPL})
+source_group("Interface"                 FILES ${QCE_INTERFACE})
 
-source_group("Transforms" FILES ${QCE_TRANSFORMS})
+source_group("Math/Headers"              FILES ${QCE_MATH_HDRS})
+source_group("Math/Implementation"       FILES ${QCE_MATH_IMPL})
+
+source_group("Renders/Headers"           FILES ${QCE_RENDERS_HDRS})
+source_group("Renders/Implementation"    FILES ${QCE_RENDERS_IMPL})
+
+source_group("HID/Headers"               FILES ${QCE_HID_HDRS})
+
+source_group("Components/Headers"        FILES ${QCE_COMPONENTS_HDRS})
+source_group("Components/Implementation" FILES ${QCE_COMPONENTS_IMPL})
+
 source_group("Objects" FILES ${QCE_OBJECTS})
-source_group("HID" FILES ${QCE_HID})
+
 source_group("Ancillary" FILES ${QCE_ANCILLARY})
 source_group("Implementation" FILES ${QCE_IMPLEMENTATION})
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")

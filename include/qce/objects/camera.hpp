@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <qce/transform/transform.hpp>
-#include <qce/transform/movement.hpp>
+#include <qce/components/transform.hpp>
+#include <qce/components/movement.hpp>
 
 namespace QCE {
     class Camera {
