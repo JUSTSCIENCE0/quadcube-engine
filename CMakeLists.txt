@@ -61,7 +61,7 @@ set(QCE_INTERFACE
     include/qce/qce.hpp
 )
 
-set(QCE_OBJECTS
+set(QCE_OBJECTS_HDRS
     include/qce/objects/index.hpp
     include/qce/objects/mesh.hpp
     include/qce/objects/model.hpp
@@ -73,6 +73,13 @@ set(QCE_OBJECTS
     include/qce/objects/camera.hpp
     include/qce/objects/camera_operator.hpp
     include/qce/objects/command.hpp
+)
+set(QCE_OBJECTS_IMPL
+    src/resource_manager.cpp
+    src/scene.cpp
+    src/figures.cpp
+    src/camera.cpp
+    src/camera_operator.cpp
 )
 
 set(QCE_MATH_HDRS
@@ -125,21 +132,12 @@ set(QCE_HID_HDRS
     include/qce/hid/win_gamepad.hpp
 )
 
-set(QCE_ANCILLARY
+set(QCE_ANCILLARY_HDRS
     include/qce/ancillary/about.hpp
     include/qce/ancillary/error_codes.hpp
     include/qce/ancillary/timer.hpp
 )
-
-set(QCE_IMPLEMENTATION
-    # objects
-    src/resource_manager.cpp
-    src/scene.cpp
-    src/figures.cpp
-    src/camera.cpp
-    src/camera_operator.cpp
-
-    #other
+set(QCE_ANCILLARY_IMPL
     src/about.cpp
 )
 
@@ -165,8 +163,6 @@ add_library(${PROJECT_NAME} STATIC)
 target_sources(${PROJECT_NAME}
     PUBLIC
         ${QCE_INTERFACE}
-        ${QCE_OBJECTS}
-        ${QCE_ANCILLARY}
     PRIVATE
         ${QCE_MATH_HDRS}
         ${QCE_MATH_IMPL}
@@ -179,8 +175,12 @@ target_sources(${PROJECT_NAME}
         ${QCE_COMPONENTS_HDRS}
         ${QCE_COMPONENTS_IMPL}
 
-        ${QCE_RENDERS}
-        ${QCE_IMPLEMENTATION}
+        ${QCE_OBJECTS_HDRS}
+        ${QCE_OBJECTS_IMPL}
+
+        ${QCE_ANCILLARY_HDRS}
+        ${QCE_ANCILLARY_IMPL}
+
         ${QCE_SHADERS}
 )
 
@@ -197,10 +197,12 @@ source_group("HID/Headers"               FILES ${QCE_HID_HDRS})
 source_group("Components/Headers"        FILES ${QCE_COMPONENTS_HDRS})
 source_group("Components/Implementation" FILES ${QCE_COMPONENTS_IMPL})
 
-source_group("Objects" FILES ${QCE_OBJECTS})
+source_group("Objects/Headers"           FILES ${QCE_OBJECTS_HDRS})
+source_group("Objects/Implementation"    FILES ${QCE_OBJECTS_IMPL})
 
-source_group("Ancillary" FILES ${QCE_ANCILLARY})
-source_group("Implementation" FILES ${QCE_IMPLEMENTATION})
+source_group("Ancillary/Headers"         FILES ${QCE_ANCILLARY_HDRS})
+source_group("Ancillary/Implementation"  FILES ${QCE_ANCILLARY_IMPL})
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     source_group("Shaders/HLSL" FILES ${QCE_HLSL_SHADERS})
 endif() # Windows
