@@ -111,25 +111,17 @@ set(QCE_RENDERS_HDRS
     include/qce/renders/windows_output.hpp
     include/qce/renders/render_type.hpp
     include/qce/renders/render_base.hpp
-    # TODO: DX12 - Windows only
-    include/qce/renders/render_dx12.hpp
-    include/qce/renders/render_dx12_helpers.hpp
+
     # TODO: include/qce/renders/render_vulkan.hpp
 )
 set(QCE_RENDERS_IMPL
     src/windows_output.cpp
     src/render_base.cpp
-    # TODO: DX12 - Windows only
-    src/render_dx12.cpp
 )
 
 set(QCE_HID_HDRS
     include/qce/hid/events.hpp
     include/qce/hid/events_handler.hpp
-
-    # TODO: Windows only
-    include/qce/hid/win_events.hpp
-    include/qce/hid/win_gamepad.hpp
 )
 
 set(QCE_ANCILLARY_HDRS
@@ -153,6 +145,22 @@ set(QCE_HLSL_SHADERS
     ${QCE_HLSL_PS}
 )
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(QCE_RENDERS_HDRS
+        ${QCE_RENDERS_HDRS}
+        include/qce/renders/render_dx12.hpp
+        include/qce/renders/render_dx12_helpers.hpp
+    )
+    set(QCE_RENDERS_IMPL
+        ${QCE_RENDERS_IMPL}
+        src/render_dx12.cpp
+    )
+
+    set(QCE_HID_HDRS
+        ${QCE_HID_HDRS}
+        include/qce/hid/win_events.hpp
+        include/qce/hid/win_gamepad.hpp
+    )
+
     set(QCE_SHADERS
         ${QCE_SHADERS}
         ${QCE_HLSL_SHADERS}
