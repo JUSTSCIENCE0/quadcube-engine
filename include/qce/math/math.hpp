@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <qce/vector.hpp>
-#include <qce/matrix.hpp>
+#include <qce/math/vector.hpp>
+#include <qce/math/matrix.hpp>
 
 #include <cmath>
 

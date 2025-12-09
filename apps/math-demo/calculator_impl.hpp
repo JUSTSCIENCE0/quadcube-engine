@@ -10,7 +10,7 @@
 
 #include "calculator.hpp"
 
-#include <qce/math.hpp>
+#include <qce/math/math.hpp>
 
 #include <iostream>
 

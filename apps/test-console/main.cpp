@@ -3,7 +3,7 @@
 //
 // License: MIT
 
-#include <qce/math.hpp>
+#include <qce/math/math.hpp>
 #include <cu/file-utils.hpp>
 
 using namespace QCE;

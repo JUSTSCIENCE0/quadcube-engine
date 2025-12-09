@@ -14,7 +14,7 @@
 
 #define MATRIX_IMPLEMENTATION "default"
 
-#include <qce/math/vector_def.hpp>
+#include <qce/math/impl/vector_def.hpp>
 
 namespace QCE {
     struct matrix final {

@@ -14,7 +14,7 @@
 
 #define MATRIX_IMPLEMENTATION "sse2"
 
-#include <qce/math/vector_sse2.hpp>
+#include <qce/math/impl/vector_sse2.hpp>
 
 namespace QCE {
     struct alignas(REQUIRED_ALIGNAS) matrix final {

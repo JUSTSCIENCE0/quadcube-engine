@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <qce/math.hpp>
+#include <qce/math/math.hpp>
 
 namespace QCE {
     class Velocity {

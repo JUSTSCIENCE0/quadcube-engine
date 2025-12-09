@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <qce/math.hpp>
+#include <qce/math/math.hpp>
 
 #include "vector_operations.hpp"
 

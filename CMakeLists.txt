@@ -59,9 +59,6 @@ list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")
 
 set(QCE_INTERFACE
     include/qce/qce.hpp
-    include/qce/vector.hpp
-    include/qce/matrix.hpp
-    include/qce/math.hpp
     include/qce/render.hpp
 )
 
@@ -79,15 +76,20 @@ set(QCE_OBJECTS
     include/qce/objects/command.hpp
 )
 
-set(QCE_MATH
-    include/qce/math/vector_def.hpp
-    include/qce/math/vector_sse2.hpp
-    include/qce/math/vector_avx2.hpp
-    include/qce/math/vector_avx512.hpp
-    include/qce/math/matrix_def.hpp
-    include/qce/math/matrix_sse2.hpp
-    include/qce/math/matrix_avx2.hpp
-    include/qce/math/matrix_avx512.hpp
+set(QCE_MATH_HDRS
+    include/qce/math/vector.hpp
+    include/qce/math/matrix.hpp
+    include/qce/math/math.hpp
+)
+set(QCE_MATH_IMPL
+    include/qce/math/impl/vector_def.hpp
+    include/qce/math/impl/vector_sse2.hpp
+    include/qce/math/impl/vector_avx2.hpp
+    include/qce/math/impl/vector_avx512.hpp
+    include/qce/math/impl/matrix_def.hpp
+    include/qce/math/impl/matrix_sse2.hpp
+    include/qce/math/impl/matrix_avx2.hpp
+    include/qce/math/impl/matrix_avx512.hpp
 )
 
 set(QCE_TRANSFORMS
@@ -163,7 +165,9 @@ target_sources(${PROJECT_NAME}
         ${QCE_OBJECTS}
         ${QCE_ANCILLARY}
     PRIVATE
-        ${QCE_MATH}
+        ${QCE_MATH_HDRS}
+        ${QCE_MATH_IMPL}
+
         ${QCE_TRANSFORMS}
         ${QCE_RENDERS}
         ${QCE_IMPLEMENTATION}
@@ -172,7 +176,10 @@ target_sources(${PROJECT_NAME}
 )
 
 source_group("Interface" FILES ${QCE_INTERFACE})
-source_group("Math" FILES ${QCE_MATH})
+
+source_group("Math/Headers" FILES ${QCE_MATH_HDRS})
+source_group("Math/Implementation" FILES ${QCE_MATH_IMPL})
+
 source_group("Transforms" FILES ${QCE_TRANSFORMS})
 source_group("Objects" FILES ${QCE_OBJECTS})
 source_group("Renders" FILES ${QCE_RENDERS})

@@ -5,7 +5,7 @@
 
 #pragma once
 
-#define CU_IMPLEMENTATION_INCLUDE qce/math/vector
+#define CU_IMPLEMENTATION_INCLUDE qce/math/impl/vector
 #define CU_IMPLEMENTATION_INCLUDE_EXT hpp
 
 #include <cu/simd-utils.hpp>

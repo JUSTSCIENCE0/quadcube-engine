@@ -14,7 +14,7 @@
 
 #define MATRIX_IMPLEMENTATION "avx512"
 
-#include <qce/math/vector_avx512.hpp>
+#include <qce/math/impl/vector_avx512.hpp>
 
 namespace QCE {
     using matrix = __m512;

@@ -14,7 +14,7 @@
 
 #define MATRIX_IMPLEMENTATION "avx2"
 
-#include <qce/math/vector_avx2.hpp>
+#include <qce/math/impl/vector_avx2.hpp>
 
 namespace QCE {
     struct alignas(REQUIRED_ALIGNAS) matrix final {
