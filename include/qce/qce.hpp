@@ -8,6 +8,7 @@
 #include <qce/renders/render.hpp>
 #include <qce/objects/scene.hpp>
 #include <qce/ancillary/timer.hpp>
+#include <qce/ecs/ecs.hpp>
 
 #include <cu/string-utils.hpp>
 

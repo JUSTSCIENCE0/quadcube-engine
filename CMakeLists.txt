@@ -124,6 +124,10 @@ set(QCE_HID_HDRS
     include/qce/hid/events_handler.hpp
 )
 
+set(QCE_ECS_HDRS
+    include/qce/ecs/ecs.hpp
+)
+
 set(QCE_ANCILLARY_HDRS
     include/qce/ancillary/about.hpp
     include/qce/ancillary/error_codes.hpp
@@ -180,6 +184,8 @@ target_sources(${PROJECT_NAME}
 
         ${QCE_HID_HDRS}
 
+        ${QCE_ECS_HDRS}
+
         ${QCE_COMPONENTS_HDRS}
         ${QCE_COMPONENTS_IMPL}
 
@@ -201,6 +207,8 @@ source_group("Renders/Headers"           FILES ${QCE_RENDERS_HDRS})
 source_group("Renders/Implementation"    FILES ${QCE_RENDERS_IMPL})
 
 source_group("HID/Headers"               FILES ${QCE_HID_HDRS})
+
+source_group("ECS/Headers"               FILES ${QCE_ECS_HDRS})
 
 source_group("Components/Headers"        FILES ${QCE_COMPONENTS_HDRS})
 source_group("Components/Implementation" FILES ${QCE_COMPONENTS_IMPL})
