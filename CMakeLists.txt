@@ -126,6 +126,7 @@ set(QCE_HID_HDRS
 
 set(QCE_ECS_HDRS
     include/qce/ecs/ecs.hpp
+    include/qce/ecs/component.hpp
 )
 
 set(QCE_ANCILLARY_HDRS
