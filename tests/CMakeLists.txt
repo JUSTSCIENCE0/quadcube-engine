@@ -31,3 +31,4 @@ if (NOT EXISTS ${QCE_TEST_DATA_PATH})
 endif()
 
 add_subdirectory(math-test)
+add_subdirectory(ecs-test)

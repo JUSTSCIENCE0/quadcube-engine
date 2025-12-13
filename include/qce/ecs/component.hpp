@@ -21,14 +21,14 @@ namespace QCE {
             m_map.resize(count, CU::INVALID_ID);
         }
 
-        void SetEntity(CU::id_t entity_id, Component&& component) {
+        void SetEntity(CU::id_t entity_id, Component component) {
             if (entity_id >= m_map.size()) {
                 m_map.resize(entity_id + 1, CU::INVALID_ID);
             }
 
             Cell new_value{
                 .entity_id = entity_id,
-                .value = std::forward<Component>(component)
+                .value = std::move(component)
             };
 
             if (m_map[entity_id] == CU::INVALID_ID) {
@@ -52,14 +52,14 @@ namespace QCE {
             size_t data_index = m_map[entity_id];
 
             assert(data_index != CU::INVALID_ID);
-            return m_data[data_index];
+            return m_data[data_index].value;
         }
 
         const Component& operator[](CU::id_t entity_id) const {
             size_t data_index = m_map[entity_id];
 
             assert(data_index != CU::INVALID_ID);
-            return m_data[data_index];
+            return m_data[data_index].value;
         }
 
         size_t Size() const {
