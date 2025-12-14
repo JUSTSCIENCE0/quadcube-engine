@@ -211,7 +211,7 @@ namespace QCE {
             result << "ENGINE - Entity with such name already exists";
             break;
         case ErrorCode::E_ENG_ENTITY_NOT_FOUND:
-            result << "ENGINE - Entity with such name not found";
+            result << "ENGINE - Entity with such id not found";
             break;
         case ErrorCode::E_ENG_SHADER_BYTECODE_NOT_FOUND:
             result << "ENGINE - Byte code for shader not found";
