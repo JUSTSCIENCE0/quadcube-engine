@@ -9,7 +9,7 @@
 
 TEST(ComponentStorageTest, BaseFunctional) {
     QCE::ComponentStorage<int> storage;
-    std::vector<CU::id_t> expected_entities;
+    std::set<CU::id_t> expected_entities;
 
     // check SetEntity
     storage.SetEntity(2, 42);

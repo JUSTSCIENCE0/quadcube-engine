@@ -66,12 +66,11 @@ namespace QCE {
             return m_data.size() - m_empty_cells.size();
         }
 
-        std::vector<CU::id_t> GetActualEntities() const {
-            std::vector<CU::id_t> result;
-            result.reserve(Size());
+        std::set<CU::id_t> GetActualEntities() const {
+            std::set<CU::id_t> result;
             for (const auto& cell : m_data) {
                 if (cell.entity_id != CU::INVALID_ID)
-                 result.push_back(cell.entity_id);
+                 result.emplace(cell.entity_id);
             }
             return result;
         }
