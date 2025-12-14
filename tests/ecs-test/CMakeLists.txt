@@ -8,6 +8,7 @@ cmake_minimum_required(VERSION 3.22)
 project(ecs-test)
 
 add_executable(${PROJECT_NAME}
+    entity-test.cpp
     component-test.cpp
 
     main.cpp
