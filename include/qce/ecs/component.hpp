@@ -49,16 +49,16 @@ namespace QCE {
         }
 
         Component& operator[](CU::id_t entity_id) {
-            size_t data_index = m_map[entity_id];
+            assert(HasEntity(entity_id));
 
-            assert(data_index != CU::INVALID_ID);
+            size_t data_index = m_map[entity_id];
             return m_data[data_index].value;
         }
 
         const Component& operator[](CU::id_t entity_id) const {
-            size_t data_index = m_map[entity_id];
+            assert(HasEntity(entity_id));
 
-            assert(data_index != CU::INVALID_ID);
+            size_t data_index = m_map[entity_id];
             return m_data[data_index].value;
         }
 
@@ -73,6 +73,13 @@ namespace QCE {
                  result.emplace(cell.entity_id);
             }
             return result;
+        }
+
+        bool HasEntity(CU::id_t entity_id) const {
+            if (entity_id >= m_map.size())
+                return false;
+
+            return m_map[entity_id] != CU::INVALID_ID;
         }
 
         void RemoveEntity(CU::id_t entity_id) {
