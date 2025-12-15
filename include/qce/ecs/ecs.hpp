@@ -8,6 +8,8 @@
 #include <qce/ecs/component.hpp>
 #include <qce/ancillary/error_codes.hpp>
 
+#include <algorithm>
+
 namespace QCE {
     using entity_id_t = CU::id_t;
 
@@ -63,10 +65,26 @@ namespace QCE {
                 }
 
                 auto min_index = std::distance(entity_counts.begin(), it);
+                ptrdiff_t index = 0;
 
-                // TODO: get result from the minimal storage and check other storages for each entity
-                (void)min_index;
+                ([&]() {
+                    if (index == min_index) {
+                        const auto& storage = std::get<ComponentStorage<Request>>(m_components);
+                        result = storage.GetActualEntities();
+                    }
+                    index++;
+                }(), ...);
 
+                ([&]() {
+                    if (index != min_index) {
+                        const auto& storage = std::get<ComponentStorage<Request>>(m_components);
+                        std::erase_if(result, 
+                            [&storage](entity_id_t id) { return !storage.HasEntity(id); });
+                    }
+                    index++;
+                }(), ...);
+
+                // TODO: cache result for next queries
                 return result;
             }
         }

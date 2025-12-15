@@ -7,6 +7,9 @@
 
 #include <qce/ecs/ecs.hpp>
 
+// TODO: refactore tests - use fixtures
+// TODO: check query cache working
+
 TEST(EntityManagerTest, BaseFunctional) {
     using Component1 = uint32_t;
     using Component2 = float;
@@ -47,7 +50,12 @@ TEST(EntityManagerTest, BaseFunctional) {
               std::set<QCE::entity_id_t>({ entity1, entity3 }));
     EXPECT_EQ(entity_manager.QueryEntities<Component3>(),
               std::set<QCE::entity_id_t>({ entity2, entity3 }));
-    // TODO: check several components query
+    EXPECT_EQ((entity_manager.QueryEntities<Component1,Component2>()),
+              std::set<QCE::entity_id_t>({ entity1 }));
+    EXPECT_EQ((entity_manager.QueryEntities<Component1, Component3>()),
+        std::set<QCE::entity_id_t>({}));
+    EXPECT_EQ((entity_manager.QueryEntities<Component2, Component3>()),
+        std::set<QCE::entity_id_t>({ entity3 }));
 
     // remove entity
     ASSERT_EQ(QCE::ErrorCode::E_ENG_ENTITY_NOT_FOUND, entity_manager.RemoveEntity(100));
@@ -64,5 +72,10 @@ TEST(EntityManagerTest, BaseFunctional) {
               std::set<QCE::entity_id_t>({ entity1, entity3 }));
     EXPECT_EQ(entity_manager.QueryEntities<Component3>(),
               std::set<QCE::entity_id_t>({ entity3 }));
-    // TODO: check several components query
+    EXPECT_EQ((entity_manager.QueryEntities<Component1, Component2>()),
+        std::set<QCE::entity_id_t>({ entity1 }));
+    EXPECT_EQ((entity_manager.QueryEntities<Component1, Component3>()),
+        std::set<QCE::entity_id_t>({}));
+    EXPECT_EQ((entity_manager.QueryEntities<Component2, Component3>()),
+        std::set<QCE::entity_id_t>({ entity3 }));
 }
