@@ -18,12 +18,12 @@ namespace QCE {
     class ComponentStorage {
     public:
         void Reserve(size_t count) {
-            m_map.resize(count, CU::INVALID_ID);
+            m_map.resize(count, INVALID_INDEX);
         }
 
         void SetEntity(CU::id_t entity_id, Component component) {
             if (entity_id >= m_map.size()) {
-                m_map.resize(entity_id + 1, CU::INVALID_ID);
+                m_map.resize(entity_id + 1, INVALID_INDEX);
             }
 
             Cell new_value{
@@ -31,7 +31,7 @@ namespace QCE {
                 .value = std::move(component)
             };
 
-            if (m_map[entity_id] == CU::INVALID_ID) {
+            if (m_map[entity_id] == INVALID_INDEX) {
                 if (m_empty_cells.empty()) {
                     m_map[entity_id] = m_data.size();
                     m_data.emplace_back(std::move(new_value));
@@ -79,7 +79,7 @@ namespace QCE {
             if (entity_id >= m_map.size())
                 return false;
 
-            return m_map[entity_id] != CU::INVALID_ID;
+            return m_map[entity_id] != INVALID_INDEX;
         }
 
         void RemoveEntity(CU::id_t entity_id) {
@@ -87,10 +87,10 @@ namespace QCE {
                 return;
 
             size_t data_index = m_map[entity_id];
-            if (data_index == CU::INVALID_ID)
+            if (data_index == INVALID_INDEX)
                 return;
 
-            m_map[entity_id] = CU::INVALID_ID;
+            m_map[entity_id] = INVALID_INDEX;
             m_data[data_index].entity_id = CU::INVALID_ID;
 
             m_empty_cells.push(data_index);
@@ -105,6 +105,8 @@ namespace QCE {
             CU::id_t  entity_id = CU::INVALID_ID;
             Component value;
         };
+
+        static constexpr size_t INVALID_INDEX = std::numeric_limits<size_t>::max();
 
         std::vector<size_t> m_map;
         std::vector<Cell>   m_data;
