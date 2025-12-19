@@ -82,6 +82,7 @@ namespace QCE {
 
     private:
         FRIEND_TEST(EntityQueriesCacheTest, QueryMask);
+        FRIEND_TEST(EntityQueriesCacheTest, ComponentIndex);
 
         static constexpr size_t ComponentsCount = sizeof...(Components);
 
@@ -100,6 +101,11 @@ namespace QCE {
                 }
             }
             return mask;
+        }
+
+        template <typename Component>
+        static constexpr size_t GetComponentIndex() noexcept {
+            return CU::type_index_v<Component, Components...>;
         }
 
         std::unordered_map<QueryMask, std::set<entity_id_t>> m_results{};

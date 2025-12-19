@@ -17,31 +17,48 @@ namespace QCE {
     class EntityQueriesCacheTest :
             public testing::Test {
     protected:
-        EntityQueriesCache<
-            64,
-            Component1,
-            Component2,
-            Component3,
-            Component4,
-            Component5> m_test_cache{};
+        using EntityQueriesCacheT =
+            EntityQueriesCache<
+                64,
+                Component1,
+                Component2,
+                Component3,
+                Component4,
+                Component5
+            >;
+
+        EntityQueriesCacheT m_test_cache{};
     };
 
     TEST_F(EntityQueriesCacheTest, QueryMask) {
-        auto mask = m_test_cache.GetQueryMask<Component1, Component2, Component5>();
+        auto mask = EntityQueriesCacheT::GetQueryMask<Component1, Component2, Component5>();
         std::bitset<5> expected_mask(0b10011ull);
         EXPECT_EQ(mask, expected_mask);
 
-        mask = m_test_cache.GetQueryMask<Component4, Component1>();
+        mask = EntityQueriesCacheT::GetQueryMask<Component4, Component1>();
         expected_mask = std::bitset<5>(0b01001ull);
         EXPECT_EQ(mask, expected_mask);
 
-        mask = m_test_cache.GetQueryMask<Component1, Component3, Component5, Component2, Component4>();
+        mask = EntityQueriesCacheT::GetQueryMask<Component1, Component3, Component5, Component2, Component4>();
         expected_mask = std::bitset<5>(0b11111ull);
         EXPECT_EQ(mask, expected_mask);
 
-        mask = m_test_cache.GetQueryMask<>();
+        mask = EntityQueriesCacheT::GetQueryMask<>();
         expected_mask = std::bitset<5>(0b00000ull);
         EXPECT_EQ(mask, expected_mask);
+    }
+
+    TEST_F(EntityQueriesCacheTest, ComponentIndex) {
+        constexpr auto index1 = EntityQueriesCacheT::GetComponentIndex<Component1>();
+        EXPECT_EQ(index1, 0u);
+        constexpr auto index2 = EntityQueriesCacheT::GetComponentIndex<Component2>();
+        EXPECT_EQ(index2, 1u);
+        constexpr auto index3 = EntityQueriesCacheT::GetComponentIndex<Component3>();
+        EXPECT_EQ(index3, 2u);
+        constexpr auto index4 = EntityQueriesCacheT::GetComponentIndex<Component4>();
+        EXPECT_EQ(index4, 3u);
+        constexpr auto index5 = EntityQueriesCacheT::GetComponentIndex<Component5>();
+        EXPECT_EQ(index5, 4u);
     }
 
     // TODO: check query cache working
