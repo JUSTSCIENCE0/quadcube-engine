@@ -8,10 +8,11 @@
 #include <qce/ecs/component.hpp>
 #include <qce/ancillary/error_codes.hpp>
 
+#include <cu/template-utils.hpp>
+
 #include <cassert>
 #include <algorithm>
 #include <bitset>
-#include <type_traits>
 #include <unordered_map>
 #include <list>
 #include <optional>
@@ -22,11 +23,6 @@
 
 namespace QCE {
     using entity_id_t = CU::id_t;
-
-    namespace PrivateImplementation {
-        template<typename T, typename... Ts>
-        constexpr bool contains_v = (std::is_same_v<T, Ts> || ...);
-    }
 
     static constexpr size_t DISABLE_ENTITY_QUERY_CACHE = 0;
     static constexpr auto   INFINITE_ENTITY_QUERY_CACHE = std::numeric_limits<size_t>::max();
@@ -83,6 +79,7 @@ namespace QCE {
         // TODO: Invalidate cache entries on component addition/removal
 
 
+
     private:
         FRIEND_TEST(EntityQueriesCacheTest, QueryMask);
 
@@ -93,7 +90,7 @@ namespace QCE {
         template <typename... Query>
         static QueryMask GetQueryMask() noexcept {
             constexpr bool flags[ComponentsCount] = {
-                PrivateImplementation::contains_v<Components, Query...>...
+                CU::contains_v<Components, Query...>...
             };
 
             QueryMask mask{};
