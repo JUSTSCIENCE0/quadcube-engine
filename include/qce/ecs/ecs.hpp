@@ -76,9 +76,13 @@ namespace QCE {
             m_results.insert(mask, std::move(result));
         }
 
-        // TODO: Invalidate cache entries on component addition/removal
+        template <typename Component>
+        void RemoveComponent() {
+            constexpr auto index = GetComponentIndex<Component>();
 
-
+            std::erase_if(m_results, [&](const auto& v) { return v.first.test(index); });
+            std::erase_if(m_usage_order, [&](const auto& v) { return v.test(index); });
+        }
 
     private:
         FRIEND_TEST(EntityQueriesCacheTest, QueryMask);
