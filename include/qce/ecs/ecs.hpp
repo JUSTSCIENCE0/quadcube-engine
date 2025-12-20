@@ -73,7 +73,7 @@ namespace QCE {
                 m_usage_order.push_front(mask);
             }
 
-            m_results.insert(mask, std::move(result));
+            m_results.emplace(mask, std::move(result));
         }
 
         template <typename Component>
@@ -113,7 +113,7 @@ namespace QCE {
         }
 
         std::unordered_map<QueryMask, std::set<entity_id_t>> m_results{};
-        std::list<QueryMask> m_usage_order{};
+        mutable std::list<QueryMask> m_usage_order{};
     };
 
     template <typename... Components>
