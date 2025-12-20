@@ -10,6 +10,7 @@ project(ecs-test)
 add_executable(${PROJECT_NAME}
     entity-test.cpp
     component-test.cpp
+    query_cache-test.cpp
 
     main.cpp
 )
