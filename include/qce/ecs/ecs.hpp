@@ -29,6 +29,15 @@ namespace QCE {
             m_id_pool.FreeId(entity_id);
             ([&]() {
                 auto& storage = std::get<ComponentStorage<Components>>(m_components);
+
+                if constexpr (CacheLimit != DISABLE_ENTITY_QUERY_CACHE) {
+                    if (storage.HasEntity(entity_id)) {
+                        m_query_cache.RemoveComponent<Components>();
+                    }
+                    else
+                        return;
+                }
+
                 storage.RemoveEntity(entity_id);
             }(), ...);
             return ErrorCode::SUCCESS;
@@ -41,6 +50,11 @@ namespace QCE {
             }
             auto& storage = std::get<ComponentStorage<Component>>(m_components);
             storage.SetEntity(entity_id, std::move(component));
+
+            if constexpr (CacheLimit != DISABLE_ENTITY_QUERY_CACHE) {
+                m_query_cache.RemoveComponent<Component>();
+            }
+
             return ErrorCode::SUCCESS;
         }
 
@@ -56,6 +70,13 @@ namespace QCE {
                 return storage.GetActualEntities();
             }
             else {
+                if constexpr (CacheLimit != DISABLE_ENTITY_QUERY_CACHE) {
+                    auto cached_result = m_query_cache.Get<Query...>();
+                    if (cached_result.has_value()) {
+                        return cached_result.value();
+                    }
+                }
+
                 std::vector<size_t> entity_counts{
                     std::get<ComponentStorage<Query>>(m_components).Size()...
                 };
@@ -85,7 +106,10 @@ namespace QCE {
                     index++;
                 }(), ...);
 
-                // TODO: cache result for next queries
+                if constexpr (CacheLimit != DISABLE_ENTITY_QUERY_CACHE) {
+                    m_query_cache.Put<Query...>(result);
+                }
+
                 return result;
             }
         }
@@ -93,5 +117,7 @@ namespace QCE {
     private:
         CU::IdPool m_id_pool;
         std::tuple<ComponentStorage<Components>...> m_components;
+
+        mutable EntityQueriesCache<CacheLimit, Components...> m_query_cache{};
     };
 }

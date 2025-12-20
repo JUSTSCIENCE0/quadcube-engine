@@ -14,7 +14,7 @@ TEST(EntityManagerTest, BaseFunctional) {
     using Component2 = float;
     using Component3 = int64_t;
 
-    QCE::EntityManager<Component1, Component2, Component3> entity_manager;
+    QCE::EntityManager<64, Component1, Component2, Component3> entity_manager;
 
     auto entity1 = entity_manager.AddEntity();
     auto entity2 = entity_manager.AddEntity();
@@ -58,21 +58,21 @@ TEST(EntityManagerTest, BaseFunctional) {
 
     // remove entity
     ASSERT_EQ(QCE::ErrorCode::E_ENG_ENTITY_NOT_FOUND, entity_manager.RemoveEntity(100));
-    ASSERT_EQ(QCE::ErrorCode::SUCCESS, entity_manager.RemoveEntity(entity2));
+    ASSERT_EQ(QCE::ErrorCode::SUCCESS, entity_manager.RemoveEntity(entity1));
 
     // check removed entity
     ASSERT_EQ(QCE::ErrorCode::E_ENG_ENTITY_NOT_FOUND,
-              entity_manager.AddComponent<Component1>(entity2, 100));
+              entity_manager.AddComponent<Component1>(entity1, 100));
 
     // check queries
     EXPECT_EQ(entity_manager.QueryEntities<Component1>(),
-              std::set<QCE::entity_id_t>({ entity1 }));
+              std::set<QCE::entity_id_t>({}));
     EXPECT_EQ(entity_manager.QueryEntities<Component2>(),
-              std::set<QCE::entity_id_t>({ entity1, entity3 }));
-    EXPECT_EQ(entity_manager.QueryEntities<Component3>(),
               std::set<QCE::entity_id_t>({ entity3 }));
+    EXPECT_EQ(entity_manager.QueryEntities<Component3>(),
+              std::set<QCE::entity_id_t>({ entity2, entity3 }));
     EXPECT_EQ((entity_manager.QueryEntities<Component1, Component2>()),
-        std::set<QCE::entity_id_t>({ entity1 }));
+        std::set<QCE::entity_id_t>({}));
     EXPECT_EQ((entity_manager.QueryEntities<Component1, Component3>()),
         std::set<QCE::entity_id_t>({}));
     EXPECT_EQ((entity_manager.QueryEntities<Component2, Component3>()),
