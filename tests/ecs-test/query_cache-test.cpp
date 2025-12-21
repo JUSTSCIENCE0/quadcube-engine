@@ -8,19 +8,19 @@
 #include <qce/ecs/query_cache.hpp>
 
 namespace QCE {
-    struct Component1 { int val = 0; };
-    struct Component2 { int val = 0; };
-    struct Component3 { int val = 0; };
-    struct Component4 { int val = 0; };
-    struct Component5 { int val = 0; };
+    struct Component1 {};
+    struct Component2 {};
+    struct Component3 {};
+    struct Component4 {};
+    struct Component5 {};
 
     /* entity  | 1 | 2 | 3 |
     -----------|---|---|---|
-    Component1 | 1 | 2 | 3 |
-    Component2 |   | 4 | 5 |
-    Component3 |   | 6 |   |
-    Component4 | 7 | 8 |   |
-    Component5 |   | 9 |   | */
+    Component1 | * | * | * |
+    Component2 |   | * | * |
+    Component3 |   | * |   |
+    Component4 | * | * |   |
+    Component5 |   | * |   | */
 
     class EntityQueriesCacheTest :
         public testing::Test {
