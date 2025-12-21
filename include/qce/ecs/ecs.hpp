@@ -58,6 +58,23 @@ namespace QCE {
             return ErrorCode::SUCCESS;
         }
 
+        template <typename Component>
+        ErrorCode RemoveComponent(entity_id_t entity_id) {
+            if (!m_id_pool.CheckId(entity_id)) {
+                return ErrorCode::E_ENG_ENTITY_NOT_FOUND;
+            }
+
+            auto& storage = std::get<ComponentStorage<Component>>(m_components);
+            if (storage.HasEntity(entity_id)) {
+                if constexpr (CacheLimit != DISABLE_ENTITY_QUERY_CACHE) {
+                    m_query_cache.RemoveComponent<Component>();
+                }
+                storage.RemoveEntity(entity_id);
+            }
+
+            return ErrorCode::SUCCESS;
+        }
+
         template <typename... Query>
         std::set<entity_id_t> QueryEntities() const {
             std::set<entity_id_t> result;
@@ -112,6 +129,18 @@ namespace QCE {
 
                 return result;
             }
+        }
+
+        template <typename Component>
+        Component& GetComponent(entity_id_t entity_id) {
+            auto& storage = std::get<ComponentStorage<Component>>(m_components);
+            return storage[entity_id];
+        }
+
+        template <typename Component>
+        const Component& GetComponent(entity_id_t entity_id) const {
+            auto& storage = std::get<ComponentStorage<Component>>(m_components);
+            return storage[entity_id];
         }
 
     private:
