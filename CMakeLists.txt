@@ -126,6 +126,7 @@ set(QCE_HID_HDRS
 
 set(QCE_ECS_HDRS
     include/qce/ecs/ecs.hpp
+    include/qce/ecs/entity_manager.hpp
     include/qce/ecs/component.hpp
     include/qce/ecs/query_cache.hpp
     include/qce/ecs/systems_hub.hpp

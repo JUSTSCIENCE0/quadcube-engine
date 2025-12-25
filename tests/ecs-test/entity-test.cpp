@@ -5,7 +5,7 @@
 
 #include <gtest/gtest.h>
 
-#include <qce/ecs/ecs.hpp>
+#include <qce/ecs/entity_manager.hpp>
 
 namespace QCE {
     struct Component1 { int val = 0; };
