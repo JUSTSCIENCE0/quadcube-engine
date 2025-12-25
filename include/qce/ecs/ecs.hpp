@@ -5,8 +5,9 @@
 
 #pragma once
 
-#include <qce/ecs/entity_manager.hpp>
-#include <qce/ecs/systems_hub.hpp>
+#ifndef QCE_CUSTOM_ECS_CORE_HEADER
+#  include <qce/ecs/default_ecs_core.hpp>
+#else
+#  include QCE_CUSTOM_ECS_CORE_HEADER
+#endif // !QCE_CUSTOM_ECS_CORE_HEADER
 
-namespace QCE {
-}

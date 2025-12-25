@@ -13,8 +13,9 @@ if (NOT PROJECT_IS_TOP_LEVEL)
     set(BUILD_QCE_TEST OFF)
 endif()
 
-option(BUILD_QCE_APPS        "Build example applications" ON)
-option(BUILD_QCE_TEST        "Build tests" ON)
+option(BUILD_QCE_APPS          "Build example applications" ON)
+option(BUILD_QCE_TEST          "Build tests" ON)
+option(QCE_USE_CUSTOM_ECS_CORE "Use custom Components and Systems set" OFF)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_compile_options(
@@ -143,6 +144,24 @@ set(QCE_ANCILLARY_IMPL
 
 set(QCE_CMAKE_UTILS
     cmake/ResourcesUtils.cmake)
+
+if (NOT QCE_USE_CUSTOM_ECS_CORE)
+    set(QCE_ECS_HDRS
+        ${QCE_ECS_HDRS}
+        include/qce/ecs/default_ecs_core.hpp
+    )
+else()
+    if (NOT DEFINED QCE_CUSTOM_ECS_CORE_HEADER OR "${QCE_CUSTOM_ECS_CORE_HEADER}" STREQUAL "")
+        message(FATAL_ERROR "QCE_CUSTOM_ECS_CORE_HEADER is not defined while QCE_USE_CUSTOM_ECS_CORE is ON")
+    endif() # !QCE_CUSTOM_ECS_CORE_HEADER
+    set(QCE_ECS_HDRS
+        ${QCE_ECS_HDRS}
+        ${QCE_CUSTOM_ECS_CORE_HEADER}
+    )
+    target_compile_definitions(${PROJECT_NAME}
+        PRIVATE
+            QCE_CUSTOM_ECS_CORE_HEADER="${QCE_CUSTOM_ECS_CORE_HEADER}")
+endif() # !QCE_USE_CUSTOM_ECS_CORE
 
 set(QCE_SHADERS_DIR shaders)
 set(QCE_HLSL_SHADERS_DIR ${QCE_SHADERS_DIR}/hlsl)
