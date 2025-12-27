@@ -108,6 +108,12 @@ set(QCE_COMPONENTS_IMPL
     src/transform.cpp
 )
 
+set(QCE_SYSTEMS_HDRS
+    include/qce/systems/render_system.hpp
+    include/qce/systems/transform_system.hpp
+    include/qce/systems/movement_system.hpp
+)
+
 set(QCE_RENDERS_HDRS
     include/qce/renders/render.hpp
     include/qce/renders/windows_output.hpp
@@ -213,6 +219,8 @@ target_sources(${PROJECT_NAME}
         ${QCE_COMPONENTS_HDRS}
         ${QCE_COMPONENTS_IMPL}
 
+        ${QCE_SYSTEMS_HDRS}
+
         ${QCE_OBJECTS_HDRS}
         ${QCE_OBJECTS_IMPL}
 
@@ -236,6 +244,8 @@ source_group("ECS/Headers"               FILES ${QCE_ECS_HDRS})
 
 source_group("Components/Headers"        FILES ${QCE_COMPONENTS_HDRS})
 source_group("Components/Implementation" FILES ${QCE_COMPONENTS_IMPL})
+
+source_group("Systems/Headers"           FILES ${QCE_SYSTEMS_HDRS})
 
 source_group("Objects/Headers"           FILES ${QCE_OBJECTS_HDRS})
 source_group("Objects/Implementation"    FILES ${QCE_OBJECTS_IMPL})
