@@ -102,6 +102,7 @@ set(QCE_MATH_IMPL
 set(QCE_COMPONENTS_HDRS
     include/qce/components/transform.hpp
     include/qce/components/movement.hpp
+    include/qce/components/camera.hpp
 )
 set(QCE_COMPONENTS_IMPL
     src/transform.cpp

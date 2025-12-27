@@ -8,6 +8,16 @@
 #include <qce/math/math.hpp>
 
 namespace QCE {
+    struct Movement {
+        float3d m_direction{};
+        float   m_linear_speed = 0.0f;
+
+        // cache
+        mutable bool m_need_recal_velocity = true;
+        mutable float3d m_velocity{};
+    };
+
+    // TODO: remove Velocity class - migration to ECS
     class Velocity {
     public:
         Velocity(float speed = 0.0f, float3d direction = {}) :

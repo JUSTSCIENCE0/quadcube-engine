@@ -9,6 +9,7 @@
 #include <qce/components/movement.hpp>
 
 namespace QCE {
+    // TODO: remove Camera class - migration to ECS
     class Camera {
     public:
         explicit Camera(bool LH = true);
