@@ -6,11 +6,18 @@
 #pragma once
 
 #include <qce/ecs/entity_manager.hpp>
-#include <qce/ecs/systems_hub.hpp>
+
+#include <qce/components/camera.hpp>
+#include <qce/components/movement.hpp>
+#include <qce/components/transform.hpp>
 
 namespace QCE {
     using Entities = EntityManager<
-        64 // Cache Limit
-        // TODO: Components List
+        64, // Cache Limit
+        // Components
+        TransformComponents,
+        TransformMatrix,
+        Movement,
+        CameraComponents
     >;
 }
