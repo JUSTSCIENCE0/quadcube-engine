@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <qce/ecs/ecs.hpp>
+
 #include <qce/ancillary/error_codes.hpp>
 
 #include <concepts>
@@ -12,7 +14,6 @@
 namespace QCE {
     template<typename T>
     concept SystemT =
-        std::default_initializable<T> &&
         requires(T s) {
             { s.Update() } -> std::same_as<ErrorCode>;
         };
@@ -20,6 +21,15 @@ namespace QCE {
     template<SystemT... Systems>
     class SystemsHub {
     public:
+        explicit SystemsHub(Entities& entities) :
+            m_systems( SystemStorage<Systems>{ System{entities}, true }... )
+        {}
+
+        SystemsHub(const SystemsHub&) = delete;
+        SystemsHub(SystemsHub&&) = delete;
+        SystemsHub& operator=(const SystemsHub&) = delete;
+        SystemsHub& operator=(SystemsHub&&) = delete;
+
         template<SystemT System>
         System& Get() {
             return std::get<SystemStorage<System>>(m_systems).system;
