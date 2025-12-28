@@ -75,6 +75,8 @@ namespace QCE {
         CU_ENUM_UNIT(E_RM_BAD_RESOURCES_DIRECTORY) \
         CU_ENUM_UNIT(E_RM_COMMAND_ALREADY_EXISTS) \
         CU_ENUM_UNIT(E_RM_COMMAND_NOT_FOUND) \
+        CU_ENUM_UNIT(E_RM_RESOURCE_NOT_FOUND) \
+        CU_ENUM_UNIT(E_RM_RESOURCE_ALREADY_EXISTS) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -262,6 +264,12 @@ namespace QCE {
             break;
         case ErrorCode::E_RM_COMMAND_NOT_FOUND:
             result << "Resource Manager - Command with such Id not found";
+            break;
+        case ErrorCode::E_RM_RESOURCE_ALREADY_EXISTS:
+            result << "Resource Manager - Resource with such Id already exitst";
+            break;
+        case ErrorCode::E_RM_RESOURCE_NOT_FOUND:
+            result << "Resource Manager - Resource with such Id not found";
             break;
 
         default:
