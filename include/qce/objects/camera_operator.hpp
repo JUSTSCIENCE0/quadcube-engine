@@ -56,10 +56,10 @@ namespace QCE {
         ErrorCode Update() override;
 
     private:
-        class MoveCommand : public Command {
+        class MoveCommand : public BaseCommand {
         public:
             MoveCommand(std::string name, CameraDirection direction, FirstPersonCameraOperator& fpco):
-                Command(std::move(name)),
+                BaseCommand(std::move(name)),
                 m_fpco(fpco),
                 m_direction(direction) {}
 
@@ -70,10 +70,10 @@ namespace QCE {
             const CameraDirection m_direction;
         };
 
-        class RotateCommand : public Command {
+        class RotateCommand : public BaseCommand {
         public:
             RotateCommand(std::string name, CameraDirection direction, FirstPersonCameraOperator& fpco) :
-                Command(std::move(name)),
+                BaseCommand(std::move(name)),
                 m_fpco(fpco),
                 m_direction(direction) {
             }

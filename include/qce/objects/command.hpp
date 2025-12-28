@@ -23,14 +23,14 @@ namespace QCE {
             CommandContextType::E_CommandContextType_UNKNOWN;
     };
 
-    struct Command {
-        explicit Command(std::string name) :
+    struct BaseCommand {
+        explicit BaseCommand(std::string name) :
             m_name(std::move(name)) {}
-        Command(const Command&) = delete;
-        Command(Command&&) = delete;
-        Command& operator=(const Command&) = delete;
-        Command& operator=(Command&&) = delete;
-        virtual ~Command() = default;
+        BaseCommand(const BaseCommand&) = delete;
+        BaseCommand(BaseCommand&&) = delete;
+        BaseCommand& operator=(const BaseCommand&) = delete;
+        BaseCommand& operator=(BaseCommand&&) = delete;
+        virtual ~BaseCommand() = default;
 
         virtual ErrorCode Execute(const CommandContext* context) = 0;
 
@@ -38,9 +38,9 @@ namespace QCE {
     };
 
     // default commands
-    struct ExitCommand : public Command {
+    struct ExitCommand : public BaseCommand {
         ExitCommand() :
-            Command("Exit") {};
+            BaseCommand("Exit") {};
 
         ErrorCode Execute(const CommandContext* context) {
             std::exit(0);

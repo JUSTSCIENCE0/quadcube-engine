@@ -97,7 +97,7 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode ResourceManager::AddCommand(std::unique_ptr<Command>&& command) {
+    ErrorCode ResourceManager::AddCommand(std::unique_ptr<BaseCommand>&& command) {
         auto key = command->m_name;
 
         if (m_commands.end() != m_commands.find(key))
@@ -135,7 +135,7 @@ namespace QCE {
         return shader_it->second;
     }
 
-    std::shared_ptr<Command> ResourceManager::GetCommand(
+    std::shared_ptr<BaseCommand> ResourceManager::GetCommand(
             const std::string& command_name) {
         auto command_it = m_commands.find(command_name);
         if (m_commands.end() == command_it) {

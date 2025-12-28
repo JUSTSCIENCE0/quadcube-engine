@@ -70,7 +70,7 @@ namespace QCE {
         ErrorCode AddShader(
             const std::string& shader_name,
             ShaderType shader_type);
-        ErrorCode AddCommand(std::unique_ptr<Command>&& command);
+        ErrorCode AddCommand(std::unique_ptr<BaseCommand>&& command);
 
         std::shared_ptr<Entity> AddAndGetEntity(
             const std::string& entity_name,
@@ -79,7 +79,7 @@ namespace QCE {
 
         std::shared_ptr<Model> GetModel(const std::string& name);
         std::shared_ptr<Shader> GetShader(const std::string& shader_name, ShaderType shader_type);
-        std::shared_ptr<Command> GetCommand(const std::string& command_name);
+        std::shared_ptr<BaseCommand> GetCommand(const std::string& command_name);
 
         // TODO:
         // Mesh
@@ -202,6 +202,9 @@ namespace QCE {
         Storage<Model>   m_models{};
         Storage<Entity>  m_entities{};
         Storage<Shader>  m_shaders{};
-        Storage<Command> m_commands{};
+        Storage<BaseCommand> m_commands{};
+
+        ResourceStorage<Mesh>   m_mesh_storage{};
+        ResourceStorage<Shader> m_shader_storage{};
     };
 }

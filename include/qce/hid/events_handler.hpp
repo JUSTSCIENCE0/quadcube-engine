@@ -40,9 +40,9 @@ namespace QCE {
     };
     // TODO - HidAccordEvent, HidComboEvent
 
-    struct HidDescribe : Command {
+    struct HidDescribe : BaseCommand {
         HidDescribe() :
-            Command("HidDescribe") {}
+            BaseCommand("HidDescribe") {}
         ErrorCode Execute(const CommandContext* context) override {
             assert(context);
             assert(context->type == CommandContextType::E_CCT_HID_EVENT);
@@ -110,7 +110,7 @@ namespace QCE {
 
     private:
         using HidEventsQueue = std::deque<HidEvent>;
-        using SingleEventHandlersMap = std::array<std::shared_ptr<Command>, HidEventCode::E_HEC_COUNT>;
+        using SingleEventHandlersMap = std::array<std::shared_ptr<BaseCommand>, HidEventCode::E_HEC_COUNT>;
 
         HidEventsManager() {
             // register default handler
