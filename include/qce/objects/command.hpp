@@ -7,6 +7,8 @@
 
 #include <qce/ancillary/error_codes.hpp>
 
+#include <memory>
+
 namespace QCE {
 #define CU_ENUMS_DESCRIPTION \
     CU_BEGIN_ENUM(CommandContextType) \
@@ -35,6 +37,11 @@ namespace QCE {
         virtual ErrorCode Execute(const CommandContext* context) = 0;
 
         const std::string m_name;
+    };
+
+    struct Command {
+        std::string id;
+        std::unique_ptr<BaseCommand> command;
     };
 
     // default commands

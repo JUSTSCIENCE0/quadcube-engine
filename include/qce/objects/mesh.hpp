@@ -16,10 +16,10 @@
 namespace QCE {
     struct Mesh {
         explicit Mesh(
-                std::string           name,
+                std::string           id,
                 std::vector<vertex>   vertices = {},
                 std::vector<index_t>  indices = {}) :
-            m_id(std::move(name)),
+            id(std::move(id)),
             m_vertices(std::move(vertices)),
             m_indices(std::move(indices)) {}
 
@@ -28,7 +28,7 @@ namespace QCE {
         Mesh& operator=(const Mesh& other) = delete;
         Mesh& operator=(Mesh&& other) = delete;
 
-        const std::string    m_id{};
+        const std::string    id{};
         std::vector<vertex>  m_vertices{};
         std::vector<index_t> m_indices{};
 

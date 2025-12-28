@@ -80,9 +80,9 @@ namespace QCE {
                 ShaderType shader_type,
                 const std::filesystem::path& bytecode_dir,
                 RenderType render_type) :
-            m_id(make_shader_id(name, shader_type)),
+            id(make_shader_id(name, shader_type)),
             m_type(shader_type),
-            m_bytecode_file(make_shader_bytecode_filepath(bytecode_dir, m_id, render_type)) {
+            m_bytecode_file(make_shader_bytecode_filepath(bytecode_dir, id, render_type)) {
             m_bytecode_cache = CU::load_data_from_file<uint8_t>(m_bytecode_file);
 
             if (m_bytecode_cache.empty()) {
@@ -90,7 +90,7 @@ namespace QCE {
             }
         }
 
-        const std::string m_id;
+        const std::string id;
         const ShaderType m_type;
         const std::filesystem::path m_bytecode_file;
 

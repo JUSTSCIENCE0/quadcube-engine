@@ -46,7 +46,7 @@ namespace QCE {
         auto mesh = generate_figure(params, mesh_name);
         assert(mesh);
 
-        auto key = mesh->m_id;
+        auto key = mesh->id;
         m_meshes.try_emplace(std::move(key), std::move(mesh));
         return ErrorCode::SUCCESS;
     }

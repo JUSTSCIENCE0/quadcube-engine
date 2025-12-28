@@ -19,6 +19,7 @@
 #include <vector>
 #include <set>
 #include <limits>
+#include <tuple>
 
 namespace QCE {
     template<typename T>
@@ -185,6 +186,9 @@ namespace QCE {
             std::set<size_t> m_free_indices{};
         };
 
+        template<typename... Rs>
+        using Resources = std::tuple<ResourceStorage<Rs>...>;
+
         /// consts
         static constexpr auto RESOURCES_DIRECTORY = "resources";
         static constexpr auto SHADERS_BYTECODE_SUBDIRECTORY = "shaders";
@@ -204,7 +208,10 @@ namespace QCE {
         Storage<Shader>  m_shaders{};
         Storage<BaseCommand> m_commands{};
 
-        ResourceStorage<Mesh>   m_mesh_storage{};
-        ResourceStorage<Shader> m_shader_storage{};
+        Resources<
+            Mesh,
+            Shader,
+            Command
+        > m_storages{};
     };
 }
