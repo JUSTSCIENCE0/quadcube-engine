@@ -70,7 +70,7 @@ namespace QCE {
                 case HidEventType::E_HET_SINGLE: {
                     auto single_descr = static_cast<const HidSingleEvent*>(descr.get());
                     m_single_event_handlers[single_descr->code] =
-                        ResourceManager::Get().GetCommand(single_descr->handler);
+                        ResourceManager::Get().Read<Command>(single_descr->handler).command;
                     if (!m_single_event_handlers[single_descr->code])
                         return ErrorCode::E_RM_COMMAND_NOT_FOUND;
                     break;
@@ -115,9 +115,10 @@ namespace QCE {
         HidEventsManager() {
             // register default handler
             QCE_THROW_CRITICAL(
-                ResourceManager::Get().AddCommand(
-                    std::make_unique<HidDescribe>()
-                )
+                ResourceManager::Get().Add(Command{
+                    "HidDescribe",
+                    std::make_shared<HidDescribe>()
+                })
             );
         }
 

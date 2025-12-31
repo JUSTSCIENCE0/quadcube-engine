@@ -18,7 +18,9 @@ namespace QCE {
     }
 
     void ResourceManager::RegisterDefaultCommands() {
-        AddCommand(std::make_unique<ExitCommand>());
+        Add(Command{
+            "Exit", std::make_shared<ExitCommand>()
+        });
     }
 
     ErrorCode ResourceManager::AddModel(
@@ -97,16 +99,6 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode ResourceManager::AddCommand(std::unique_ptr<BaseCommand>&& command) {
-        auto key = command->m_name;
-
-        if (m_commands.end() != m_commands.find(key))
-            return ErrorCode::E_RM_COMMAND_ALREADY_EXISTS;
-
-        m_commands.emplace(std::move(key), std::move(command));
-        return ErrorCode::SUCCESS;
-    }
-
     std::shared_ptr<Entity> ResourceManager::AddAndGetEntity(
             const std::string& entity_name,
             const std::string& model_name,
@@ -133,14 +125,5 @@ namespace QCE {
         }
 
         return shader_it->second;
-    }
-
-    std::shared_ptr<BaseCommand> ResourceManager::GetCommand(
-            const std::string& command_name) {
-        auto command_it = m_commands.find(command_name);
-        if (m_commands.end() == command_it) {
-            return nullptr;
-        }
-        return command_it->second;
     }
 }

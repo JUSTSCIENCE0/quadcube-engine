@@ -41,7 +41,7 @@ namespace QCE {
 
     struct Command {
         std::string id;
-        std::unique_ptr<BaseCommand> command;
+        std::shared_ptr<BaseCommand> command;
     };
 
     // default commands

@@ -71,7 +71,6 @@ namespace QCE {
         ErrorCode AddShader(
             const std::string& shader_name,
             ShaderType shader_type);
-        ErrorCode AddCommand(std::unique_ptr<BaseCommand>&& command);
 
         std::shared_ptr<Entity> AddAndGetEntity(
             const std::string& entity_name,
@@ -80,19 +79,54 @@ namespace QCE {
 
         std::shared_ptr<Model> GetModel(const std::string& name);
         std::shared_ptr<Shader> GetShader(const std::string& shader_name, ShaderType shader_type);
-        std::shared_ptr<BaseCommand> GetCommand(const std::string& command_name);
 
-        // TODO:
-        // Mesh
-        //  error mesh
-        //  GetMesh
-        //  Load Mesh (from file)
-        // Model
-        //  error model
-        //  Load Model (from file)
-        //  Add Model (as shared_ptr)
-        // Entity
-        //  Add Entity (as shared_ptr)
+        template <Resource ResourceT>
+        ErrorCode Add(ResourceT resource) {
+            auto& storage = std::get<ResourceStorage<ResourceT>>(m_storages);
+            return storage.Add(std::move(resource));
+        }
+
+        template <Resource ResourceT>
+        bool Exists(size_t index) {
+            auto& storage = std::get<ResourceStorage<ResourceT>>(m_storages);
+            return storage.Exists(index);
+        }
+
+        template <Resource ResourceT>
+        bool Exists(const std::string& id) {
+            auto& storage = std::get<ResourceStorage<ResourceT>>(m_storages);
+            return storage.Exists(id);
+        }
+
+        template <Resource ResourceT>
+        size_t GetIndex(const std::string& id) {
+            auto& storage = std::get<ResourceStorage<ResourceT>>(m_storages);
+            return storage.GetIndex(id);
+        }
+
+        template <Resource ResourceT>
+        ResourceT& Read(size_t index) {
+            auto& storage = std::get<ResourceStorage<ResourceT>>(m_storages);
+            return storage.Get(index);
+        }
+
+        template <Resource ResourceT>
+        ResourceT& Read(const std::string& id) {
+            auto index = GetIndex<ResourceT>(id);
+            return Read<ResourceT>(index);
+        }
+
+        template <Resource ResourceT>
+        ErrorCode RemoveResource(size_t index) {
+            auto& storage = std::get<ResourceStorage<ResourceT>>(m_storages);
+            return storage.Remove(index);
+        }
+
+        template <Resource ResourceT>
+        ErrorCode RemoveResource(const std::string& id) {
+            auto& storage = std::get<ResourceStorage<ResourceT>>(m_storages);
+            return storage.Remove(id);
+        }
 
     private:
         /// ctor
@@ -137,7 +171,7 @@ namespace QCE {
                 if (m_data.size() <= index)
                     return false;
 
-                return (m_free_indices.end() != m_free_indices.find(index));
+                return (m_free_indices.end() == m_free_indices.find(index));
             }
 
             bool Exists(const std::string& id) {
@@ -206,7 +240,6 @@ namespace QCE {
         Storage<Model>   m_models{};
         Storage<Entity>  m_entities{};
         Storage<Shader>  m_shaders{};
-        Storage<BaseCommand> m_commands{};
 
         Resources<
             Mesh,

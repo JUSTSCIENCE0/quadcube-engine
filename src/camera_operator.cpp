@@ -142,31 +142,28 @@ namespace QCE {
     }
 
     ErrorCode FirstPersonCameraOperator::RegisterEventHandlers() {
-        auto forward_move = std::make_unique<MoveCommand>(
-            m_name + ".MoveForward", CameraDirection::E_CAMERA_DIRECTION_FORWARD, *this);
-        auto back_move = std::make_unique<MoveCommand>(
-            m_name + ".MoveBack", CameraDirection::E_CAMERA_DIRECTION_BACK, *this);
-        auto left_move = std::make_unique<MoveCommand>(
-            m_name + ".MoveLeft", CameraDirection::E_CAMERA_DIRECTION_LEFT, *this);
-        auto right_move = std::make_unique<MoveCommand>(
-            m_name + ".MoveRight", CameraDirection::E_CAMERA_DIRECTION_RIGHT, *this);
-        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(forward_move)));
-        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(back_move)));
-        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(left_move)));
-        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(right_move)));
+#define REGISTRER_COMMAND(CommandType, Suffix, Direction) { \
+            auto command_ptr = std::make_shared<CommandType>( \
+                m_name + "." #Suffix, CameraDirection::E_CAMERA_DIRECTION_ ## Direction, *this); \
+            auto id = command_ptr->m_name; \
+            QCE_CRITICAL( \
+                ResourceManager::Get().Add(Command{ \
+                    std::move(id), \
+                    std::move(command_ptr) \
+                }) \
+            ); \
+        }
 
-        auto up_rotate = std::make_unique<RotateCommand>(
-            m_name + ".RotateUp", CameraDirection::E_CAMERA_DIRECTION_UP, *this);
-        auto down_rotate = std::make_unique<RotateCommand>(
-            m_name + ".RotateDown", CameraDirection::E_CAMERA_DIRECTION_DOWN, *this);
-        auto left_rotate = std::make_unique<RotateCommand>(
-            m_name + ".RotateLeft", CameraDirection::E_CAMERA_DIRECTION_LEFT, *this);
-        auto right_rotate = std::make_unique<RotateCommand>(
-            m_name + ".RotateRight", CameraDirection::E_CAMERA_DIRECTION_RIGHT, *this);
-        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(up_rotate)));
-        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(down_rotate)));
-        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(left_rotate)));
-        QCE_CRITICAL(ResourceManager::Get().AddCommand(std::move(right_rotate)));
+        REGISTRER_COMMAND(MoveCommand,   MoveForward, FORWARD)
+        REGISTRER_COMMAND(MoveCommand,   MoveBack,    BACK)
+        REGISTRER_COMMAND(MoveCommand,   MoveLeft,    LEFT)
+        REGISTRER_COMMAND(MoveCommand,   MoveRight,   RIGHT)
+        REGISTRER_COMMAND(RotateCommand, RotateUp,    UP)
+        REGISTRER_COMMAND(RotateCommand, RotateDown,  DOWN)
+        REGISTRER_COMMAND(RotateCommand, RotateLeft,  LEFT)
+        REGISTRER_COMMAND(RotateCommand, RotateRight, RIGHT)
+
+#undef REGISTRER_COMMAND
 
         return ErrorCode::SUCCESS;
     }
