@@ -527,12 +527,18 @@ namespace QCE {
     ErrorCode RenderDX12::CreatePSO() {
         assert(m_current_scene);
         auto scene = m_current_scene->GetDescription();
-        auto& vs = scene.shaders[ShaderType::E_VERTEX_SHADER];
-        auto& ps = scene.shaders[ShaderType::E_PIXEL_SHADER];
-        if (!vs)
+
+        if (!ResourceManager::Get().Exists<Shader>(
+                scene.shaders[ShaderType::E_VERTEX_SHADER]))
             return ErrorCode::E_ENG_SCENE_VS_NOT_SELECTED;
-        if (!ps)
+        if (!ResourceManager::Get().Exists<Shader>(
+                scene.shaders[ShaderType::E_PIXEL_SHADER]))
             return ErrorCode::E_ENG_SCENE_PS_NOT_SELECTED;
+
+        auto& vs = ResourceManager::Get().Read<Shader>(
+            scene.shaders[ShaderType::E_VERTEX_SHADER]);
+        auto& ps = ResourceManager::Get().Read<Shader>(
+            scene.shaders[ShaderType::E_PIXEL_SHADER]);
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_descr{};
         ZeroMemory(&pso_descr, sizeof(pso_descr));
@@ -540,13 +546,13 @@ namespace QCE {
         pso_descr.pRootSignature = m_root_signature.Get();
         pso_descr.VS =
         {
-            vs->m_bytecode_cache.data(),
-            vs->m_bytecode_cache.size()
+            vs.bytecode_cache.data(),
+            vs.bytecode_cache.size()
         };
         pso_descr.PS =
         {
-            ps->m_bytecode_cache.data(),
-            ps->m_bytecode_cache.size()
+            ps.bytecode_cache.data(),
+            ps.bytecode_cache.size()
         };
         pso_descr.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 

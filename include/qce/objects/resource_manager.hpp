@@ -68,6 +68,7 @@ namespace QCE {
             const std::string& entity_name,
             const std::string& model_name,
             const Transform& start_transform = {});
+
         ErrorCode AddShader(
             const std::string& shader_name,
             ShaderType shader_type);
@@ -78,7 +79,6 @@ namespace QCE {
             const Transform& start_transform = {});
 
         std::shared_ptr<Model> GetModel(const std::string& name);
-        std::shared_ptr<Shader> GetShader(const std::string& shader_name, ShaderType shader_type);
 
         template <Resource ResourceT>
         ErrorCode Add(ResourceT resource) {
@@ -239,7 +239,6 @@ namespace QCE {
         Storage<Mesh>    m_meshes{};
         Storage<Model>   m_models{};
         Storage<Entity>  m_entities{};
-        Storage<Shader>  m_shaders{};
 
         Resources<
             Mesh,

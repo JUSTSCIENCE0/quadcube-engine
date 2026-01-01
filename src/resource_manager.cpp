@@ -77,26 +77,19 @@ namespace QCE {
 
     ErrorCode ResourceManager::AddShader(
             const std::string& shader_name,
-        ShaderType shader_type) {
-        const auto id = shader_name + "_" + get_shader_type_suffix(shader_type);
-        if (m_shaders.end() != m_shaders.find(id))
-            return ErrorCode::E_RM_SHADER_ALREADY_EXISTS;
-
-        std::shared_ptr<Shader> shader = nullptr;
-        try {
-            shader = std::make_shared<Shader>(
+            ShaderType shader_type) {
+        Shader shader{};
+        QCE_CRITICAL(
+            load_shader(
                 shader_name,
                 shader_type,
                 m_shaders_bytecode_directory,
-                m_render_type
-            );
-        }
-        catch (ErrorCodeException err) {
-            return err.code_value();
-        }
+                m_render_type,
+                shader
+            )
+        );
 
-        m_shaders.emplace(id, std::move(shader));
-        return ErrorCode::SUCCESS;
+        return Add(shader);
     }
 
     std::shared_ptr<Entity> ResourceManager::AddAndGetEntity(
@@ -113,17 +106,5 @@ namespace QCE {
         assert(m_entities.end() == m_entities.find(key));
         m_entities.try_emplace(key, entity);
         return entity;
-    }
-
-    std::shared_ptr<Shader> ResourceManager::GetShader(
-            const std::string& shader_name,
-            ShaderType shader_type) {
-        const auto id = shader_name + "_" + get_shader_type_suffix(shader_type);
-        auto shader_it = m_shaders.find(id);
-        if (m_shaders.end() == shader_it) {
-            return nullptr;
-        }
-
-        return shader_it->second;
     }
 }

@@ -21,7 +21,7 @@ namespace QCE {
             std::vector<std::shared_ptr<Entity>>
         >;
         using Shaders = std::array<
-            std::shared_ptr<Shader>,
+            size_t /* index*/,
             ShaderType::E_SHADERS_TYPE_COUNT>;
         struct CameraUnit {
             std::shared_ptr<Camera> camera;
@@ -44,7 +44,9 @@ namespace QCE {
         };
 
         explicit Scene(RenderType render_type):
-            m_render_type(render_type) {}
+            m_render_type(render_type) {
+            m_shaders.fill(ResourceManager::INVALID_RESOURCE_INDEX);
+        }
         Scene(const Scene&) = delete;
         Scene(Scene&&) = delete;
         Scene& operator=(const Scene&) = delete;
