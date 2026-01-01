@@ -46,7 +46,7 @@ namespace QCE {
 
         auto scene = m_current_scene->GetDescription();
         for (const auto& [name, entities_group] : scene.entities) {
-            entities_group[0]->m_model->m_mesh->m_render_unit_index.reset();
+            entities_group[0]->m_mesh->m_render_unit_index.reset();
         }
 
         size_t unit_index = 0;
@@ -54,8 +54,7 @@ namespace QCE {
         for (const auto& [name, entities_group] : scene.entities) {
             assert(!entities_group.empty());
             assert(entities_group[0]);
-            assert(entities_group[0]->m_model);
-            const auto& mesh = entities_group[0]->m_model->m_mesh;
+            const auto& mesh = entities_group[0]->m_mesh;
             assert(mesh);
 
             if (mesh->m_render_unit_index.has_value())

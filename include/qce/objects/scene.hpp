@@ -54,7 +54,7 @@ namespace QCE {
 
         ErrorCode AddEntity(
             const std::string& name,
-            const std::string& model,
+            const std::string& mesh,
             const Transform& start_transform = {});
 
         ErrorCode AddCamera(

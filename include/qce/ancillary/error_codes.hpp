@@ -69,7 +69,6 @@ namespace QCE {
         CU_ENUM_UNIT(E_ENG_UNSUPPORTED_EVENT_TYPE) \
         CU_VALUED_ENUM_UNIT(GROUP_RESOURCE_MANAGER, 0x60000) \
         CU_ENUM_UNIT(E_RM_MESH_ID_COLLISION) \
-        CU_ENUM_UNIT(E_RM_MODEL_ID_COLLISION) \
         CU_ENUM_UNIT(E_RM_MESH_NOT_FOUND) \
         CU_ENUM_UNIT(E_RM_SHADER_ALREADY_EXISTS) \
         CU_ENUM_UNIT(E_RM_BAD_RESOURCES_DIRECTORY) \
@@ -246,9 +245,6 @@ namespace QCE {
         /* Group Resource Manager*/
         case ErrorCode::E_RM_MESH_ID_COLLISION:
             result << "Resource Manager - Mesh with such Id already exitst";
-            break;
-        case ErrorCode::E_RM_MODEL_ID_COLLISION:
-            result << "Resource Manager - Model with such Id already exitst";
             break;
         case ErrorCode::E_RM_MESH_NOT_FOUND:
             result << "Resource Manager - Mesh with such Id not found";

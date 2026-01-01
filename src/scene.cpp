@@ -8,13 +8,13 @@
 namespace QCE {
     ErrorCode Scene::AddEntity(
             const std::string& name,
-            const std::string& model,
+            const std::string& mesh,
             const Transform& start_transform) {
         if (m_entities.end() != m_entities.find(name))
             return ErrorCode::E_ENG_ENTITY_ALREADY_EXISTS;
 
         auto entity = ResourceManager::Get().AddAndGetEntity(
-            name, model, start_transform);
+            name, mesh, start_transform);
         assert(entity);
         assert(entity->m_name == name);
 

@@ -7,6 +7,7 @@
 
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/objects/entity.hpp>
+#include <qce/objects/shader.hpp>
 #include <qce/objects/figures.hpp>
 #include <qce/objects/command.hpp>
 
@@ -61,12 +62,9 @@ namespace QCE {
             return ErrorCode::SUCCESS;
         }
         ErrorCode AddFigure(const FigureParams& params, const std::string& mesh_name="");
-        ErrorCode AddModel(
-            const std::string& model_name,
-            const std::string& mesh_name);
         ErrorCode AddEntity(
             const std::string& entity_name,
-            const std::string& model_name,
+            const std::string& mesh_name,
             const Transform& start_transform = {});
 
         ErrorCode AddShader(
@@ -75,10 +73,8 @@ namespace QCE {
 
         std::shared_ptr<Entity> AddAndGetEntity(
             const std::string& entity_name,
-            const std::string& model_name,
+            const std::string& mesh_name,
             const Transform& start_transform = {});
-
-        std::shared_ptr<Model> GetModel(const std::string& name);
 
         template <Resource ResourceT>
         ErrorCode Add(ResourceT resource) {
@@ -237,7 +233,6 @@ namespace QCE {
         const std::filesystem::path m_shaders_bytecode_directory;
 
         Storage<Mesh>    m_meshes{};
-        Storage<Model>   m_models{};
         Storage<Entity>  m_entities{};
 
         Resources<
