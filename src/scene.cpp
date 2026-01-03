@@ -63,18 +63,6 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode Scene::UseShader(const std::string& name, ShaderType type) {
-        if (ResourceManager::INVALID_RESOURCE_INDEX != m_shaders[type])
-            return ErrorCode::E_ENG_SHADER_ALREADY_SELECTED;
-        auto shader_id = make_shader_id(name, type);
-        auto shader_index = ResourceManager::Get().GetIndex<Shader>(shader_id);
-        if (ResourceManager::INVALID_RESOURCE_INDEX == shader_index)
-            return ErrorCode::E_ENG_SHADER_NOT_FOUND;
-
-        m_shaders[type] = shader_index;
-        return ErrorCode::SUCCESS;
-    }
-
     ErrorCode Scene::Update() {
         // update entities
         // TODO

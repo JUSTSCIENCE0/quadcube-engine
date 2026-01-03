@@ -36,6 +36,7 @@ namespace QCE {
             return app;
         }
         static Application& Get() {
+            // TODO: fix it
             return Get(ReadConfig());
         }
 
@@ -66,7 +67,7 @@ namespace QCE {
 
         // for prototyping only
         ResourceManager& Resources() { return ResourceManager::Get(); }
-        // for prototyping only
+        // for prototyping only, TODO: remove it
         Scene& CurrentScene() { return m_current_scene; }
         // for prototyping only
         HidEventsManager& HidManager() { return HidEventsManager::Get(); }
@@ -138,6 +139,9 @@ namespace QCE {
 
         GraphicsOutput m_graphics_output;
         // TODO: additional graphics outputs
+
+    public: // for prototyping only, TODO: remove it
+        Entities m_entities{};
 
         std::shared_ptr<RenderBase> m_render{};
     };

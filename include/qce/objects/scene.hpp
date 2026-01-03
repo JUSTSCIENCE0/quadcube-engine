@@ -20,9 +20,6 @@ namespace QCE {
             std::string/*name*/,
             std::vector<std::shared_ptr<Entity>>
         >;
-        using Shaders = std::array<
-            size_t /* index*/,
-            ShaderType::E_SHADERS_TYPE_COUNT>;
         struct CameraUnit {
             std::shared_ptr<Camera> camera;
             std::unique_ptr<CameraOperator> camera_operator;
@@ -39,14 +36,11 @@ namespace QCE {
         using Cameras = std::vector<CameraUnit>;
         struct Description {
             Entities& entities;
-            Shaders& shaders;
             Cameras& cameras;
         };
 
         explicit Scene(RenderType render_type):
-            m_render_type(render_type) {
-            m_shaders.fill(ResourceManager::INVALID_RESOURCE_INDEX);
-        }
+            m_render_type(render_type) {}
         Scene(const Scene&) = delete;
         Scene(Scene&&) = delete;
         Scene& operator=(const Scene&) = delete;
@@ -73,12 +67,9 @@ namespace QCE {
         //    const std::string& name,
         //    const transform& start_transform = {});
 
-        ErrorCode UseShader(const std::string& name, ShaderType type);
-
         Description GetDescription() {
             return {
                 .entities = m_entities,
-                .shaders = m_shaders,
                 .cameras = m_cameras
             };
         }
@@ -93,7 +84,6 @@ namespace QCE {
         RenderType m_render_type = DEFAULT_RENDER_TYPE;
 
         Entities m_entities{};
-        Shaders  m_shaders{};
         Cameras  m_cameras{};
 
         size_t   m_entities_count = 0;

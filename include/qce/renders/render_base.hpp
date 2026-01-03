@@ -69,7 +69,12 @@ namespace QCE {
             return UpdateGpuScene(this);
         }
 
+        ErrorCode UseShader(const std::string& name, ShaderType type);
+
     protected:
+        using ShaderIndeces = std::array<
+            size_t /* index*/,
+            ShaderType::E_SHADERS_TYPE_COUNT>;
         struct RenderSceneCPU {
             struct Unit {
                 uint32_t indeces_count = 0;
@@ -96,12 +101,15 @@ namespace QCE {
             m_config(std::move(initial_config)),
             DerivedDraw([](void* ptr) { return static_cast<DerivedRender*>(ptr)->Draw(); }),
             UpdateGpuScene([](void* ptr) { return static_cast<DerivedRender*>(ptr)->UpdateGpuScene(); }) {
+            m_shader_indeces.fill(ResourceManager::INVALID_RESOURCE_INDEX);
         }
 
         RenderConfig m_config{};
 
         Scene* m_current_scene = nullptr;
         RenderSceneCPU m_scene_cpu{};
+
+        ShaderIndeces m_shader_indeces{};
 
     private:
         ErrorCode UpdateCpuScene();

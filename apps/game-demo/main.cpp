@@ -46,8 +46,8 @@ int main(int argc, char* argv[]) {
             { -2.0f, 0.0f, -2.0f },
             { 1.0f, 1.0f, 1.0f }
         )));
-    QCE_CRITICAL(app.CurrentScene().UseShader("simple", QCE::ShaderType::E_VERTEX_SHADER));
-    QCE_CRITICAL(app.CurrentScene().UseShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
+    QCE_CRITICAL(app.m_render->UseShader("simple", QCE::ShaderType::E_VERTEX_SHADER));
+    QCE_CRITICAL(app.m_render->UseShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
 
     QCE::HidEventsManager::Config hid_events_config{};
     hid_events_config.emplace_back(

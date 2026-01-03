@@ -530,16 +530,16 @@ namespace QCE {
         auto scene = m_current_scene->GetDescription();
 
         if (!ResourceManager::Get().Exists<Shader>(
-                scene.shaders[ShaderType::E_VERTEX_SHADER]))
+                m_shader_indeces[ShaderType::E_VERTEX_SHADER]))
             return ErrorCode::E_ENG_SCENE_VS_NOT_SELECTED;
         if (!ResourceManager::Get().Exists<Shader>(
-                scene.shaders[ShaderType::E_PIXEL_SHADER]))
+                m_shader_indeces[ShaderType::E_PIXEL_SHADER]))
             return ErrorCode::E_ENG_SCENE_PS_NOT_SELECTED;
 
         auto& vs = ResourceManager::Get().Read<Shader>(
-            scene.shaders[ShaderType::E_VERTEX_SHADER]);
+            m_shader_indeces[ShaderType::E_VERTEX_SHADER]);
         auto& ps = ResourceManager::Get().Read<Shader>(
-            scene.shaders[ShaderType::E_PIXEL_SHADER]);
+            m_shader_indeces[ShaderType::E_PIXEL_SHADER]);
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_descr{};
         ZeroMemory(&pso_descr, sizeof(pso_descr));
