@@ -322,8 +322,9 @@ namespace QCE {
         UINT entity_index = 0;
         for (const auto& [_, chunk] : entities) {
             for (const auto& entity : chunk) {
-                assert(entity->m_mesh->m_render_unit_index.has_value());
-                auto index = entity->m_mesh->m_render_unit_index.value();
+                auto& mesh = ResourceManager::Get().Read<Mesh>(entity->m_mesh_index);
+                assert(mesh.render_unit_index.has_value());
+                auto index = mesh.render_unit_index.value();
                 const auto& unit_descr = m_scene_cpu.units[index];
 
                 auto cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetGPUDescriptorHandleForHeapStart());

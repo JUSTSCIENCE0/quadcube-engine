@@ -23,10 +23,10 @@ namespace QCE {
     };
     using FigureParams = std::variant<CuboidParams, SphereParams>;
 
-    std::unique_ptr<Mesh> generate_cuboid(
+    Mesh generate_cuboid(
         float length, float width, float height,
         /*TODO: int subdivisions = 1 ,*/
         std::string name = "");
 
-    std::unique_ptr<Mesh> generate_figure(const FigureParams& params, const std::string& name = "");
+    Mesh generate_figure(const FigureParams& params, const std::string& name = "");
 }

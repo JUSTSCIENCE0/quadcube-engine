@@ -25,16 +25,17 @@ namespace QCE {
 
     ErrorCode ResourceManager::AddFigure(const FigureParams& params, const std::string& mesh_name) {
         if (!mesh_name.empty()) {
-            if (m_meshes.end() != m_meshes.find(mesh_name))
-                return ErrorCode::SUCCESS;
+            if (Exists<Mesh>(mesh_name))
+                return ErrorCode::E_RM_RESOURCE_ALREADY_EXISTS;
         }
 
         auto mesh = generate_figure(params, mesh_name);
-        assert(mesh);
+        assert(
+            !mesh.id.empty() &&
+            !mesh.indices.empty() &&
+            !mesh.vertices.empty());
 
-        auto key = mesh->id;
-        m_meshes.try_emplace(std::move(key), std::move(mesh));
-        return ErrorCode::SUCCESS;
+        return Add(mesh);
     }
 
     ErrorCode ResourceManager::AddEntity(
@@ -70,11 +71,11 @@ namespace QCE {
             const std::string& entity_name,
             const std::string& mesh_name,
             const Transform& start_transform) {
-        auto mesh = m_meshes[mesh_name];
-        assert(mesh);
+        auto mesh_index = GetIndex<Mesh>(mesh_name);
+        assert(INVALID_RESOURCE_INDEX != mesh_index);
 
         auto entity = std::make_shared<Entity>(
-            entity_name, mesh, start_transform);
+            entity_name, mesh_index, start_transform);
 
         auto key = entity->m_id;
         assert(m_entities.end() == m_entities.find(key));

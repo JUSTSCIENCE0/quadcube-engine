@@ -46,7 +46,8 @@ namespace QCE {
 
         auto scene = m_current_scene->GetDescription();
         for (const auto& [name, entities_group] : scene.entities) {
-            entities_group[0]->m_mesh->m_render_unit_index.reset();
+            auto& mesh = ResourceManager::Get().Read<Mesh>(entities_group[0]->m_mesh_index);
+            mesh.render_unit_index.reset();
         }
 
         size_t unit_index = 0;
@@ -54,25 +55,24 @@ namespace QCE {
         for (const auto& [name, entities_group] : scene.entities) {
             assert(!entities_group.empty());
             assert(entities_group[0]);
-            const auto& mesh = entities_group[0]->m_mesh;
-            assert(mesh);
+            auto& mesh = ResourceManager::Get().Read<Mesh>(entities_group[0]->m_mesh_index);
 
-            if (mesh->m_render_unit_index.has_value())
+            if (mesh.render_unit_index.has_value())
                 continue;
 
             RenderSceneCPU::Unit unit{
-                .indeces_count = uint32_t(mesh->m_indices.size()),
+                .indeces_count = uint32_t(mesh.indices.size()),
                 .index_offset = uint32_t(m_scene_cpu.index_buffer.size()),
                 .vertex_offset = uint32_t(m_scene_cpu.vertex_buffer.size())
             };
 
             m_scene_cpu.index_buffer.insert(
-                m_scene_cpu.index_buffer.end(), mesh->m_indices.begin(), mesh->m_indices.end());
+                m_scene_cpu.index_buffer.end(), mesh.indices.begin(), mesh.indices.end());
             m_scene_cpu.vertex_buffer.insert(
-                m_scene_cpu.vertex_buffer.end(), mesh->m_vertices.begin(), mesh->m_vertices.end());
+                m_scene_cpu.vertex_buffer.end(), mesh.vertices.begin(), mesh.vertices.end());
             m_scene_cpu.units.push_back(std::move(unit));
 
-            mesh->m_render_unit_index = unit_index;
+            mesh.render_unit_index = unit_index;
             unit_index++;
         }
 

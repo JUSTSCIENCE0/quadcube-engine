@@ -51,26 +51,17 @@ namespace QCE {
             return *m_instance;
         }
 
-        template<typename SharedMesh>
-        requires std::same_as<std::remove_cvref_t<SharedMesh>, std::shared_ptr<Mesh>>
-        ErrorCode AddMesh(SharedMesh&& mesh) {
-            if (m_meshes.end() != m_meshes.find(mesh->m_id))
-                return ErrorCode::E_RM_MESH_ID_COLLISION;
-
-            auto key = mesh->m_id;
-            m_meshes.emplace(std::move(key), std::forward<SharedMesh>(mesh));
-            return ErrorCode::SUCCESS;
-        }
         ErrorCode AddFigure(const FigureParams& params, const std::string& mesh_name="");
-        ErrorCode AddEntity(
-            const std::string& entity_name,
-            const std::string& mesh_name,
-            const Transform& start_transform = {});
 
         ErrorCode AddShader(
             const std::string& shader_name,
             ShaderType shader_type);
 
+        // TODO: remove it
+        ErrorCode AddEntity(
+            const std::string& entity_name,
+            const std::string& mesh_name,
+            const Transform& start_transform = {});
         std::shared_ptr<Entity> AddAndGetEntity(
             const std::string& entity_name,
             const std::string& mesh_name,
@@ -232,7 +223,7 @@ namespace QCE {
         const std::filesystem::path m_resources_directory;
         const std::filesystem::path m_shaders_bytecode_directory;
 
-        Storage<Mesh>    m_meshes{};
+        // TODO: remove it
         Storage<Entity>  m_entities{};
 
         Resources<

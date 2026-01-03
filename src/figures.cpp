@@ -9,7 +9,7 @@
 #include <sstream>
 
 namespace QCE {
-    std::unique_ptr<Mesh> generate_cuboid(
+    Mesh generate_cuboid(
         float length, float width, float height,
         /*TODO: int subdivisions,*/
         std::string name) {
@@ -24,9 +24,9 @@ namespace QCE {
         float w2 = width / 2.0f;
         float h2 = height / 2.0f;
 
-        auto result = std::make_unique<Mesh>(
-            /*name*/ std::move(name),
-            /*vertices*/ std::vector<vertex>{
+        Mesh result{
+            .id = std::move(name),
+            .vertices = std::vector<vertex>{
                 {
                     .position = { -l2, -w2, -h2 }
                 },
@@ -51,9 +51,9 @@ namespace QCE {
                 {
                     .position = { -l2,  w2,  h2 }
                 },
-        },
-            /*indices*/ std::vector<index_t>{
-            0, 1, 2,
+            },
+            .indices = std::vector<index_t>{
+                0, 1, 2,
                 0, 2, 3,
                 1, 5, 6,
                 1, 6, 2,
@@ -65,13 +65,13 @@ namespace QCE {
                 4, 1, 0,
                 5, 4, 7,
                 5, 7, 6
-        }
-        );
+            }
+        };
 
         return result;
     }
 
-    std::unique_ptr<Mesh> generate_figure(const FigureParams& params, const std::string& name) {
+    Mesh generate_figure(const FigureParams& params, const std::string& name) {
         if (std::holds_alternative<CuboidParams>(params)) {
             const auto& cube_params = std::get<CuboidParams>(params);
             return generate_cuboid(
@@ -84,9 +84,9 @@ namespace QCE {
         if (std::holds_alternative<SphereParams>(params)) {
             // TODO
             //const auto& sphere_params = std::get<SphereParams>(params);
-            return nullptr;
+            return {};
         }
 
-        return nullptr;
+        return {};
     }
 }
