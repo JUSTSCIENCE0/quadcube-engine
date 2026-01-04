@@ -1,4 +1,4 @@
-// Copyright (c) 2025, Yakov Usoltsev
+// Copyright (c) 2025-2026, Yakov Usoltsev
 // Email: yakovmen62@gmail.com
 //
 // License: MIT
@@ -28,9 +28,7 @@ namespace QCE {
             TransformMatrix,
             Movement,
             CameraComponents,
-            AdditionalComponents... > {
-
-    };
+            AdditionalComponents... > {};
 
     using Entities = EcsCore< QCE_ECS_ADDITIONAL_COMPONENTS >;
 }
