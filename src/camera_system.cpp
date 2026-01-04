@@ -14,7 +14,7 @@ namespace QCE {
             const float3d& position,
             const float3d& target,
             const float3d& up,
-            CameraOperatorType operator_type) {
+            CameraType camera_type) {
         if (aspect <= 0.0f)
             return ErrorCode::E_ENG_WRONG_ASPECT;
         if (fov_rad < deg_to_rad(MIN_FOV_DEG))
@@ -27,7 +27,7 @@ namespace QCE {
         const bool is_LH_system = (m_render_type == RenderType::E_RENDER_DIRECTX12);
         const auto camera_entity_id = m_entities.AddEntity();
 
-        if (operator_type != E_CAMERA_OPERATOR_FIXED)
+        if (camera_type != E_CAMERA_FIXED)
             QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, Movement{}));
 
         TransformComponents tc{

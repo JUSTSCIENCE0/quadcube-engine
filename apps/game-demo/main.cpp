@@ -28,8 +28,6 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.Resources().AddShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
     QCE_CRITICAL(app.Resources().AddFigure(cuboid, "cuboid"));
 
-    QCE_CRITICAL(app.CurrentScene().AddCamera());
-
     auto& cameras = app.m_systems.Get<QCE::CameraSystem>();
     QCE_CRITICAL(cameras.Setup(config.render.render_type));
     QCE_CRITICAL(cameras.AddCamera());
@@ -54,30 +52,32 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_render->UseShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
 
     QCE::HidEventsManager::Config hid_events_config{};
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('W'), "CameraOperator0.MoveForward"));
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('A'), "CameraOperator0.MoveLeft"));
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('S'), "CameraOperator0.MoveBack"));
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('D'), "CameraOperator0.MoveRight"));
 
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_UP, "CameraOperator0.MoveForward"));
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_LEFT, "CameraOperator0.MoveLeft"));
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_DOWN, "CameraOperator0.MoveBack"));
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_RIGHT, "CameraOperator0.MoveRight"));
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_GAMEPAD_LSTICK_MOVE, "CameraOperator0.MoveForward"));
+    // TODO: migrate this functionality to CameraSystem
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('W'), "CameraOperator0.MoveForward"));
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('A'), "CameraOperator0.MoveLeft"));
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('S'), "CameraOperator0.MoveBack"));
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('D'), "CameraOperator0.MoveRight"));
 
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_MOUSE_MOVE, "CameraOperator0.RotateUp"));
-    hid_events_config.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE, "CameraOperator0.RotateUp"));
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_UP, "CameraOperator0.MoveForward"));
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_LEFT, "CameraOperator0.MoveLeft"));
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_DOWN, "CameraOperator0.MoveBack"));
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_RIGHT, "CameraOperator0.MoveRight"));
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_GAMEPAD_LSTICK_MOVE, "CameraOperator0.MoveForward"));
+
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_MOUSE_MOVE, "CameraOperator0.RotateUp"));
+    //hid_events_config.emplace_back(
+    //    std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE, "CameraOperator0.RotateUp"));
 
     hid_events_config.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_ESC, "Exit"));

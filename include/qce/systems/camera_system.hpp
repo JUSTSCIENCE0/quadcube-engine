@@ -6,9 +6,26 @@
 #pragma once
 
 #include <qce/ecs/ecs.hpp>
-#include <qce/objects/camera_operator.hpp>
+#include <qce/renders/render_type.hpp>
 
 namespace QCE {
+#define CU_ENUMS_DESCRIPTION \
+    CU_BEGIN_ENUM(CameraDirection) \
+        CU_ENUM_UNIT(E_CAMERA_DIRECTION_FORWARD) \
+        CU_ENUM_UNIT(E_CAMERA_DIRECTION_BACK) \
+        CU_ENUM_UNIT(E_CAMERA_DIRECTION_UP) \
+        CU_ENUM_UNIT(E_CAMERA_DIRECTION_DOWN) \
+        CU_ENUM_UNIT(E_CAMERA_DIRECTION_LEFT) \
+        CU_ENUM_UNIT(E_CAMERA_DIRECTION_RIGHT) \
+    CU_END_ENUM(CameraDirection) \
+    CU_BEGIN_ENUM(CameraType) \
+        CU_ENUM_UNIT(E_CAMERA_FIXED) \
+        CU_ENUM_UNIT(E_CAMERA_FIRST_PERSON) \
+        CU_ENUM_UNIT(E_CAMERA_THIRD_PERSON) \
+    CU_END_ENUM(CameraType)
+#include <cu/enum-utils.hpp>
+#undef CU_ENUMS_DESCRIPTION
+
     class CameraSystem {
     public:
         explicit CameraSystem(Entities& entities) :
@@ -29,7 +46,7 @@ namespace QCE {
             const float3d& position = { 2.0f, 2.0f, -2.0f },
             const float3d& target = { 0.0f, 0.0f, 0.0f },
             const float3d& up = { 0.0f, 1.0f, 0.0f },
-            CameraOperatorType operator_type = E_CAMERA_OPERATOR_FIRST_PERSON
+            CameraType camera_type = E_CAMERA_FIRST_PERSON
         );
 
         ErrorCode Update();

@@ -127,7 +127,7 @@ namespace QCE {
 
             HidEventsManager::Get().Process();
 
-            QCE_CRITICAL(m_current_scene.Update());
+            QCE_CRITICAL(m_systems.UpdateAll());
 
             assert(m_render);
             return m_render->Draw();

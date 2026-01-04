@@ -70,7 +70,6 @@ set(QCE_OBJECTS_HDRS
     include/qce/objects/scene.hpp
     include/qce/objects/figures.hpp
     include/qce/objects/shader.hpp
-    include/qce/objects/camera.hpp
     include/qce/objects/camera_operator.hpp
     include/qce/objects/command.hpp
 )
@@ -78,7 +77,6 @@ set(QCE_OBJECTS_IMPL
     src/resource_manager.cpp
     src/scene.cpp
     src/figures.cpp
-    src/camera.cpp
     src/camera_operator.cpp
 )
 
@@ -105,6 +103,7 @@ set(QCE_COMPONENTS_HDRS
 )
 set(QCE_COMPONENTS_IMPL
     src/transform.cpp
+    src/camera.cpp
 )
 
 set(QCE_SYSTEMS_HDRS
