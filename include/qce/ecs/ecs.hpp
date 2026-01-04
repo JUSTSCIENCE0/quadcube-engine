@@ -5,9 +5,32 @@
 
 #pragma once
 
-#ifndef QCE_CUSTOM_ECS_CORE_HEADER
-#  include <qce/ecs/default_ecs_core.hpp>
+#ifdef QCE_ECS_ADDITIONAL_COMPONENTS_HEADER
+#  include QCE_ECS_ADDITIONAL_COMPONENTS_HEADER
 #else
-#  include QCE_CUSTOM_ECS_CORE_HEADER
-#endif // !QCE_CUSTOM_ECS_CORE_HEADER
+#  define QCE_ECS_ENTITY_MANAGER_CACHE_SIZE 64
+#  define QCE_ECS_ADDITIONAL_COMPONENTS
+#endif
 
+#include <qce/ecs/entity_manager.hpp>
+
+#include <qce/components/camera.hpp>
+#include <qce/components/movement.hpp>
+#include <qce/components/transform.hpp>
+
+namespace QCE {
+    template <typename... AdditionalComponents>
+    class EcsCore :
+        public EntityManager<
+            QCE_ECS_ENTITY_MANAGER_CACHE_SIZE,
+            // Components
+            TransformComponents,
+            TransformMatrix,
+            Movement,
+            CameraComponents,
+            AdditionalComponents... > {
+
+    };
+
+    using Entities = EcsCore< QCE_ECS_ADDITIONAL_COMPONENTS >;
+}
