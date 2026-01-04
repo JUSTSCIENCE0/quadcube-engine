@@ -1,4 +1,4 @@
-// Copyright (c) 2025, Yakov Usoltsev
+// Copyright (c) 2025-2026, Yakov Usoltsev
 // Email: yakovmen62@gmail.com
 //
 // License: MIT
@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
         }
     };
 
-    auto& app = QCE::Application::Get(config);
+    auto& app = QCE::Application<>::Get(config);
 
     QCE::CuboidParams cuboid{
         .length = 1.0f,
@@ -29,6 +29,10 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.Resources().AddFigure(cuboid, "cuboid"));
 
     QCE_CRITICAL(app.CurrentScene().AddCamera());
+
+    auto& cameras = app.m_systems.Get<QCE::CameraSystem>();
+    QCE_CRITICAL(cameras.Setup(config.render.render_type));
+    QCE_CRITICAL(cameras.AddCamera());
 
     QCE_CRITICAL(app.CurrentScene().AddEntity(
         "cuboid_1",

@@ -1,4 +1,4 @@
-# Copyright (c) 2025, Yakov Usoltsev
+# Copyright (c) 2025-2026, Yakov Usoltsev
 # Email: yakovmen62@gmail.com
 #
 # License: MIT
@@ -111,6 +111,10 @@ set(QCE_SYSTEMS_HDRS
     include/qce/systems/render_system.hpp
     include/qce/systems/transform_system.hpp
     include/qce/systems/movement_system.hpp
+    include/qce/systems/camera_system.hpp
+)
+set(QCE_SYSTEMS_IMPL
+    src/camera_system.cpp
 )
 
 set(QCE_RENDERS_HDRS
@@ -215,6 +219,7 @@ target_sources(${PROJECT_NAME}
         ${QCE_COMPONENTS_IMPL}
 
         ${QCE_SYSTEMS_HDRS}
+        ${QCE_SYSTEMS_IMPL}
 
         ${QCE_OBJECTS_HDRS}
         ${QCE_OBJECTS_IMPL}
@@ -241,6 +246,7 @@ source_group("Components/Headers"        FILES ${QCE_COMPONENTS_HDRS})
 source_group("Components/Implementation" FILES ${QCE_COMPONENTS_IMPL})
 
 source_group("Systems/Headers"           FILES ${QCE_SYSTEMS_HDRS})
+source_group("Systems/Implementation"    FILES ${QCE_SYSTEMS_IMPL})
 
 source_group("Objects/Headers"           FILES ${QCE_OBJECTS_HDRS})
 source_group("Objects/Implementation"    FILES ${QCE_OBJECTS_IMPL})

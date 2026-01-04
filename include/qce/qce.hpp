@@ -1,4 +1,4 @@
-// Copyright (c) 2025, Yakov Usoltsev
+// Copyright (c) 2025-2026, Yakov Usoltsev
 // Email: yakovmen62@gmail.com
 //
 // License: MIT
@@ -9,6 +9,8 @@
 #include <qce/objects/scene.hpp>
 #include <qce/ancillary/timer.hpp>
 #include <qce/ecs/ecs.hpp>
+#include <qce/ecs/systems_hub.hpp>
+#include <qce/systems/camera_system.hpp>
 
 #include <cu/string-utils.hpp>
 
@@ -18,7 +20,7 @@ namespace QCE {
         RenderConfig render{};
     };
 
-    // TODO:  additional logic, graphics, etc
+    template <SystemT... AdditionalSystems>
     class Application {
         friend GraphicsOutput;
 
@@ -140,9 +142,16 @@ namespace QCE {
         GraphicsOutput m_graphics_output;
         // TODO: additional graphics outputs
 
-    public: // for prototyping only, TODO: remove it
-        Entities m_entities{};
+    public:
+        using Systems = SystemsHub<
+            CameraSystem,
+            AdditionalSystems...
+        >;
 
+        Entities m_entities{};
+        Systems  m_systems{ m_entities };
+
+    public: // for prototyping only, TODO: remove it
         std::shared_ptr<RenderBase> m_render{};
     };
 }
