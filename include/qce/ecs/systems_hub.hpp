@@ -1,4 +1,4 @@
-// Copyright (c) 2025, Yakov Usoltsev
+// Copyright (c) 2025-2026, Yakov Usoltsev
 // Email: yakovmen62@gmail.com
 //
 // License: MIT
@@ -22,7 +22,7 @@ namespace QCE {
     class SystemsHub {
     public:
         explicit SystemsHub(Entities& entities) :
-            m_systems( SystemStorage<Systems>{ System{entities}, true }... )
+            m_systems( SystemStorage<Systems>{ Systems{entities}, true }... )
         {}
 
         SystemsHub(const SystemsHub&) = delete;
