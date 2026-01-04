@@ -22,13 +22,13 @@ namespace QCE {
             public RenderBase {
     public:
         friend class RenderBase;
-        friend std::shared_ptr<RenderBase> GetRender(RenderConfig config, void* window, void* app);
+        friend std::shared_ptr<RenderBase> GetRender(Entities& entities, RenderConfig config, void* window, void* app);
 
-        ErrorCode Draw();
+        ErrorCode Draw() override;
 
     private:
         /// ctor
-        explicit RenderDX12(RenderConfig initial_config, HWND window);
+        explicit RenderDX12(Entities& entities, RenderConfig initial_config, HWND window);
 
         /// types
         template<typename T> using MsPtr = Microsoft::WRL::ComPtr<T>;

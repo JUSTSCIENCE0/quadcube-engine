@@ -9,7 +9,7 @@
 
 namespace QCE {
     std::shared_ptr<RenderBase> GetRender(
-            RenderConfig config, void* window, void* app) {
+            Entities& entities, RenderConfig config, void* window, void* app) {
         static RenderType current_type = RenderType::E_RenderType_UNKNOWN;
         static std::shared_ptr<RenderBase> result = nullptr;
 
@@ -21,7 +21,7 @@ namespace QCE {
             case RenderType::E_RENDER_DIRECTX12:
 #ifdef WIN32
                 // unfortunatly we can't use std::make_shared for private constructor
-                result = std::shared_ptr<RenderBase>(new RenderDX12(config, HWND(window)));
+                result = std::shared_ptr<RenderBase>(new RenderDX12(entities, config, HWND(window)));
 #else
                 assert(!"Current platform doesn't support DirectX 12");
                 current_type = RenderType::E_RenderType_UNKNOWN;

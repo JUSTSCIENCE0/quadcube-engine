@@ -90,7 +90,7 @@ namespace QCE {
             auto window = nullptr;
             auto app = nullptr;
 #endif
-            m_render = QCE::GetRender(m_config.render, window, app);
+            m_render = QCE::GetRender(m_entities, m_config.render, window, app);
         }
         catch (QCE::ErrorCodeException qce_ex) {
             m_graphics_output.ShowMessage(

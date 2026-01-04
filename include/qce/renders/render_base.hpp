@@ -8,6 +8,7 @@
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/objects/scene.hpp>
 #include <qce/renders/render_type.hpp>
+#include <qce/ecs/ecs.hpp>
 
 #include <utility>
 #include <cstring>
@@ -55,18 +56,14 @@ namespace QCE {
             return ErrorCode::SUCCESS;
         }
 
-        ErrorCode Draw() {
-            assert(DerivedDraw);
-            return DerivedDraw(this);
-        }
+        virtual ErrorCode Draw() = 0;
 
         ErrorCode SetCurrentScene(Scene* scene) {
             m_current_scene = scene;
 
             QCE_CRITICAL(UpdateCpuScene());
 
-            assert(UpdateGpuScene);
-            return UpdateGpuScene(this);
+            return UpdateGpuScene();
         }
 
         ErrorCode UseShader(const std::string& name, ShaderType type);
@@ -96,14 +93,15 @@ namespace QCE {
             float world_matrix[16];
         };
 
-        template <typename /*TODO: concept*/ DerivedRender>
-        explicit RenderBase(std::in_place_type_t<DerivedRender>, RenderConfig initial_config) :
-            m_config(std::move(initial_config)),
-            DerivedDraw([](void* ptr) { return static_cast<DerivedRender*>(ptr)->Draw(); }),
-            UpdateGpuScene([](void* ptr) { return static_cast<DerivedRender*>(ptr)->UpdateGpuScene(); }) {
+        explicit RenderBase(Entities& entities, RenderConfig initial_config) :
+            m_entities(entities),
+            m_config(std::move(initial_config)) {
             m_shader_indeces.fill(ResourceManager::INVALID_RESOURCE_INDEX);
         }
 
+        virtual ErrorCode UpdateGpuScene() = 0;
+
+        Entities& m_entities;
         RenderConfig m_config{};
 
         Scene* m_current_scene = nullptr;
@@ -113,10 +111,8 @@ namespace QCE {
 
     private:
         ErrorCode UpdateCpuScene();
-
-        ErrorCode(*DerivedDraw)(void*) = nullptr;
-        ErrorCode(*UpdateGpuScene)(void*) = nullptr;
     };
 
-    std::shared_ptr<RenderBase> GetRender(RenderConfig config, void* window, void* app);
+    std::shared_ptr<RenderBase> GetRender(
+        Entities& entities, RenderConfig config, void* window, void* app);
 }

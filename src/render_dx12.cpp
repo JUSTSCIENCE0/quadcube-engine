@@ -6,8 +6,8 @@
 #include <qce/renders/render_dx12.hpp>
 
 namespace QCE {
-    RenderDX12::RenderDX12(RenderConfig initial_config, HWND window) :
-        RenderBase(std::in_place_type<RenderDX12>, std::move(initial_config)),
+    RenderDX12::RenderDX12(Entities& entities, RenderConfig initial_config, HWND window) :
+        RenderBase(entities, std::move(initial_config)),
             m_window(window) {
         assert(RenderType::E_RENDER_DIRECTX12 == m_config.render_type);
         assert(m_window);
