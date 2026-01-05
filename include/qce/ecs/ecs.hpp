@@ -14,6 +14,7 @@
 
 #include <qce/ecs/entity_manager.hpp>
 
+#include <qce/components/common.hpp>
 #include <qce/components/camera.hpp>
 #include <qce/components/movement.hpp>
 #include <qce/components/transform.hpp>
@@ -24,6 +25,7 @@ namespace QCE {
         public EntityManager<
             QCE_ECS_ENTITY_MANAGER_CACHE_SIZE,
             // Components
+            EntityName,
             TransformComponents,
             TransformMatrix,
             Movement,
