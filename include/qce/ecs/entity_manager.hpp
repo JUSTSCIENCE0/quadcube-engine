@@ -17,6 +17,10 @@ namespace QCE {
             return m_id_pool.LockId();
         }
 
+        bool IsEntityExists(entity_id_t entity_id) const {
+            return m_id_pool.CheckId(entity_id);
+        }
+
         ErrorCode RemoveEntity(entity_id_t entity_id) {
             if (!m_id_pool.CheckId(entity_id)) {
                 return ErrorCode::E_ENG_ENTITY_NOT_FOUND;
@@ -55,8 +59,17 @@ namespace QCE {
         }
 
         template <typename Component>
+        bool HasComponent(entity_id_t entity_id) const {
+            if (!IsEntityExists(entity_id)) {
+                return false;
+            }
+            const auto& storage = std::get<ComponentStorage<Component>>(m_components);
+            return storage.HasEntity(entity_id);
+        }
+
+        template <typename Component>
         ErrorCode RemoveComponent(entity_id_t entity_id) {
-            if (!m_id_pool.CheckId(entity_id)) {
+            if (!IsEntityExists(entity_id)) {
                 return ErrorCode::E_ENG_ENTITY_NOT_FOUND;
             }
 
