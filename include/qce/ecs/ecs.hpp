@@ -29,7 +29,8 @@ namespace QCE {
             TransformComponents,
             TransformMatrix,
             Movement,
-            CameraComponents,
+            CameraView,
+            CameraProj,
             FirstPersonCameraControl,
             AdditionalComponents... > {};
 

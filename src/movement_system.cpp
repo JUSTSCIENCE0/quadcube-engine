@@ -21,8 +21,8 @@ namespace QCE {
                 // auto& transform = m_entities.GetComponent<TransformComponents>(entity_id);
             }
 
-            if (m_entities.HasComponent<CameraComponents>(entity_id)) {
-                auto& camera = m_entities.GetComponent<CameraComponents>(entity_id);
+            if (m_entities.HasComponent<CameraView>(entity_id)) {
+                auto& camera = m_entities.GetComponent<CameraView>(entity_id);
                 camera_move(camera, translation);
             }
 

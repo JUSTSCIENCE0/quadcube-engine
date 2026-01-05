@@ -13,7 +13,7 @@
 
 namespace QCE {
     static inline void camera_load_params(
-            CameraComponents& camera,
+            CameraView& camera,
             vector& position,
             vector& target,
             vector& forward,
@@ -45,7 +45,7 @@ namespace QCE {
         }
     }
 
-    void camera_recalc_view(CameraComponents& camera) {
+    void camera_recalc_view(CameraView& camera) {
         assert(camera.is_LH && "Only LH implemented");
 
         vector position, target, forward, right, up_real;
@@ -56,7 +56,7 @@ namespace QCE {
         camera.actual_view = true;
     }
 
-    void camera_recalc_proj(CameraComponents& camera) {
+    void camera_recalc_proj(CameraProj& camera) {
         assert(camera.is_LH && "Only LH implemented");
 
         float height = 1.0f / (std::tanf(camera.fov_rad * 0.5f));
@@ -70,7 +70,7 @@ namespace QCE {
         camera.actual_proj = true;
     }
 
-    void camera_move(CameraComponents& camera, const float3d& move) {
+    void camera_move(CameraView& camera, const float3d& move) {
         if (!move.x() && !move.z())
             return;
 
@@ -87,7 +87,7 @@ namespace QCE {
         camera.actual_view = false;
     }
 
-    void camera_rotate_view(CameraComponents& camera, float d_yaw, float d_pitch) {
+    void camera_rotate_view(CameraView& camera, float d_yaw, float d_pitch) {
         vector position, target, forward, right, up_real;
         camera_load_params(camera, position, target, forward, right, up_real);
 

@@ -45,19 +45,24 @@ namespace QCE {
         };
         QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, transform));
 
-        CameraComponents camera{
+        CameraView camera_view{
+            .is_LH = is_LH_system,
+
             .position = position,
             .target = target,
-            .up_direction = up,
+            .up_direction = up
+        };
+        QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, camera_view));
+
+        CameraProj camera_proj{
+            .is_LH = is_LH_system,
 
             .fov_rad = fov_rad,
             .aspect = aspect,
             .znear = znear,
-            .zfar = zfar,
-
-            .is_LH = is_LH_system
+            .zfar = zfar
         };
-        QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, camera));
+        QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, camera_proj));
 
         if (camera_type == E_CAMERA_FIRST_PERSON) {
             QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, FirstPersonCameraControl{}));
@@ -68,13 +73,13 @@ namespace QCE {
     }
 
     ErrorCode CameraSystem::Update() {
-        auto cameras = m_entities.QueryEntities<CameraComponents>();
+        auto cameras = m_entities.QueryEntities<CameraView>();
         for (const auto& camera_id : cameras) {
             if (m_entities.HasComponent<FirstPersonCameraControl>(camera_id)) {
                 auto& camera_fp_control = m_entities.GetComponent<FirstPersonCameraControl>(camera_id);
-                auto& camera = m_entities.GetComponent<CameraComponents>(camera_id);
+                auto& camera_view = m_entities.GetComponent<CameraView>(camera_id);
                 camera_rotate_view(
-                    camera,
+                    camera_view,
                     camera_fp_control.view_rotation.y(),
                     camera_fp_control.view_rotation.x()
                 );

@@ -277,17 +277,18 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::UpdateConstantBuffers() {
-        auto cameras_indeces = m_entities.QueryEntities<CameraComponents>();
+        auto cameras_indeces = m_entities.QueryEntities<CameraView, CameraProj>();
         assert(cameras_indeces.size() == 1); // TODO: support more than one camera
-        auto& camera = m_entities.GetComponent<CameraComponents>(*cameras_indeces.begin());
-        if (!camera.actual_fru || !camera.actual_view)
-            camera_recalc_view(camera);
-        if (!camera.actual_proj)
-            camera_recalc_proj(camera);
+        auto& camera_view = m_entities.GetComponent<CameraView>(*cameras_indeces.begin());
+        if (!camera_view.actual_fru || !camera_view.actual_view)
+            camera_recalc_view(camera_view);
+        auto& camera_proj = m_entities.GetComponent<CameraProj>(*cameras_indeces.begin());
+        if (!camera_proj.actual_proj)
+            camera_recalc_proj(camera_proj);
 
         auto vp = matrix_mul(
-            matrix_init(camera.view.arr),
-            matrix_init(camera.proj.arr)
+            matrix_init(camera_view.view.arr),
+            matrix_init(camera_proj.proj.arr)
         );
 
         assert(m_current_scene);
