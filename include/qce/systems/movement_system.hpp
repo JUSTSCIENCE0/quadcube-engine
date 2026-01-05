@@ -5,6 +5,17 @@
 
 #pragma once
 
-namespace QCE {
+#include <qce/ecs/ecs.hpp>
 
+namespace QCE {
+    class MovementSystem {
+    public:
+        explicit MovementSystem(Entities& entities) :
+            m_entities(entities)
+        {}
+        ErrorCode Update();
+
+    private:
+        Entities& m_entities;
+    };
 }

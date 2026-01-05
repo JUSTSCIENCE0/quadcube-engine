@@ -10,6 +10,8 @@
 #include <qce/ancillary/timer.hpp>
 #include <qce/ecs/ecs.hpp>
 #include <qce/ecs/systems_hub.hpp>
+
+#include <qce/systems/movement_system.hpp>
 #include <qce/systems/camera_system.hpp>
 
 #include <cu/string-utils.hpp>
@@ -144,6 +146,7 @@ namespace QCE {
 
     public:
         using Systems = SystemsHub<
+            MovementSystem,
             CameraSystem,
             AdditionalSystems...
         >;
