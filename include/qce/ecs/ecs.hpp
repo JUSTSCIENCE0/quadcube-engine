@@ -30,6 +30,7 @@ namespace QCE {
             TransformMatrix,
             Movement,
             CameraComponents,
+            FirstPersonCameraControl,
             AdditionalComponents... > {};
 
     using Entities = EcsCore< QCE_ECS_ADDITIONAL_COMPONENTS >;
