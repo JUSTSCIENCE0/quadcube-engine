@@ -13,6 +13,7 @@
 
 #include <qce/systems/movement_system.hpp>
 #include <qce/systems/camera_system.hpp>
+#include <qce/systems/hid_system.hpp>
 
 #include <cu/string-utils.hpp>
 
@@ -34,6 +35,8 @@ namespace QCE {
 
         static Application& Get(
                 const ApplicationConfig& initial_config) {
+            ResourceManager::Initialize(initial_config.render.render_type);
+
             static Application app {
                 initial_config
             };
@@ -73,8 +76,20 @@ namespace QCE {
         ResourceManager& Resources() { return ResourceManager::Get(); }
         // for prototyping only, TODO: remove it
         Scene& CurrentScene() { return m_current_scene; }
-        // for prototyping only
-        HidEventsManager& HidManager() { return HidEventsManager::Get(); }
+
+    public:
+        using Systems = SystemsHub<
+            HidSystem,
+            MovementSystem,
+            CameraSystem,
+            AdditionalSystems...
+        >;
+
+        Entities m_entities{};
+        Systems  m_systems{ m_entities };
+
+    public: // for prototyping only, TODO: remove it
+        std::shared_ptr<RenderBase> m_render{};
 
     private:
         explicit Application(
@@ -82,9 +97,8 @@ namespace QCE {
         try :
             m_config(initial_config),
             m_graphics_output(
-                m_config.graphics_output) {
-            ResourceManager::Initialize(m_config.render.render_type);
-
+                m_config.graphics_output,
+                m_systems.Get<QCE::HidSystem>()) {
 #ifdef WIN32
             auto window = m_graphics_output.GetHwnd();
             auto app = nullptr;
@@ -127,8 +141,6 @@ namespace QCE {
         ErrorCode StepForward() {
             FrameTime::Get().NextFrame();
 
-            HidEventsManager::Get().Process();
-
             QCE_CRITICAL(m_systems.UpdateAll());
 
             assert(m_render);
@@ -143,19 +155,6 @@ namespace QCE {
 
         GraphicsOutput m_graphics_output;
         // TODO: additional graphics outputs
-
-    public:
-        using Systems = SystemsHub<
-            MovementSystem,
-            CameraSystem,
-            AdditionalSystems...
-        >;
-
-        Entities m_entities{};
-        Systems  m_systems{ m_entities };
-
-    public: // for prototyping only, TODO: remove it
-        std::shared_ptr<RenderBase> m_render{};
     };
 }
 

@@ -11,8 +11,10 @@
 namespace QCE {
     WinNtWindow::WinNtWindow(
                 GraphicsOutputConfig initial_config,
+                HidSystem& hid_system,
                 std::wstring class_name) :
             m_config(std::move(initial_config)),
+            m_hid_system(hid_system),
             m_class_name(std::move(class_name)) {
         QCE_THROW_CRITICAL(Init());
     }
@@ -111,7 +113,7 @@ namespace QCE {
                 break; // def win proc
             }
             auto [x, y] = get_mouse_position(lParam);
-            HidEventsManager::Get().PushEvent(
+            m_hid_system.PushEvent(
                 hid_event_on_mouse_button_down(event_code.value(), x, y));
             return 0;
         }
@@ -128,7 +130,7 @@ namespace QCE {
                 break; // def win proc
             }
             auto [x, y] = get_mouse_position(lParam);
-            HidEventsManager::Get().PushEvent(
+            m_hid_system.PushEvent(
                 hid_event_on_mouse_button_up(event_code.value(), x, y));
             return 0;
         }
@@ -136,7 +138,7 @@ namespace QCE {
         {
             int zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
             float intensity = float(zDelta) / float(WHEEL_DELTA);
-            HidEventsManager::Get().PushEvent(hid_event_on_scroll(intensity));
+            m_hid_system.PushEvent(hid_event_on_scroll(intensity));
             return 0;
         }
         case WM_MOUSEMOVE:
@@ -154,7 +156,7 @@ namespace QCE {
                 return 0;
             }
 
-            HidEventsManager::Get().PushMouseMoveEvent(hid_event_on_mouse_move(dx, dy));
+            m_hid_system.PushMouseMoveEvent(hid_event_on_mouse_move(dx, dy));
 
             if (m_config.is_first_person)
                 CenterCursor();
@@ -171,7 +173,7 @@ namespace QCE {
                     std::hex << wParam << std::dec << std::endl;
                 break; // def win proc
             }
-            HidEventsManager::Get().PushEvent(
+            m_hid_system.PushEvent(
                 hid_event_on_button_down(event_code.value()));
             return 0;
         }
@@ -184,7 +186,7 @@ namespace QCE {
                     std::hex << wParam << std::dec << std::endl;
                 break; // def win proc
             }
-            HidEventsManager::Get().PushEvent(
+            m_hid_system.PushEvent(
                 hid_event_on_button_up(event_code.value()));
 
             return 0;

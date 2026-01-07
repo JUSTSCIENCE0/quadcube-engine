@@ -51,36 +51,37 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_render->UseShader("simple", QCE::ShaderType::E_VERTEX_SHADER));
     QCE_CRITICAL(app.m_render->UseShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
 
-    QCE::HidEventsManager::Config hid_events_config{};
-    hid_events_config.emplace_back(
+    QCE::HidSystem::Config hid_events_config{};
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('W'), "MainCamera.MoveForward"));
-    hid_events_config.emplace_back(
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('A'), "MainCamera.MoveLeft"));
-    hid_events_config.emplace_back(
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('S'), "MainCamera.MoveBack"));
-    hid_events_config.emplace_back(
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('D'), "MainCamera.MoveRight"));
 
-    hid_events_config.emplace_back(
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_UP, "MainCamera.MoveForward"));
-    hid_events_config.emplace_back(
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_LEFT, "MainCamera.MoveLeft"));
-    hid_events_config.emplace_back(
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_DOWN, "MainCamera.MoveBack"));
-    hid_events_config.emplace_back(
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_RIGHT, "MainCamera.MoveRight"));
-    hid_events_config.emplace_back(
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_GAMEPAD_LSTICK_MOVE, "MainCamera.MoveForward"));
 
-    hid_events_config.emplace_back(
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_MOUSE_MOVE, "MainCamera.RotateUp"));
-    hid_events_config.emplace_back(
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE, "MainCamera.RotateUp"));
 
-    hid_events_config.emplace_back(
+    hid_events_config.event_descriptors.emplace_back(
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_ESC, "Exit"));
 
-    QCE_CRITICAL(app.HidManager().Setup(hid_events_config));
+    auto& hid_system = app.m_systems.Get<QCE::HidSystem>();
+    QCE_CRITICAL(hid_system.Setup(hid_events_config));
 
     return app.Run();
 }

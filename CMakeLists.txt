@@ -110,6 +110,7 @@ set(QCE_SYSTEMS_HDRS
     include/qce/systems/transform_system.hpp
     include/qce/systems/movement_system.hpp
     include/qce/systems/camera_system.hpp
+    include/qce/systems/hid_system.hpp
 )
 set(QCE_SYSTEMS_IMPL
     src/camera_system.cpp
