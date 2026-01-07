@@ -56,18 +56,21 @@ namespace QCE {
         m_scene_cpu.index_buffer_size = 0;
         m_scene_cpu.vertex_buffer_size = 0;
 
-        auto scene = m_current_scene->GetDescription();
-        for (const auto& [name, entities_group] : scene.entities) {
-            auto& mesh = ResourceManager::Get().Read<Mesh>(entities_group[0]->m_mesh_index);
+        auto entities = m_entities.QueryEntities<
+            MeshComponent,
+            TransformComponents,
+            TransformMatrix>();
+        for (const auto& entity_id : entities) {
+            auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
+            auto& mesh = ResourceManager::Get().Read<Mesh>(mesh_comp.index);
             mesh.render_unit_index.reset();
         }
 
         size_t unit_index = 0;
 
-        for (const auto& [name, entities_group] : scene.entities) {
-            assert(!entities_group.empty());
-            assert(entities_group[0]);
-            auto& mesh = ResourceManager::Get().Read<Mesh>(entities_group[0]->m_mesh_index);
+        for (const auto& entity_id : entities) {
+            auto mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
+            auto& mesh = ResourceManager::Get().Read<Mesh>(mesh_comp.index);
 
             if (mesh.render_unit_index.has_value())
                 continue;

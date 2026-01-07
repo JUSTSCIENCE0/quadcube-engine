@@ -6,10 +6,11 @@
 #pragma once
 
 #include <qce/ancillary/error_codes.hpp>
-#include <qce/objects/scene.hpp>
+#include <qce/objects/resource_manager.hpp>
 #include <qce/renders/render_type.hpp>
 #include <qce/ecs/ecs.hpp>
 
+#include <array>
 #include <utility>
 #include <cstring>
 #include <string>
@@ -58,9 +59,7 @@ namespace QCE {
 
         virtual ErrorCode Draw() = 0;
 
-        ErrorCode SetCurrentScene(Scene* scene) {
-            m_current_scene = scene;
-
+        ErrorCode UpdateScene() {
             QCE_CRITICAL(UpdateCpuScene());
 
             return UpdateGpuScene();
@@ -104,7 +103,6 @@ namespace QCE {
         Entities& m_entities;
         RenderConfig m_config{};
 
-        Scene* m_current_scene = nullptr;
         RenderSceneCPU m_scene_cpu{};
 
         ShaderIndeces m_shader_indeces{};

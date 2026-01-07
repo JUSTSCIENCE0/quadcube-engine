@@ -14,6 +14,10 @@
 #include <optional>
 
 namespace QCE {
+    struct MeshComponent {
+        size_t index{};
+    };
+
     struct Mesh {
         std::string          id{};
         std::vector<vertex>  vertices{};

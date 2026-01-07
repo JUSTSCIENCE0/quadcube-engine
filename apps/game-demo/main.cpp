@@ -32,22 +32,29 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(cameras.Setup(config.render.render_type));
     QCE_CRITICAL(cameras.AddCamera());
 
-    QCE_CRITICAL(app.CurrentScene().AddEntity(
-        "cuboid_1",
-        "cuboid",
-        QCE::Transform(
+    QCE::MeshComponent cuboid_mesh_component{
+        .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
+    };
+    auto entity0 = app.m_entities.AddEntity();
+    QCE_CRITICAL(app.m_entities.AddComponent(entity0, cuboid_mesh_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity0,
+        QCE::TransformComponents{
             { 0.0f, 0.3826834f, 0.0f, 0.9238795f },
-            {2.0f, 0.0f, 2.0f},
-            {1.0f, 1.0f, 1.0f}
-        )));
-    QCE_CRITICAL(app.CurrentScene().AddEntity(
-        "cuboid_2",
-        "cuboid",
-        QCE::Transform(
+            { 2.0f, 0.0f, 2.0f },
+            { 1.0f, 1.0f, 1.0f }
+        }));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity0, QCE::TransformMatrix{}));
+
+    auto entity1 = app.m_entities.AddEntity();
+    QCE_CRITICAL(app.m_entities.AddComponent(entity1, cuboid_mesh_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity1,
+        QCE::TransformComponents{
             { 0.0f, 0.3826834f, 0.0f, 0.9238795f },
             { -2.0f, 0.0f, -2.0f },
             { 1.0f, 1.0f, 1.0f }
-        )));
+        }));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity1, QCE::TransformMatrix{}));
+
     QCE_CRITICAL(app.m_render->UseShader("simple", QCE::ShaderType::E_VERTEX_SHADER));
     QCE_CRITICAL(app.m_render->UseShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
 

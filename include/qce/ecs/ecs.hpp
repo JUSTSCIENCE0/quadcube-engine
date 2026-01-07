@@ -19,6 +19,8 @@
 #include <qce/components/movement.hpp>
 #include <qce/components/transform.hpp>
 
+#include <qce/objects/mesh.hpp>
+
 namespace QCE {
     template <typename... AdditionalComponents>
     class EcsCore :
@@ -26,6 +28,7 @@ namespace QCE {
             QCE_ECS_ENTITY_MANAGER_CACHE_SIZE,
             // Components
             EntityName,
+            MeshComponent,
             TransformComponents,
             TransformMatrix,
             Movement,

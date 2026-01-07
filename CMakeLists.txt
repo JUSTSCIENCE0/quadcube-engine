@@ -65,7 +65,6 @@ set(QCE_INTERFACE
 set(QCE_OBJECTS_HDRS
     include/qce/objects/index.hpp
     include/qce/objects/mesh.hpp
-    include/qce/objects/entity.hpp
     include/qce/objects/resource_manager.hpp
     include/qce/objects/scene.hpp
     include/qce/objects/figures.hpp
@@ -74,7 +73,6 @@ set(QCE_OBJECTS_HDRS
 )
 set(QCE_OBJECTS_IMPL
     src/resource_manager.cpp
-    src/scene.cpp
     src/figures.cpp
 )
 

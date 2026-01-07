@@ -6,7 +6,6 @@
 #pragma once
 
 #include <qce/ancillary/error_codes.hpp>
-#include <qce/objects/entity.hpp>
 #include <qce/objects/shader.hpp>
 #include <qce/objects/figures.hpp>
 #include <qce/objects/command.hpp>
@@ -56,16 +55,6 @@ namespace QCE {
         ErrorCode AddShader(
             const std::string& shader_name,
             ShaderType shader_type);
-
-        // TODO: remove it
-        ErrorCode AddEntity(
-            const std::string& entity_name,
-            const std::string& mesh_name,
-            const Transform& start_transform = {});
-        std::shared_ptr<Entity> AddAndGetEntity(
-            const std::string& entity_name,
-            const std::string& mesh_name,
-            const Transform& start_transform = {});
 
         template <Resource ResourceT>
         ErrorCode Add(ResourceT resource) {
@@ -222,9 +211,6 @@ namespace QCE {
         RenderType m_render_type = DEFAULT_RENDER_TYPE;
         const std::filesystem::path m_resources_directory;
         const std::filesystem::path m_shaders_bytecode_directory;
-
-        // TODO: remove it
-        Storage<Entity>  m_entities{};
 
         Resources<
             Mesh,

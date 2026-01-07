@@ -6,11 +6,10 @@
 #pragma once
 
 #include <qce/renders/render.hpp>
-#include <qce/objects/scene.hpp>
 #include <qce/ancillary/timer.hpp>
+
 #include <qce/ecs/ecs.hpp>
 #include <qce/ecs/systems_hub.hpp>
-
 #include <qce/systems/movement_system.hpp>
 #include <qce/systems/camera_system.hpp>
 #include <qce/systems/hid_system.hpp>
@@ -74,8 +73,6 @@ namespace QCE {
 
         // for prototyping only
         ResourceManager& Resources() { return ResourceManager::Get(); }
-        // for prototyping only, TODO: remove it
-        Scene& CurrentScene() { return m_current_scene; }
 
     public:
         using Systems = SystemsHub<
@@ -134,7 +131,7 @@ namespace QCE {
 
         ErrorCode PreRun() {
             assert(m_render);
-            QCE_CRITICAL(m_render->SetCurrentScene(&m_current_scene));
+            QCE_CRITICAL(m_render->UpdateScene());
             return ErrorCode::SUCCESS;
         }
 
@@ -148,10 +145,6 @@ namespace QCE {
         }
 
         ApplicationConfig m_config{};
-        Scene m_current_scene{
-            m_config.render.render_type
-        };
-        // TODO: Level & World;
 
         GraphicsOutput m_graphics_output;
         // TODO: additional graphics outputs

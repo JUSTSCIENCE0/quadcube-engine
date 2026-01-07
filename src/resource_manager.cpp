@@ -38,18 +38,6 @@ namespace QCE {
         return Add(mesh);
     }
 
-    ErrorCode ResourceManager::AddEntity(
-            const std::string& entity_name,
-            const std::string& mesh_name,
-            const Transform& start_transform) {
-        [[maybe_unused]] auto entity = AddAndGetEntity(
-            entity_name,
-            mesh_name,
-            start_transform);
-        assert(entity);
-        return ErrorCode::SUCCESS;
-    }
-
     ErrorCode ResourceManager::AddShader(
             const std::string& shader_name,
             ShaderType shader_type) {
@@ -65,21 +53,5 @@ namespace QCE {
         );
 
         return Add(shader);
-    }
-
-    std::shared_ptr<Entity> ResourceManager::AddAndGetEntity(
-            const std::string& entity_name,
-            const std::string& mesh_name,
-            const Transform& start_transform) {
-        auto mesh_index = GetIndex<Mesh>(mesh_name);
-        assert(INVALID_RESOURCE_INDEX != mesh_index);
-
-        auto entity = std::make_shared<Entity>(
-            entity_name, mesh_index, start_transform);
-
-        auto key = entity->m_id;
-        assert(m_entities.end() == m_entities.find(key));
-        m_entities.try_emplace(key, entity);
-        return entity;
     }
 }
