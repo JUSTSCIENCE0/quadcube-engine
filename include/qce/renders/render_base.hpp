@@ -42,10 +42,20 @@ namespace QCE {
 
         int width = 1280;
         int height = 720;
+
+        // ancillary
+        void* window = nullptr;
+        void* app = nullptr;
     };
 
     class RenderBase {
     public:
+        RenderBase(Entities& entities, RenderConfig initial_config) :
+            m_entities(entities),
+            m_config(std::move(initial_config)) {
+            m_shader_indeces.fill(ResourceManager::INVALID_RESOURCE_INDEX);
+        }
+
         RenderBase(const RenderBase&) = delete;
         RenderBase(RenderBase&&) = delete;
         RenderBase& operator=(const RenderBase&) = delete;
@@ -91,12 +101,6 @@ namespace QCE {
         struct UnitConstants {
             float world_matrix[16];
         };
-
-        explicit RenderBase(Entities& entities, RenderConfig initial_config) :
-            m_entities(entities),
-            m_config(std::move(initial_config)) {
-            m_shader_indeces.fill(ResourceManager::INVALID_RESOURCE_INDEX);
-        }
 
         virtual ErrorCode UpdateGpuScene() = 0;
 

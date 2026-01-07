@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <qce/renders/render.hpp>
 #include <qce/ancillary/timer.hpp>
 
 #include <qce/ecs/ecs.hpp>
@@ -13,6 +12,7 @@
 #include <qce/systems/movement_system.hpp>
 #include <qce/systems/camera_system.hpp>
 #include <qce/systems/hid_system.hpp>
+#include <qce/systems/render_system.hpp>
 
 #include <cu/string-utils.hpp>
 
@@ -79,14 +79,12 @@ namespace QCE {
             HidSystem,
             MovementSystem,
             CameraSystem,
+            RenderSystem,
             AdditionalSystems...
         >;
 
         Entities m_entities{};
         Systems  m_systems{ m_entities };
-
-    public: // for prototyping only, TODO: remove it
-        std::shared_ptr<RenderBase> m_render{};
 
     private:
         explicit Application(
@@ -97,13 +95,14 @@ namespace QCE {
                 m_config.graphics_output,
                 m_systems.Get<QCE::HidSystem>()) {
 #ifdef WIN32
-            auto window = m_graphics_output.GetHwnd();
-            auto app = nullptr;
+            m_config.render.window = m_graphics_output.GetHwnd();
+            m_config.render.app = this;
 #else
             auto window = nullptr;
             auto app = nullptr;
 #endif
-            m_render = QCE::GetRender(m_entities, m_config.render, window, app);
+            auto& render = m_systems.Get<RenderSystem>();
+            render.Setup(m_config.render);
         }
         catch (QCE::ErrorCodeException qce_ex) {
             m_graphics_output.ShowMessage(
@@ -130,8 +129,8 @@ namespace QCE {
         }
 
         ErrorCode PreRun() {
-            assert(m_render);
-            QCE_CRITICAL(m_render->UpdateScene());
+            auto& render = m_systems.Get<RenderSystem>();
+            QCE_CRITICAL(render.UpdateScene());
             return ErrorCode::SUCCESS;
         }
 
@@ -140,8 +139,7 @@ namespace QCE {
 
             QCE_CRITICAL(m_systems.UpdateAll());
 
-            assert(m_render);
-            return m_render->Draw();
+            return ErrorCode::SUCCESS;
         }
 
         ApplicationConfig m_config{};

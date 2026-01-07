@@ -21,15 +21,12 @@ namespace QCE {
     class RenderDX12 final :
             public RenderBase {
     public:
-        friend class RenderBase;
-        friend std::shared_ptr<RenderBase> GetRender(Entities& entities, RenderConfig config, void* window, void* app);
+        /// ctor
+        RenderDX12(Entities& entities, RenderConfig initial_config, HWND window);
 
         ErrorCode Draw() override;
 
     private:
-        /// ctor
-        explicit RenderDX12(Entities& entities, RenderConfig initial_config, HWND window);
-
         /// types
         template<typename T> using MsPtr = Microsoft::WRL::ComPtr<T>;
         struct RenderSceneGPU {

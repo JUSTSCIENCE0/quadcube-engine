@@ -1,0 +1,34 @@
+// Copyright (c) 2026, Yakov Usoltsev
+// Email: yakovmen62@gmail.com
+//
+// License: MIT
+
+#include <qce/systems/render_system.hpp>
+
+#ifdef WIN32
+#  include <qce/renders/render_dx12.hpp>
+#endif
+
+namespace QCE {
+    ErrorCode RenderSystem::Setup(const RenderConfig& config) {
+        if (m_config.render_type != config.render_type) {
+            m_render.reset();
+
+            switch (config.render_type) {
+            case RenderType::E_RENDER_DIRECTX12:
+#ifdef WIN32
+                m_render = std::make_unique<RenderDX12>(m_entities, config, HWND(config.window));
+#else
+                assert(!"Current platform doesn't support DirectX 12");
+                m_config.render_type = RenderType::E_RenderType_UNKNOWN;
+#endif
+                break;
+            default:
+                m_config.render_type = RenderType::E_RenderType_UNKNOWN;
+                break;
+            }
+        }
+
+        return ErrorCode::SUCCESS;
+    }
+}

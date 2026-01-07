@@ -111,6 +111,7 @@ set(QCE_SYSTEMS_HDRS
     include/qce/systems/hid_system.hpp
 )
 set(QCE_SYSTEMS_IMPL
+    src/render_system.cpp
     src/camera_system.cpp
     src/movement_system.cpp
 )

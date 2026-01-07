@@ -55,8 +55,9 @@ int main(int argc, char* argv[]) {
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, QCE::TransformMatrix{}));
 
-    QCE_CRITICAL(app.m_render->UseShader("simple", QCE::ShaderType::E_VERTEX_SHADER));
-    QCE_CRITICAL(app.m_render->UseShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
+    auto& render = app.m_systems.Get<QCE::RenderSystem>();
+    QCE_CRITICAL(render.UseShader("simple", QCE::ShaderType::E_VERTEX_SHADER));
+    QCE_CRITICAL(render.UseShader("simple", QCE::ShaderType::E_PIXEL_SHADER));
 
     QCE::HidSystem::Config hid_events_config{};
     hid_events_config.event_descriptors.emplace_back(
