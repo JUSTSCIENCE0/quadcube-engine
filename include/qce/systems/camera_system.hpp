@@ -6,33 +6,31 @@
 #pragma once
 
 #include <qce/ecs/ecs.hpp>
-#include <qce/renders/render_type.hpp>
+#include <qce/configs/camera_config.hpp>
 #include <qce/hid/events_handler.hpp>
 
 namespace QCE {
     class CameraSystem {
     public:
+        using Config = CameraConfig;
+
         explicit CameraSystem(Entities& entities) :
             m_entities(entities)
         {}
 
-        ErrorCode Setup(RenderType render_type) {
-            m_render_type = render_type;
-            // TODO: reconfigure cameras if needed
+        ErrorCode Setup(Config config) {
+            m_config = config;
+
+            // TODO: remove existing cameras
+
+            for (const auto& camera : m_config.cameras) {
+                QCE_CRITICAL(AddCamera(camera));
+            }
+
             return ErrorCode::SUCCESS;
         }
 
-        ErrorCode AddCamera(
-            float aspect = (16.0f / 9.0f),
-            float fov_rad = deg_to_rad(60),
-            float znear = 1.0f,
-            float zfar = 1000.0f,
-            const float3d& position = { 2.0f, 2.0f, -2.0f },
-            const float3d& target = { 0.0f, 0.0f, 0.0f },
-            const float3d& up = { 0.0f, 1.0f, 0.0f },
-            const std::string& camera_name = "MainCamera",
-            CameraType camera_type = E_CAMERA_FIRST_PERSON
-        );
+        ErrorCode AddCamera(const Config::Unit& config);
 
         ErrorCode Update();
 
@@ -84,7 +82,7 @@ namespace QCE {
 
         static constexpr float MIN_FOV_DEG = 30.0f;
 
-        Entities&  m_entities;
-        RenderType m_render_type = DEFAULT_RENDER_TYPE;
+        Entities& m_entities;
+        Config    m_config{};
     };
 }

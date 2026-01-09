@@ -1,4 +1,4 @@
-// Copyright (c) 2025, Yakov Usoltsev
+// Copyright (c) 2025-2026, Yakov Usoltsev
 // Email: yakovmen62@gmail.com
 //
 // License: MIT
@@ -19,7 +19,6 @@ namespace QCE {
     class WinNtWindow final {
     public:
         explicit WinNtWindow(
-            GraphicsOutputConfig initial_config,
             HidSystem& hid_system,
             std::wstring class_name = L"QceMainWindow");
         WinNtWindow(const WinNtWindow&) = delete;
@@ -28,7 +27,7 @@ namespace QCE {
         WinNtWindow& operator=(WinNtWindow&&) = delete;
         ~WinNtWindow() = default;
 
-        ErrorCode UpdateConfig(GraphicsOutputConfig config);
+        ErrorCode Setup(GraphicsOutputConfig config);
 
         template <typename /*TODO: concept*/ TickConsumer>
         ErrorCode MainLoop(TickConsumer* app) {

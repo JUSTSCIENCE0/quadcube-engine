@@ -6,29 +6,20 @@
 #include <qce/systems/camera_system.hpp>
 
 namespace QCE {
-    ErrorCode CameraSystem::AddCamera(
-            float aspect,
-            float fov_rad,
-            float znear,
-            float zfar,
-            const float3d& position,
-            const float3d& target,
-            const float3d& up,
-            const std::string& camera_name,
-            CameraType camera_type) {
-        if (aspect <= 0.0f)
+    ErrorCode CameraSystem::AddCamera(const Config::Unit& config) {
+        if (config.aspect <= 0.0f)
             return ErrorCode::E_ENG_WRONG_ASPECT;
-        if (fov_rad < deg_to_rad(MIN_FOV_DEG))
+        if (config.fov_rad < deg_to_rad(MIN_FOV_DEG))
             return ErrorCode::E_ENG_WRONG_FOV;
-        if (zfar <= znear)
+        if (config.zfar <= config.znear)
             return ErrorCode::E_ENG_WRONG_ZLIMITS;
 
         //const auto cameras_count = m_entities.QueryEntities<CameraComponents>().size();
 
-        const bool is_LH_system = (m_render_type == RenderType::E_RENDER_DIRECTX12);
+        const bool is_LH_system = (m_config.render_type == RenderType::E_RENDER_DIRECTX12);
         const auto camera_entity_id = m_entities.AddEntity();
 
-        if (camera_type != E_CAMERA_FIXED) {
+        if (config.camera_type != E_CAMERA_FIXED) {
             Movement movement{
                 .linear_speed = 1.0f // TODO: make configurable
             };
@@ -36,37 +27,37 @@ namespace QCE {
         }
 
         EntityName entity_name{
-            .name = camera_name
+            .name = config.camera_name
         };
         QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, entity_name));
 
         TransformComponents transform{
-            .position = position
+            .position = config.position
         };
         QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, transform));
 
         CameraView camera_view{
             .is_LH = is_LH_system,
 
-            .position = position,
-            .target = target,
-            .up_direction = up
+            .position = config.position,
+            .target = config.target,
+            .up_direction = config.up
         };
         QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, camera_view));
 
         CameraProj camera_proj{
             .is_LH = is_LH_system,
 
-            .fov_rad = fov_rad,
-            .aspect = aspect,
-            .znear = znear,
-            .zfar = zfar
+            .fov_rad = config.fov_rad,
+            .aspect = config.aspect,
+            .znear = config.znear,
+            .zfar = config.zfar
         };
         QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, camera_proj));
 
-        if (camera_type == E_CAMERA_FIRST_PERSON) {
+        if (config.camera_type == E_CAMERA_FIRST_PERSON) {
             QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, FirstPersonCameraControl{}));
-            QCE_CRITICAL(RegisterFpcEventHandlers(camera_name, camera_entity_id));
+            QCE_CRITICAL(RegisterFpcEventHandlers(config.camera_name, camera_entity_id));
         }
 
         return ErrorCode::SUCCESS;

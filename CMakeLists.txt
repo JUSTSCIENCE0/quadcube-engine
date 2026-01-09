@@ -62,6 +62,13 @@ set(QCE_INTERFACE
     include/qce/qce.hpp
 )
 
+set(QCE_CONFIGS_HDRS
+    include/qce/configs/camera_config.hpp
+    include/qce/configs/render_config.hpp
+    include/qce/configs/hid_config.hpp
+    include/qce/configs/movement_config.hpp
+)
+
 set(QCE_OBJECTS_HDRS
     include/qce/objects/index.hpp
     include/qce/objects/mesh.hpp
@@ -212,6 +219,8 @@ target_sources(${PROJECT_NAME}
 
         ${QCE_HID_HDRS}
 
+        ${QCE_CONFIGS_HDRS}
+
         ${QCE_ECS_HDRS}
 
         ${QCE_COMPONENTS_HDRS}
@@ -238,6 +247,8 @@ source_group("Renders/Headers"           FILES ${QCE_RENDERS_HDRS})
 source_group("Renders/Implementation"    FILES ${QCE_RENDERS_IMPL})
 
 source_group("HID/Headers"               FILES ${QCE_HID_HDRS})
+
+source_group("Configs/Headers"           FILES ${QCE_CONFIGS_HDRS})
 
 source_group("ECS/Headers"               FILES ${QCE_ECS_HDRS})
 

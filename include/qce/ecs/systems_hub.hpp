@@ -45,6 +45,23 @@ namespace QCE {
             return std::get<SystemStorage<System>>(m_systems).is_active;
         }
 
+        template<typename... Configs>
+        ErrorCode Setup(const std::tuple<Configs...>& configs) {
+            auto ret_code = ErrorCode::SUCCESS;
+            ([&]() {
+                if (is_fail(ret_code)) {
+                    return;
+                }
+
+                auto& config = std::get<Configs>(configs);
+                auto& storage = std::get<SystemStorage<typename Configs::System>>(m_systems);
+                ret_code = storage.system.Setup(config);
+                QCE_SOFT(ret_code);
+            }(), ...);
+
+            return ret_code;
+        }
+
         ErrorCode UpdateAll() {
             auto ret_code = ErrorCode::SUCCESS;
             ([&]() {
@@ -54,6 +71,7 @@ namespace QCE {
                 auto& storage = std::get<SystemStorage<Systems>>(m_systems);
                 if (storage.is_active) {
                     ret_code = storage.system.Update();
+                    QCE_SOFT(ret_code);
                 }
             }(), ...);
             return ret_code;

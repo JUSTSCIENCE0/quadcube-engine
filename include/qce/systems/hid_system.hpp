@@ -6,26 +6,24 @@
 #pragma once
 
 #include <qce/ecs/ecs.hpp>
-#include <qce/hid/events_handler.hpp>
+#include <qce/configs/hid_config.hpp>
 
 namespace QCE {
     class HidSystem {
     public:
-        struct Config {
-            std::vector<std::unique_ptr<HidEventDescriptor>> event_descriptors{};
-        };
+        using Config = HidConfig;
 
-        explicit HidSystem(Entities&) {
+        explicit HidSystem(Entities&) {}
+
+        ErrorCode Setup(const Config& config) {
             // register default handler
-            QCE_THROW_CRITICAL(
+            QCE_CRITICAL(
                 ResourceManager::Get().Add(Command{
                     "HidDescribe",
                     std::make_shared<HidDescribe>()
-                    })
+                })
             );
-        }
 
-        ErrorCode Setup(const Config& config) {
             for (const auto& descr : config.event_descriptors) {
                 assert(descr);
                 switch (descr->type) {

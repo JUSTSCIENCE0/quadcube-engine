@@ -17,10 +17,22 @@
 #include <cu/string-utils.hpp>
 
 namespace QCE {
+    template <typename... AdditionalConfigs>
     struct ApplicationConfig {
         GraphicsOutputConfig graphics_output{};
-        RenderConfig render{};
+
+        std::tuple<
+            RenderConfig,
+            CameraConfig,
+            MovementConfig,
+            HidConfig,
+            AdditionalConfigs...
+        > systems_configs{};
     };
+    //struct ApplicationConfig {
+    //    GraphicsOutputConfig graphics_output{};
+    //    RenderConfig render{};
+    //};
 
     template <SystemT... AdditionalSystems>
     class Application {
@@ -32,18 +44,27 @@ namespace QCE {
         Application& operator=(const Application&) = delete;
         Application& operator=(Application&&) = delete;
 
-        static Application& Get(
-                const ApplicationConfig& initial_config) {
-            ResourceManager::Initialize(initial_config.render.render_type);
-
-            static Application app {
-                initial_config
-            };
+        static Application& Get() {
+            static Application app{};
             return app;
         }
-        static Application& Get() {
-            // TODO: fix it
-            return Get(ReadConfig());
+
+        template <typename... AdditionalConfigs>
+        ErrorCode Setup(ApplicationConfig<AdditionalConfigs...>& config) {
+            QCE_CRITICAL(m_graphics_output.Setup(config.graphics_output));
+
+            auto& render_config = std::get<RenderConfig>(config.systems_configs);
+#ifdef WIN32
+            render_config.window = m_graphics_output.GetHwnd();
+#else
+            render_config.window = nullptr;
+#endif
+            render_config.app = this;
+
+            ResourceManager::Initialize(render_config.render_type);
+
+            QCE_CRITICAL(m_systems.Setup(config.systems_configs));
+            return ErrorCode::SUCCESS;
         }
 
         ErrorCode Run() {
@@ -87,46 +108,8 @@ namespace QCE {
         Systems  m_systems{ m_entities };
 
     private:
-        explicit Application(
-                const ApplicationConfig& initial_config)
-        try :
-            m_config(initial_config),
-            m_graphics_output(
-                m_config.graphics_output,
-                m_systems.Get<QCE::HidSystem>()) {
-#ifdef WIN32
-            m_config.render.window = m_graphics_output.GetHwnd();
-            m_config.render.app = this;
-#else
-            auto window = nullptr;
-            auto app = nullptr;
-#endif
-            auto& render = m_systems.Get<RenderSystem>();
-            render.Setup(m_config.render);
-        }
-        catch (QCE::ErrorCodeException qce_ex) {
-            m_graphics_output.ShowMessage(
-                L"QCE Error",
-                CU::str_to_wstr_simple(qce_ex.what()));
-            exit(qce_ex.code_value());
-        }
-        catch (std::exception ex) {
-            m_graphics_output.ShowMessage(
-                L"General Error",
-                CU::str_to_wstr_simple(ex.what()));
-            exit(-1);
-        }
-        catch (...) {
-            m_graphics_output.ShowMessage(
-                L"Error",
-                L"Unknown Error");
-            exit(-1);
-        }
-
-        static ApplicationConfig ReadConfig() {
-            // TODO
-            return {};
-        }
+        explicit Application() :
+            m_graphics_output(m_systems.Get<QCE::HidSystem>()) {}
 
         ErrorCode PreRun() {
             auto& render = m_systems.Get<RenderSystem>();
@@ -141,8 +124,6 @@ namespace QCE {
 
             return ErrorCode::SUCCESS;
         }
-
-        ApplicationConfig m_config{};
 
         GraphicsOutput m_graphics_output;
         // TODO: additional graphics outputs

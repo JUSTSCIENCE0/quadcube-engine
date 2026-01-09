@@ -1,4 +1,4 @@
-// Copyright (c) 2025, Yakov Usoltsev
+// Copyright (c) 2025-2026, Yakov Usoltsev
 // Email: yakovmen62@gmail.com
 //
 // License: MIT
@@ -10,18 +10,14 @@
 
 namespace QCE {
     WinNtWindow::WinNtWindow(
-                GraphicsOutputConfig initial_config,
                 HidSystem& hid_system,
                 std::wstring class_name) :
-            m_config(std::move(initial_config)),
             m_hid_system(hid_system),
-            m_class_name(std::move(class_name)) {
-        QCE_THROW_CRITICAL(Init());
-    }
+            m_class_name(std::move(class_name)) {}
 
-    ErrorCode WinNtWindow::UpdateConfig(GraphicsOutputConfig config) {
+    ErrorCode WinNtWindow::Setup(GraphicsOutputConfig config) {
         m_config = std::move(config);
-        return ErrorCode::SUCCESS;
+        return Init();
     }
 
     ErrorCode WinNtWindow::Init() {

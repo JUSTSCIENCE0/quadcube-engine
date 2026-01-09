@@ -10,7 +10,7 @@
 #endif
 
 namespace QCE {
-    ErrorCode RenderSystem::Setup(const RenderConfig& config) {
+    ErrorCode RenderSystem::Setup(const Config& config) {
         if (m_config.render_type != config.render_type) {
             m_render.reset();
 
@@ -25,8 +25,16 @@ namespace QCE {
                 break;
             default:
                 m_config.render_type = RenderType::E_RenderType_UNKNOWN;
+                assert(!"Unsupported render type");
                 break;
             }
+        }
+
+        assert(m_render);
+        for (const auto& shader : config.used_shaders) {
+            QCE_CRITICAL(
+                ResourceManager::Get().AddShader(shader.shader_name, shader.shader_type));
+            QCE_CRITICAL(UseShader(shader.shader_name, shader.shader_type));
         }
 
         return ErrorCode::SUCCESS;

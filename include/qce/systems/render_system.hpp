@@ -11,12 +11,14 @@
 namespace QCE {
     class RenderSystem {
     public:
+        using Config = RenderConfig;
+
         explicit RenderSystem(Entities& entities) :
             m_entities(entities) {
             m_config.render_type = RenderType::E_RenderType_UNKNOWN;
         }
 
-        ErrorCode Setup(const RenderConfig& config);
+        ErrorCode Setup(const Config& config);
 
         ErrorCode Update() {
             assert(m_render);
@@ -34,9 +36,9 @@ namespace QCE {
         }
 
     private:
-        std::unique_ptr<RenderBase> m_render = nullptr;
-        RenderConfig m_config{};
-
         Entities& m_entities;
+
+        Config m_config{};
+        std::unique_ptr<RenderBase> m_render = nullptr;
     };
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2025, Yakov Usoltsev
+// Copyright (c) 2025-2026, Yakov Usoltsev
 // Email: yakovmen62@gmail.com
 //
 // License: MIT
@@ -7,7 +7,7 @@
 
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/objects/resource_manager.hpp>
-#include <qce/renders/render_type.hpp>
+#include <qce/configs/render_config.hpp>
 #include <qce/ecs/ecs.hpp>
 
 #include <array>
@@ -35,17 +35,6 @@ namespace QCE {
         std::wstring caption = L"QCE Application";
 
         bool is_first_person = false;
-    };
-
-    struct RenderConfig {
-        RenderType render_type = DEFAULT_RENDER_TYPE;
-
-        int width = 1280;
-        int height = 720;
-
-        // ancillary
-        void* window = nullptr;
-        void* app = nullptr;
     };
 
     class RenderBase {
