@@ -8,7 +8,7 @@
 namespace QCE {
     const char* get_verion() {
         // TODO: use git tag - common-utils
-        return "0.0.0";
+        return "0.1.0_pre-alpha";
     }
 
     const char* get_author() {
