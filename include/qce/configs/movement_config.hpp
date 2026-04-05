@@ -5,10 +5,11 @@
 
 #pragma once
 
-namespace QCE {
-    class MovementSystem;
+#include <optional>
+#include <string>
 
+namespace QCE {
     struct MovementConfig {
-        using System = MovementSystem;
+        std::optional<std::string> temporal;
     };
 }

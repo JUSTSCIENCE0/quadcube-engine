@@ -12,11 +12,7 @@
 #include <vector>
 
 namespace QCE {
-    class RenderSystem;
-
     struct RenderConfig {
-        using System = RenderSystem;
-
         RenderType render_type = DEFAULT_RENDER_TYPE;
 
         int width = 1280;

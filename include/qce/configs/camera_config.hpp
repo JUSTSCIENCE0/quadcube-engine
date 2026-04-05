@@ -13,11 +13,7 @@
 #include <vector>
 
 namespace QCE {
-    class CameraSystem;
-
     struct CameraConfig {
-        using System = CameraSystem;
-
         struct Unit {
             float aspect  = (16.0f / 9.0f);
             float fov_rad = deg_to_rad(60);

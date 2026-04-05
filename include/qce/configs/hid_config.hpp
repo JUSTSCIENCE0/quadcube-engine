@@ -8,11 +8,7 @@
 #include <qce/hid/events_handler.hpp>
 
 namespace QCE {
-    class HidSystem;
-
     struct HidConfig {
-        using System = HidSystem;
-
         std::vector<
             std::unique_ptr<
                 HidEventDescriptor>> event_descriptors{};

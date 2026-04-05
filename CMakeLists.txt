@@ -67,6 +67,8 @@ set(QCE_CONFIGS_HDRS
     include/qce/configs/render_config.hpp
     include/qce/configs/hid_config.hpp
     include/qce/configs/movement_config.hpp
+
+    include/qce/configs/configs_traits.hpp
 )
 
 set(QCE_OBJECTS_HDRS

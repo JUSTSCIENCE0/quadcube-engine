@@ -9,6 +9,8 @@
 
 #include <qce/ancillary/error_codes.hpp>
 
+#include <qce/configs/configs_traits.hpp>
+
 #include <concepts>
 
 namespace QCE {
@@ -54,7 +56,7 @@ namespace QCE {
                 }
 
                 auto& config = std::get<Configs>(configs);
-                auto& storage = std::get<SystemStorage<typename Configs::System>>(m_systems);
+                auto& storage = std::get<SystemStorage<config_corresponding_system_t<Configs>>>(m_systems);
                 ret_code = storage.system.Setup(config);
                 QCE_SOFT(ret_code);
             }(), ...);
