@@ -9,6 +9,9 @@
 #include <qce/math/matrix.hpp>
 
 #include <cmath>
+#include <cstring>
+#include <cassert>
+#include <vector>
 
 namespace QCE {
     static constexpr float PI     = 3.1415926535f;
@@ -16,6 +19,12 @@ namespace QCE {
 
     struct float3d {
         float arr[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+        float3d& operator=(const std::vector<float>& numbers) {
+            assert(numbers.size() >= 3);
+            std::memcpy(arr, numbers.data(), sizeof(float) * 3);
+            return *this;
+        }
 
         float& x() noexcept { return arr[0]; }
         float& y() noexcept { return arr[1]; }
@@ -27,6 +36,12 @@ namespace QCE {
     };
 
     struct float4d : public float3d {
+        float4d& operator=(const std::vector<float>& numbers) {
+            assert(numbers.size() >= 4);
+            std::memcpy(arr, numbers.data(), sizeof(float) * 4);
+            return *this;
+        }
+
         float& w() noexcept { return arr[3]; }
         const float& w() const noexcept { return arr[3]; }
     };
