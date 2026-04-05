@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <qce/math/math.hpp>
 #include <qce/components/camera.hpp>
 #include <qce/renders/render_type.hpp>
 
@@ -20,9 +19,9 @@ namespace QCE {
             float znear   = 1.0f;
             float zfar    = 1000.0f;
 
-            float3d position = { 2.0f, 2.0f, -2.0f };
-            float3d target   = { 0.0f, 0.0f, 0.0f };
-            float3d up       = { 0.0f, 1.0f, 0.0f };
+            std::vector<float> position = { 2.0f, 2.0f, -2.0f };
+            std::vector<float> target   = { 0.0f, 0.0f, 0.0f };
+            std::vector<float> up       = { 0.0f, 1.0f, 0.0f };
 
             std::string camera_name = "MainCamera";
             CameraType camera_type  = E_CAMERA_FIRST_PERSON;

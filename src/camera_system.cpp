@@ -31,18 +31,17 @@ namespace QCE {
         };
         QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, entity_name));
 
-        TransformComponents transform{
-            .position = config.position
-        };
+        TransformComponents transform{};
+        transform.position = config.position;
         QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, transform));
 
         CameraView camera_view{
             .is_LH = is_LH_system,
-
-            .position = config.position,
-            .target = config.target,
-            .up_direction = config.up
         };
+        camera_view.position = config.position;
+        camera_view.target = config.target;
+        camera_view.up_direction = config.up;
+
         QCE_CRITICAL(m_entities.AddComponent(camera_entity_id, camera_view));
 
         CameraProj camera_proj{
