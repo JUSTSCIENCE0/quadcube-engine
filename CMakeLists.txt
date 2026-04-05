@@ -60,7 +60,7 @@ list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")
 
 # generate mjson headers from configs_description.h
 macrojson_generate_header_cu_ex(
-    qce/configs/configs_description.h
+    qce/configs/configs_description.hpp
     configs_implementation.hpp
     TRUE
 )
@@ -75,7 +75,7 @@ set(QCE_CONFIGS_HDRS
     include/qce/configs/render_config.hpp
     include/qce/configs/hid_config.hpp
 
-    include/qce/configs/configs_description.h
+    include/qce/configs/configs_description.hpp
     generated/configs_implementation.hpp
 
     include/qce/configs/configs_traits.hpp
