@@ -58,6 +58,14 @@ FetchContent_MakeAvailable(common-utils)
 set_property(TARGET common-utils PROPERTY FOLDER "externals")
 list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")
 
+# generate mjson headers from configs_description.h
+macrojson_generate_header_cu_ex(
+    qce/configs/configs_description.h
+    configs_implementation.hpp
+    TRUE
+)
+
+# sources
 set(QCE_INTERFACE
     include/qce/qce.hpp
 )
@@ -66,7 +74,9 @@ set(QCE_CONFIGS_HDRS
     include/qce/configs/camera_config.hpp
     include/qce/configs/render_config.hpp
     include/qce/configs/hid_config.hpp
-    include/qce/configs/movement_config.hpp
+
+    include/qce/configs/configs_description.h
+    generated/configs_implementation.hpp
 
     include/qce/configs/configs_traits.hpp
 )
@@ -298,6 +308,7 @@ endif() # Windows
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         include/
+        generated/
 )
 
 target_link_libraries(${PROJECT_NAME}

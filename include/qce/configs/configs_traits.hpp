@@ -5,6 +5,8 @@
 
 #pragma once
 
+struct MovementConfig;
+
 namespace QCE {
     template<typename T>
     struct config_corresponding_system {
@@ -28,7 +30,6 @@ namespace QCE {
         using System = HidSystem;
     };
 
-    struct MovementConfig;
     class MovementSystem;
     template<>
     struct config_corresponding_system<MovementConfig> {
