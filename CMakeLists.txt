@@ -138,7 +138,6 @@ set(QCE_SYSTEMS_IMPL
 set(QCE_RENDERS_HDRS
     include/qce/renders/render.hpp
     include/qce/renders/windows_output.hpp
-    include/qce/renders/render_type.hpp
     include/qce/renders/render_base.hpp
 
     # TODO: include/qce/renders/render_vulkan.hpp

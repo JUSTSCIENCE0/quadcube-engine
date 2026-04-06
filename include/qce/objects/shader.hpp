@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include <qce/renders/render_type.hpp>
+#include "configs_implementation.hpp"
+
 #include <qce/ancillary/error_codes.hpp>
 #include <cu/file-utils.hpp>
 

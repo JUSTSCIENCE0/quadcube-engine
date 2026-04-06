@@ -20,11 +20,11 @@ namespace QCE {
                 m_render = std::make_unique<RenderDX12>(m_entities, config, HWND(config.window));
 #else
                 assert(!"Current platform doesn't support DirectX 12");
-                m_config.render_type = RenderType::E_RenderType_UNKNOWN;
+                m_config.render_type = RenderType::E_RENDER_UNKNOWN;
 #endif
                 break;
             default:
-                m_config.render_type = RenderType::E_RenderType_UNKNOWN;
+                m_config.render_type = RenderType::E_RENDER_UNKNOWN;
                 assert(!"Unsupported render type");
                 break;
             }

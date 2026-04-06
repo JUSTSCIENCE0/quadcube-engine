@@ -10,7 +10,7 @@
 namespace QCE {
     std::shared_ptr<RenderBase> GetRender(
             Entities& entities, RenderConfig config, void* window, void* app) {
-        static RenderType current_type = RenderType::E_RenderType_UNKNOWN;
+        static RenderType current_type = RenderType::E_RENDER_UNKNOWN;
         static std::shared_ptr<RenderBase> result = nullptr;
 
         if (current_type != config.render_type) {
@@ -24,11 +24,11 @@ namespace QCE {
                 result = std::shared_ptr<RenderBase>(new RenderDX12(entities, config, HWND(window)));
 #else
                 assert(!"Current platform doesn't support DirectX 12");
-                current_type = RenderType::E_RenderType_UNKNOWN;
+                current_type = RenderType::E_RENDER_UNKNOWN;
 #endif
                 break;
             default:
-                current_type = RenderType::E_RenderType_UNKNOWN;
+                current_type = RenderType::E_RENDER_UNKNOWN;
                 break;
             }
         }

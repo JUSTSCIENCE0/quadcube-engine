@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include <qce/renders/render_type.hpp>
+#include "configs_implementation.hpp"
+
 #include <qce/objects/shader.hpp>
 
 #include <string>

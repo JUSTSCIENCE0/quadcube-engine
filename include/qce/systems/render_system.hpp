@@ -15,7 +15,7 @@ namespace QCE {
 
         explicit RenderSystem(Entities& entities) :
             m_entities(entities) {
-            m_config.render_type = RenderType::E_RenderType_UNKNOWN;
+            m_config.render_type = RenderType::E_RENDER_UNKNOWN;
         }
 
         ErrorCode Setup(const Config& config);

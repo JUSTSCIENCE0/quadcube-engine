@@ -5,8 +5,9 @@
 
 #pragma once
 
+#include "configs_implementation.hpp"
+
 #include <qce/components/camera.hpp>
-#include <qce/renders/render_type.hpp>
 
 #include <string>
 #include <vector>
