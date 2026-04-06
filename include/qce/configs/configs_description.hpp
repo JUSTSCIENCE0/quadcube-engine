@@ -4,13 +4,20 @@
 // License: MIT
 
 // common
-MJSON_ENUM_BEGIN(RenderType, "Render Type", nullptr)
+MJSON_ENUM_BEGIN(RenderType,
+        "Render Type", "Rendering system API")
     MJSON_ENUM_UNIT(E_RENDER_DIRECTX12, directx12)
     MJSON_ENUM_UNIT(E_RENDER_VULKAN, vulkan)
     MJSON_ENUM_VALUE(E_RENDER_UNKNOWN, unknown, -1)
 MJSON_ENUM_END(RenderType)
 
 // camera config
+MJSON_ENUM_BEGIN(CameraType, "Camera Type", nullptr)
+    MJSON_ENUM_UNIT(E_CAMERA_FIXED, fixed)
+    MJSON_ENUM_UNIT(E_CAMERA_FIRST_PERSON, first_person)
+    MJSON_ENUM_UNIT(E_CAMERA_THIRD_PERSON, third_person)
+MJSON_ENUM_END(CameraType)
+
 // TODO
 
 // hid config

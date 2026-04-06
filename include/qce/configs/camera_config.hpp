@@ -7,8 +7,6 @@
 
 #include "configs_implementation.hpp"
 
-#include <qce/components/camera.hpp>
-
 #include <string>
 #include <vector>
 

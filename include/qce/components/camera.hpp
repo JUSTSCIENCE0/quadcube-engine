@@ -18,12 +18,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_CAMERA_DIRECTION_DOWN) \
         CU_ENUM_UNIT(E_CAMERA_DIRECTION_LEFT) \
         CU_ENUM_UNIT(E_CAMERA_DIRECTION_RIGHT) \
-    CU_END_ENUM(CameraDirection) \
-    CU_BEGIN_ENUM(CameraType) \
-        CU_ENUM_UNIT(E_CAMERA_FIXED) \
-        CU_ENUM_UNIT(E_CAMERA_FIRST_PERSON) \
-        CU_ENUM_UNIT(E_CAMERA_THIRD_PERSON) \
-    CU_END_ENUM(CameraType)
+    CU_END_ENUM(CameraDirection)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
 
