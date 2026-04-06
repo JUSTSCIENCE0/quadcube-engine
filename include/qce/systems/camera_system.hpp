@@ -6,8 +6,9 @@
 #pragma once
 
 #include <qce/ecs/ecs.hpp>
-#include <qce/configs/camera_config.hpp>
 #include <qce/hid/events_handler.hpp>
+
+#include "configs_implementation.hpp"
 
 namespace QCE {
     class CameraSystem {
@@ -30,7 +31,7 @@ namespace QCE {
             return ErrorCode::SUCCESS;
         }
 
-        ErrorCode AddCamera(const Config::Unit& config);
+        ErrorCode AddCamera(const CameraConfigUnit& config);
 
         ErrorCode Update();
 

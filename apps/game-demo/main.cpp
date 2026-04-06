@@ -19,10 +19,7 @@ int main(int argc, char* argv[]) {
         }
     };
     auto& camera_config = std::get<QCE::CameraConfig>(config.systems_configs);
-    camera_config =
-        QCE::CameraSystem::Config{
-            .cameras = { QCE::CameraSystem::Config::Unit{} }
-    };
+    camera_config = QCE::DEFAULT_CAMERA_CONFIG;
 
     auto& hid_events_config = std::get<QCE::HidConfig>(config.systems_configs);
     hid_events_config.event_descriptors.emplace_back(

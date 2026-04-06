@@ -6,7 +6,7 @@
 #include <qce/systems/camera_system.hpp>
 
 namespace QCE {
-    ErrorCode CameraSystem::AddCamera(const Config::Unit& config) {
+    ErrorCode CameraSystem::AddCamera(const CameraConfigUnit& config) {
         if (config.aspect <= 0.0f)
             return ErrorCode::E_ENG_WRONG_ASPECT;
         if (config.fov_rad < deg_to_rad(MIN_FOV_DEG))

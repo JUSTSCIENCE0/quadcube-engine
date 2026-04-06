@@ -6,6 +6,7 @@
 #pragma once
 
 struct MovementConfig;
+struct CameraConfig;
 
 namespace QCE {
     template<typename T>
@@ -16,7 +17,6 @@ namespace QCE {
     template<typename T>
     using config_corresponding_system_t = config_corresponding_system<T>::System;
 
-    struct CameraConfig;
     class CameraSystem;
     template<>
     struct config_corresponding_system<CameraConfig> {
