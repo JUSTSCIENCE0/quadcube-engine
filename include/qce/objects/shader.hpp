@@ -17,25 +17,9 @@
 #include <cassert>
 
 namespace QCE {
-#define CU_ENUMS_DESCRIPTION \
-    CU_BEGIN_ENUM(ShaderType) \
-        CU_ENUM_UNIT(E_VERTEX_SHADER) \
-        CU_ENUM_UNIT(E_PIXEL_SHADER) \
-        CU_ENUM_ANCILLARY_UNITS(E_SHADERS_TYPE) \
-    CU_END_ENUM(ShaderType)
-    /*
-    TODO:
-        E_TESSELLATION_CONTROL_SHADER
-        E_TESSELLATION_EVALUATION_SHADER
-        E_GEOMETRY_SHADER
-        E_MESH_SHADER
-    */
-#include <cu/enum-utils.hpp>
-#undef CU_ENUMS_DESCRIPTION
-
     struct Shader {
         std::string id{};
-        ShaderType type = ShaderType::E_ShaderType_UNKNOWN;
+        ShaderType type = ShaderType::E_UNKNOWN_SHADER;
         std::filesystem::path bytecode_file{};
         std::vector<uint8_t> bytecode_cache{};
     };

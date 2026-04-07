@@ -56,7 +56,18 @@ MJSON_OBJECT_BEGIN(
 MJSON_OBJECT_END(MovementConfig)
 
 // render config
-// TODO
+MJSON_ENUM_BEGIN(ShaderType, "Shader Type", nullptr)
+    MJSON_ENUM_UNIT (E_VERTEX_SHADER, vertex)
+    MJSON_ENUM_UNIT (E_PIXEL_SHADER,  pixel)
+// ancillary
+    MJSON_ENUM_UNIT (E_SHADERS_TYPE_COUNT, count)
+    MJSON_ENUM_VALUE(E_UNKNOWN_SHADER, unknown, -1)
+// TODO:
+//     E_TESSELLATION_CONTROL_SHADER
+//     E_TESSELLATION_EVALUATION_SHADER
+//     E_GEOMETRY_SHADER
+//     E_MESH_SHADER
+MJSON_ENUM_END(ShaderType)
 
 #ifndef QCE_CONFIGS_ANCILLARY_H
 #define QCE_CONFIGS_ANCILLARY_H
@@ -65,6 +76,7 @@ namespace QCE {
     using ::RenderType;
     using ::CameraType, ::CameraConfigUnit, ::CameraConfig;
     using ::MovementConfig;
+    using ::ShaderType;
 
 #  ifdef WIN32
     static constexpr auto DEFAULT_RENDER_TYPE = RenderType::E_RENDER_DIRECTX12;

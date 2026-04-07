@@ -21,7 +21,7 @@ namespace QCE {
 
         struct ShaderDescr {
             std::string shader_name{};
-            ShaderType  shader_type = ShaderType::E_ShaderType_UNKNOWN;
+            ShaderType  shader_type = ShaderType::E_UNKNOWN_SHADER;
         };
         std::vector<ShaderDescr> used_shaders{};
     };
