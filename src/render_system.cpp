@@ -17,7 +17,8 @@ namespace QCE {
             switch (config.render_type) {
             case RenderType::E_RENDER_DIRECTX12:
 #ifdef WIN32
-                m_render = std::make_unique<RenderDX12>(m_entities, config, HWND(config.window));
+                assert(m_window);
+                m_render = std::make_unique<RenderDX12>(m_entities, config, HWND(m_window));
 #else
                 assert(!"Current platform doesn't support DirectX 12");
                 m_config.render_type = RenderType::E_RENDER_UNKNOWN;

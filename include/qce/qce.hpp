@@ -53,14 +53,14 @@ namespace QCE {
         ErrorCode Setup(ApplicationConfig<AdditionalConfigs...>& config) {
             QCE_CRITICAL(m_graphics_output.Setup(config.graphics_output));
 
-            auto& render_config = std::get<RenderConfig>(config.systems_configs);
+            auto& render_system = m_systems.Get<RenderSystem>();
 #ifdef WIN32
-            render_config.window = m_graphics_output.GetHwnd();
+            render_system.SetWindow(m_graphics_output.GetHwnd());
 #else
-            render_config.window = nullptr;
+            render_system.SetWindow(nullptr);
 #endif
-            render_config.app = this;
 
+            auto& render_config = std::get<RenderConfig>(config.systems_configs);
             ResourceManager::Initialize(render_config.render_type);
 
             QCE_CRITICAL(m_systems.Setup(config.systems_configs));

@@ -18,6 +18,10 @@ namespace QCE {
             m_config.render_type = RenderType::E_RENDER_UNKNOWN;
         }
 
+        void SetWindow(void* window) {
+            m_window = window;
+        }
+
         ErrorCode Setup(const Config& config);
 
         ErrorCode Update() {
@@ -40,5 +44,7 @@ namespace QCE {
 
         Config m_config{};
         std::unique_ptr<RenderBase> m_render = nullptr;
+
+        void* m_window = nullptr;
     };
 }

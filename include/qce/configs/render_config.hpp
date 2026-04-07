@@ -24,9 +24,5 @@ namespace QCE {
             ShaderType  shader_type = ShaderType::E_ShaderType_UNKNOWN;
         };
         std::vector<ShaderDescr> used_shaders{};
-
-        // ancillary
-        void* window = nullptr;
-        void* app = nullptr;
     };
 }
