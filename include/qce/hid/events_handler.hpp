@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "configs_implementation.hpp"
+
 #include <qce/hid/events.hpp>
 #include <qce/objects/resource_manager.hpp>
 
@@ -14,21 +16,12 @@
 #include <memory>
 
 namespace QCE {
-#define CU_ENUMS_DESCRIPTION \
-    CU_BEGIN_ENUM(HidEventType) \
-        CU_ENUM_UNIT(E_HET_SINGLE) \
-        CU_ENUM_UNIT(E_HET_ACCORD) \
-        CU_ENUM_UNIT(E_HET_COMBO) \
-    CU_END_ENUM(HidEventType)
-#include <cu/enum-utils.hpp>
-#undef CU_ENUMS_DESCRIPTION
-
     struct HidEventDescriptor {
         HidEventDescriptor(HidEventType het, const std::string& hname) :
             type(het),
             handler(hname) {}
 
-        const HidEventType type = HidEventType::E_HidEventType_UNKNOWN;
+        const HidEventType type = HidEventType::E_HET_UNKNOWN;
         std::string handler = "";
     };
     struct HidSingleEvent : HidEventDescriptor {

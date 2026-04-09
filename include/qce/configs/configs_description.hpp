@@ -45,7 +45,12 @@ MJSON_OBJECT_BEGIN(
 MJSON_OBJECT_END(CameraConfig)
 
 // hid config
-// TODO
+MJSON_ENUM_BEGIN(HidEventType, "Hid Event Type", nullptr)
+    MJSON_ENUM_UNIT (E_HET_SINGLE,  single)
+    MJSON_ENUM_UNIT (E_HET_ACCORD,  accord)
+    MJSON_ENUM_UNIT (E_HET_COMBO,   combo)
+    MJSON_ENUM_VALUE(E_HET_UNKNOWN, unknown, -1)
+MJSON_ENUM_END(HidEventType)
 
 // movement config
 MJSON_OBJECT_BEGIN(
