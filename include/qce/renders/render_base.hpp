@@ -5,9 +5,10 @@
 
 #pragma once
 
+#include "configs_implementation.hpp"
+
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/objects/resource_manager.hpp>
-#include <qce/configs/render_config.hpp>
 #include <qce/ecs/ecs.hpp>
 
 #include <array>

@@ -69,14 +69,30 @@ MJSON_ENUM_BEGIN(ShaderType, "Shader Type", nullptr)
 //     E_MESH_SHADER
 MJSON_ENUM_END(ShaderType)
 
+MJSON_OBJECT_BEGIN(ShaderDescr, "Shader Description", nullptr)
+    MJSON_FIELD(std::string, shader_name, "Shader Name", nullptr)
+    MJSON_FIELD(ShaderType, shader_type, "Shader Type", nullptr)
+MJSON_OBJECT_END(ShaderDescr)
+
+MJSON_OBJECT_BEGIN(
+        RenderConfig,
+        "Render Configuration",
+        "Configuration of render system")
+    MJSON_FIELD(RenderType, render_type, "Render Type", nullptr)
+    MJSON_FIELD(int, width, "Width", nullptr)
+    MJSON_FIELD(int, height, "Height", nullptr)
+    MJSON_FIELD(std::vector<ShaderDescr>, used_shaders,
+                "Used shaders", "List of used shaders")
+MJSON_OBJECT_END(RenderConfig)
+
 #ifndef QCE_CONFIGS_ANCILLARY_H
 #define QCE_CONFIGS_ANCILLARY_H
 
 namespace QCE {
-    using ::RenderType;
-    using ::CameraType, ::CameraConfigUnit, ::CameraConfig;
+    using ::RenderType, ::CameraType, ::ShaderType;
+    using ::CameraConfigUnit, ::CameraConfig;
     using ::MovementConfig;
-    using ::ShaderType;
+    using ::ShaderDescr, ::RenderConfig;
 
 #  ifdef WIN32
     static constexpr auto DEFAULT_RENDER_TYPE = RenderType::E_RENDER_DIRECTX12;
