@@ -199,52 +199,67 @@ namespace QCE {
                (code <= HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE);
     }
 
-    static inline constexpr std::string hid_event_describe(HidEventCode code) noexcept {
-        std::string result = "HID Type: ";
+    static inline std::string hid_event_to_short_name(HidEventCode code) noexcept {
         if (hid_event_is_keyboard(code)) {
-            result += "KEYBOARD, key: ";
-
             assert(hid_event_is_button(code));
 
+            std::string result = "KEYBOARD_";
             if (hid_event_is_function_key(code)) {
                 int f_num = code - HidEventCode::E_HEC_KEYBOARD_FUNC_BEGIN + 1;
-                result += "F" + std::to_string(f_num);
+                return "KEYBOARD_F" + std::to_string(f_num);
             }
-            else if (hid_event_is_char_key(code)) {
-                result += char(code);
+            if (hid_event_is_char_key(code)) {
+                return std::string("KEYBOARD_") + char(code);
             }
-            else if (hid_event_is_numpad_key(code)) {
-                result += "NUMPAD " + 
+            if (hid_event_is_numpad_key(code)) {
+                return "KEYBOARD_NUMPAD_" + 
                     std::to_string(code - E_HEC_KEYBOARD_NUMPAD_START);
             }
-            else {
-                auto key_name = to_string(code) + sizeof("E_HEC_KEYBOARD");
-                result += key_name;
-            }
-        }
-        else if (hid_event_is_mouse(code)) {
-            result += "MOUSE, ";
-
-            if (hid_event_is_button(code)) {
-                result += "key: ";
-            }
-            auto key_name = to_string(code) + sizeof("E_HEC_MOUSE");
-            result += key_name;
-        }
-        else if (hid_event_is_gamepad(code)) {
-            result += "GAMEPAD, ";
-            if (hid_event_is_button(code)) {
-                result += "key: ";
-            }
-            auto key_name = to_string(code) + sizeof("E_HEC_GAMEPAD");
-            result += key_name;
-        }
-        else {
-            assert(!"Invalid device type");
-            return "Invalid device type";
         }
 
-        return result;
+        return to_string(code) + sizeof("E_HEC_");;
+    }
+
+    static inline HidEventCode hid_event_from_short_name(const char* short_name) noexcept {
+        constexpr auto KEYBOARD_PREFIX = "KEYBOARD_";
+        const auto KEYBOARD_PREFIX_LEN = std::strlen(KEYBOARD_PREFIX);
+        if (!std::strncmp(KEYBOARD_PREFIX, short_name, KEYBOARD_PREFIX_LEN)) {
+            const auto short_name_len = std::strlen(short_name);
+
+            // check char or number key
+            if (short_name_len == (KEYBOARD_PREFIX_LEN + 1)) {
+                return HidEventCode(short_name[KEYBOARD_PREFIX_LEN]);
+            }
+
+            if (short_name_len > (KEYBOARD_PREFIX_LEN + 1)) {
+                auto short_name_suffix = short_name + KEYBOARD_PREFIX_LEN;
+
+                // check functional key
+                constexpr auto FUNC_KEY_PREFIX = 'F';
+                if (FUNC_KEY_PREFIX == short_name_suffix[0]) {
+                    auto func_suffix = short_name_suffix + 1;
+                    auto f_num = std::strtol(func_suffix, nullptr, 10);
+                    if (f_num) {
+                        return HidEventCode(E_HEC_KEYBOARD_FUNC_BEGIN + f_num - 1); // F1-F12
+                    }
+                }
+
+                // check numpad key
+                constexpr auto NUMPAD_PREFIX = "NUMPAD_";
+                const auto NUMPAD_PREFIX_LEN = std::strlen(NUMPAD_PREFIX);
+                if (!std::strncmp(NUMPAD_PREFIX, short_name_suffix, NUMPAD_PREFIX_LEN)) {
+                    assert(short_name_len == (KEYBOARD_PREFIX_LEN + NUMPAD_PREFIX_LEN + 1));
+                    auto num_suffix = short_name_suffix + NUMPAD_PREFIX_LEN;
+                    assert(std::isdigit(num_suffix[0]));
+                    auto num_key = std::strtol(num_suffix, nullptr, 10);
+                    return HidEventCode(E_HEC_KEYBOARD_NUMPAD_START + num_key);
+                }
+            }
+        }
+
+        std::string str_code = "E_HEC_";
+        str_code += short_name;
+        return HidEventCode_from_string(str_code.c_str());
     }
 
     /// HidEvent structure and helpers
@@ -385,7 +400,7 @@ namespace QCE {
             result += "Device ID: " + std::to_string(device_id) + ", ";
         }
 
-        result += hid_event_describe(code);
+        result += hid_event_to_short_name(code);
         if (is_button) {
             bool is_down = hid_event.descriptor & HidEvent::IS_DOWN_MASK;
             result += is_down ? " DOWN" : " UP";
