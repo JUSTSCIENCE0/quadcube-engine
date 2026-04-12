@@ -165,9 +165,6 @@ set(QCE_ANCILLARY_IMPL
     src/about.cpp
 )
 
-set(QCE_CMAKE_UTILS
-    cmake/ResourcesUtils.cmake)
-
 if (QCE_ECS_ADD_COMPONENTS)
     if (NOT DEFINED QCE_ECS_ADDITIONAL_COMPONENTS_HEADER OR
             "${QCE_ECS_ADDITIONAL_COMPONENTS_HEADER}" STREQUAL "")
@@ -335,7 +332,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif()
 
 # QCE CMake utils
-include(${QCE_CMAKE_UTILS})
+include(cmake/ResourcesUtils.cmake)
+include(cmake/ConfigsUtils.cmake)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY INCLUDE_DIR_POSTFIX "qce")
 

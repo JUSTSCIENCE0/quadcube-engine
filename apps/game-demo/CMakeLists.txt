@@ -27,6 +27,9 @@ set(SHADERS_QCE
     simple_ps
 )
 use_qce_shaders(${PROJECT_NAME} ${SHADERS_QCE})
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    qce_copy_configs_directory(${PROJECT_NAME} "${CMAKE_CURRENT_LIST_DIR}/configs_win")
+endif() # Windows
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps")
 target_interface_group(common-utils)
