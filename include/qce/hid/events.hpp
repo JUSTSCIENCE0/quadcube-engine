@@ -217,7 +217,7 @@ namespace QCE {
             }
         }
 
-        return to_string(code) + sizeof("E_HEC_");;
+        return to_string(code) + sizeof("E_HEC");;
     }
 
     static inline HidEventCode hid_event_from_short_name(const char* short_name) noexcept {
