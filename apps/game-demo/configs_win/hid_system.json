@@ -1,0 +1,64 @@
+{
+    "event_descriptors": [
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveForward",
+            "hid_event_code_name": "KEYBOARD_W"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveLeft",
+            "hid_event_code_name": "KEYBOARD_A"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveBack",
+            "hid_event_code_name": "KEYBOARD_S"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveRight",
+            "hid_event_code_name": "KEYBOARD_D"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveForward",
+            "hid_event_code_name": "KEYBOARD_UP"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveLeft",
+            "hid_event_code_name": "KEYBOARD_LEFT"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveBack",
+            "hid_event_code_name": "KEYBOARD_DOWN"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveRight",
+            "hid_event_code_name": "KEYBOARD_RIGHT"
+        },
+        {
+           "type": "single",
+           "handler": "MainCamera.RotateUp",
+           "hid_event_code_name": "MOUSE_MOVE"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveForward",
+            "hid_event_code_name": "GAMEPAD_LSTICK_MOVE"
+        },
+        {
+           "type": "single",
+           "handler": "MainCamera.RotateUp",
+           "hid_event_code_name": "GAMEPAD_RSTICK_MOVE"
+        },
+        {
+            "type": "single",
+            "handler": "Exit",
+            "hid_event_code_name": "KEYBOARD_ESC"
+        }
+    ]
+}
