@@ -1,0 +1,28 @@
+{
+    "render_type": "directx12",
+    "cameras": [
+        {
+            "aspect": 1.7777777910232544,
+            "fov_rad": 1.0471975803375244,
+            "znear": 1.0,
+            "zfar": 1000.0,
+            "position": [
+                2.0,
+                2.0,
+                -2.0
+            ],
+            "target": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "up": [
+                0.0,
+                1.0,
+                0.0
+            ],
+            "camera_name": "MainCamera",
+            "camera_type": "first_person"
+        }
+    ]
+}

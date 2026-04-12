@@ -1,0 +1,15 @@
+{
+    "render_type": "directx12",
+    "width": 1280,
+    "height": 720,
+    "used_shaders": [
+        {
+            "shader_name": "simple",
+            "shader_type": "vertex"
+        },
+        {
+            "shader_name": "simple",
+            "shader_type": "pixel"
+        }
+    ]
+}
