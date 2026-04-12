@@ -51,10 +51,7 @@ int main(int argc, char* argv[]) {
         std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_ESC, "Exit"));
 
     auto& render_config = std::get<QCE::RenderConfig>(config.systems_configs);
-    render_config.used_shaders = {
-        { "simple", QCE::ShaderType::E_VERTEX_SHADER },
-        { "simple", QCE::ShaderType::E_PIXEL_SHADER }
-    };
+    render_config = QCE::DEFAULT_RENDER_CONFIG;
 
     QCE_CRITICAL(app.Setup(config));
 

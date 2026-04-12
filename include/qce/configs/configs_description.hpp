@@ -123,6 +123,16 @@ namespace QCE {
         .render_type = DEFAULT_RENDER_TYPE,
         .cameras = { DEFAULT_CAMERA_CONFIG_UNIT }
     };
+
+    static const RenderConfig DEFAULT_RENDER_CONFIG = {
+        .render_type = DEFAULT_RENDER_TYPE,
+        .width = 1280,
+        .height = 720,
+        .used_shaders = {
+            { "simple", QCE::ShaderType::E_VERTEX_SHADER },
+            { "simple", QCE::ShaderType::E_PIXEL_SHADER }
+        }
+    };
 }
 
 #endif // QCE_CONFIGS_ANCILLARY_H
