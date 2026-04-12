@@ -52,6 +52,34 @@ MJSON_ENUM_BEGIN(HidEventType, "Hid Event Type", nullptr)
     MJSON_ENUM_VALUE(E_HET_UNKNOWN, unknown, -1)
 MJSON_ENUM_END(HidEventType)
 
+#define MJSON_BASE_OBJECT_NAME HidEventDescriptor
+MJSON_POLYMORPHIC_OBJECT_BEGIN(
+        "HID Event Descriptor",
+        "HID Event Descriptor Base Class")
+    MJSON_BASE_OBJECT_BEGIN(HidEventType)
+      MJSON_BASE_OBJECT_FIELD(std::string, handler,
+        "Handler",
+        "Handler name for this event")
+    MJSON_BASE_OBJECT_END()
+    MJSON_DERIVED_OBJECT_BEGIN(HidSingleEvent, E_HET_SINGLE)
+      MJSON_DERIVED_OBJECT_FIELD(std::string, hid_event_code_name,
+        "HID Event Code Name",
+        "Name of the HID event code\n"
+        "Structure: <INPUT_DEVICE>_<EVENT>")
+    MJSON_DERIVED_OBJECT_END(HidSingleEvent)
+    // TODO - HidAccordEvent, HidComboEvent
+MJSON_POLYMORPHIC_OBJECT_END()
+#undef MJSON_BASE_OBJECT_NAME
+
+MJSON_OBJECT_BEGIN(
+        HidConfig,
+        "HID Config",
+        "Configuration of the HID system")
+    MJSON_FIELD(
+        std::vector<std::unique_ptr<HidEventDescriptor>>,
+        event_descriptors, nullptr, nullptr)
+MJSON_OBJECT_END(HidConfig)
+
 // movement config
 MJSON_OBJECT_BEGIN(
         MovementConfig,
@@ -94,10 +122,11 @@ MJSON_OBJECT_END(RenderConfig)
 #define QCE_CONFIGS_ANCILLARY_H
 
 namespace QCE {
-    using ::RenderType, ::CameraType, ::ShaderType;
+    using ::RenderType, ::CameraType, ::ShaderType, ::HidEventType;
     using ::CameraConfigUnit, ::CameraConfig;
     using ::MovementConfig;
     using ::ShaderDescr, ::RenderConfig;
+    using ::HidEventDescriptor, ::HidSingleEvent, ::HidConfig;
 
 #  ifdef WIN32
     static constexpr auto DEFAULT_RENDER_TYPE = RenderType::E_RENDER_DIRECTX12;

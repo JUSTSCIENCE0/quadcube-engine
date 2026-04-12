@@ -5,6 +5,72 @@
 
 #include <qce/qce.hpp>
 
+static const std::string HID_CONFIG = R"(
+{
+    "event_descriptors": [
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveForward",
+            "hid_event_code_name": "KEYBOARD_W"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveLeft",
+            "hid_event_code_name": "KEYBOARD_A"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveBack",
+            "hid_event_code_name": "KEYBOARD_S"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveRight",
+            "hid_event_code_name": "KEYBOARD_D"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveForward",
+            "hid_event_code_name": "KEYBOARD_UP"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveLeft",
+            "hid_event_code_name": "KEYBOARD_LEFT"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveBack",
+            "hid_event_code_name": "KEYBOARD_DOWN"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveRight",
+            "hid_event_code_name": "KEYBOARD_RIGHT"
+        },
+        {
+           "type": "single",
+           "handler": "MainCamera.RotateUp",
+           "hid_event_code_name": "MOUSE_MOVE"
+        },
+        {
+            "type": "single",
+            "handler": "MainCamera.MoveForward",
+            "hid_event_code_name": "GAMEPAD_LSTICK_MOVE"
+        },
+        {
+           "type": "single",
+           "handler": "MainCamera.RotateUp",
+           "hid_event_code_name": "GAMEPAD_RSTICK_MOVE"
+        },
+        {
+            "type": "single",
+            "handler": "Exit",
+            "hid_event_code_name": "KEYBOARD_ESC"
+        }
+    ]
+})";
+
 int main(int argc, char* argv[]) {
 #ifdef NDEBUG
     FreeConsole();
@@ -22,33 +88,12 @@ int main(int argc, char* argv[]) {
     camera_config = QCE::DEFAULT_CAMERA_CONFIG;
 
     auto& hid_events_config = std::get<QCE::HidConfig>(config.systems_configs);
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('W'), "MainCamera.MoveForward"));
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('A'), "MainCamera.MoveLeft"));
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('S'), "MainCamera.MoveBack"));
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode('D'), "MainCamera.MoveRight"));
-
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_UP, "MainCamera.MoveForward"));
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_LEFT, "MainCamera.MoveLeft"));
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_DOWN, "MainCamera.MoveBack"));
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_RIGHT, "MainCamera.MoveRight"));
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_GAMEPAD_LSTICK_MOVE, "MainCamera.MoveForward"));
-
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_MOUSE_MOVE, "MainCamera.RotateUp"));
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_GAMEPAD_RSTICK_MOVE, "MainCamera.RotateUp"));
-
-    hid_events_config.event_descriptors.emplace_back(
-        std::make_unique<QCE::HidSingleEvent>(QCE::HidEventCode::E_HEC_KEYBOARD_ESC, "Exit"));
+    std::string error_descr = "";
+    auto parse_result = macrojson::json_str_to_object(HID_CONFIG, hid_events_config, error_descr);
+    if (macrojson::E_MJSON_OK != parse_result) {
+        std::cerr << "HID Config parsing failed with error: " << error_descr << std::endl;
+        return -1;
+    }
 
     auto& render_config = std::get<QCE::RenderConfig>(config.systems_configs);
     render_config = QCE::DEFAULT_RENDER_CONFIG;

@@ -5,8 +5,10 @@
 
 #pragma once
 
+#include "configs_implementation.hpp"
+
 #include <qce/ecs/ecs.hpp>
-#include <qce/configs/hid_config.hpp>
+#include <qce/hid/events_handler.hpp>
 
 namespace QCE {
     class HidSystem {
@@ -29,9 +31,10 @@ namespace QCE {
                 switch (descr->type) {
                 case HidEventType::E_HET_SINGLE: {
                     auto single_descr = static_cast<const HidSingleEvent*>(descr.get());
-                    m_single_event_handlers[single_descr->code] =
+                    auto hid_event_code = hid_event_from_short_name(single_descr->hid_event_code_name.c_str());
+                    m_single_event_handlers[hid_event_code] =
                         ResourceManager::Get().Read<Command>(single_descr->handler).command;
-                    if (!m_single_event_handlers[single_descr->code])
+                    if (!m_single_event_handlers[hid_event_code])
                         return ErrorCode::E_RM_COMMAND_NOT_FOUND;
                     break;
                 }

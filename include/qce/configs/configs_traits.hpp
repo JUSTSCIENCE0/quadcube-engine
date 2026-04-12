@@ -6,6 +6,7 @@
 #pragma once
 
 struct CameraConfig;
+struct HidConfig;
 struct MovementConfig;
 struct RenderConfig;
 
@@ -24,7 +25,6 @@ namespace QCE {
         using System = CameraSystem;
     };
 
-    struct HidConfig;
     class HidSystem;
     template<>
     struct config_corresponding_system<HidConfig> {

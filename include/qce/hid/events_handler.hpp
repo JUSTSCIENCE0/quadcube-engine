@@ -16,23 +16,6 @@
 #include <memory>
 
 namespace QCE {
-    struct HidEventDescriptor {
-        HidEventDescriptor(HidEventType het, const std::string& hname) :
-            type(het),
-            handler(hname) {}
-
-        const HidEventType type = HidEventType::E_HET_UNKNOWN;
-        std::string handler = "";
-    };
-    struct HidSingleEvent : HidEventDescriptor {
-        HidSingleEvent(HidEventCode hec, const std::string& hname) :
-            HidEventDescriptor(HidEventType::E_HET_SINGLE, hname),
-            code(hec) {}
-
-        HidEventCode code = HidEventCode::E_HEC_END;
-    };
-    // TODO - HidAccordEvent, HidComboEvent
-
     struct HidDescribe : BaseCommand {
         HidDescribe() :
             BaseCommand("HidDescribe") {}

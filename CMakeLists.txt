@@ -71,8 +71,6 @@ set(QCE_INTERFACE
 )
 
 set(QCE_CONFIGS_HDRS
-    include/qce/configs/hid_config.hpp
-
     include/qce/configs/configs_description.hpp
     generated/configs_implementation.hpp
 
