@@ -4,6 +4,7 @@
 // License: MIT
 
 #include <qce/qce.hpp>
+#include <qce/ancillary/directories.hpp>
 
 int main(int argc, char* argv[]) {
 #ifdef NDEBUG
@@ -12,7 +13,7 @@ int main(int argc, char* argv[]) {
 
     auto& app = QCE::Application<>::Get();
 
-    const auto CONFIGS_DIR = app.m_systems.GetConfigsDirectory();
+    const auto CONFIGS_DIR = QCE::get_configs_directory();
     std::string error_descr = "";
     auto parse_result = macrojson::E_MJSON_OK;
 

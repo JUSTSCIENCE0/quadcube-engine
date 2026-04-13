@@ -79,30 +79,12 @@ namespace QCE {
             return ret_code;
         }
 
-        static std::filesystem::path GetConfigsDirectory() {
-            std::filesystem::path result = CU::get_current_module_directory();
-            result.append(CONFIGS_DIRECTORY);
-
-            if (!std::filesystem::exists(result) ||
-                !std::filesystem::is_directory(result)) {
-                std::error_code fs_error;
-                if (!std::filesystem::create_directory(result, fs_error)) {
-                    throw ErrorCodeException(E_ENG_BAD_CONFIGS_DIRECTORY);
-                }
-            }
-
-            return result;
-        }
-
     private:
         template<SystemT System>
         struct SystemStorage {
             System system;
             bool is_active = true;
         };
-
-        /// consts
-        static constexpr auto CONFIGS_DIRECTORY = "configs";
 
         std::tuple<SystemStorage<Systems>...> m_systems;
     };

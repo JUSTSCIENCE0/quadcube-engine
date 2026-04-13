@@ -160,6 +160,7 @@ set(QCE_ANCILLARY_HDRS
     include/qce/ancillary/about.hpp
     include/qce/ancillary/error_codes.hpp
     include/qce/ancillary/timer.hpp
+    include/qce/ancillary/directories.hpp
 )
 set(QCE_ANCILLARY_IMPL
     src/about.cpp
