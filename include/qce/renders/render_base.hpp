@@ -18,26 +18,6 @@
 #include <stdint.h>
 
 namespace QCE {
-#define CU_ENUMS_DESCRIPTION \
-    CU_BEGIN_ENUM(WindowMode) \
-        CU_ENUM_UNIT(E_REGULAR_WINDOW) \
-        CU_ENUM_UNIT(E_FRAMELESS_WINDOW) \
-        CU_ENUM_UNIT(E_FULLSCREEN_WINDOW) \
-    CU_END_ENUM(WindowMode)
-#include <cu/enum-utils.hpp>
-#undef CU_ENUMS_DESCRIPTION
-
-    struct GraphicsOutputConfig {
-        WindowMode mode = WindowMode::E_REGULAR_WINDOW;
-
-        int width = 1280;
-        int height = 720;
-
-        std::wstring caption = L"QCE Application";
-
-        bool is_first_person = false;
-    };
-
     class RenderBase {
     public:
         RenderBase(Entities& entities, RenderConfig initial_config) :

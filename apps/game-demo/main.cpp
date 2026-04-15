@@ -19,10 +19,17 @@ int main(int argc, char* argv[]) {
 
     QCE::ApplicationConfig<> config{
         .graphics_output {
-            .caption = L"QCE Game Demo",
+            .mode = WindowMode::E_REGULAR_WINDOW,
+            .width = 1280,
+            .height = 720,
+            .caption = "QCE Game Demo",
             .is_first_person = true
         }
     };
+
+    std::string graphics_output_json;
+    macrojson::object_to_json_str(config.graphics_output, graphics_output_json);
+    std::cout << graphics_output_json << std::endl;
 
     const auto camera_config_json_file = CONFIGS_DIR / "camera_system.json";
     auto& camera_config = std::get<QCE::CameraConfig>(config.systems_configs);

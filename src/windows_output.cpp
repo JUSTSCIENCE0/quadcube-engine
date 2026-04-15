@@ -6,6 +6,8 @@
 #include <qce/renders/windows_output.hpp>
 #include <qce/hid/win_events.hpp>
 
+#include <cu/string-utils.hpp>
+
 #include <windowsx.h>
 
 namespace QCE {
@@ -51,7 +53,8 @@ namespace QCE {
             return ErrorCode::E_WINNT_INVALID_WINDOW_RECT;
         }
 
-        m_hwnd = CreateWindow(wc.lpszClassName, m_config.caption.c_str(),
+        auto w_caption = CU::str_to_wstr_simple(m_config.caption);
+        m_hwnd = CreateWindow(wc.lpszClassName, w_caption.c_str(),
             WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, m_config.width, m_config.height, nullptr, nullptr, wc.hInstance, nullptr);
         if (!m_hwnd) {
             return ErrorCode::E_WINNT_CREATE_FAILED;

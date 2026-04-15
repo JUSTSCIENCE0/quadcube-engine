@@ -118,15 +118,31 @@ MJSON_OBJECT_BEGIN(
                 "Used shaders", "List of used shaders")
 MJSON_OBJECT_END(RenderConfig)
 
+// graphics output config
+MJSON_ENUM_BEGIN(WindowMode, "Window Mode", nullptr)
+    MJSON_ENUM_UNIT(E_REGULAR_WINDOW,    regular)
+    MJSON_ENUM_UNIT(E_FRAMELESS_WINDOW,  frameless)
+    MJSON_ENUM_UNIT(E_FULLSCREEN_WINDOW, fullscreen)
+MJSON_ENUM_END(WindowMode)
+
+MJSON_OBJECT_BEGIN(GraphicsOutputConfig, "Graphics Output Configuration", nullptr)
+    MJSON_FIELD(WindowMode, mode, "Window Mode", nullptr)
+    MJSON_FIELD(int, width, "Width", nullptr)
+    MJSON_FIELD(int, height, "Height", nullptr)
+    MJSON_FIELD(std::string, caption, "Caption", nullptr)
+    MJSON_FIELD(bool, is_first_person, "Is First Person", nullptr)
+MJSON_OBJECT_END(GraphicsOutputConfig)
+
 #ifndef QCE_CONFIGS_ANCILLARY_H
 #define QCE_CONFIGS_ANCILLARY_H
 
 namespace QCE {
-    using ::RenderType, ::CameraType, ::ShaderType, ::HidEventType;
+    using ::RenderType, ::CameraType, ::ShaderType, ::HidEventType, ::WindowMode;
     using ::CameraConfigUnit, ::CameraConfig;
     using ::MovementConfig;
     using ::ShaderDescr, ::RenderConfig;
     using ::HidEventDescriptor, ::HidSingleEvent, ::HidConfig;
+    using ::GraphicsOutputConfig;
 
 #  ifdef WIN32
     static constexpr auto DEFAULT_RENDER_TYPE = RenderType::E_RENDER_DIRECTX12;
