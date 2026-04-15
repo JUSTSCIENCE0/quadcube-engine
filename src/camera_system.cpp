@@ -4,8 +4,42 @@
 // License: MIT
 
 #include <qce/systems/camera_system.hpp>
+#include <qce/ancillary/directories.hpp>
 
 namespace QCE {
+    ErrorCode CameraSystem::Setup(Config config) {
+        m_config = config;
+
+        // TODO: remove existing cameras
+
+        for (const auto& camera : m_config.cameras) {
+            QCE_CRITICAL(AddCamera(camera));
+        }
+
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode CameraSystem::Setup() {
+        const auto CONFIGS_DIR = QCE::get_configs_directory();
+        const auto camera_config_json_file = CONFIGS_DIR / "camera_system.json";
+
+        std::string error_descr = "";
+        auto parse_result = macrojson::json_file_to_object(camera_config_json_file, m_config, error_descr);
+        if (macrojson::E_MJSON_OK != parse_result) {
+            // TODO: use log system
+            std::cout << error_descr << std::endl;
+            return ErrorCode::E_ENG_BAD_CONFIG_FILE;
+        }
+
+        // TODO: remove existing cameras
+
+        for (const auto& camera : m_config.cameras) {
+            QCE_CRITICAL(AddCamera(camera));
+        }
+
+        return ErrorCode::SUCCESS;
+    }
+
     ErrorCode CameraSystem::AddCamera(const CameraConfigUnit& config) {
         if (config.aspect <= 0.0f)
             return ErrorCode::E_ENG_WRONG_ASPECT;

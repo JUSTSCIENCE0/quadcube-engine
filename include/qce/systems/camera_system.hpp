@@ -5,10 +5,10 @@
 
 #pragma once
 
+#include "configs_implementation.hpp"
+
 #include <qce/ecs/ecs.hpp>
 #include <qce/hid/events_handler.hpp>
-
-#include "configs_implementation.hpp"
 
 namespace QCE {
     class CameraSystem {
@@ -19,17 +19,8 @@ namespace QCE {
             m_entities(entities)
         {}
 
-        ErrorCode Setup(Config config) {
-            m_config = config;
-
-            // TODO: remove existing cameras
-
-            for (const auto& camera : m_config.cameras) {
-                QCE_CRITICAL(AddCamera(camera));
-            }
-
-            return ErrorCode::SUCCESS;
-        }
+        ErrorCode Setup(Config config);
+        ErrorCode Setup();
 
         ErrorCode AddCamera(const CameraConfigUnit& config);
 

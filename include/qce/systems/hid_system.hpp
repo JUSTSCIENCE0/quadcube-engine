@@ -18,6 +18,7 @@ namespace QCE {
         explicit HidSystem(Entities&) {}
 
         ErrorCode Setup(const Config& config);
+        ErrorCode Setup();
 
         void PushEvent(const HidEvent& hid_event);
         void PushMouseMoveEvent(HidEvent hid_event);
