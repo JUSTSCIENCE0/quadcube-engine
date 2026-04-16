@@ -10,6 +10,20 @@
 #endif
 
 namespace QCE {
+    RenderSystem::RenderSystem(Entities& entities) :
+        m_entities(entities) {
+        m_config.render_type = RenderType::E_RENDER_UNKNOWN;
+    }
+
+    void RenderSystem::SetWindow(void* window) {
+        m_window = window;
+    }
+
+    ErrorCode RenderSystem::UseShader(const std::string& name, ShaderType type) {
+        assert(m_render);
+        return m_render->UseShader(name, type);
+    }
+
     ErrorCode RenderSystem::Setup(const Config& config) {
         if (m_config.render_type != config.render_type) {
             m_render.reset();
@@ -39,5 +53,15 @@ namespace QCE {
         }
 
         return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderSystem::Update() {
+        assert(m_render);
+        return m_render->Draw();
+    }
+
+    ErrorCode RenderSystem::UpdateScene() {
+        assert(m_render);
+        return m_render->UpdateScene();
     }
 }

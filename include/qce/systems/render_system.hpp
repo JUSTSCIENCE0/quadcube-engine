@@ -13,31 +13,14 @@ namespace QCE {
     public:
         using Config = RenderConfig;
 
-        explicit RenderSystem(Entities& entities) :
-            m_entities(entities) {
-            m_config.render_type = RenderType::E_RENDER_UNKNOWN;
-        }
+        explicit RenderSystem(Entities& entities);
 
-        void SetWindow(void* window) {
-            m_window = window;
-        }
-
+        void SetWindow(void* window);
         ErrorCode Setup(const Config& config);
+        ErrorCode UseShader(const std::string& name, ShaderType type);
 
-        ErrorCode Update() {
-            assert(m_render);
-            return m_render->Draw();
-        }
-
-        ErrorCode UpdateScene() {
-            assert(m_render);
-            return m_render->UpdateScene();
-        }
-
-        ErrorCode UseShader(const std::string& name, ShaderType type) {
-            assert(m_render);
-            return m_render->UseShader(name, type);
-        }
+        ErrorCode Update();
+        ErrorCode UpdateScene();
 
     private:
         Entities& m_entities;
