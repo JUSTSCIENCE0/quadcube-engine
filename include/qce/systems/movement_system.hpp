@@ -20,9 +20,6 @@ namespace QCE {
         ErrorCode Setup() {
             return ErrorCode::SUCCESS;
         }
-        ErrorCode Setup(const Config&) {
-            return ErrorCode::SUCCESS;
-        }
 
         ErrorCode Update();
 

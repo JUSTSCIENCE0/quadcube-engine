@@ -20,10 +20,6 @@ namespace QCE {
             return ErrorCode::E_ENG_BAD_CONFIG_FILE;
         }
 
-        return Setup(config);
-    }
-
-    ErrorCode HidSystem::Setup(const Config& config) {
         // register default handler
         QCE_CRITICAL(
             ResourceManager::Get().Add(Command{

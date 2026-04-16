@@ -12,50 +12,7 @@ int main(int argc, char* argv[]) {
 #endif
 
     auto& app = QCE::Application<>::Get();
-
-    const auto CONFIGS_DIR = QCE::get_configs_directory();
-    std::string error_descr = "";
-    auto parse_result = macrojson::E_MJSON_OK;
-
-    QCE::ApplicationConfig<> config{
-        .graphics_output {
-            .mode = WindowMode::E_REGULAR_WINDOW,
-            .width = 1280,
-            .height = 720,
-            .caption = "QCE Game Demo",
-            .is_first_person = true
-        }
-    };
-
-    std::string graphics_output_json;
-    macrojson::object_to_json_str(config.graphics_output, graphics_output_json);
-    std::cout << graphics_output_json << std::endl;
-
-    const auto camera_config_json_file = CONFIGS_DIR / "camera_system.json";
-    auto& camera_config = std::get<QCE::CameraConfig>(config.systems_configs);
-    parse_result = macrojson::json_file_to_object(camera_config_json_file, camera_config, error_descr);
-    if (macrojson::E_MJSON_OK != parse_result) {
-        std::cerr << "Camera Config parsing failed with error: " << error_descr << std::endl;
-        return -1;
-    }
-
-    const auto hid_events_config_json_file = CONFIGS_DIR / "hid_system.json";
-    auto& hid_events_config = std::get<QCE::HidConfig>(config.systems_configs);
-    parse_result = macrojson::json_file_to_object(hid_events_config_json_file, hid_events_config, error_descr);
-    if (macrojson::E_MJSON_OK != parse_result) {
-        std::cerr << "HID Config parsing failed with error: " << error_descr << std::endl;
-        return -1;
-    }
-
-    const auto render_config_json_file = CONFIGS_DIR / "render_system.json";
-    auto& render_config = std::get<QCE::RenderConfig>(config.systems_configs);
-    parse_result = macrojson::json_file_to_object(render_config_json_file, render_config, error_descr);
-    if (macrojson::E_MJSON_OK != parse_result) {
-        std::cerr << "Render Config parsing failed with error: " << error_descr << std::endl;
-        return -1;
-    }
-
-    QCE_CRITICAL(app.Setup(config));
+    QCE_CRITICAL(app.Setup<>());
 
     QCE::CuboidParams cuboid{
         .length = 1.0f,

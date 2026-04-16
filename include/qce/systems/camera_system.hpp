@@ -19,7 +19,6 @@ namespace QCE {
             m_entities(entities)
         {}
 
-        ErrorCode Setup(Config config);
         ErrorCode Setup();
 
         ErrorCode AddCamera(const CameraConfigUnit& config);

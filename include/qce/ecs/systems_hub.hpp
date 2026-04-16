@@ -48,16 +48,15 @@ namespace QCE {
         }
 
         template<typename... Configs>
-        ErrorCode Setup(const std::tuple<Configs...>& configs) {
+        ErrorCode Setup() {
             auto ret_code = ErrorCode::SUCCESS;
             ([&]() {
                 if (is_fail(ret_code)) {
                     return;
                 }
 
-                auto& config = std::get<Configs>(configs);
                 auto& storage = std::get<SystemStorage<config_corresponding_system_t<Configs>>>(m_systems);
-                ret_code = storage.system.Setup(config);
+                ret_code = storage.system.Setup();
                 QCE_SOFT(ret_code);
             }(), ...);
 

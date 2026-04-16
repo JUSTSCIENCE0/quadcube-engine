@@ -7,18 +7,6 @@
 #include <qce/ancillary/directories.hpp>
 
 namespace QCE {
-    ErrorCode CameraSystem::Setup(Config config) {
-        m_config = config;
-
-        // TODO: remove existing cameras
-
-        for (const auto& camera : m_config.cameras) {
-            QCE_CRITICAL(AddCamera(camera));
-        }
-
-        return ErrorCode::SUCCESS;
-    }
-
     ErrorCode CameraSystem::Setup() {
         const auto CONFIGS_DIR = QCE::get_configs_directory();
         const auto camera_config_json_file = CONFIGS_DIR / "camera_system.json";

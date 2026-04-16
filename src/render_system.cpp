@@ -38,10 +38,6 @@ namespace QCE {
             return ErrorCode::E_ENG_BAD_CONFIG_FILE;
         }
 
-        return Setup(config);
-    }
-
-    ErrorCode RenderSystem::Setup(const Config& config) {
         if (m_config.render_type != config.render_type) {
             m_render.reset();
 
