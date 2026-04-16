@@ -16,6 +16,7 @@ namespace QCE {
         explicit RenderSystem(Entities& entities);
 
         void SetWindow(void* window);
+        ErrorCode Setup();
         ErrorCode Setup(const Config& config);
         ErrorCode UseShader(const std::string& name, ShaderType type);
 

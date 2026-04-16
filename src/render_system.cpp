@@ -4,6 +4,7 @@
 // License: MIT
 
 #include <qce/systems/render_system.hpp>
+#include <qce/ancillary/directories.hpp>
 
 #ifdef WIN32
 #  include <qce/renders/render_dx12.hpp>
@@ -22,6 +23,22 @@ namespace QCE {
     ErrorCode RenderSystem::UseShader(const std::string& name, ShaderType type) {
         assert(m_render);
         return m_render->UseShader(name, type);
+    }
+
+    ErrorCode RenderSystem::Setup() {
+        const auto CONFIGS_DIR = QCE::get_configs_directory();
+        const auto render_config_json_file = CONFIGS_DIR / "render_system.json";
+
+        RenderConfig config;
+        std::string error_descr = "";
+        auto parse_result = macrojson::json_file_to_object(render_config_json_file, config, error_descr);
+        if (macrojson::E_MJSON_OK != parse_result) {
+            // TODO: use log system
+            std::cout << error_descr << std::endl;
+            return ErrorCode::E_ENG_BAD_CONFIG_FILE;
+        }
+
+        return Setup(config);
     }
 
     ErrorCode RenderSystem::Setup(const Config& config) {

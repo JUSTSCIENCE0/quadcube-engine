@@ -17,6 +17,9 @@ namespace QCE {
             m_entities(entities)
         {}
 
+        ErrorCode Setup() {
+            return ErrorCode::SUCCESS;
+        }
         ErrorCode Setup(const Config&) {
             return ErrorCode::SUCCESS;
         }
