@@ -27,7 +27,7 @@ namespace QCE {
         WinNtWindow& operator=(WinNtWindow&&) = delete;
         ~WinNtWindow() = default;
 
-        ErrorCode Setup(GraphicsOutputConfig config);
+        ErrorCode Setup();
 
         template <typename /*TODO: concept*/ TickConsumer>
         ErrorCode MainLoop(TickConsumer* app) {

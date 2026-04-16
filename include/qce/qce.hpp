@@ -51,7 +51,7 @@ namespace QCE {
 
         template <typename... AdditionalConfigs>
         ErrorCode Setup(ApplicationConfig<AdditionalConfigs...>& config) {
-            QCE_CRITICAL(m_graphics_output.Setup(config.graphics_output));
+            QCE_CRITICAL(m_graphics_output.Setup());
 
             auto& render_system = m_systems.Get<RenderSystem>();
 #ifdef WIN32
