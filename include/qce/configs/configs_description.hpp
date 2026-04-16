@@ -133,6 +133,11 @@ MJSON_OBJECT_BEGIN(GraphicsOutputConfig, "Graphics Output Configuration", nullpt
     MJSON_FIELD(bool, is_first_person, "Is First Person", nullptr)
 MJSON_OBJECT_END(GraphicsOutputConfig)
 
+// common config
+MJSON_OBJECT_BEGIN(CommonConfig, "Common Configuration", nullptr)
+    MJSON_FIELD(RenderType, render_type, "Render Type", nullptr)
+MJSON_OBJECT_END(CommonConfig)
+
 #ifndef QCE_CONFIGS_ANCILLARY_H
 #define QCE_CONFIGS_ANCILLARY_H
 
@@ -142,7 +147,7 @@ namespace QCE {
     using ::MovementConfig;
     using ::ShaderDescr, ::RenderConfig;
     using ::HidEventDescriptor, ::HidSingleEvent, ::HidConfig;
-    using ::GraphicsOutputConfig;
+    using ::GraphicsOutputConfig, ::CommonConfig;
 
 #  ifdef WIN32
     static constexpr auto DEFAULT_RENDER_TYPE = RenderType::E_RENDER_DIRECTX12;
