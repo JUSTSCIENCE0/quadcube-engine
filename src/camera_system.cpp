@@ -19,6 +19,16 @@ namespace QCE {
             return ErrorCode::E_ENG_BAD_CONFIG_FILE;
         }
 
+        const auto common_config_json_file = CONFIGS_DIR / "common_config.json";
+        CommonConfig common_config{};
+        parse_result = macrojson::json_file_to_object(common_config_json_file, common_config, error_descr);
+        if (macrojson::E_MJSON_OK != parse_result) {
+            // TODO: use log system
+            std::cout << error_descr << std::endl;
+            return ErrorCode::E_ENG_BAD_CONFIG_FILE;
+        }
+        m_render_type = common_config.render_type;
+
         // TODO: remove existing cameras
 
         for (const auto& camera : m_config.cameras) {
@@ -38,7 +48,7 @@ namespace QCE {
 
         //const auto cameras_count = m_entities.QueryEntities<CameraComponents>().size();
 
-        const bool is_LH_system = (m_config.render_type == RenderType::E_RENDER_DIRECTX12);
+        const bool is_LH_system = (m_render_type == RenderType::E_RENDER_DIRECTX12);
         const auto camera_entity_id = m_entities.AddEntity();
 
         if (config.camera_type != E_CAMERA_FIXED) {

@@ -8,34 +8,6 @@
 #endif
 
 namespace QCE {
-    std::shared_ptr<RenderBase> GetRender(
-            Entities& entities, RenderConfig config, void* window, void* app) {
-        static RenderType current_type = RenderType::E_RENDER_UNKNOWN;
-        static std::shared_ptr<RenderBase> result = nullptr;
-
-        if (current_type != config.render_type) {
-            current_type = config.render_type;
-            result.reset();
-
-            switch (config.render_type) {
-            case RenderType::E_RENDER_DIRECTX12:
-#ifdef WIN32
-                // unfortunatly we can't use std::make_shared for private constructor
-                result = std::shared_ptr<RenderBase>(new RenderDX12(entities, config, HWND(window)));
-#else
-                assert(!"Current platform doesn't support DirectX 12");
-                current_type = RenderType::E_RENDER_UNKNOWN;
-#endif
-                break;
-            default:
-                current_type = RenderType::E_RENDER_UNKNOWN;
-                break;
-            }
-        }
-
-        return result;
-    }
-
     ErrorCode RenderBase::UseShader(const std::string& name, ShaderType type) {
         if (ResourceManager::INVALID_RESOURCE_INDEX != m_shader_indeces[type])
             return ErrorCode::E_ENG_SHADER_ALREADY_SELECTED;

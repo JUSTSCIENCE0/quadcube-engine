@@ -12,9 +12,7 @@
 
 namespace QCE {
     RenderSystem::RenderSystem(Entities& entities) :
-        m_entities(entities) {
-        m_config.render_type = RenderType::E_RENDER_UNKNOWN;
-    }
+        m_entities(entities) {}
 
     void RenderSystem::SetWindow(void* window) {
         m_window = window;
@@ -38,21 +36,31 @@ namespace QCE {
             return ErrorCode::E_ENG_BAD_CONFIG_FILE;
         }
 
-        if (m_config.render_type != config.render_type) {
+        const auto common_config_json_file = CONFIGS_DIR / "common_config.json";
+        CommonConfig common_config{};
+        parse_result = macrojson::json_file_to_object(common_config_json_file, common_config, error_descr);
+        if (macrojson::E_MJSON_OK != parse_result) {
+            // TODO: use log system
+            std::cout << error_descr << std::endl;
+            return ErrorCode::E_ENG_BAD_CONFIG_FILE;
+        }
+
+        if (m_render_type != common_config.render_type) {
             m_render.reset();
 
-            switch (config.render_type) {
+            switch (common_config.render_type) {
             case RenderType::E_RENDER_DIRECTX12:
 #ifdef WIN32
                 assert(m_window);
                 m_render = std::make_unique<RenderDX12>(m_entities, config, HWND(m_window));
+                m_render_type = RenderType::E_RENDER_DIRECTX12;
 #else
                 assert(!"Current platform doesn't support DirectX 12");
-                m_config.render_type = RenderType::E_RENDER_UNKNOWN;
+                m_render_type = RenderType::E_RENDER_UNKNOWN;
 #endif
                 break;
             default:
-                m_config.render_type = RenderType::E_RENDER_UNKNOWN;
+                m_render_type = RenderType::E_RENDER_UNKNOWN;
                 assert(!"Unsupported render type");
                 break;
             }

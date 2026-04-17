@@ -84,7 +84,4 @@ namespace QCE {
     private:
         ErrorCode UpdateCpuScene();
     };
-
-    std::shared_ptr<RenderBase> GetRender(
-        Entities& entities, RenderConfig config, void* window, void* app);
 }

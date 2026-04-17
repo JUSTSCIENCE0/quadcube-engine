@@ -1,5 +1,4 @@
 {
-    "render_type": "directx12",
     "width": 1280,
     "height": 720,
     "used_shaders": [

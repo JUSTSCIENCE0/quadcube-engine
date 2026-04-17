@@ -25,7 +25,8 @@ namespace QCE {
     private:
         Entities& m_entities;
 
-        Config m_config{};
+        Config     m_config{};
+        RenderType m_render_type = RenderType::E_RENDER_UNKNOWN;
         std::unique_ptr<RenderBase> m_render = nullptr;
 
         void* m_window = nullptr;

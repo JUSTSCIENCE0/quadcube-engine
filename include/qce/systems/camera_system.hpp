@@ -73,7 +73,8 @@ namespace QCE {
 
         static constexpr float MIN_FOV_DEG = 30.0f;
 
-        Entities& m_entities;
-        Config    m_config{};
+        Entities&  m_entities;
+        Config     m_config{};
+        RenderType m_render_type = RenderType::E_RENDER_UNKNOWN;
     };
 }

@@ -39,7 +39,6 @@ MJSON_OBJECT_BEGIN(
         CameraConfig,
         "Camera Config",
         "Configuration of the camera system")
-    MJSON_FIELD(RenderType, render_type, "Render Type", nullptr)
     MJSON_FIELD(std::vector<CameraConfigUnit>, cameras,
                 "Cameras", "Description of all cameras")
 MJSON_OBJECT_END(CameraConfig)
@@ -111,7 +110,6 @@ MJSON_OBJECT_BEGIN(
         RenderConfig,
         "Render Configuration",
         "Configuration of render system")
-    MJSON_FIELD(RenderType, render_type, "Render Type", nullptr)
     MJSON_FIELD(int, width, "Width", nullptr)
     MJSON_FIELD(int, height, "Height", nullptr)
     MJSON_FIELD(std::vector<ShaderDescr>, used_shaders,
@@ -170,12 +168,10 @@ namespace QCE {
     };
 
     static const CameraConfig DEFAULT_CAMERA_CONFIG = {
-        .render_type = DEFAULT_RENDER_TYPE,
         .cameras = { DEFAULT_CAMERA_CONFIG_UNIT }
     };
 
     static const RenderConfig DEFAULT_RENDER_CONFIG = {
-        .render_type = DEFAULT_RENDER_TYPE,
         .width = 1280,
         .height = 720,
         .used_shaders = {
