@@ -28,28 +28,36 @@ namespace QCE {
             .id = std::move(name),
             .vertices = std::vector<vertex>{
                 {
-                    .position = { -l2, -w2, -h2 }
+                    .position = { -l2, -w2, -h2 },
+                    .color = WHITE
                 },
                 {
-                    .position = {  l2, -w2, -h2 }
+                    .position = {  l2, -w2, -h2 },
+                    .color = BLACK
                 },
                 {
-                    .position = {  l2, -w2,  h2 }
+                    .position = {  l2, -w2,  h2 },
+                    .color = RED
                 },
                 {
-                    .position = { -l2, -w2,  h2 }
+                    .position = { -l2, -w2,  h2 },
+                    .color = GREEN
                 },
                 {
-                    .position = { -l2,  w2, -h2 }
+                    .position = { -l2,  w2, -h2 },
+                    .color = BLUE
                 },
                 {
-                    .position = {  l2,  w2, -h2 }
+                    .position = {  l2,  w2, -h2 },
+                    .color = YELLOW
                 },
                 {
-                    .position = {  l2,  w2,  h2 }
+                    .position = {  l2,  w2,  h2 },
+                    .color = CYAN
                 },
                 {
-                    .position = { -l2,  w2,  h2 }
+                    .position = { -l2,  w2,  h2 },
+                    .color = MAGENTA
                 },
             },
             .indices = std::vector<index_t>{

@@ -95,6 +95,7 @@ set(QCE_MATH_HDRS
     include/qce/math/vector.hpp
     include/qce/math/matrix.hpp
     include/qce/math/math.hpp
+    include/qce/math/color.hpp
 )
 set(QCE_MATH_IMPL
     include/qce/math/impl/vector_def.hpp

@@ -8,15 +8,11 @@ cbuffer cbPerObject : register(b0) {
 };
 
 struct VertexOut {
-    float4 PosH : SV_POSITION;
+    float4 PosH  : SV_POSITION;
+    float4 Color : COLOR;
 };
 
 float4 main(VertexOut pin) : SV_Target {
-    float4 res;
-    res.r = 0.0f;
-    res.g = 0.0f;
-    res.b = 0.0f;
-    res.a = 1.0f;
-    return res;
+    return pin.Color;
 }
 

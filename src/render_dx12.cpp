@@ -534,7 +534,8 @@ namespace QCE {
     ErrorCode RenderDX12::CreateInputLayout() {
         // TODO: configurable IL from Shader's props
         m_input_layout = {
-            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
         };
 
         return ErrorCode::SUCCESS;
@@ -570,7 +571,7 @@ namespace QCE {
         pso_descr.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 
         // TODO: configurable SOLID/WIREFRAME in same scene
-        pso_descr.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+        // pso_descr.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
 
         pso_descr.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
         pso_descr.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);

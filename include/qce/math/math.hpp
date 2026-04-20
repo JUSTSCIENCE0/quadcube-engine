@@ -7,6 +7,7 @@
 
 #include <qce/math/vector.hpp>
 #include <qce/math/matrix.hpp>
+#include <qce/math/color.hpp>
 
 #include <cmath>
 #include <cstring>
@@ -59,6 +60,7 @@ namespace QCE {
 
     struct vertex {
         float3d position{};
+        color_rgba color{};
     };
 
     static inline float constexpr deg_to_rad(float deg) {
