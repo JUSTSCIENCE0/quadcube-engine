@@ -58,6 +58,8 @@ FetchContent_MakeAvailable(common-utils)
 set_property(TARGET common-utils PROPERTY FOLDER "externals")
 list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")
 
+find_package(ktx REQUIRED)
+
 # generate mjson headers from configs_description.h
 macrojson_generate_header_cu_ex(
     qce/configs/configs_description.hpp
@@ -309,6 +311,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
         common-utils
+        KTX::ktx
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
