@@ -87,10 +87,12 @@ set(QCE_OBJECTS_HDRS
     include/qce/objects/figures.hpp
     include/qce/objects/shader.hpp
     include/qce/objects/command.hpp
+    include/qce/objects/texture.hpp
 )
 set(QCE_OBJECTS_IMPL
     src/resource_manager.cpp
     src/figures.cpp
+    src/texture.cpp
 )
 
 set(QCE_MATH_HDRS
