@@ -80,6 +80,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_RM_RESOURCE_ALREADY_EXISTS) \
         CU_ENUM_UNIT(E_RM_TEXTURE_NOT_FOUND) \
         CU_ENUM_UNIT(E_RM_TEXTURE_LOAD_FAILED) \
+        CU_ENUM_UNIT(E_RM_TEXTURE_PARSING_FAILED) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -282,6 +283,9 @@ namespace QCE {
             break;
         case ErrorCode::E_RM_TEXTURE_LOAD_FAILED:
             result << "Resource Manager - Texture load failed";
+            break;
+        case ErrorCode::E_RM_TEXTURE_PARSING_FAILED:
+            result << "Resource Manager - Texture parsing failed";
             break;
 
         default:

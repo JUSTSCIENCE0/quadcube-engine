@@ -10,13 +10,20 @@
 #include <iostream>
 
 namespace QCE {
-    ErrorCode texture_load(const std::filesystem::path& path /*, Texture& texture*/) {
+    Texture2D::~Texture2D() {
+        if (ktx) {
+            ktxTexture2_Destroy(static_cast<ktxTexture2 *>(ktx));
+            ktx = nullptr;
+        }
+    }
+
+    ErrorCode texture2d_load(const std::filesystem::path& path, Texture2D& texture) {
         if (!std::filesystem::exists(path)) {
             return ErrorCode::E_RM_TEXTURE_NOT_FOUND;
         }
 
-        ktxTexture* ktx_texture = nullptr;
-        auto ktx_result = ktxTexture_CreateFromNamedFile(
+        ktxTexture2* ktx_texture = nullptr;
+        auto ktx_result = ktxTexture2_CreateFromNamedFile(
             path.string().c_str(), KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &ktx_texture);
         if (KTX_SUCCESS != ktx_result) {
             // TODO: use log system
@@ -24,12 +31,34 @@ namespace QCE {
             return ErrorCode::E_RM_TEXTURE_LOAD_FAILED;
         }
 
-        std::cout << "Levels: "  << ktx_texture->numLevels << "\n";
-        std::cout << "Layers: "  << ktx_texture->numLayers << "\n";
-        std::cout << "Faces: "   << ktx_texture->numFaces  << "\n";
-        std::cout << "IsArray: " << ktx_texture->isArray   << "\n";
+        // TODO: check if format is supported
+        texture.format = static_cast<TextureFormat>(ktx_texture->vkFormat);
 
-        ktxTexture_Destroy(ktx_texture);
+        texture.base_width  = ktx_texture->baseWidth;
+        texture.base_height = ktx_texture->baseHeight;
+
+        texture.mip_levels.reserve(ktx_texture->numLevels);
+        for (uint32_t level = 0; level < ktx_texture->numLevels; level++) {
+            auto& mip_level = texture.mip_levels.emplace_back();
+            mip_level.width  = std::max(1u, ktx_texture->baseWidth  >> level);
+            mip_level.height = std::max(1u, ktx_texture->baseHeight >> level);
+            mip_level.row_pitch = ((mip_level.width + 3) / 4) * 16 ;
+            mip_level.slice_pitch = mip_level.row_pitch * ((mip_level.height + 3) / 4);
+
+            ktx_size_t offset;
+            ktx_result = ktxTexture_GetImageOffset(ktxTexture(ktx_texture), level, 0, 0, &offset);
+             if (KTX_SUCCESS != ktx_result) {
+                // TODO: use log system
+                std::cerr << "KTX: Failed to get MIP Level #" << level
+                          << " offset. Error: " << ktxErrorString(ktx_result) << '\n';
+
+                ktxTexture2_Destroy(ktx_texture);
+                return ErrorCode::E_RM_TEXTURE_PARSING_FAILED;
+            }
+            mip_level.data = ktx_texture->pData + offset;
+        }
+
+        texture.ktx = ktx_texture;
         return ErrorCode::SUCCESS;
     }
 }
