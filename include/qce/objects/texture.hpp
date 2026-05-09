@@ -16,11 +16,19 @@ namespace QCE {
         CU_VALUED_ENUM_UNIT(E_TEXFMT_BC7_UNORM_BLOCK, 145) \
         CU_VALUED_ENUM_UNIT(E_TEXFMT_BC7_SRGB_BLOCK, 146) \
     CU_END_ENUM(TextureFormat)
+// TODO: enum TextureType
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
 
     struct Texture2D {
+        Texture2D() = default;
+        Texture2D(const Texture2D&) = delete;
+        Texture2D& operator=(const Texture2D&) = delete;
+        Texture2D(Texture2D&& other) noexcept;
+        Texture2D& operator=(Texture2D&& other) noexcept;
         ~Texture2D();
+
+        std::string id{};
 
         TextureFormat format = TextureFormat::E_TEXFMT_UNKNOWN;
         uint32_t base_width  = 0;

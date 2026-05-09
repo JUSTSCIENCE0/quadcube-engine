@@ -20,6 +20,8 @@ int main(int argc, char* argv[]) {
         .height = 1.0f
     };
     QCE_CRITICAL(app.Resources().AddFigure(cuboid, "cuboid"));
+    QCE_CRITICAL(app.Resources().AddTexture("squares",
+        "D:\\Project\\quadcube-engine\\apps\\game-demo\\assets\\textures\\squares.bc7.ktx2"));
 
     QCE::MeshComponent cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")

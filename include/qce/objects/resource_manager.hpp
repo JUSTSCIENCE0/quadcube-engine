@@ -7,6 +7,7 @@
 
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/objects/shader.hpp>
+#include <qce/objects/texture.hpp>
 #include <qce/objects/figures.hpp>
 #include <qce/objects/command.hpp>
 
@@ -55,6 +56,12 @@ namespace QCE {
         ErrorCode AddShader(
             const std::string& shader_name,
             ShaderType shader_type);
+
+        ErrorCode AddTexture(
+            const std::string& texture_name,
+            const std::filesystem::path& file_name
+            /*TODO: TextureType texture_type = TextureType::TEXTURE_2D*/
+        );
 
         template <Resource ResourceT>
         ErrorCode Add(ResourceT resource) {
@@ -212,6 +219,7 @@ namespace QCE {
         Resources<
             Mesh,
             Shader,
+            Texture2D,
             Command
         > m_storages{};
     };

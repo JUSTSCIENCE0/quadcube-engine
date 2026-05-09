@@ -10,6 +10,29 @@
 #include <iostream>
 
 namespace QCE {
+    Texture2D::Texture2D(Texture2D&& other) noexcept :
+        id(std::move(other.id)),
+        format(other.format),
+        base_width(other.base_width),
+        base_height(other.base_height),
+        mip_levels(std::move(other.mip_levels)),
+        ktx(other.ktx) {
+        other.ktx = nullptr;
+    }
+
+    Texture2D& Texture2D::operator=(Texture2D&& other) noexcept {
+        if (this != &other) {
+            id = std::move(other.id);
+            format = other.format;
+            base_width = other.base_width;
+            base_height = other.base_height;
+            mip_levels = std::move(other.mip_levels);
+            ktx = other.ktx;
+            other.ktx = nullptr;
+        }
+        return *this;
+    }
+
     Texture2D::~Texture2D() {
         if (ktx) {
             ktxTexture2_Destroy(static_cast<ktxTexture2 *>(ktx));

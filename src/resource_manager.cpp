@@ -54,4 +54,15 @@ namespace QCE {
 
         return Add(shader);
     }
+
+    ErrorCode ResourceManager::AddTexture(
+            const std::string& texture_name,
+            const std::filesystem::path& file_name
+            /*TODO: TextureType texture_type = TextureType::TEXTURE_2D*/) {
+        QCE::Texture2D texture{};
+        texture.id = texture_name;
+        QCE_CRITICAL(QCE::texture2d_load(file_name, texture));
+
+        return Add(std::move(texture));
+    }
 }
