@@ -117,9 +117,6 @@ namespace QCE {
         static inline std::unique_ptr<ResourceManager> m_instance = nullptr;
 
         /// types
-        template <typename T>
-        using Storage = std::unordered_map<std::string, std::shared_ptr<T>>;
-
         template <Resource ResourceT>
         class ResourceStorage {
         public:
