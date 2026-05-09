@@ -29,35 +29,43 @@ namespace QCE {
             .vertices = std::vector<vertex>{
                 {
                     .position = { -l2, -w2, -h2 },
-                    .color = WHITE
+                    .color = WHITE,
+                    .texture_coordinates = { 0.0f, 1.0f }
                 },
                 {
                     .position = {  l2, -w2, -h2 },
-                    .color = BLACK
+                    .color = BLACK,
+                    .texture_coordinates = { 1.0f, 1.0f }
                 },
                 {
                     .position = {  l2, -w2,  h2 },
-                    .color = RED
+                    .color = RED,
+                    .texture_coordinates = { 1.0f, 1.0f }
                 },
                 {
                     .position = { -l2, -w2,  h2 },
-                    .color = GREEN
+                    .color = GREEN,
+                    .texture_coordinates = { 0.0f, 1.0f }
                 },
                 {
                     .position = { -l2,  w2, -h2 },
-                    .color = BLUE
+                    .color = BLUE,
+                    .texture_coordinates = { 0.0f, 0.0f }
                 },
                 {
                     .position = {  l2,  w2, -h2 },
-                    .color = YELLOW
+                    .color = YELLOW,
+                    .texture_coordinates = { 1.0f, 1.0f }
                 },
                 {
                     .position = {  l2,  w2,  h2 },
-                    .color = CYAN
+                    .color = CYAN,
+                    .texture_coordinates = { 1.0f, 1.0f }
                 },
                 {
                     .position = { -l2,  w2,  h2 },
-                    .color = MAGENTA
+                    .color = MAGENTA,
+                    .texture_coordinates = { 0.0f, 0.0f }
                 },
             },
             .indices = std::vector<index_t>{
