@@ -24,64 +24,63 @@ namespace QCE {
         float w2 = width / 2.0f;
         float h2 = height / 2.0f;
 
-        Mesh result{
-            .id = std::move(name),
-            .vertices = std::vector<vertex>{
-                {
-                    .position = { -l2, -w2, -h2 },
-                    .color = WHITE,
-                    .texture_coordinates = { 0.0f, 1.0f }
-                },
-                {
-                    .position = {  l2, -w2, -h2 },
-                    .color = BLACK,
-                    .texture_coordinates = { 1.0f, 1.0f }
-                },
-                {
-                    .position = {  l2, -w2,  h2 },
-                    .color = RED,
-                    .texture_coordinates = { 1.0f, 1.0f }
-                },
-                {
-                    .position = { -l2, -w2,  h2 },
-                    .color = GREEN,
-                    .texture_coordinates = { 0.0f, 1.0f }
-                },
-                {
-                    .position = { -l2,  w2, -h2 },
-                    .color = BLUE,
-                    .texture_coordinates = { 0.0f, 0.0f }
-                },
-                {
-                    .position = {  l2,  w2, -h2 },
-                    .color = YELLOW,
-                    .texture_coordinates = { 1.0f, 1.0f }
-                },
-                {
-                    .position = {  l2,  w2,  h2 },
-                    .color = CYAN,
-                    .texture_coordinates = { 1.0f, 1.0f }
-                },
-                {
-                    .position = { -l2,  w2,  h2 },
-                    .color = MAGENTA,
-                    .texture_coordinates = { 0.0f, 0.0f }
-                },
+        Mesh result{};
+        result.id = std::move(name),
+        result.vertices = std::vector<vertex>{
+            {
+                .position = { -l2, -w2, -h2 },
+                .color = WHITE,
+                .texture_coordinates = { 0.0f, 1.0f }
             },
-            .indices = std::vector<index_t>{
-                0, 1, 2,
-                0, 2, 3,
-                1, 5, 6,
-                1, 6, 2,
-                3, 2, 6,
-                3, 6, 7,
-                4, 0, 3,
-                4, 3, 7,
-                4, 5, 1,
-                4, 1, 0,
-                5, 4, 7,
-                5, 7, 6
-            }
+            {
+                .position = {  l2, -w2, -h2 },
+                .color = BLACK,
+                .texture_coordinates = { 1.0f, 1.0f }
+            },
+            {
+                .position = {  l2, -w2,  h2 },
+                .color = RED,
+                .texture_coordinates = { 1.0f, 1.0f }
+            },
+            {
+                .position = { -l2, -w2,  h2 },
+                .color = GREEN,
+                .texture_coordinates = { 0.0f, 1.0f }
+            },
+            {
+                .position = { -l2,  w2, -h2 },
+                .color = BLUE,
+                .texture_coordinates = { 0.0f, 0.0f }
+            },
+            {
+                .position = {  l2,  w2, -h2 },
+                .color = YELLOW,
+                .texture_coordinates = { 1.0f, 1.0f }
+            },
+            {
+                .position = {  l2,  w2,  h2 },
+                .color = CYAN,
+                .texture_coordinates = { 1.0f, 1.0f }
+            },
+            {
+                .position = { -l2,  w2,  h2 },
+                .color = MAGENTA,
+                .texture_coordinates = { 0.0f, 0.0f }
+            },
+        };
+        result.indices = std::vector<index_t>{
+            0, 1, 2,
+            0, 2, 3,
+            1, 5, 6,
+            1, 6, 2,
+            3, 2, 6,
+            3, 6, 7,
+            4, 0, 3,
+            4, 3, 7,
+            4, 5, 1,
+            4, 1, 0,
+            5, 4, 7,
+            5, 7, 6
         };
 
         return result;

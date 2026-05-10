@@ -35,7 +35,7 @@ namespace QCE {
             !mesh.indices.empty() &&
             !mesh.vertices.empty());
 
-        return Add(mesh);
+        return Add(std::move(mesh));
     }
 
     ErrorCode ResourceManager::AddShader(
@@ -52,7 +52,7 @@ namespace QCE {
             )
         );
 
-        return Add(shader);
+        return Add(std::move(shader));
     }
 
     ErrorCode ResourceManager::AddTexture(

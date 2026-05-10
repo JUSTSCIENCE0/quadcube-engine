@@ -29,6 +29,10 @@ namespace QCE {
             std::remove_cvref_t<decltype(t.id)>,
             std::string
         >;
+        requires !std::is_copy_constructible_v<T>;
+        requires !std::is_copy_assignable_v<T>;
+        requires std::is_move_constructible_v<T>;
+        requires std::is_move_assignable_v<T>;
     };
 
     class ResourceManager final {

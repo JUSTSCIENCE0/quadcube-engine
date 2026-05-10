@@ -18,6 +18,12 @@
 
 namespace QCE {
     struct Shader {
+        Shader() = default;
+        Shader(const Shader& other) = delete;
+        Shader& operator=(const Shader& other) = delete;
+        Shader(Shader&& other) noexcept = default;
+        Shader& operator=(Shader&& other) noexcept = default;
+
         std::string id{};
         ShaderType type = ShaderType::E_UNKNOWN_SHADER;
         std::filesystem::path bytecode_file{};

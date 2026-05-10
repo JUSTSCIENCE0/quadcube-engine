@@ -40,8 +40,16 @@ namespace QCE {
     };
 
     struct Command {
-        std::string id;
-        std::shared_ptr<BaseCommand> command;
+        Command(std::string name, std::shared_ptr<BaseCommand> cmd) :
+            command(std::move(cmd)),
+            id(std::move(name)) {}
+        Command(const Command&) = delete;
+        Command& operator=(const Command&) = delete;
+        Command(Command&& other) noexcept = default;
+        Command& operator=(Command&& other) noexcept = default;
+
+        std::string id{};
+        std::shared_ptr<BaseCommand> command{};
     };
 
     // default commands

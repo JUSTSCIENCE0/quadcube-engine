@@ -19,6 +19,12 @@ namespace QCE {
     };
 
     struct Mesh {
+        Mesh() = default;
+        Mesh(const Mesh&) = delete;
+        Mesh& operator=(const Mesh&) = delete;
+        Mesh(Mesh&&) noexcept = default;
+        Mesh& operator=(Mesh&&) noexcept = default;
+
         std::string          id{};
         std::vector<vertex>  vertices{};
         std::vector<index_t> indices{};
