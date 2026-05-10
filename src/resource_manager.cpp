@@ -56,9 +56,9 @@ namespace QCE {
     }
 
     ErrorCode ResourceManager::AddTexture(
-            const std::string& texture_name,
-            const std::filesystem::path& file_name
+            const std::string& texture_name
             /*TODO: TextureType texture_type = TextureType::TEXTURE_2D*/) {
+        auto file_name = m_textures_directory / (texture_name + "." + TEXTURE_CONTAINER);
         QCE::Texture2D texture{};
         texture.id = texture_name;
         QCE_CRITICAL(QCE::texture2d_load(file_name, texture));
