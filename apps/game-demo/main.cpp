@@ -25,6 +25,9 @@ int main(int argc, char* argv[]) {
     QCE::MeshComponent cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
+    QCE::MaterialComponent material_component{
+        .cpu_albedo_index = app.Resources().GetIndex<QCE::Texture2D>("squares.bc7")
+    };
     auto entity0 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, cuboid_mesh_component));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0,

@@ -18,6 +18,7 @@
 #include <qce/components/camera.hpp>
 #include <qce/components/movement.hpp>
 #include <qce/components/transform.hpp>
+#include <qce/components/material.hpp>
 
 #include <qce/objects/mesh.hpp>
 
@@ -29,6 +30,7 @@ namespace QCE {
             // Components
             EntityName,
             MeshComponent,
+            MaterialComponent,
             TransformComponents,
             TransformMatrix,
             Movement,

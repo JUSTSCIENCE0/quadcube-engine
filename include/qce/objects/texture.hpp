@@ -7,7 +7,10 @@
 
 #include <qce/ancillary/error_codes.hpp>
 
+#include <stdint.h>
+
 #include <filesystem>
+#include <optional>
 
 namespace QCE {
 #define CU_ENUMS_DESCRIPTION \
@@ -43,6 +46,7 @@ namespace QCE {
         };
         std::vector<MipLevel> mip_levels;
 
+        std::optional<size_t> gpu_texture_index = std::nullopt;
         void* ktx = nullptr;
     };
 
