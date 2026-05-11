@@ -31,14 +31,22 @@ namespace QCE {
         template<typename T> using MsPtr = Microsoft::WRL::ComPtr<T>;
         struct RenderSceneGPU {
             MsPtr<ID3D12Resource> vertex_buffer = nullptr;
-            MsPtr<ID3D12Resource> index_buffer = nullptr;
+            MsPtr<ID3D12Resource> index_buffer  = nullptr;
 
             MsPtr<ID3D12Resource> vertex_buffer_uploader = nullptr;
-            MsPtr<ID3D12Resource> index_buffer_uploader = nullptr;
+            MsPtr<ID3D12Resource> index_buffer_uploader  = nullptr;
 
             std::unique_ptr<Dx12UploadBuffer<UnitConstants>> m_units_constant_buffers{};
 
             constexpr static DXGI_FORMAT INDEX_FORMAT = dx12_get_index_format();
+
+            struct Texture {
+                DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;
+
+                MsPtr<ID3D12Resource> buffer   = nullptr;
+                MsPtr<ID3D12Resource> uploader = nullptr;
+            };
+            std::vector<Texture> textures{};
 
             void DisposeUploaders() {
                 vertex_buffer_uploader = nullptr;
@@ -72,6 +80,7 @@ namespace QCE {
 
         // Utils
         ErrorCode FlushCommandQueue();
+        ErrorCode LoadTexture(Texture2D& texture);
         D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView() const {
             return m_dsv_heap->GetCPUDescriptorHandleForHeapStart();
         }

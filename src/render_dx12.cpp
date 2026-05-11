@@ -590,4 +590,16 @@ namespace QCE {
 
         return ErrorCode::SUCCESS;
     }
+
+    ErrorCode RenderDX12::LoadTexture(Texture2D& texture) {
+        RenderSceneGPU::Texture result;
+        result.format = dx12_get_texture_format(texture.format);
+        if (DXGI_FORMAT_UNKNOWN == result.format)
+            return ErrorCode::E_DX12_UNSUPPORTED_TEXTURE_FORMAT;
+
+        // TODO
+
+        m_scene_gpu.textures.emplace_back(std::move(result));
+        return ErrorCode::SUCCESS;
+    }
 }

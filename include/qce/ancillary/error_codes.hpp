@@ -52,6 +52,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_DX12_SERIALIZE_ROOT_SIGNATURE_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_ROOT_SIGNATURE_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_PSO_FAILED) \
+        CU_ENUM_UNIT(E_DX12_UNSUPPORTED_TEXTURE_FORMAT) \
         CU_VALUED_ENUM_UNIT(GROUP_VULKAN,           0x40000) \
         CU_VALUED_ENUM_UNIT(GROUP_ENGINE,           0x50000) \
         CU_ENUM_UNIT(E_ENG_FILE_OPEN_FAILED) \
@@ -202,6 +203,9 @@ namespace QCE {
             break;
         case ErrorCode::E_DX12_CREATE_PSO_FAILED:
             result << "DX12 - Create Graphics Pipeline State Failed";
+            break;
+        case ErrorCode::E_DX12_UNSUPPORTED_TEXTURE_FORMAT:
+            result << "DX12 - Unsupported texture format";
             break;
 
         /* Group Vulkan*/

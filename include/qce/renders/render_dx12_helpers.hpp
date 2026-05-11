@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/ancillary/error_codes.hpp>
+#include <qce/objects/texture.hpp>
 
 #include <d3d12.h>
 #include <wrl.h>
@@ -32,6 +33,18 @@ namespace QCE {
                 QCE_INDEX_WIDTH == IndexWidth::INDEX_WIDTH_4,
                 "Unknown index format");
             return DXGI_FORMAT_UNKNOWN;
+        }
+    }
+
+    constexpr static DXGI_FORMAT dx12_get_texture_format(TextureFormat format) {
+        switch (format) {
+            case TextureFormat::E_TEXFMT_BC7_UNORM_BLOCK:
+                return DXGI_FORMAT_BC7_UNORM;
+            case TextureFormat::E_TEXFMT_BC7_SRGB_BLOCK:
+                return DXGI_FORMAT_BC7_UNORM_SRGB;
+            default:
+                assert(!"Unsupported texture format");
+                return DXGI_FORMAT_UNKNOWN;
         }
     }
 
