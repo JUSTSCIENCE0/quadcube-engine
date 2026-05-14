@@ -419,7 +419,22 @@ namespace QCE {
         QCE_CRITICAL(CreateConstantBuffers());
         QCE_CRITICAL(CreateRootSignature());
         QCE_CRITICAL(CreateInputLayout());
-        
+
+        QCE_CRITICAL(UploadMeshes());
+        QCE_CRITICAL(UploadTextures());
+
+        QCE_CRITICAL(CreatePSO());
+
+        hr = m_cmd_list->Close();
+        if (FAILED(hr))
+            return ErrorCode::E_DX12_CLOSE_COMMAND_LIST_FAILED;
+
+        ID3D12CommandList* cmds_lists[] = { m_cmd_list.Get() };
+        m_cmd_queue->ExecuteCommandLists(_countof(cmds_lists), cmds_lists);
+        return FlushCommandQueue();
+    }
+
+    ErrorCode RenderDX12::UploadMeshes() {
         m_scene_gpu.DisposeUploaders();
 
         QCE_CRITICAL(dx12_create_default_buffer(
@@ -438,15 +453,40 @@ namespace QCE {
             m_scene_gpu.index_buffer,
             m_scene_gpu.index_buffer_uploader));
 
-        QCE_CRITICAL(CreatePSO());
+        return ErrorCode::SUCCESS;
+    }
 
-        hr = m_cmd_list->Close();
-        if (FAILED(hr))
-            return ErrorCode::E_DX12_CLOSE_COMMAND_LIST_FAILED;
+    ErrorCode RenderDX12::UploadTextures() {
+        auto entities = m_entities.QueryEntities<
+            MaterialComponent>();
 
-        ID3D12CommandList* cmds_lists[] = { m_cmd_list.Get() };
-        m_cmd_queue->ExecuteCommandLists(_countof(cmds_lists), cmds_lists);
-        return FlushCommandQueue();;
+        // reset
+        m_scene_gpu.textures.clear();
+        for (auto& entity : entities) {
+            auto& material = m_entities.GetComponent<MaterialComponent>(entity);
+
+            if (material.cpu_albedo_index.has_value()) {
+                auto& albedo = ResourceManager::Get().Read<Texture2D>(material.cpu_albedo_index.value());
+                albedo.gpu_texture_index.reset();
+            }
+        }
+
+        for (auto& entity : entities) {
+            auto& material = m_entities.GetComponent<MaterialComponent>(entity);
+
+            if (material.cpu_albedo_index.has_value()) {
+                auto& albedo = ResourceManager::Get().Read<Texture2D>(material.cpu_albedo_index.value());
+                if (!albedo.gpu_texture_index.has_value()) {
+                    auto index = m_scene_gpu.textures.size();
+                    QCE_CRITICAL(LoadTexture(albedo));
+                    albedo.gpu_texture_index = index;
+                }
+
+                material.gpu_albedo_index = albedo.gpu_texture_index;
+            }
+        }
+
+        return ErrorCode::SUCCESS;
     }
 
     ErrorCode RenderDX12::CreateRootSignature() {
@@ -597,7 +637,72 @@ namespace QCE {
         if (DXGI_FORMAT_UNKNOWN == result.format)
             return ErrorCode::E_DX12_UNSUPPORTED_TEXTURE_FORMAT;
 
-        // TODO
+        if (texture.base_width  > D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION ||
+            texture.base_height > D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION)
+            return ErrorCode::E_DX12_UNSUPPORTED_TEXTURE_FORMAT;
+
+        D3D12_RESOURCE_DESC desc = {};
+        desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+        desc.Alignment = 0;
+        desc.Width  = texture.base_width;
+        desc.Height = texture.base_height;
+        desc.DepthOrArraySize = 1;
+        desc.MipLevels = static_cast<UINT16>(texture.mip_levels.size());
+        desc.Format = result.format;
+        desc.SampleDesc.Count   = 1;
+        desc.SampleDesc.Quality = 0;
+        desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+        desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+        auto heap_props1 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+        if (FAILED(m_d3d_device->CreateCommittedResource(
+            &heap_props1,
+            D3D12_HEAP_FLAG_NONE,
+            &desc,
+            D3D12_RESOURCE_STATE_COMMON,
+            nullptr,
+            IID_PPV_ARGS(result.buffer.GetAddressOf())))) {
+            return ErrorCode::E_DX12_CREATE_DEFAULT_BUFFER_RESOURCE_FAILED;
+        }
+
+        std::vector<D3D12_SUBRESOURCE_DATA> subresources;
+        subresources.reserve(texture.mip_levels.size());
+        for (const auto& mip : texture.mip_levels) {
+            auto& sr = subresources.emplace_back();
+            sr.pData = mip.data;
+            sr.RowPitch = mip.row_pitch;
+            sr.SlicePitch = mip.slice_pitch;
+        }
+
+        UINT64 uploadSize = GetRequiredIntermediateSize(
+            result.buffer.Get(), 0, static_cast<UINT>(subresources.size()));
+
+        auto heap_props2 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+        auto resource_desc2 = CD3DX12_RESOURCE_DESC::Buffer(uploadSize);
+        if FAILED(m_d3d_device->CreateCommittedResource(
+            &heap_props2,
+            D3D12_HEAP_FLAG_NONE,
+            &resource_desc2,
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&result.uploader))) {
+            return ErrorCode::E_DX12_CREATE_UPLOAD_BUFFER_RESOURCE_FAILED;
+        }
+
+        UpdateSubresources(
+            m_cmd_list.Get(),
+            result.buffer.Get(),
+            result.uploader.Get(),
+            0,
+            0,
+            static_cast<UINT>(subresources.size()),
+            subresources.data());
+
+        auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+            result.buffer.Get(),
+            D3D12_RESOURCE_STATE_COPY_DEST,
+            D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        m_cmd_list->ResourceBarrier(1, &barrier);
 
         m_scene_gpu.textures.emplace_back(std::move(result));
         return ErrorCode::SUCCESS;

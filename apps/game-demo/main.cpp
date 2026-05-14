@@ -37,6 +37,7 @@ int main(int argc, char* argv[]) {
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, QCE::TransformMatrix{}));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity0, material_component));
 
     auto entity1 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, cuboid_mesh_component));
@@ -47,6 +48,7 @@ int main(int argc, char* argv[]) {
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, QCE::TransformMatrix{}));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity1, material_component));
 
     return app.Run();
 }

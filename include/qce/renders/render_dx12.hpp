@@ -77,6 +77,8 @@ namespace QCE {
         ErrorCode CreateInputLayout();
         ErrorCode CreatePSO();
         ErrorCode UpdateConstantBuffers();
+        ErrorCode UploadMeshes();
+        ErrorCode UploadTextures();
 
         // Utils
         ErrorCode FlushCommandQueue();
