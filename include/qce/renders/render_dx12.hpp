@@ -138,6 +138,7 @@ namespace QCE {
         MsPtr<ID3D12DescriptorHeap> m_rtv_heap{};
         MsPtr<ID3D12DescriptorHeap> m_dsv_heap{};
         MsPtr<ID3D12DescriptorHeap> m_cbv_heap{};
+        MsPtr<ID3D12DescriptorHeap> m_srv_heap{};
 
         D3D12_VIEWPORT m_screen_viewport{};
         D3D12_RECT     m_scissor_rect{};

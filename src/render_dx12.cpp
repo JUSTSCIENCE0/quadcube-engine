@@ -134,7 +134,16 @@ namespace QCE {
         hr = m_d3d_device->CreateDescriptorHeap(
             &dsvHeapDesc, IID_PPV_ARGS(m_dsv_heap.GetAddressOf()));
         if (FAILED(hr))
-            return ErrorCode::E_DX12_CREATE_RTV_HEAP_FAILED;
+            return ErrorCode::E_DX12_CREATE_DSV_HEAP_FAILED;
+
+        D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+        srvHeapDesc.NumDescriptors = 3;
+        srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        hr = m_d3d_device->CreateDescriptorHeap(
+            &srvHeapDesc, IID_PPV_ARGS(m_srv_heap.GetAddressOf()));
+        if (FAILED(hr))
+            return ErrorCode::E_DX12_CREATE_SRV_HEAP_FAILED;
 
         return ErrorCode::SUCCESS;
     }
@@ -632,9 +641,9 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::LoadTexture(Texture2D& texture) {
-        RenderSceneGPU::Texture result;
-        result.format = dx12_get_texture_format(texture.format);
-        if (DXGI_FORMAT_UNKNOWN == result.format)
+        RenderSceneGPU::Texture gpu_texture;
+        gpu_texture.format = dx12_get_texture_format(texture.format);
+        if (DXGI_FORMAT_UNKNOWN == gpu_texture.format)
             return ErrorCode::E_DX12_UNSUPPORTED_TEXTURE_FORMAT;
 
         if (texture.base_width  > D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION ||
@@ -648,7 +657,7 @@ namespace QCE {
         desc.Height = texture.base_height;
         desc.DepthOrArraySize = 1;
         desc.MipLevels = static_cast<UINT16>(texture.mip_levels.size());
-        desc.Format = result.format;
+        desc.Format = gpu_texture.format;
         desc.SampleDesc.Count   = 1;
         desc.SampleDesc.Quality = 0;
         desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
@@ -661,7 +670,7 @@ namespace QCE {
             &desc,
             D3D12_RESOURCE_STATE_COMMON,
             nullptr,
-            IID_PPV_ARGS(result.buffer.GetAddressOf())))) {
+            IID_PPV_ARGS(gpu_texture.buffer.GetAddressOf())))) {
             return ErrorCode::E_DX12_CREATE_DEFAULT_BUFFER_RESOURCE_FAILED;
         }
 
@@ -675,7 +684,7 @@ namespace QCE {
         }
 
         UINT64 uploadSize = GetRequiredIntermediateSize(
-            result.buffer.Get(), 0, static_cast<UINT>(subresources.size()));
+            gpu_texture.buffer.Get(), 0, static_cast<UINT>(subresources.size()));
 
         auto heap_props2 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
         auto resource_desc2 = CD3DX12_RESOURCE_DESC::Buffer(uploadSize);
@@ -685,26 +694,39 @@ namespace QCE {
             &resource_desc2,
             D3D12_RESOURCE_STATE_GENERIC_READ,
             nullptr,
-            IID_PPV_ARGS(&result.uploader))) {
+            IID_PPV_ARGS(&gpu_texture.uploader))) {
             return ErrorCode::E_DX12_CREATE_UPLOAD_BUFFER_RESOURCE_FAILED;
         }
 
         UpdateSubresources(
             m_cmd_list.Get(),
-            result.buffer.Get(),
-            result.uploader.Get(),
+            gpu_texture.buffer.Get(),
+            gpu_texture.uploader.Get(),
             0,
             0,
             static_cast<UINT>(subresources.size()),
             subresources.data());
 
         auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-            result.buffer.Get(),
+            gpu_texture.buffer.Get(),
             D3D12_RESOURCE_STATE_COPY_DEST,
             D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         m_cmd_list->ResourceBarrier(1, &barrier);
 
-        m_scene_gpu.textures.emplace_back(std::move(result));
+        CD3DX12_CPU_DESCRIPTOR_HANDLE descr(m_srv_heap->GetCPUDescriptorHandleForHeapStart());
+        auto texture_resource = gpu_texture.buffer;
+
+        D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+        srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        srv_desc.Format = texture_resource->GetDesc().Format;
+        srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        srv_desc.Texture2D.MostDetailedMip = 0;
+        srv_desc.Texture2D.MipLevels = texture_resource->GetDesc().MipLevels;
+        srv_desc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+        m_d3d_device->CreateShaderResourceView(texture_resource.Get(), &srv_desc, descr);
+
+        m_scene_gpu.textures.emplace_back(std::move(gpu_texture));
         return ErrorCode::SUCCESS;
     }
 }

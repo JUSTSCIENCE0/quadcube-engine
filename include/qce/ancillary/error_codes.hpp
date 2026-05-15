@@ -35,6 +35,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_DX12_CREATE_RTV_HEAP_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_DSV_HEAP_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_CBV_HEAP_FAILED) \
+        CU_ENUM_UNIT(E_DX12_CREATE_SRV_HEAP_FAILED) \
         CU_ENUM_UNIT(E_DX12_QUEUE_ADD_SIGNAL_FAILED) \
         CU_ENUM_UNIT(E_DX12_SET_EVENT_ON_COMPLETE_FAILED) \
         CU_ENUM_UNIT(E_DX12_CREATE_EVENT_FAILED) \
@@ -152,6 +153,9 @@ namespace QCE {
             break;
         case ErrorCode::E_DX12_CREATE_CBV_HEAP_FAILED:
             result << "DX12 - CBV CreateDescriptorHeap Failed";
+            break;
+        case ErrorCode::E_DX12_CREATE_SRV_HEAP_FAILED:
+            result << "DX12 - SRV CreateDescriptorHeap Failed";
             break;
         case ErrorCode::E_DX12_QUEUE_ADD_SIGNAL_FAILED:
             result << "DX12 - Add Signal to CommandQueue Failed";
