@@ -3,14 +3,7 @@
 //
 // License: MIT
 
-cbuffer cbPerObject : register(b0) {
-    float4x4 gWorldViewProj;
-};
-
-struct VertexOut {
-    float4 PosH  : SV_POSITION;
-    float4 Color : COLOR;
-};
+#include "common.hlsl"
 
 float4 main(VertexOut pin) : SV_Target {
     return pin.Color;

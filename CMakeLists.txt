@@ -189,9 +189,11 @@ endif() # QCE_USE_CUSTOM_ECS_CORE
 
 set(QCE_SHADERS_DIR shaders)
 set(QCE_HLSL_SHADERS_DIR ${QCE_SHADERS_DIR}/hlsl)
+set(QCE_HLSL_COMMON ${QCE_HLSL_SHADERS_DIR}/common.hlsl)
 set(QCE_HLSL_VS ${QCE_HLSL_SHADERS_DIR}/simple_vs.hlsl)
 set(QCE_HLSL_PS ${QCE_HLSL_SHADERS_DIR}/simple_ps.hlsl)
 set(QCE_HLSL_SHADERS
+    ${QCE_HLSL_COMMON}
     ${QCE_HLSL_VS}
     ${QCE_HLSL_PS}
 )
