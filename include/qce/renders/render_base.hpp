@@ -74,6 +74,22 @@ namespace QCE {
             float world_matrix[16];
         };
 
+        struct PassConstants
+        {
+            float view_matrix[16] = {};
+            float view_matrix_inv[16] = {};
+            float proj_matrix[16] = {};
+            float proj_matrix_inv[16] = {};
+            float view_proj_matrix[16] = {};
+            float view_proj_matrix_inv[16] = {};
+            float eye_position[3] = { 0.0f, 0.0f, 0.0f };
+            float render_target_size[2] = { 0.0f, 0.0f };
+            float render_target_size_inv[2] = { 0.0f, 0.0f };
+            float near_z = 0.0f;
+            float far_z = 0.0f;
+            float delta_time = 0.0f;
+        };
+
         static constexpr int FRAME_RESOURCE_COUNT = 3;
 
         virtual ErrorCode UpdateGpuScene() = 0;

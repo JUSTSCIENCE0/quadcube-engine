@@ -41,11 +41,13 @@ namespace QCE {
         size_t unit_index = 0;
 
         for (const auto& entity_id : entities) {
-            auto mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
+            auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
             auto& mesh = ResourceManager::Get().Read<Mesh>(mesh_comp.index);
 
-            if (mesh.render_unit_index.has_value())
+            if (mesh.render_unit_index.has_value()) {
+                mesh_comp.render_unit_index = mesh.render_unit_index.value();
                 continue;
+            }
 
             RenderSceneCPU::Unit unit{
                 .dirty_frames = FRAME_RESOURCE_COUNT,
@@ -61,6 +63,7 @@ namespace QCE {
             m_scene_cpu.units.push_back(std::move(unit));
 
             mesh.render_unit_index = unit_index;
+            mesh_comp.render_unit_index = unit_index;
             unit_index++;
         }
 

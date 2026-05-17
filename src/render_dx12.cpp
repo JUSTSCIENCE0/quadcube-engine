@@ -3,6 +3,7 @@
 //
 // License: MIT
 
+#include <qce/ancillary/timer.hpp>
 #include <qce/renders/render_dx12.hpp>
 
 namespace QCE {
@@ -337,10 +338,33 @@ namespace QCE {
         if (!camera_proj.actual_proj)
             camera_recalc_proj(camera_proj);
 
-        auto vp = matrix_mul(
-            matrix_init(camera_view.view.arr),
-            matrix_init(camera_proj.proj.arr)
-        );
+        auto v = matrix_init(camera_view.view.arr);
+        auto p = matrix_init(camera_proj.proj.arr);
+        auto vp = matrix_mul(v, p);
+
+        PassConstants pass_constants{};
+        matrix_copy(v, pass_constants.view_matrix);
+        matrix_copy(matrix_inverse(v, matrix_determinant(v)),
+            pass_constants.view_matrix_inv);
+        matrix_copy(p, pass_constants.proj_matrix);
+        matrix_copy(matrix_inverse(p, matrix_determinant(p)),
+            pass_constants.proj_matrix_inv);
+        matrix_copy(vp, pass_constants.view_proj_matrix);
+        matrix_copy(matrix_inverse(vp, matrix_determinant(vp)),
+            pass_constants.view_proj_matrix_inv);
+        std::memcpy(pass_constants.eye_position,
+                    camera_view.position.arr,
+                    sizeof(pass_constants.eye_position));
+        pass_constants.render_target_size[0] = static_cast<float>(m_config.width);
+        pass_constants.render_target_size[1] = static_cast<float>(m_config.height);
+        pass_constants.render_target_size_inv[0] = 1.0f / pass_constants.render_target_size[0];
+        pass_constants.render_target_size_inv[1] = 1.0f / pass_constants.render_target_size[1];
+        pass_constants.near_z = camera_proj.znear;
+        pass_constants.far_z  = camera_proj.zfar;
+        pass_constants.delta_time = static_cast<float>(FrameTime::Get().Elapsed());
+
+        //auto current_pass_constant_buffer = m_current_frame_resource->m_pass_constant_buffer.get();
+        //current_pass_constant_buffer->CopyData(0, pass_constants);
 
         auto entities = m_entities.QueryEntities<
             MeshComponent,
@@ -383,11 +407,8 @@ namespace QCE {
 
         UINT entity_index = 0;
         for (const auto& entity_id : entities) {
-            auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
-            auto& mesh = ResourceManager::Get().Read<Mesh>(mesh_comp.index);
-            assert(mesh.render_unit_index.has_value());
-            auto index = mesh.render_unit_index.value();
-            const auto& unit_descr = m_scene_cpu.units[index];
+            const auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
+            const auto& unit_descr = m_scene_cpu.units[mesh_comp.render_unit_index];
 
             auto cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetGPUDescriptorHandleForHeapStart());
             cbv_handle.Offset(entity_index, m_cbv_srv_uav_descr_size);

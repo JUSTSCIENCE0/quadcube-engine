@@ -70,7 +70,7 @@ namespace QCE {
 
             MsPtr<ID3D12CommandAllocator> m_cmd_alloc = nullptr;
 
-            // TODO: add pass constant buffer
+            std::unique_ptr<Dx12UploadBuffer<PassConstants>> m_pass_constant_buffer{};
             std::unique_ptr<Dx12UploadBuffer<UnitConstants>> m_units_constant_buffers{};
 
             uint64_t m_fence_value = 0;

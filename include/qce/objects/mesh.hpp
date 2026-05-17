@@ -16,6 +16,7 @@
 namespace QCE {
     struct MeshComponent {
         size_t index{};
+        size_t render_unit_index = 0;
     };
 
     struct Mesh {
