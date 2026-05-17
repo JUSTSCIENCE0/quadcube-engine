@@ -53,6 +53,8 @@ namespace QCE {
             ShaderType::E_SHADERS_TYPE_COUNT>;
         struct RenderSceneCPU {
             struct Unit {
+                int dirty_frames = FRAME_RESOURCE_COUNT;
+
                 uint32_t indeces_count = 0;
                 uint32_t index_offset = 0;
                 uint32_t vertex_offset = 0;
@@ -71,6 +73,8 @@ namespace QCE {
         struct UnitConstants {
             float world_matrix[16];
         };
+
+        static constexpr int FRAME_RESOURCE_COUNT = 3;
 
         virtual ErrorCode UpdateGpuScene() = 0;
 

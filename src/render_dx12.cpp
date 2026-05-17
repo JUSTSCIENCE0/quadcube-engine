@@ -84,6 +84,29 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
+    ErrorCode RenderDX12::CreateFrameResources() {
+        m_frame_resources.clear();
+
+        auto entities = m_entities.QueryEntities<
+            MeshComponent,
+            TransformComponents,
+            TransformMatrix>();
+        const auto units_count = UINT(entities.size());
+
+        for (int i = 0; i < FRAME_RESOURCE_COUNT; i++) {
+            try {
+                m_frame_resources.emplace_back(
+                    std::make_unique<FrameResource>(m_d3d_device.Get(), units_count));
+            }
+            catch (const ErrorCodeException& e) {
+                return e.code_value();
+            }
+        }
+        m_current_frame_resource_index = 0;
+        m_current_frame_resource = m_frame_resources[m_current_frame_resource_index].get();
+        return ErrorCode::SUCCESS;
+    }
+
     ErrorCode RenderDX12::CreateSwapChain() {
         m_swap_chain.Reset();
 
@@ -275,6 +298,26 @@ namespace QCE {
 
             hr = m_fence->SetEventOnCompletion(m_current_fence, eventHandle);
             if (FAILED(hr))
+                return ErrorCode::E_DX12_SET_EVENT_ON_COMPLETE_FAILED;
+
+            WaitForSingleObject(eventHandle, INFINITE);
+            CloseHandle(eventHandle);
+        }
+
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::NextFrameResource() {
+        m_current_frame_resource_index = (m_current_frame_resource_index + 1) % FRAME_RESOURCE_COUNT;
+        m_current_frame_resource = m_frame_resources[m_current_frame_resource_index].get();
+
+        if (m_current_frame_resource->m_fence_value != 0 &&
+            m_fence->GetCompletedValue() < m_current_frame_resource->m_fence_value) {
+            HANDLE eventHandle = CreateEventEx(nullptr, nullptr, NULL, EVENT_ALL_ACCESS);
+            if (!eventHandle)
+                return ErrorCode::E_DX12_CREATE_EVENT_FAILED;
+
+            if (FAILED(m_fence->SetEventOnCompletion(m_current_fence, eventHandle)))
                 return ErrorCode::E_DX12_SET_EVENT_ON_COMPLETE_FAILED;
 
             WaitForSingleObject(eventHandle, INFINITE);

@@ -53,6 +53,28 @@ namespace QCE {
                 index_buffer_uploader = nullptr;
             }
         };
+        struct FrameResource {
+            FrameResource(ID3D12Device* device, UINT units_count) {
+                if (FAILED(device->CreateCommandAllocator(
+                        D3D12_COMMAND_LIST_TYPE_DIRECT,
+                        IID_PPV_ARGS(&m_cmd_alloc))))
+                    throw ErrorCodeException(ErrorCode::E_DX12_CREATE_COMMAND_ALLOCATOR_FAILED);
+
+                m_units_constant_buffers = std::make_unique<Dx12UploadBuffer<UnitConstants>>(
+                    device, units_count, true);
+            }
+            FrameResource(const FrameResource&) = delete;
+            FrameResource& operator=(const FrameResource&) = delete;
+            FrameResource(FrameResource&&) = delete;
+            FrameResource& operator=(FrameResource&&) = delete;
+
+            MsPtr<ID3D12CommandAllocator> m_cmd_alloc = nullptr;
+
+            // TODO: add pass constant buffer
+            std::unique_ptr<Dx12UploadBuffer<UnitConstants>> m_units_constant_buffers{};
+
+            uint64_t m_fence_value = 0;
+        };
 
         /// consts
         static constexpr int SWAP_CHAIN_BUFFER_COUNT = 2;
@@ -63,6 +85,7 @@ namespace QCE {
         /// methods
         // Initialization
         ErrorCode Init();
+        ErrorCode CreateFrameResources();
         ErrorCode CreateCommandObjects();
         ErrorCode CreateSwapChain();
         ErrorCode CreateDescriptorHeaps();
@@ -82,6 +105,7 @@ namespace QCE {
 
         // Utils
         ErrorCode FlushCommandQueue();
+        ErrorCode NextFrameResource();
         ErrorCode LoadTexture(Texture2D& texture);
         D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView() const {
             return m_dsv_heap->GetCPUDescriptorHandleForHeapStart();
@@ -127,6 +151,10 @@ namespace QCE {
         MsPtr<ID3D12CommandQueue>        m_cmd_queue{};
         MsPtr<ID3D12CommandAllocator>    m_cmd_alloc{};
         MsPtr<ID3D12GraphicsCommandList> m_cmd_list{};
+
+        std::vector<std::unique_ptr<FrameResource>> m_frame_resources{};
+        FrameResource* m_current_frame_resource = nullptr;
+        int m_current_frame_resource_index = 0;
 
         int m_current_back_buffer = 0;
         MsPtr<IDXGISwapChain> m_swap_chain{};
