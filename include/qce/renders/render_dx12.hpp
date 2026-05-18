@@ -36,8 +36,6 @@ namespace QCE {
             MsPtr<ID3D12Resource> vertex_buffer_uploader = nullptr;
             MsPtr<ID3D12Resource> index_buffer_uploader  = nullptr;
 
-            std::unique_ptr<Dx12UploadBuffer<UnitConstants>> m_units_constant_buffers{};
-
             constexpr static DXGI_FORMAT INDEX_FORMAT = dx12_get_index_format();
 
             struct Texture {
@@ -54,7 +52,7 @@ namespace QCE {
             }
         };
         struct FrameResource {
-            FrameResource(ID3D12Device* device, UINT units_count) {
+            FrameResource(ID3D12Device* device, UINT units_count, UINT pass_count) {
                 if (FAILED(device->CreateCommandAllocator(
                         D3D12_COMMAND_LIST_TYPE_DIRECT,
                         IID_PPV_ARGS(&m_cmd_alloc))))
@@ -62,6 +60,8 @@ namespace QCE {
 
                 m_units_constant_buffers = std::make_unique<Dx12UploadBuffer<UnitConstants>>(
                     device, units_count, true);
+                m_pass_constant_buffer = std::make_unique<Dx12UploadBuffer<PassConstants>>(
+                    device, pass_count, true);
             }
             FrameResource(const FrameResource&) = delete;
             FrameResource& operator=(const FrameResource&) = delete;
@@ -149,12 +149,13 @@ namespace QCE {
         MsPtr<ID3D12Fence>  m_fence{};
 
         MsPtr<ID3D12CommandQueue>        m_cmd_queue{};
-        MsPtr<ID3D12CommandAllocator>    m_cmd_alloc{};
+        MsPtr<ID3D12CommandAllocator>    m_main_cmd_alloc{};
         MsPtr<ID3D12GraphicsCommandList> m_cmd_list{};
 
         std::vector<std::unique_ptr<FrameResource>> m_frame_resources{};
         FrameResource* m_current_frame_resource = nullptr;
         int m_current_frame_resource_index = 0;
+        int m_pass_cbv_offset = 0;
 
         int m_current_back_buffer = 0;
         MsPtr<IDXGISwapChain> m_swap_chain{};

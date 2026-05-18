@@ -8,8 +8,10 @@
 VertexOut main(VertexIn vin) {
     VertexOut vout;
 
-    vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
-    vout.Color = vin.Color;
+    float4 pos_w = mul(float4(vin.pos_l, 1.0f), world_matrix);
+    vout.pos_h = mul(pos_w, view_proj_matrix);
+
+    vout.color = vin.color;
 
     return vout;
 }

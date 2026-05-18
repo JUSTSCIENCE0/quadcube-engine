@@ -66,13 +66,13 @@ namespace QCE {
 
         hr = m_d3d_device->CreateCommandAllocator(
             D3D12_COMMAND_LIST_TYPE_DIRECT,
-            IID_PPV_ARGS(m_cmd_alloc.GetAddressOf()));
+            IID_PPV_ARGS(m_main_cmd_alloc.GetAddressOf()));
         if (FAILED(hr))
             return ErrorCode::E_DX12_CREATE_COMMAND_ALLOCATOR_FAILED;
 
         hr = m_d3d_device->CreateCommandList(0,
             D3D12_COMMAND_LIST_TYPE_DIRECT,
-            m_cmd_alloc.Get(),
+            m_main_cmd_alloc.Get(),
             nullptr,
             IID_PPV_ARGS(m_cmd_list.GetAddressOf()));
         if (FAILED(hr))
@@ -97,7 +97,7 @@ namespace QCE {
         for (int i = 0; i < FRAME_RESOURCE_COUNT; i++) {
             try {
                 m_frame_resources.emplace_back(
-                    std::make_unique<FrameResource>(m_d3d_device.Get(), units_count));
+                    std::make_unique<FrameResource>(m_d3d_device.Get(), units_count, 1));
             }
             catch (const ErrorCodeException& e) {
                 return e.code_value();
@@ -175,12 +175,12 @@ namespace QCE {
     ErrorCode RenderDX12::InitBuffersAndDescriptors() {
         assert(m_d3d_device);
         assert(m_swap_chain);
-        assert(m_cmd_alloc);
+        assert(m_main_cmd_alloc);
         assert(m_cmd_list);
 
         QCE_CRITICAL(FlushCommandQueue());
 
-        auto hr = m_cmd_list->Reset(m_cmd_alloc.Get(), nullptr);
+        auto hr = m_cmd_list->Reset(m_main_cmd_alloc.Get(), nullptr);
         if (FAILED(hr))
             return ErrorCode::E_DX12_RESET_COMMAND_LIST_FAILED;
 
@@ -338,20 +338,21 @@ namespace QCE {
         if (!camera_proj.actual_proj)
             camera_recalc_proj(camera_proj);
 
-        auto v = matrix_init(camera_view.view.arr);
-        auto p = matrix_init(camera_proj.proj.arr);
+        auto v  = matrix_init(camera_view.view.arr);
+        auto p  = matrix_init(camera_proj.proj.arr);
         auto vp = matrix_mul(v, p);
 
+        auto inv_v  = matrix_inverse(v, matrix_determinant(v));
+        auto inv_p  = matrix_inverse(p, matrix_determinant(p));
+        auto inv_vp = matrix_inverse(vp, matrix_determinant(vp));
+
         PassConstants pass_constants{};
-        matrix_copy(v, pass_constants.view_matrix);
-        matrix_copy(matrix_inverse(v, matrix_determinant(v)),
-            pass_constants.view_matrix_inv);
-        matrix_copy(p, pass_constants.proj_matrix);
-        matrix_copy(matrix_inverse(p, matrix_determinant(p)),
-            pass_constants.proj_matrix_inv);
-        matrix_copy(vp, pass_constants.view_proj_matrix);
-        matrix_copy(matrix_inverse(vp, matrix_determinant(vp)),
-            pass_constants.view_proj_matrix_inv);
+        matrix_copy(matrix_transpose(v), pass_constants.view_matrix);
+        matrix_copy(matrix_transpose(inv_v), pass_constants.view_matrix_inv);
+        matrix_copy(matrix_transpose(p), pass_constants.proj_matrix);
+        matrix_copy(matrix_transpose(inv_p), pass_constants.proj_matrix_inv);
+        matrix_copy(matrix_transpose(vp), pass_constants.view_proj_matrix);
+        matrix_copy(matrix_transpose(inv_vp), pass_constants.view_proj_matrix_inv);
         std::memcpy(pass_constants.eye_position,
                     camera_view.position.arr,
                     sizeof(pass_constants.eye_position));
@@ -363,30 +364,35 @@ namespace QCE {
         pass_constants.far_z  = camera_proj.zfar;
         pass_constants.delta_time = static_cast<float>(FrameTime::Get().Elapsed());
 
-        //auto current_pass_constant_buffer = m_current_frame_resource->m_pass_constant_buffer.get();
-        //current_pass_constant_buffer->CopyData(0, pass_constants);
+        auto current_pass_constant_buffer = m_current_frame_resource->m_pass_constant_buffer.get();
+        current_pass_constant_buffer->CopyData(0, pass_constants);
 
         auto entities = m_entities.QueryEntities<
             MeshComponent,
             TransformComponents,
             TransformMatrix>();
 
+        auto current_units_constant_buffers = m_current_frame_resource->m_units_constant_buffers.get();
+
         UINT index = 0;
         for (const auto& entity_id : entities) {
             auto& world = m_entities.GetComponent<TransformMatrix>(entity_id);
+            const auto& mesh = m_entities.GetComponent<MeshComponent>(entity_id);
+            auto& unit_descr = m_scene_cpu.units[mesh.render_unit_index];
             if (!world.actual) {
                 auto& transform_comp = m_entities.GetComponent<TransformComponents>(entity_id);
                 calculate_transform_matrix(transform_comp, world);
+                unit_descr.dirty_frames = FRAME_RESOURCE_COUNT;
             }
 
-            auto w = matrix_init(world.data.arr);
-            auto wvp = matrix_mul(w, vp);
-            wvp = matrix_transpose(wvp);
+            if (unit_descr.dirty_frames > 0) {
+                UnitConstants transform{};
+                std::memcpy(transform.world_matrix,
+                            world.transposed_data.arr, sizeof(world.transposed_data.arr));
+                current_units_constant_buffers->CopyData(index, transform);
 
-            UnitConstants transform{};
-            matrix_copy(wvp, transform.world_matrix);
-
-            m_scene_gpu.m_units_constant_buffers->CopyData(index, transform);
+                unit_descr.dirty_frames--;
+            }
             index++;
         }
 
@@ -396,22 +402,23 @@ namespace QCE {
     void RenderDX12::DrawSceneEntities() {
         auto vbv = GetVertexBufferView();
         auto ibv = GetIndexBufferView();
-        m_cmd_list->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
         m_cmd_list->IASetVertexBuffers(0, 1, &vbv);
         m_cmd_list->IASetIndexBuffer(&ibv);
+        m_cmd_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         auto entities = m_entities.QueryEntities<
             MeshComponent,
             TransformComponents,
             TransformMatrix>();
 
-        UINT entity_index = 0;
+        UINT cbv_index = m_current_frame_resource_index * UINT(entities.size());
         for (const auto& entity_id : entities) {
             const auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
             const auto& unit_descr = m_scene_cpu.units[mesh_comp.render_unit_index];
 
             auto cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetGPUDescriptorHandleForHeapStart());
-            cbv_handle.Offset(entity_index, m_cbv_srv_uav_descr_size);
+            cbv_handle.Offset(cbv_index, m_cbv_srv_uav_descr_size);
             m_cmd_list->SetGraphicsRootDescriptorTable(0, cbv_handle);
 
             m_cmd_list->DrawIndexedInstanced(
@@ -422,29 +429,32 @@ namespace QCE {
                 0
             );
 
-            entity_index++;
+            cbv_index++;
         }
     }
 
     ErrorCode RenderDX12::Draw() {
+        QCE_CRITICAL(NextFrameResource());
         QCE_CRITICAL(UpdateConstantBuffers());
 
-        auto hr = m_cmd_alloc->Reset();
+        auto& cmd_alloc = m_current_frame_resource->m_cmd_alloc;
+
+        auto hr = cmd_alloc->Reset();
         if (FAILED(hr)) {
             return ErrorCode::E_DX12_RESET_COMMAND_ALLOCATOR_FAILED;
         }
 
-        hr = m_cmd_list->Reset(m_cmd_alloc.Get(), m_PSO.Get());
+        hr = m_cmd_list->Reset(cmd_alloc.Get(), m_PSO.Get());
         if (FAILED(hr)) {
             return ErrorCode::E_DX12_RESET_COMMAND_LIST_FAILED;
         }
 
+        m_cmd_list->RSSetViewports(1, &m_screen_viewport);
+        m_cmd_list->RSSetScissorRects(1, &m_scissor_rect);
+
         auto barrier_pt = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
             D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
         m_cmd_list->ResourceBarrier(1, &barrier_pt);
-
-        m_cmd_list->RSSetViewports(1, &m_screen_viewport);
-        m_cmd_list->RSSetScissorRects(1, &m_scissor_rect);
 
         auto current_bbv = CurrentBackBufferView();
         m_cmd_list->ClearRenderTargetView(
@@ -459,6 +469,11 @@ namespace QCE {
         m_cmd_list->SetDescriptorHeaps(_countof(descr_heaps), descr_heaps);
 
         m_cmd_list->SetGraphicsRootSignature(m_root_signature.Get());
+
+        int pass_cbv_index = m_pass_cbv_offset + m_current_frame_resource_index;
+        auto pass_cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetGPUDescriptorHandleForHeapStart());
+        pass_cbv_handle.Offset(pass_cbv_index, m_cbv_srv_uav_descr_size);
+        m_cmd_list->SetGraphicsRootDescriptorTable(1, pass_cbv_handle);
 
         DrawSceneEntities();
 
@@ -480,20 +495,29 @@ namespace QCE {
         }
         m_current_back_buffer = (m_current_back_buffer + 1) % SWAP_CHAIN_BUFFER_COUNT;
 
-        return FlushCommandQueue();
+        m_current_frame_resource->m_fence_value = ++m_current_fence;
+        hr = m_cmd_queue->Signal(m_fence.Get(), m_current_fence);
+        if (FAILED(hr)) {
+            return ErrorCode::E_DX12_QUEUE_ADD_SIGNAL_FAILED;
+        }
+
+        return ErrorCode::SUCCESS;
     }
 
     ErrorCode RenderDX12::UpdateGpuScene() { 
-        auto hr = m_cmd_list->Reset(m_cmd_alloc.Get(), nullptr);
+        auto hr = m_cmd_list->Reset(m_main_cmd_alloc.Get(), nullptr);
         if (FAILED(hr))
             return ErrorCode::E_DX12_RESET_COMMAND_LIST_FAILED;
 
-        QCE_CRITICAL(CreateCBVDescriptorHeap());
-        QCE_CRITICAL(CreateConstantBuffers());
         QCE_CRITICAL(CreateRootSignature());
         QCE_CRITICAL(CreateInputLayout());
 
         QCE_CRITICAL(UploadMeshes());
+
+        QCE_CRITICAL(CreateFrameResources());
+        QCE_CRITICAL(CreateCBVDescriptorHeap());
+        QCE_CRITICAL(CreateConstantBuffers());
+
         QCE_CRITICAL(UploadTextures());
 
         QCE_CRITICAL(CreatePSO());
@@ -563,13 +587,17 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::CreateRootSignature() {
-        CD3DX12_ROOT_PARAMETER slotRootParameter{};
+        CD3DX12_ROOT_PARAMETER slotRootParameter[2] = {};
 
-        CD3DX12_DESCRIPTOR_RANGE cbvTable{};
-        cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
-        slotRootParameter.InitAsDescriptorTable(1, &cbvTable);
+        CD3DX12_DESCRIPTOR_RANGE cbvTable0{};
+        cbvTable0.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+        slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable0);
 
-        CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(1, &slotRootParameter, 0, nullptr,
+        CD3DX12_DESCRIPTOR_RANGE cbvTable1{};
+        cbvTable1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
+        slotRootParameter[1].InitAsDescriptorTable(1, &cbvTable1);
+
+        CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 0, nullptr,
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
         MsPtr<ID3DBlob> serializedRootSig = nullptr;
@@ -600,9 +628,12 @@ namespace QCE {
             TransformComponents,
             TransformMatrix>();
         const auto units_count = UINT(entities.size());
+        const auto descr_count = (units_count + 1) * FRAME_RESOURCE_COUNT; // +1 for pass constants
+
+        m_pass_cbv_offset = units_count * FRAME_RESOURCE_COUNT;
 
         D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
-        cbvHeapDesc.NumDescriptors = units_count + 1;
+        cbvHeapDesc.NumDescriptors = descr_count;
         cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         cbvHeapDesc.NodeMask = 0;
@@ -621,24 +652,45 @@ namespace QCE {
             TransformComponents,
             TransformMatrix>();
         const auto units_count = UINT(entities.size());
+        int unit_heap_index = 0;
+        int pass_heap_index = m_pass_cbv_offset;
 
-        auto& cb = m_scene_gpu.m_units_constant_buffers;
-        cb = std::make_unique<Dx12UploadBuffer<UnitConstants>>(
-                m_d3d_device.Get(), units_count, true);
+        assert(m_frame_resources.size() == FRAME_RESOURCE_COUNT);
+        for (int frame_index = 0; frame_index < FRAME_RESOURCE_COUNT; frame_index++) {
+            assert(m_frame_resources[frame_index]->m_units_constant_buffers);
+            auto& units_cb = m_frame_resources[frame_index]->m_units_constant_buffers;
+            const auto unit_cb_size = units_cb->m_element_size;
+            D3D12_GPU_VIRTUAL_ADDRESS unit_cb_address = units_cb->Resource()->GetGPUVirtualAddress();
 
-        const auto cb_unit_size = cb->m_element_size;
-        D3D12_GPU_VIRTUAL_ADDRESS cb_address = cb->Resource()->GetGPUVirtualAddress();
+            for (UINT index = 0; index < units_count; index++) {
+                auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetCPUDescriptorHandleForHeapStart());
+                handle.Offset(unit_heap_index, m_cbv_srv_uav_descr_size);
 
-        for (UINT index = 0; index < units_count; index++) {
+                D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_descr;
+                cbv_descr.BufferLocation = unit_cb_address;
+                cbv_descr.SizeInBytes = unit_cb_size;
+
+                m_d3d_device->CreateConstantBufferView(&cbv_descr, handle);
+
+                unit_cb_address += unit_cb_size;
+                unit_heap_index++;
+            }
+
+            assert(m_frame_resources[frame_index]->m_pass_constant_buffer);
+            auto& pass_cb = m_frame_resources[frame_index]->m_pass_constant_buffer;
+            const auto pass_cb_size = pass_cb->m_element_size;
+
+            D3D12_GPU_VIRTUAL_ADDRESS pass_cb_address = pass_cb->Resource()->GetGPUVirtualAddress();
             auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetCPUDescriptorHandleForHeapStart());
-            handle.Offset(index, m_cbv_srv_uav_descr_size);
+            handle.Offset(pass_heap_index, m_cbv_srv_uav_descr_size);
 
             D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_descr;
-            cbv_descr.BufferLocation = cb_address;
-            cbv_descr.SizeInBytes = cb_unit_size;
+            cbv_descr.BufferLocation = pass_cb_address;
+            cbv_descr.SizeInBytes = pass_cb_size;
 
             m_d3d_device->CreateConstantBufferView(&cbv_descr, handle);
-            cb_address += cb_unit_size;
+
+            pass_heap_index++;
         }
 
         return ErrorCode::SUCCESS;
