@@ -27,6 +27,15 @@ namespace QCE {
                 0.0f, 0.0f, 0.0f, 1.0f
             }
         };
+
+        float4x4 transposed_data{
+            .arr = {
+                1.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, 1.0f, 0.0f, 0.0f,
+                0.0f, 0.0f, 1.0f, 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
+            }
+        };
     };
 
     // helpers

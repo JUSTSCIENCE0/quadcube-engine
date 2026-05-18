@@ -51,8 +51,11 @@ namespace QCE {
         auto M = matrix_mul(S, R);
         M = matrix_mul(M, T);
 
+        auto TM = matrix_transpose(M);
+
         out.actual = true;
         matrix_copy(M, out.data.arr);
+        matrix_copy(TM, out.transposed_data.arr);
     }
 
     void decompose_transform_matrix(
