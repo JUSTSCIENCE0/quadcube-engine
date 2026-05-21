@@ -50,7 +50,6 @@ namespace QCE {
             }
 
             RenderSceneCPU::Unit unit{
-                .dirty_frames = FRAME_RESOURCE_COUNT,
                 .indeces_count = uint32_t(mesh.indices.size()),
                 .index_offset = uint32_t(m_scene_cpu.index_buffer.size()),
                 .vertex_offset = uint32_t(m_scene_cpu.vertex_buffer.size())

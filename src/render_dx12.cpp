@@ -318,7 +318,7 @@ namespace QCE {
             if (!eventHandle)
                 return ErrorCode::E_DX12_CREATE_EVENT_FAILED;
 
-            if (FAILED(m_fence->SetEventOnCompletion(m_current_fence, eventHandle)))
+            if (FAILED(m_fence->SetEventOnCompletion(m_current_frame_resource->m_fence_value, eventHandle)))
                 return ErrorCode::E_DX12_SET_EVENT_ON_COMPLETE_FAILED;
 
             WaitForSingleObject(eventHandle, INFINITE);
@@ -377,21 +377,20 @@ namespace QCE {
         UINT index = 0;
         for (const auto& entity_id : entities) {
             auto& world = m_entities.GetComponent<TransformMatrix>(entity_id);
-            const auto& mesh = m_entities.GetComponent<MeshComponent>(entity_id);
-            auto& unit_descr = m_scene_cpu.units[mesh.render_unit_index];
+            auto& mesh = m_entities.GetComponent<MeshComponent>(entity_id);
             if (!world.actual) {
                 auto& transform_comp = m_entities.GetComponent<TransformComponents>(entity_id);
                 calculate_transform_matrix(transform_comp, world);
-                unit_descr.dirty_frames = FRAME_RESOURCE_COUNT;
+                mesh.dirty_frames = FRAME_RESOURCE_COUNT;
             }
 
-            if (unit_descr.dirty_frames > 0) {
+            if (mesh.dirty_frames > 0) {
                 UnitConstants transform{};
                 std::memcpy(transform.world_matrix,
                             world.transposed_data.arr, sizeof(world.transposed_data.arr));
                 current_units_constant_buffers->CopyData(index, transform);
 
-                unit_descr.dirty_frames--;
+                mesh.dirty_frames--;
             }
             index++;
         }
