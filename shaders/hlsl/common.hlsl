@@ -17,11 +17,13 @@ cbuffer PassConstants : register(b1)
     float4x4 view_proj_matrix;
     float4x4 inv_view_proj_matrix;
     float3   eye_position;
+    float    padding1;
     float2   render_target_size;
     float2   render_target_size_inv;
     float    near_z;
     float    far_z;
     float    delta_time;
+    float    padding2;
 };
 
 struct VertexIn

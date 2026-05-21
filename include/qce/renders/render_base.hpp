@@ -81,11 +81,13 @@ namespace QCE {
             float view_proj_matrix[16] = {};
             float view_proj_matrix_inv[16] = {};
             float eye_position[3] = { 0.0f, 0.0f, 0.0f };
+            float padding1;
             float render_target_size[2] = { 0.0f, 0.0f };
             float render_target_size_inv[2] = { 0.0f, 0.0f };
             float near_z = 0.0f;
             float far_z = 0.0f;
             float delta_time = 0.0f;
+            float padding2;
         };
 
         static constexpr int FRAME_RESOURCE_COUNT = 3;
