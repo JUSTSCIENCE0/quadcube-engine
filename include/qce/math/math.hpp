@@ -77,6 +77,7 @@ namespace QCE {
     struct vertex {
         float3d position{};
         color_rgba color{};
+        float3d normal{};
         float2d texture_coordinates{};
     };
 
