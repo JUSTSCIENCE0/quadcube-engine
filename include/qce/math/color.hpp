@@ -21,12 +21,13 @@ namespace QCE {
         const float& a() const noexcept { return arr[3]; }
     };
 
-    static constexpr color_rgba WHITE =  { 1.0f, 1.0f, 1.0f, 1.0f };
-    static constexpr color_rgba BLACK =  { 0.0f, 0.0f, 0.0f, 1.0f };
-    static constexpr color_rgba RED   =  { 1.0f, 0.0f, 0.0f, 1.0f };
-    static constexpr color_rgba GREEN =  { 0.0f, 1.0f, 0.0f, 1.0f };
-    static constexpr color_rgba BLUE  =  { 0.0f, 0.0f, 1.0f, 1.0f };
-    static constexpr color_rgba YELLOW=  { 1.0f, 1.0f, 0.0f, 1.0f };
-    static constexpr color_rgba CYAN  =  { 0.0f, 1.0f, 1.0f, 1.0f };
-    static constexpr color_rgba MAGENTA= { 1.0f, 0.0f, 1.0f, 1.0f };
+    static constexpr color_rgba WHITE   = { 1.0f, 1.0f, 1.0f, 1.0f };
+    static constexpr color_rgba BLACK   = { 0.0f, 0.0f, 0.0f, 1.0f };
+    static constexpr color_rgba RED     = { 1.0f, 0.0f, 0.0f, 1.0f };
+    static constexpr color_rgba GREEN   = { 0.0f, 1.0f, 0.0f, 1.0f };
+    static constexpr color_rgba BLUE    = { 0.0f, 0.0f, 1.0f, 1.0f };
+    static constexpr color_rgba YELLOW  = { 1.0f, 1.0f, 0.0f, 1.0f };
+    static constexpr color_rgba CYAN    = { 0.0f, 1.0f, 1.0f, 1.0f };
+    static constexpr color_rgba MAGENTA = { 1.0f, 0.0f, 1.0f, 1.0f };
+    static constexpr color_rgba GRAY    = { 0.5f, 0.5f, 0.5f, 1.0f };
 }
