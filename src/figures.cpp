@@ -27,60 +27,162 @@ namespace QCE {
         Mesh result{};
         result.id = std::move(name),
         result.vertices = std::vector<vertex>{
+            // front face
             {
-                .position = { -l2, -w2, -h2 },
-                .color = WHITE,
-                .texture_coordinates = { 0.0f, 1.0f }
-            },
-            {
-                .position = {  l2, -w2, -h2 },
+                .position = { -w2, -h2, -l2 },
                 .color = BLACK,
-                .texture_coordinates = { 1.0f, 1.0f }
-            },
-            {
-                .position = {  l2, -w2,  h2 },
-                .color = RED,
-                .texture_coordinates = { 1.0f, 1.0f }
-            },
-            {
-                .position = { -l2, -w2,  h2 },
-                .color = GREEN,
                 .texture_coordinates = { 0.0f, 1.0f }
             },
             {
-                .position = { -l2,  w2, -h2 },
-                .color = BLUE,
+                .position = { -w2,  h2, -l2 },
+                .color = BLACK,
                 .texture_coordinates = { 0.0f, 0.0f }
             },
             {
-                .position = {  l2,  w2, -h2 },
-                .color = YELLOW,
-                .texture_coordinates = { 1.0f, 1.0f }
+                .position = {  w2,  h2, -l2 },
+                .color = BLACK,
+                .texture_coordinates = { 1.0f, 0.0f }
             },
             {
-                .position = {  l2,  w2,  h2 },
+                .position = {  w2, -h2, -l2 },
+                .color = BLACK,
+                .texture_coordinates = { 1.0f, 1.0f }
+            },
+
+            // back face
+            {
+                .position = { -w2, -h2,  l2 },
                 .color = CYAN,
                 .texture_coordinates = { 1.0f, 1.0f }
             },
             {
-                .position = { -l2,  w2,  h2 },
-                .color = MAGENTA,
+                .position = {  w2, -h2,  l2 },
+                .color = CYAN,
+                .texture_coordinates = { 0.0f, 1.0f }
+            },
+            {
+                .position = {  w2,  h2,  l2 },
+                .color = CYAN,
                 .texture_coordinates = { 0.0f, 0.0f }
             },
+            {
+                .position = { -w2,  h2,  l2 },
+                .color = CYAN,
+                .texture_coordinates = { 1.0f, 0.0f }
+            },
+
+            // top face
+             {
+                .position = { -w2,  h2, -l2 },
+                .color = RED,
+                .texture_coordinates = { 0.0f, 1.0f }
+            },
+            {
+                .position = { -w2,  h2,  l2 },
+                .color = RED,
+                .texture_coordinates = { 0.0f, 0.0f }
+            },
+            {
+                .position = {  w2,  h2,  l2 },
+                .color = RED,
+                .texture_coordinates = { 1.0f, 0.0f }
+            },
+            {
+                .position = {  w2,  h2, -l2 },
+                .color = RED,
+                .texture_coordinates = { 1.0f, 1.0f }
+            },
+
+            // bottom face
+            {
+                .position = { -w2, -h2, -l2 },
+                .color = GREEN,
+                .texture_coordinates = { 1.0f, 1.0f }
+            },
+            {
+                .position = {  w2, -h2, -l2 },
+                .color = GREEN,
+                .texture_coordinates = { 0.0f, 1.0f }
+            },
+            {
+                .position = {  w2, -h2,  l2 },
+                .color = GREEN,
+                .texture_coordinates = { 0.0f, 0.0f }
+            },
+            {
+                .position = { -w2, -h2,  l2 },
+                .color = GREEN,
+                .texture_coordinates = { 1.0f, 0.0f }
+            },
+
+            // left face
+            {
+                .position = { -w2, -h2,  l2 },
+                .color = BLUE,
+                .texture_coordinates = { 0.0f, 1.0f }
+            },
+            {
+                .position = { -w2,  h2,  l2 },
+                .color = BLUE,
+                .texture_coordinates = { 0.0f, 0.0f }
+            },
+            {
+                .position = { -w2,  h2, -l2 },
+                .color = BLUE,
+                .texture_coordinates = { 1.0f, 0.0f }
+            },
+            {
+                .position = { -w2, -h2, -l2 },
+                .color = BLUE,
+                .texture_coordinates = { 1.0f, 1.0f }
+            },
+
+            // right face
+            {
+                .position = {  w2, -h2, -l2 },
+                .color = YELLOW,
+                .texture_coordinates = { 0.0f, 1.0f }
+            },
+            {
+                .position = {  w2,  h2, -l2 },
+                .color = YELLOW,
+                .texture_coordinates = { 0.0f, 0.0f }
+            },
+            {
+                .position = {  w2,  h2,  l2 },
+                .color = YELLOW,
+                .texture_coordinates = { 1.0f, 0.0f }
+            },
+            {
+                .position = {  w2, -h2,  l2 },
+                .color = YELLOW,
+                .texture_coordinates = { 1.0f, 1.0f }
+            }
         };
         result.indices = std::vector<index_t>{
-            0, 1, 2,
-            0, 2, 3,
-            1, 5, 6,
-            1, 6, 2,
-            3, 2, 6,
-            3, 6, 7,
-            4, 0, 3,
-            4, 3, 7,
-            4, 5, 1,
-            4, 1, 0,
-            5, 4, 7,
-            5, 7, 6
+            // front face
+             0,  1,  2,
+             0,  2,  3,
+
+            // back face
+             4,  5,  6,
+             4,  6,  7,
+
+            // top face
+             8,  9, 10,
+             8, 10, 11,
+
+            // bottom face
+            12, 13, 14,
+            12, 14, 15,
+
+            // left face
+            16, 17, 18,
+            16, 18, 19,
+
+            // right face
+            20, 21, 22,
+            20, 22, 23
         };
 
         return result;
