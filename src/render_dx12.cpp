@@ -411,14 +411,15 @@ namespace QCE {
             TransformComponents,
             TransformMatrix>();
 
-        UINT cbv_index = m_current_frame_resource_index * UINT(entities.size());
+        auto unit_cb = m_current_frame_resource->m_units_constant_buffers->Resource();
+        auto unit_cb_gpu_addr = unit_cb->GetGPUVirtualAddress();
+        auto unit_cb_size = m_current_frame_resource->m_units_constant_buffers->m_element_size;
+
         for (const auto& entity_id : entities) {
             const auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
             const auto& unit_descr = m_scene_cpu.units[mesh_comp.render_unit_index];
 
-            auto cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetGPUDescriptorHandleForHeapStart());
-            cbv_handle.Offset(cbv_index, m_cbv_srv_uav_descr_size);
-            m_cmd_list->SetGraphicsRootDescriptorTable(0, cbv_handle);
+            m_cmd_list->SetGraphicsRootConstantBufferView(0, unit_cb_gpu_addr);
 
             m_cmd_list->DrawIndexedInstanced(
                 unit_descr.indeces_count,
@@ -428,7 +429,7 @@ namespace QCE {
                 0
             );
 
-            cbv_index++;
+            unit_cb_gpu_addr += unit_cb_size;
         }
     }
 
@@ -469,10 +470,8 @@ namespace QCE {
 
         m_cmd_list->SetGraphicsRootSignature(m_root_signature.Get());
 
-        int pass_cbv_index = m_pass_cbv_offset + m_current_frame_resource_index;
-        auto pass_cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetGPUDescriptorHandleForHeapStart());
-        pass_cbv_handle.Offset(pass_cbv_index, m_cbv_srv_uav_descr_size);
-        m_cmd_list->SetGraphicsRootDescriptorTable(1, pass_cbv_handle);
+        auto pass_cb = m_current_frame_resource->m_pass_constant_buffer->Resource();
+        m_cmd_list->SetGraphicsRootConstantBufferView(1, pass_cb->GetGPUVirtualAddress());
 
         DrawSceneEntities();
 
@@ -588,13 +587,8 @@ namespace QCE {
     ErrorCode RenderDX12::CreateRootSignature() {
         CD3DX12_ROOT_PARAMETER slotRootParameter[2] = {};
 
-        CD3DX12_DESCRIPTOR_RANGE cbvTable0{};
-        cbvTable0.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
-        slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable0);
-
-        CD3DX12_DESCRIPTOR_RANGE cbvTable1{};
-        cbvTable1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
-        slotRootParameter[1].InitAsDescriptorTable(1, &cbvTable1);
+        slotRootParameter[0].InitAsConstantBufferView(0);
+        slotRootParameter[1].InitAsConstantBufferView(1);
 
         CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 0, nullptr,
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
