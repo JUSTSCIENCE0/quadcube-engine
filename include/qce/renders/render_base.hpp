@@ -72,8 +72,7 @@ namespace QCE {
             float world_matrix[16];
         };
 
-        struct PassConstants
-        {
+        struct PassConstants {
             float view_matrix[16] = {};
             float view_matrix_inv[16] = {};
             float proj_matrix[16] = {};
@@ -88,6 +87,12 @@ namespace QCE {
             float far_z = 0.0f;
             float delta_time = 0.0f;
             float padding2;
+        };
+
+        struct MaterialConstants {
+            float albedo_color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+            float fresnel[3] = { 0.01f, 0.01f, 0.01f };
+            float roughness = 0.25f;
         };
 
         static constexpr int FRAME_RESOURCE_COUNT = 3;

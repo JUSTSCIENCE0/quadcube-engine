@@ -52,7 +52,7 @@ namespace QCE {
             }
         };
         struct FrameResource {
-            FrameResource(ID3D12Device* device, UINT units_count, UINT pass_count) {
+            FrameResource(ID3D12Device* device, UINT units_count, UINT material_count) {
                 if (FAILED(device->CreateCommandAllocator(
                         D3D12_COMMAND_LIST_TYPE_DIRECT,
                         IID_PPV_ARGS(&m_cmd_alloc))))
@@ -61,7 +61,9 @@ namespace QCE {
                 m_units_constant_buffers = std::make_unique<Dx12UploadBuffer<UnitConstants>>(
                     device, units_count, true);
                 m_pass_constant_buffer = std::make_unique<Dx12UploadBuffer<PassConstants>>(
-                    device, pass_count, true);
+                    device, 1, true);
+                m_material_constant_buffer = std::make_unique<Dx12UploadBuffer<MaterialConstants>>(
+                    device, material_count, true);
             }
             FrameResource(const FrameResource&) = delete;
             FrameResource& operator=(const FrameResource&) = delete;
@@ -72,6 +74,7 @@ namespace QCE {
 
             std::unique_ptr<Dx12UploadBuffer<PassConstants>> m_pass_constant_buffer{};
             std::unique_ptr<Dx12UploadBuffer<UnitConstants>> m_units_constant_buffers{};
+            std::unique_ptr<Dx12UploadBuffer<MaterialConstants>> m_material_constant_buffer{};
 
             uint64_t m_fence_value = 0;
         };
