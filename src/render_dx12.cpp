@@ -370,7 +370,8 @@ namespace QCE {
         auto entities = m_entities.QueryEntities<
             MeshComponent,
             TransformComponents,
-            TransformMatrix>();
+            TransformMatrix,
+            MaterialComponent>();
 
         auto current_units_constant_buffers = m_current_frame_resource->m_units_constant_buffers.get();
 
@@ -558,7 +559,8 @@ namespace QCE {
         // reset
         m_scene_gpu.textures.clear();
         for (auto& entity : entities) {
-            auto& material = m_entities.GetComponent<MaterialComponent>(entity);
+            auto& material_component = m_entities.GetComponent<MaterialComponent>(entity);
+            auto& material = ResourceManager::Get().Read<Material>(material_component.index);
 
             if (material.cpu_albedo_index.has_value()) {
                 auto& albedo = ResourceManager::Get().Read<Texture2D>(material.cpu_albedo_index.value());
@@ -567,7 +569,8 @@ namespace QCE {
         }
 
         for (auto& entity : entities) {
-            auto& material = m_entities.GetComponent<MaterialComponent>(entity);
+            auto& material_component = m_entities.GetComponent<MaterialComponent>(entity);
+            auto& material = ResourceManager::Get().Read<Material>(material_component.index);
 
             if (material.cpu_albedo_index.has_value()) {
                 auto& albedo = ResourceManager::Get().Read<Texture2D>(material.cpu_albedo_index.value());

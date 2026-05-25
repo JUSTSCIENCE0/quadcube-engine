@@ -10,6 +10,7 @@
 #include <qce/objects/texture.hpp>
 #include <qce/objects/figures.hpp>
 #include <qce/objects/command.hpp>
+#include <qce/objects/material.hpp>
 
 #include <cu/file-utils.hpp>
 
@@ -228,6 +229,7 @@ namespace QCE {
             Mesh,
             Shader,
             Texture2D,
+            Material,
             Command
         > m_storages{};
     };

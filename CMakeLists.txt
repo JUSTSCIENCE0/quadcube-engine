@@ -88,6 +88,7 @@ set(QCE_OBJECTS_HDRS
     include/qce/objects/shader.hpp
     include/qce/objects/command.hpp
     include/qce/objects/texture.hpp
+    include/qce/objects/material.hpp
 )
 set(QCE_OBJECTS_IMPL
     src/resource_manager.cpp
@@ -117,7 +118,6 @@ set(QCE_COMPONENTS_HDRS
     include/qce/components/transform.hpp
     include/qce/components/movement.hpp
     include/qce/components/camera.hpp
-    include/qce/components/material.hpp
 )
 set(QCE_COMPONENTS_IMPL
     src/transform.cpp

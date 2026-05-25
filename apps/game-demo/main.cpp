@@ -21,12 +21,17 @@ int main(int argc, char* argv[]) {
     };
     QCE_CRITICAL(app.Resources().AddFigure(cuboid, "cuboid"));
     QCE_CRITICAL(app.Resources().AddTexture("squares.bc7"));
+    QCE::Material material{};
+    material.id = "simple_material";
+    material.albedo_color = QCE::GRAY;
+    material.cpu_albedo_index = app.Resources().GetIndex<QCE::Texture2D>("squares.bc7");
+    QCE_CRITICAL(app.Resources().Add(std::move(material)));
 
     QCE::MeshComponent cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
     QCE::MaterialComponent material_component{
-        .cpu_albedo_index = app.Resources().GetIndex<QCE::Texture2D>("squares.bc7")
+        .index = app.Resources().GetIndex<QCE::Material>("simple_material")
     };
     auto entity0 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, cuboid_mesh_component));

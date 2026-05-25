@@ -18,9 +18,9 @@
 #include <qce/components/camera.hpp>
 #include <qce/components/movement.hpp>
 #include <qce/components/transform.hpp>
-#include <qce/components/material.hpp>
 
 #include <qce/objects/mesh.hpp>
+#include <qce/objects/material.hpp>
 
 namespace QCE {
     template <typename... AdditionalComponents>
