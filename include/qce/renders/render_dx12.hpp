@@ -24,12 +24,14 @@ namespace QCE {
         /// ctor
         RenderDX12(Entities& entities, RenderConfig initial_config, HWND window);
 
+        /// methods
         ErrorCode Draw() override;
+        ErrorCode UpdateScene() override;
 
     private:
         /// types
         template<typename T> using MsPtr = Microsoft::WRL::ComPtr<T>;
-        struct RenderSceneGPU {
+        struct GeometryBuffers {
             MsPtr<ID3D12Resource> vertex_buffer = nullptr;
             MsPtr<ID3D12Resource> index_buffer  = nullptr;
 
@@ -73,9 +75,9 @@ namespace QCE {
 
             MsPtr<ID3D12CommandAllocator> m_cmd_alloc = nullptr;
 
-            std::unique_ptr<Dx12UploadBuffer<PassConstants>> m_pass_constant_buffer{};
-            std::unique_ptr<Dx12UploadBuffer<UnitConstants>> m_units_constant_buffers{};
+            std::unique_ptr<Dx12UploadBuffer<UnitConstants>>     m_units_constant_buffers{};
             std::unique_ptr<Dx12UploadBuffer<MaterialConstants>> m_material_constant_buffer{};
+            std::unique_ptr<Dx12UploadBuffer<PassConstants>>     m_pass_constant_buffer{};
 
             uint64_t m_fence_value = 0;
         };
@@ -97,7 +99,6 @@ namespace QCE {
 
         // Scene
         void DrawSceneEntities();
-        ErrorCode UpdateGpuScene();
         ErrorCode CreateRootSignature();
         ErrorCode CreateCBVDescriptorHeap();
         ErrorCode CreateConstantBuffers();
@@ -124,23 +125,23 @@ namespace QCE {
                 m_rtv_descr_size);
         }
         D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() const {
-            assert(m_scene_gpu.vertex_buffer);
-            assert(m_scene_cpu.vertex_buffer_size);
+            assert(m_geometry_buffers.vertex_buffer);
+            assert(m_scene_geometry.vertex_buffer_size);
 
             D3D12_VERTEX_BUFFER_VIEW vbv;
-            vbv.BufferLocation = m_scene_gpu.vertex_buffer->GetGPUVirtualAddress();
-            vbv.StrideInBytes = m_scene_cpu.VERTEX_STRIDE;
-            vbv.SizeInBytes = m_scene_cpu.vertex_buffer_size;
+            vbv.BufferLocation = m_geometry_buffers.vertex_buffer->GetGPUVirtualAddress();
+            vbv.StrideInBytes = m_scene_geometry.VERTEX_STRIDE;
+            vbv.SizeInBytes = m_scene_geometry.vertex_buffer_size;
             return vbv;
         }
         D3D12_INDEX_BUFFER_VIEW GetIndexBufferView() const {
-            assert(m_scene_gpu.index_buffer);
-            assert(m_scene_cpu.index_buffer_size);
+            assert(m_geometry_buffers.index_buffer);
+            assert(m_scene_geometry.index_buffer_size);
 
             D3D12_INDEX_BUFFER_VIEW ibv;
-            ibv.BufferLocation = m_scene_gpu.index_buffer->GetGPUVirtualAddress();
-            ibv.Format = m_scene_gpu.INDEX_FORMAT;
-            ibv.SizeInBytes = m_scene_cpu.index_buffer_size;
+            ibv.BufferLocation = m_geometry_buffers.index_buffer->GetGPUVirtualAddress();
+            ibv.Format = m_geometry_buffers.INDEX_FORMAT;
+            ibv.SizeInBytes = m_scene_geometry.index_buffer_size;
             return ibv;
         }
 
@@ -176,7 +177,7 @@ namespace QCE {
         D3D12_VIEWPORT m_screen_viewport{};
         D3D12_RECT     m_scissor_rect{};
 
-        RenderSceneGPU m_scene_gpu{};
+        GeometryBuffers m_geometry_buffers{};
         std::vector<D3D12_INPUT_ELEMENT_DESC> m_input_layout;
         MsPtr<ID3D12PipelineState> m_PSO{};
 

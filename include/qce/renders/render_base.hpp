@@ -38,12 +38,7 @@ namespace QCE {
         }
 
         virtual ErrorCode Draw() = 0;
-
-        ErrorCode UpdateScene() {
-            QCE_CRITICAL(UpdateCpuScene());
-
-            return UpdateGpuScene();
-        }
+        virtual ErrorCode UpdateScene();
 
         ErrorCode UseShader(const std::string& name, ShaderType type);
 
@@ -51,7 +46,9 @@ namespace QCE {
         using ShaderIndeces = std::array<
             size_t /* index*/,
             ShaderType::E_SHADERS_TYPE_COUNT>;
-        struct RenderSceneCPU {
+        struct SceneGeometry {
+            constexpr static uint32_t VERTEX_STRIDE = sizeof(vertex);
+
             struct Unit {
                 uint32_t indeces_count = 0;
                 uint32_t index_offset = 0;
@@ -63,7 +60,6 @@ namespace QCE {
 
             uint32_t vertex_buffer_size = 0;
             uint32_t index_buffer_size = 0;
-            constexpr static uint32_t VERTEX_STRIDE = sizeof(vertex);
 
             std::vector<Unit> units;
         };
@@ -97,16 +93,9 @@ namespace QCE {
 
         static constexpr int FRAME_RESOURCE_COUNT = 3;
 
-        virtual ErrorCode UpdateGpuScene() = 0;
-
-        Entities& m_entities;
-        RenderConfig m_config{};
-
-        RenderSceneCPU m_scene_cpu{};
-
+        Entities&     m_entities;
+        RenderConfig  m_config{};
+        SceneGeometry m_scene_geometry{};
         ShaderIndeces m_shader_indeces{};
-
-    private:
-        ErrorCode UpdateCpuScene();
     };
 }

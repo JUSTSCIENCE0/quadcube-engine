@@ -20,13 +20,13 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode RenderBase::UpdateCpuScene() {
+    ErrorCode RenderBase::UpdateScene() {
         // reset
-        m_scene_cpu.units.clear();
-        m_scene_cpu.index_buffer.clear();
-        m_scene_cpu.vertex_buffer.clear();
-        m_scene_cpu.index_buffer_size = 0;
-        m_scene_cpu.vertex_buffer_size = 0;
+        m_scene_geometry.units.clear();
+        m_scene_geometry.index_buffer.clear();
+        m_scene_geometry.vertex_buffer.clear();
+        m_scene_geometry.index_buffer_size = 0;
+        m_scene_geometry.vertex_buffer_size = 0;
 
         auto entities = m_entities.QueryEntities<
             MeshComponent,
@@ -49,25 +49,25 @@ namespace QCE {
                 continue;
             }
 
-            RenderSceneCPU::Unit unit{
+            SceneGeometry::Unit unit{
                 .indeces_count = uint32_t(mesh.indices.size()),
-                .index_offset = uint32_t(m_scene_cpu.index_buffer.size()),
-                .vertex_offset = uint32_t(m_scene_cpu.vertex_buffer.size())
+                .index_offset = uint32_t(m_scene_geometry.index_buffer.size()),
+                .vertex_offset = uint32_t(m_scene_geometry.vertex_buffer.size())
             };
 
-            m_scene_cpu.index_buffer.insert(
-                m_scene_cpu.index_buffer.end(), mesh.indices.begin(), mesh.indices.end());
-            m_scene_cpu.vertex_buffer.insert(
-                m_scene_cpu.vertex_buffer.end(), mesh.vertices.begin(), mesh.vertices.end());
-            m_scene_cpu.units.push_back(std::move(unit));
+            m_scene_geometry.index_buffer.insert(
+                m_scene_geometry.index_buffer.end(), mesh.indices.begin(), mesh.indices.end());
+            m_scene_geometry.vertex_buffer.insert(
+                m_scene_geometry.vertex_buffer.end(), mesh.vertices.begin(), mesh.vertices.end());
+            m_scene_geometry.units.push_back(std::move(unit));
 
             mesh.render_unit_index = unit_index;
             mesh_comp.render_unit_index = unit_index;
             unit_index++;
         }
 
-        m_scene_cpu.vertex_buffer_size = uint32_t(m_scene_cpu.vertex_buffer.size()) * m_scene_cpu.VERTEX_STRIDE;
-        m_scene_cpu.index_buffer_size = uint32_t(m_scene_cpu.index_buffer.size()) * sizeof(index_t);
+        m_scene_geometry.vertex_buffer_size = uint32_t(m_scene_geometry.vertex_buffer.size()) * m_scene_geometry.VERTEX_STRIDE;
+        m_scene_geometry.index_buffer_size = uint32_t(m_scene_geometry.index_buffer.size()) * sizeof(index_t);
         return ErrorCode::SUCCESS;
     }
 }

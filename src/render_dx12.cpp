@@ -98,7 +98,7 @@ namespace QCE {
             try {
                 m_frame_resources.emplace_back(
                     std::make_unique<FrameResource>(
-                        m_d3d_device.Get(), units_count, UINT(m_scene_gpu.used_materials_indices.size())));
+                        m_d3d_device.Get(), units_count, UINT(m_geometry_buffers.used_materials_indices.size())));
             }
             catch (const ErrorCodeException& e) {
                 return e.code_value();
@@ -397,7 +397,7 @@ namespace QCE {
             index++;
         }
 
-        for (const auto& material_index : m_scene_gpu.used_materials_indices) {
+        for (const auto& material_index : m_geometry_buffers.used_materials_indices) {
             auto& material = ResourceManager::Get().Read<Material>(material_index);
             if (material.dirty_frames > 0) {
                 MaterialConstants mat_const {
@@ -439,7 +439,7 @@ namespace QCE {
 
         for (const auto& entity_id : entities) {
             const auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
-            const auto& unit_descr = m_scene_cpu.units[mesh_comp.render_unit_index];
+            const auto& unit_descr = m_scene_geometry.units[mesh_comp.render_unit_index];
             const auto& material_comp = m_entities.GetComponent<MaterialComponent>(entity_id);
 
             m_cmd_list->SetGraphicsRootConstantBufferView(0, unit_cb_gpu_addr);
@@ -527,8 +527,10 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode RenderDX12::UpdateGpuScene() {
-        m_scene_gpu.used_materials_indices.clear();
+    ErrorCode RenderDX12::UpdateScene() {
+        QCE_CRITICAL(RenderBase::UpdateScene());
+
+        m_geometry_buffers.used_materials_indices.clear();
         auto entities = m_entities.QueryEntities<
             MeshComponent,
             TransformComponents,
@@ -553,13 +555,13 @@ namespace QCE {
 
             material.gpu_buffer_index = material_gpu_index++;
             material_component.gpu_buffer_index = material.gpu_buffer_index.value();
-            m_scene_gpu.used_materials_indices.push_back(material_component.index);
+            m_geometry_buffers.used_materials_indices.push_back(material_component.index);
         }
 #ifndef NDEBUG
         // assert that used materials indices are unique
         {
             std::set<size_t> unique_indices;
-            for (auto index : m_scene_gpu.used_materials_indices) {
+            for (auto index : m_geometry_buffers.used_materials_indices) {
                 assert(unique_indices.find(index) == unique_indices.end());
                 unique_indices.insert(index);
             }
@@ -593,23 +595,23 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::UploadMeshes() {
-        m_scene_gpu.DisposeUploaders();
+        m_geometry_buffers.DisposeUploaders();
 
         QCE_CRITICAL(dx12_create_default_buffer(
             m_d3d_device.Get(),
             m_cmd_list.Get(),
-            m_scene_cpu.vertex_buffer.data(),
-            m_scene_cpu.vertex_buffer_size,
-            m_scene_gpu.vertex_buffer,
-            m_scene_gpu.vertex_buffer_uploader));
+            m_scene_geometry.vertex_buffer.data(),
+            m_scene_geometry.vertex_buffer_size,
+            m_geometry_buffers.vertex_buffer,
+            m_geometry_buffers.vertex_buffer_uploader));
 
         QCE_CRITICAL(dx12_create_default_buffer(
             m_d3d_device.Get(),
             m_cmd_list.Get(),
-            m_scene_cpu.index_buffer.data(),
-            m_scene_cpu.index_buffer_size,
-            m_scene_gpu.index_buffer,
-            m_scene_gpu.index_buffer_uploader));
+            m_scene_geometry.index_buffer.data(),
+            m_scene_geometry.index_buffer_size,
+            m_geometry_buffers.index_buffer,
+            m_geometry_buffers.index_buffer_uploader));
 
         return ErrorCode::SUCCESS;
     }
@@ -619,7 +621,7 @@ namespace QCE {
             MaterialComponent>();
 
         // reset
-        m_scene_gpu.textures.clear();
+        m_geometry_buffers.textures.clear();
         for (auto& entity : entities) {
             auto& material_component = m_entities.GetComponent<MaterialComponent>(entity);
             auto& material = ResourceManager::Get().Read<Material>(material_component.index);
@@ -637,7 +639,7 @@ namespace QCE {
             if (material.cpu_albedo_index.has_value()) {
                 auto& albedo = ResourceManager::Get().Read<Texture2D>(material.cpu_albedo_index.value());
                 if (!albedo.gpu_texture_index.has_value()) {
-                    auto index = m_scene_gpu.textures.size();
+                    auto index = m_geometry_buffers.textures.size();
                     QCE_CRITICAL(LoadTexture(albedo));
                     albedo.gpu_texture_index = index;
                 }
@@ -816,7 +818,7 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::LoadTexture(Texture2D& texture) {
-        RenderSceneGPU::Texture gpu_texture;
+        GeometryBuffers::Texture gpu_texture;
         gpu_texture.format = dx12_get_texture_format(texture.format);
         if (DXGI_FORMAT_UNKNOWN == gpu_texture.format)
             return ErrorCode::E_DX12_UNSUPPORTED_TEXTURE_FORMAT;
@@ -901,7 +903,7 @@ namespace QCE {
 
         m_d3d_device->CreateShaderResourceView(texture_resource.Get(), &srv_desc, descr);
 
-        m_scene_gpu.textures.emplace_back(std::move(gpu_texture));
+        m_geometry_buffers.textures.emplace_back(std::move(gpu_texture));
         return ErrorCode::SUCCESS;
     }
 }
