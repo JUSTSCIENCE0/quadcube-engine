@@ -6,6 +6,6 @@
 #include "common.hlsl"
 
 float4 main(VertexOut pin) : SV_Target {
-    return pin.color;
+    return pin.color * albedo_color;
 }
 

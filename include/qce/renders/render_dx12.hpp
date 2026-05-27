@@ -45,6 +45,7 @@ namespace QCE {
                 MsPtr<ID3D12Resource> uploader = nullptr;
             };
             std::vector<Texture> textures{};
+            std::vector<size_t>  used_materials_indices{};
 
             void DisposeUploaders() {
                 vertex_buffer_uploader = nullptr;

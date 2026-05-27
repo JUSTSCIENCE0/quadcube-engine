@@ -8,7 +8,14 @@ cbuffer UnitConstants : register(b0)
     float4x4 world_matrix;
 };
 
-cbuffer PassConstants : register(b1)
+cbuffer MaterialConstants : register(b1)
+{
+    float4 albedo_color;
+    float3 fresnel;
+    float  roughness;
+};
+
+cbuffer PassConstants : register(b2)
 {
     float4x4 view_matrix;
     float4x4 view_matrix_inv;

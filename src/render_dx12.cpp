@@ -97,7 +97,8 @@ namespace QCE {
         for (int i = 0; i < FRAME_RESOURCE_COUNT; i++) {
             try {
                 m_frame_resources.emplace_back(
-                    std::make_unique<FrameResource>(m_d3d_device.Get(), units_count, 1));
+                    std::make_unique<FrameResource>(
+                        m_d3d_device.Get(), units_count, UINT(m_scene_gpu.used_materials_indices.size())));
             }
             catch (const ErrorCodeException& e) {
                 return e.code_value();
@@ -396,6 +397,22 @@ namespace QCE {
             index++;
         }
 
+        for (const auto& material_index : m_scene_gpu.used_materials_indices) {
+            auto& material = ResourceManager::Get().Read<Material>(material_index);
+            if (material.dirty_frames > 0) {
+                MaterialConstants mat_const {
+                    .roughness = material.roughness
+                };
+                std::memcpy(mat_const.albedo_color, material.albedo_color.arr, sizeof(mat_const.albedo_color));
+                std::memcpy(mat_const.fresnel, material.fresnel.arr, sizeof(mat_const.fresnel));
+
+                assert(material.gpu_buffer_index.has_value());
+                m_current_frame_resource->m_material_constant_buffer->CopyData(
+                    int(material.gpu_buffer_index.value()), mat_const);
+                material.dirty_frames--;
+            }
+        }
+
         return ErrorCode::SUCCESS;
     }
 
@@ -410,17 +427,24 @@ namespace QCE {
         auto entities = m_entities.QueryEntities<
             MeshComponent,
             TransformComponents,
-            TransformMatrix>();
+            TransformMatrix,
+            MaterialComponent>();
 
         auto unit_cb = m_current_frame_resource->m_units_constant_buffers->Resource();
         auto unit_cb_gpu_addr = unit_cb->GetGPUVirtualAddress();
         auto unit_cb_size = m_current_frame_resource->m_units_constant_buffers->m_element_size;
+        auto material_cb = m_current_frame_resource->m_material_constant_buffer->Resource();
+        auto material_cb_gpu_addr = material_cb->GetGPUVirtualAddress();
+        auto material_cb_size = m_current_frame_resource->m_material_constant_buffer->m_element_size;
 
         for (const auto& entity_id : entities) {
             const auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
             const auto& unit_descr = m_scene_cpu.units[mesh_comp.render_unit_index];
+            const auto& material_comp = m_entities.GetComponent<MaterialComponent>(entity_id);
 
             m_cmd_list->SetGraphicsRootConstantBufferView(0, unit_cb_gpu_addr);
+            m_cmd_list->SetGraphicsRootConstantBufferView(1,
+                material_cb_gpu_addr + material_cb_size * material_comp.index);
 
             m_cmd_list->DrawIndexedInstanced(
                 unit_descr.indeces_count,
@@ -472,7 +496,7 @@ namespace QCE {
         m_cmd_list->SetGraphicsRootSignature(m_root_signature.Get());
 
         auto pass_cb = m_current_frame_resource->m_pass_constant_buffer->Resource();
-        m_cmd_list->SetGraphicsRootConstantBufferView(1, pass_cb->GetGPUVirtualAddress());
+        m_cmd_list->SetGraphicsRootConstantBufferView(2, pass_cb->GetGPUVirtualAddress());
 
         DrawSceneEntities();
 
@@ -503,7 +527,45 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode RenderDX12::UpdateGpuScene() { 
+    ErrorCode RenderDX12::UpdateGpuScene() {
+        m_scene_gpu.used_materials_indices.clear();
+        auto entities = m_entities.QueryEntities<
+            MeshComponent,
+            TransformComponents,
+            TransformMatrix,
+            MaterialComponent>();
+        for (auto& entity : entities) {
+            auto& material_component = m_entities.GetComponent<MaterialComponent>(entity);
+            auto& material = ResourceManager::Get().Read<Material>(material_component.index);
+            material.gpu_buffer_index.reset();
+            material.dirty_frames = FRAME_RESOURCE_COUNT;
+        }
+
+        size_t material_gpu_index = 0;
+        for (auto& entity : entities) {
+            auto& material_component = m_entities.GetComponent<MaterialComponent>(entity);
+            auto& material = ResourceManager::Get().Read<Material>(material_component.index);
+
+            if (material.gpu_buffer_index.has_value()) {
+                material_component.gpu_buffer_index = material.gpu_buffer_index.value();
+                continue;
+            }
+
+            material.gpu_buffer_index = material_gpu_index++;
+            material_component.gpu_buffer_index = material.gpu_buffer_index.value();
+            m_scene_gpu.used_materials_indices.push_back(material_component.index);
+        }
+#ifndef NDEBUG
+        // assert that used materials indices are unique
+        {
+            std::set<size_t> unique_indices;
+            for (auto index : m_scene_gpu.used_materials_indices) {
+                assert(unique_indices.find(index) == unique_indices.end());
+                unique_indices.insert(index);
+            }
+        }
+#endif
+
         auto hr = m_cmd_list->Reset(m_main_cmd_alloc.Get(), nullptr);
         if (FAILED(hr))
             return ErrorCode::E_DX12_RESET_COMMAND_LIST_FAILED;
@@ -588,12 +650,13 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::CreateRootSignature() {
-        CD3DX12_ROOT_PARAMETER slotRootParameter[2] = {};
+        CD3DX12_ROOT_PARAMETER slotRootParameter[3] = {};
 
-        slotRootParameter[0].InitAsConstantBufferView(0);
-        slotRootParameter[1].InitAsConstantBufferView(1);
+        slotRootParameter[0].InitAsConstantBufferView(0); // world matrices
+        slotRootParameter[1].InitAsConstantBufferView(1); // materials
+        slotRootParameter[2].InitAsConstantBufferView(2); // pass constants
 
-        CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 0, nullptr,
+        CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(3, slotRootParameter, 0, nullptr,
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
         MsPtr<ID3DBlob> serializedRootSig = nullptr;
