@@ -439,7 +439,13 @@ namespace QCE {
 
         for (const auto& entity_id : entities) {
             const auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
-            const auto& unit_descr = m_scene_geometry.units[mesh_comp.render_unit_index];
+            if (!m_geometry_unit_index.exists(mesh_comp.index)) {
+                // TODO: use log system
+                std::cerr << "Mesh index " << mesh_comp.index << " not found in geometry buffers\n";
+                continue;
+            }
+
+            const auto& unit_descr = m_scene_geometry.units[m_geometry_unit_index[mesh_comp.index]];
             const auto& material_comp = m_entities.GetComponent<MaterialComponent>(entity_id);
 
             m_cmd_list->SetGraphicsRootConstantBufferView(0, unit_cb_gpu_addr);
@@ -770,16 +776,16 @@ namespace QCE {
 
     ErrorCode RenderDX12::CreatePSO() {
         if (!ResourceManager::Get().Exists<Shader>(
-                m_shader_indeces[ShaderType::E_VERTEX_SHADER]))
+                m_shader_index[ShaderType::E_VERTEX_SHADER]))
             return ErrorCode::E_ENG_SCENE_VS_NOT_SELECTED;
         if (!ResourceManager::Get().Exists<Shader>(
-                m_shader_indeces[ShaderType::E_PIXEL_SHADER]))
+                m_shader_index[ShaderType::E_PIXEL_SHADER]))
             return ErrorCode::E_ENG_SCENE_PS_NOT_SELECTED;
 
         auto& vs = ResourceManager::Get().Read<Shader>(
-            m_shader_indeces[ShaderType::E_VERTEX_SHADER]);
+            m_shader_index[ShaderType::E_VERTEX_SHADER]);
         auto& ps = ResourceManager::Get().Read<Shader>(
-            m_shader_indeces[ShaderType::E_PIXEL_SHADER]);
+            m_shader_index[ShaderType::E_PIXEL_SHADER]);
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_descr{};
         ZeroMemory(&pso_descr, sizeof(pso_descr));

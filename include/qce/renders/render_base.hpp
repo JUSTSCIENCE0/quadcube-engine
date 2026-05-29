@@ -23,7 +23,7 @@ namespace QCE {
         RenderBase(Entities& entities, RenderConfig initial_config) :
             m_entities(entities),
             m_config(std::move(initial_config)) {
-            m_shader_indeces.fill(ResourceManager::INVALID_RESOURCE_INDEX);
+            m_shader_index.fill(ResourceManager::INVALID_RESOURCE_INDEX);
         }
 
         RenderBase(const RenderBase&) = delete;
@@ -43,9 +43,27 @@ namespace QCE {
         ErrorCode UseShader(const std::string& name, ShaderType type);
 
     protected:
-        using ShaderIndeces = std::array<
+        /// types
+        using ShaderIndex = std::array<
             size_t /* index*/,
             ShaderType::E_SHADERS_TYPE_COUNT>;
+
+        class BufferMap : 
+                public std::vector<size_t> {
+            static constexpr auto INVALID_INDEX = std::numeric_limits<size_t>::max();
+        public:
+            void add(size_t index, size_t value) {
+                if (index >= this->size()) {
+                    this->resize(index + 1, INVALID_INDEX);
+                }
+                (*this)[index] = value;
+            }
+
+            bool exists(size_t index) const {
+                return (index < this->size()) && (*this)[index] != INVALID_INDEX;
+            }
+        };
+
         struct SceneGeometry {
             constexpr static uint32_t VERTEX_STRIDE = sizeof(vertex);
 
@@ -91,11 +109,16 @@ namespace QCE {
             float roughness = 0.25f;
         };
 
-        static constexpr int FRAME_RESOURCE_COUNT = 3;
+        /// consts
+        static constexpr auto FRAME_RESOURCE_COUNT = 3;
 
+        /// attributes
         Entities&     m_entities;
         RenderConfig  m_config{};
         SceneGeometry m_scene_geometry{};
-        ShaderIndeces m_shader_indeces{};
+
+        // buffers map
+        ShaderIndex m_shader_index{};        // shader type -> shader index
+        BufferMap   m_geometry_unit_index{}; // mesh index  -> geometry unit index
     };
 }

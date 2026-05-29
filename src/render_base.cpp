@@ -9,14 +9,14 @@
 
 namespace QCE {
     ErrorCode RenderBase::UseShader(const std::string& name, ShaderType type) {
-        if (ResourceManager::INVALID_RESOURCE_INDEX != m_shader_indeces[type])
+        if (ResourceManager::INVALID_RESOURCE_INDEX != m_shader_index[type])
             return ErrorCode::E_ENG_SHADER_ALREADY_SELECTED;
         auto shader_id = make_shader_id(name, type);
         auto shader_index = ResourceManager::Get().GetIndex<Shader>(shader_id);
         if (ResourceManager::INVALID_RESOURCE_INDEX == shader_index)
             return ErrorCode::E_ENG_SHADER_NOT_FOUND;
 
-        m_shader_indeces[type] = shader_index;
+        m_shader_index[type] = shader_index;
         return ErrorCode::SUCCESS;
     }
 
@@ -27,27 +27,22 @@ namespace QCE {
         m_scene_geometry.vertex_buffer.clear();
         m_scene_geometry.index_buffer_size = 0;
         m_scene_geometry.vertex_buffer_size = 0;
+        m_geometry_unit_index.clear();
 
         auto entities = m_entities.QueryEntities<
             MeshComponent,
             TransformComponents,
-            TransformMatrix>();
-        for (const auto& entity_id : entities) {
-            auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
-            auto& mesh = ResourceManager::Get().Read<Mesh>(mesh_comp.index);
-            mesh.render_unit_index.reset();
-        }
+            TransformMatrix,
+            MaterialComponent>();
 
         size_t unit_index = 0;
 
         for (const auto& entity_id : entities) {
             auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
-            auto& mesh = ResourceManager::Get().Read<Mesh>(mesh_comp.index);
-
-            if (mesh.render_unit_index.has_value()) {
-                mesh_comp.render_unit_index = mesh.render_unit_index.value();
+            if (m_geometry_unit_index.exists(mesh_comp.index))
                 continue;
-            }
+
+            auto& mesh = ResourceManager::Get().Read<Mesh>(mesh_comp.index);
 
             SceneGeometry::Unit unit{
                 .indeces_count = uint32_t(mesh.indices.size()),
@@ -59,10 +54,9 @@ namespace QCE {
                 m_scene_geometry.index_buffer.end(), mesh.indices.begin(), mesh.indices.end());
             m_scene_geometry.vertex_buffer.insert(
                 m_scene_geometry.vertex_buffer.end(), mesh.vertices.begin(), mesh.vertices.end());
-            m_scene_geometry.units.push_back(std::move(unit));
+            m_scene_geometry.units.emplace_back(std::move(unit));
 
-            mesh.render_unit_index = unit_index;
-            mesh_comp.render_unit_index = unit_index;
+            m_geometry_unit_index.add(mesh_comp.index, unit_index);
             unit_index++;
         }
 

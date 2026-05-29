@@ -16,7 +16,6 @@
 namespace QCE {
     struct MeshComponent {
         size_t index{};
-        size_t render_unit_index = 0;
         int    dirty_frames = 1;
     };
 
@@ -30,7 +29,5 @@ namespace QCE {
         std::string          id{};
         std::vector<vertex>  vertices{};
         std::vector<index_t> indices{};
-
-        std::optional<size_t> render_unit_index = std::nullopt;
     };
 }
