@@ -9,14 +9,14 @@
 
 namespace QCE {
     ErrorCode RenderBase::UseShader(const std::string& name, ShaderType type) {
-        if (ResourceManager::INVALID_RESOURCE_INDEX != m_shader_index[type])
+        if (ResourceManager::INVALID_RESOURCE_INDEX != m_shader_map[type])
             return ErrorCode::E_ENG_SHADER_ALREADY_SELECTED;
         auto shader_id = make_shader_id(name, type);
         auto shader_index = ResourceManager::Get().GetIndex<Shader>(shader_id);
         if (ResourceManager::INVALID_RESOURCE_INDEX == shader_index)
             return ErrorCode::E_ENG_SHADER_NOT_FOUND;
 
-        m_shader_index[type] = shader_index;
+        m_shader_map[type] = shader_index;
         return ErrorCode::SUCCESS;
     }
 
@@ -29,7 +29,7 @@ namespace QCE {
         m_scene_geometry.vertex_buffer_size = 0;
         m_scene_materials.resources.clear();
         m_scene_materials.dirty_frames.clear();
-        m_geometry_unit_index.clear();
+        m_geometry_unit_map.clear();
         m_material_buffer_map.clear();
 
         auto entities = m_entities.QueryEntities<
@@ -42,7 +42,7 @@ namespace QCE {
         size_t unit_index = 0;
         for (const auto& entity_id : entities) {
             auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
-            if (m_geometry_unit_index.exists(mesh_comp.index))
+            if (m_geometry_unit_map.exists(mesh_comp.index))
                 continue;
 
             auto& mesh = ResourceManager::Get().Read<Mesh>(mesh_comp.index);
@@ -59,7 +59,7 @@ namespace QCE {
                 m_scene_geometry.vertex_buffer.end(), mesh.vertices.begin(), mesh.vertices.end());
             m_scene_geometry.units.emplace_back(std::move(unit));
 
-            m_geometry_unit_index.add(mesh_comp.index, unit_index);
+            m_geometry_unit_map.add(mesh_comp.index, unit_index);
             unit_index++;
         }
 

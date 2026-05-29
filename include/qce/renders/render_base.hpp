@@ -23,7 +23,7 @@ namespace QCE {
         RenderBase(Entities& entities, RenderConfig initial_config) :
             m_entities(entities),
             m_config(std::move(initial_config)) {
-            m_shader_index.fill(ResourceManager::INVALID_RESOURCE_INDEX);
+            m_shader_map.fill(ResourceManager::INVALID_RESOURCE_INDEX);
         }
 
         RenderBase(const RenderBase&) = delete;
@@ -44,7 +44,7 @@ namespace QCE {
 
     protected:
         /// types
-        using ShaderIndex = std::array<
+        using ShaderMap = std::array<
             size_t /* index*/,
             ShaderType::E_SHADERS_TYPE_COUNT>;
 
@@ -124,8 +124,8 @@ namespace QCE {
         SceneMaterials m_scene_materials{};
 
         // buffers map
-        ShaderIndex m_shader_index{};          // shader type -> shader index
-        BufferMap   m_geometry_unit_index{};   // mesh resource index  -> scene geometry unit index
-        BufferMap   m_material_buffer_map{};   // material resource index -> scene materials buffer index
+        ShaderMap m_shader_map{};          // shader type -> shader index
+        BufferMap m_geometry_unit_map{};   // mesh resource index -> scene geometry unit index
+        BufferMap m_material_buffer_map{}; // material resource index -> scene materials buffer index
     };
 }
