@@ -48,7 +48,7 @@ namespace QCE {
             size_t /* index*/,
             ShaderType::E_SHADERS_TYPE_COUNT>;
 
-        class BufferMap : 
+        class BufferMap :
                 public std::vector<size_t> {
             static constexpr auto INVALID_INDEX = std::numeric_limits<size_t>::max();
         public:

@@ -16,7 +16,6 @@
 namespace QCE {
     struct MeshComponent {
         size_t index{};
-        int    dirty_frames = 1;
     };
 
     struct Mesh {

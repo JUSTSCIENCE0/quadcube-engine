@@ -379,20 +379,19 @@ namespace QCE {
         UINT index = 0;
         for (const auto& entity_id : entities) {
             auto& world = m_entities.GetComponent<TransformMatrix>(entity_id);
-            auto& mesh = m_entities.GetComponent<MeshComponent>(entity_id);
             if (!world.actual) {
                 auto& transform_comp = m_entities.GetComponent<TransformComponents>(entity_id);
                 calculate_transform_matrix(transform_comp, world);
-                mesh.dirty_frames = FRAME_RESOURCE_COUNT;
+                world.dirty_frames = FRAME_RESOURCE_COUNT;
             }
 
-            if (mesh.dirty_frames > 0) {
+            if (world.dirty_frames > 0) {
                 UnitConstants transform{};
                 std::memcpy(transform.world_matrix,
                             world.transposed_data.arr, sizeof(world.transposed_data.arr));
                 current_units_constant_buffers->CopyData(index, transform);
 
-                mesh.dirty_frames--;
+                world.dirty_frames--;
             }
             index++;
         }

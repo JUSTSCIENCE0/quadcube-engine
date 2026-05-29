@@ -18,6 +18,7 @@ namespace QCE {
 
     struct TransformMatrix {
         bool actual = false;
+        int  dirty_frames = 1;
 
         float4x4 data{
             .arr = {
