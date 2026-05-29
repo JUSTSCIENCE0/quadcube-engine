@@ -449,7 +449,7 @@ namespace QCE {
 
             m_cmd_list->SetGraphicsRootConstantBufferView(0, unit_cb_gpu_addr);
             m_cmd_list->SetGraphicsRootConstantBufferView(1,
-                material_cb_gpu_addr + material_cb_size * material_comp.index);
+                material_cb_gpu_addr + material_cb_size * material_comp.gpu_buffer_index);
 
             m_cmd_list->DrawIndexedInstanced(
                 unit_descr.indeces_count,
