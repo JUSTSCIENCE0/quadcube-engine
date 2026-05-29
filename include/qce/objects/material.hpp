@@ -13,7 +13,6 @@
 namespace QCE {
     struct MaterialComponent {
         size_t index = 0;
-        size_t gpu_buffer_index = 0;
     };
 
     struct Material {
@@ -40,9 +39,5 @@ namespace QCE {
         std::optional<size_t> cpu_emissive_index = std::nullopt;
         //  gpu resource indices
         std::optional<size_t> gpu_albedo_index = std::nullopt;
-
-        // ancillary
-        int    dirty_frames = 1;
-        std::optional<size_t> gpu_buffer_index = std::nullopt;
     };
 }

@@ -27,7 +27,10 @@ namespace QCE {
         m_scene_geometry.vertex_buffer.clear();
         m_scene_geometry.index_buffer_size = 0;
         m_scene_geometry.vertex_buffer_size = 0;
+        m_scene_materials.resources.clear();
+        m_scene_materials.dirty_frames.clear();
         m_geometry_unit_index.clear();
+        m_material_buffer_map.clear();
 
         auto entities = m_entities.QueryEntities<
             MeshComponent,
@@ -35,8 +38,8 @@ namespace QCE {
             TransformMatrix,
             MaterialComponent>();
 
+        // scene geometry
         size_t unit_index = 0;
-
         for (const auto& entity_id : entities) {
             auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
             if (m_geometry_unit_index.exists(mesh_comp.index))
@@ -62,6 +65,22 @@ namespace QCE {
 
         m_scene_geometry.vertex_buffer_size = uint32_t(m_scene_geometry.vertex_buffer.size()) * m_scene_geometry.VERTEX_STRIDE;
         m_scene_geometry.index_buffer_size = uint32_t(m_scene_geometry.index_buffer.size()) * sizeof(index_t);
+
+        // scene materials
+        size_t material_index = 0;
+        for (const auto& entity_id : entities) {
+            auto& material_comp = m_entities.GetComponent<MaterialComponent>(entity_id);
+            if (m_material_buffer_map.exists(material_comp.index))
+                continue;
+
+            m_scene_materials.resources.push_back(material_comp.index);
+            m_material_buffer_map.add(material_comp.index, material_index);
+            material_index++;
+        }
+
+        m_scene_materials.dirty_frames.resize(
+            m_scene_materials.resources.size(), FRAME_RESOURCE_COUNT);
+
         return ErrorCode::SUCCESS;
     }
 }

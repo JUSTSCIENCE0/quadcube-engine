@@ -98,7 +98,7 @@ namespace QCE {
             try {
                 m_frame_resources.emplace_back(
                     std::make_unique<FrameResource>(
-                        m_d3d_device.Get(), units_count, UINT(m_geometry_buffers.used_materials_indices.size())));
+                        m_d3d_device.Get(), units_count, UINT(m_scene_materials.resources.size())));
             }
             catch (const ErrorCodeException& e) {
                 return e.code_value();
@@ -396,19 +396,19 @@ namespace QCE {
             index++;
         }
 
-        for (const auto& material_index : m_geometry_buffers.used_materials_indices) {
-            auto& material = ResourceManager::Get().Read<Material>(material_index);
-            if (material.dirty_frames > 0) {
+        for (const auto& material_index : m_scene_materials.resources) {
+            assert(m_material_buffer_map.exists(material_index));
+            auto buffer_index = m_material_buffer_map[material_index];
+            if (m_scene_materials.dirty_frames[buffer_index] > 0) {
+                auto& material = ResourceManager::Get().Read<Material>(material_index);
                 MaterialConstants mat_const {
                     .roughness = material.roughness
                 };
                 std::memcpy(mat_const.albedo_color, material.albedo_color.arr, sizeof(mat_const.albedo_color));
                 std::memcpy(mat_const.fresnel, material.fresnel.arr, sizeof(mat_const.fresnel));
 
-                assert(material.gpu_buffer_index.has_value());
-                m_current_frame_resource->m_material_constant_buffer->CopyData(
-                    int(material.gpu_buffer_index.value()), mat_const);
-                material.dirty_frames--;
+                m_current_frame_resource->m_material_constant_buffer->CopyData(int(buffer_index), mat_const);
+                m_scene_materials.dirty_frames[buffer_index]--;
             }
         }
 
@@ -440,17 +440,22 @@ namespace QCE {
             const auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
             if (!m_geometry_unit_index.exists(mesh_comp.index)) {
                 // TODO: use log system
-                std::cerr << "Mesh index " << mesh_comp.index << " not found in geometry buffers\n";
+                std::cerr << "Mesh index " << mesh_comp.index << " not found in geometry buffers" << std::endl;
                 continue;
             }
 
-            const auto& unit_descr = m_scene_geometry.units[m_geometry_unit_index[mesh_comp.index]];
             const auto& material_comp = m_entities.GetComponent<MaterialComponent>(entity_id);
+            if (!m_material_buffer_map.exists(material_comp.index)) {
+                // TODO: use log system
+                std::cerr << "Material index " << material_comp.index << " not found in material buffers" << std::endl;
+                continue;
+            }
 
             m_cmd_list->SetGraphicsRootConstantBufferView(0, unit_cb_gpu_addr);
             m_cmd_list->SetGraphicsRootConstantBufferView(1,
-                material_cb_gpu_addr + material_cb_size * material_comp.gpu_buffer_index);
+                material_cb_gpu_addr + material_cb_size * m_material_buffer_map[material_comp.index]);
 
+            const auto& unit_descr = m_scene_geometry.units[m_geometry_unit_index[mesh_comp.index]];
             m_cmd_list->DrawIndexedInstanced(
                 unit_descr.indeces_count,
                 1,
@@ -534,44 +539,6 @@ namespace QCE {
 
     ErrorCode RenderDX12::UpdateScene() {
         QCE_CRITICAL(RenderBase::UpdateScene());
-
-        m_geometry_buffers.used_materials_indices.clear();
-        auto entities = m_entities.QueryEntities<
-            MeshComponent,
-            TransformComponents,
-            TransformMatrix,
-            MaterialComponent>();
-        for (auto& entity : entities) {
-            auto& material_component = m_entities.GetComponent<MaterialComponent>(entity);
-            auto& material = ResourceManager::Get().Read<Material>(material_component.index);
-            material.gpu_buffer_index.reset();
-            material.dirty_frames = FRAME_RESOURCE_COUNT;
-        }
-
-        size_t material_gpu_index = 0;
-        for (auto& entity : entities) {
-            auto& material_component = m_entities.GetComponent<MaterialComponent>(entity);
-            auto& material = ResourceManager::Get().Read<Material>(material_component.index);
-
-            if (material.gpu_buffer_index.has_value()) {
-                material_component.gpu_buffer_index = material.gpu_buffer_index.value();
-                continue;
-            }
-
-            material.gpu_buffer_index = material_gpu_index++;
-            material_component.gpu_buffer_index = material.gpu_buffer_index.value();
-            m_geometry_buffers.used_materials_indices.push_back(material_component.index);
-        }
-#ifndef NDEBUG
-        // assert that used materials indices are unique
-        {
-            std::set<size_t> unique_indices;
-            for (auto index : m_geometry_buffers.used_materials_indices) {
-                assert(unique_indices.find(index) == unique_indices.end());
-                unique_indices.insert(index);
-            }
-        }
-#endif
 
         auto hr = m_cmd_list->Reset(m_main_cmd_alloc.Get(), nullptr);
         if (FAILED(hr))

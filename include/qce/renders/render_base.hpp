@@ -82,6 +82,11 @@ namespace QCE {
             std::vector<Unit> units;
         };
 
+        struct SceneMaterials {
+            std::vector<size_t> resources;
+            std::vector<int>    dirty_frames; // same indeces as material buffer
+        };
+
         struct UnitConstants {
             float world_matrix[16];
         };
@@ -113,12 +118,14 @@ namespace QCE {
         static constexpr auto FRAME_RESOURCE_COUNT = 3;
 
         /// attributes
-        Entities&     m_entities;
-        RenderConfig  m_config{};
-        SceneGeometry m_scene_geometry{};
+        Entities&      m_entities;
+        RenderConfig   m_config{};
+        SceneGeometry  m_scene_geometry{};
+        SceneMaterials m_scene_materials{};
 
         // buffers map
-        ShaderIndex m_shader_index{};        // shader type -> shader index
-        BufferMap   m_geometry_unit_index{}; // mesh index  -> geometry unit index
+        ShaderIndex m_shader_index{};          // shader type -> shader index
+        BufferMap   m_geometry_unit_index{};   // mesh resource index  -> scene geometry unit index
+        BufferMap   m_material_buffer_map{};   // material resource index -> scene materials buffer index
     };
 }
