@@ -30,25 +30,21 @@ namespace QCE {
             // front face
             {
                 .position = { -w2, -h2, -l2 },
-                .color = BLACK,
                 .normal = { 0.0f, 0.0f, -1.0f },
                 .texture_coordinates = { 0.0f, 1.0f }
             },
             {
                 .position = { -w2,  h2, -l2 },
-                .color = BLACK,
                 .normal = { 0.0f, 0.0f, -1.0f },
                 .texture_coordinates = { 0.0f, 0.0f }
             },
             {
                 .position = {  w2,  h2, -l2 },
-                .color = BLACK,
                 .normal = { 0.0f, 0.0f, -1.0f },
                 .texture_coordinates = { 1.0f, 0.0f }
             },
             {
                 .position = {  w2, -h2, -l2 },
-                .color = BLACK,
                 .normal = { 0.0f, 0.0f, -1.0f },
                 .texture_coordinates = { 1.0f, 1.0f }
             },
@@ -56,25 +52,21 @@ namespace QCE {
             // back face
             {
                 .position = { -w2, -h2,  l2 },
-                .color = GRAY,
                 .normal = { 0.0f, 0.0f, 1.0f },
                 .texture_coordinates = { 1.0f, 1.0f }
             },
             {
                 .position = {  w2, -h2,  l2 },
-                .color = GRAY,
                 .normal = { 0.0f, 0.0f, 1.0f },
                 .texture_coordinates = { 0.0f, 1.0f }
             },
             {
                 .position = {  w2,  h2,  l2 },
-                .color = GRAY,
                 .normal = { 0.0f, 0.0f, 1.0f },
                 .texture_coordinates = { 0.0f, 0.0f }
             },
             {
                 .position = { -w2,  h2,  l2 },
-                .color = GRAY,
                 .normal = { 0.0f, 0.0f, 1.0f },
                 .texture_coordinates = { 1.0f, 0.0f }
             },
@@ -82,25 +74,21 @@ namespace QCE {
             // top face
              {
                 .position = { -w2,  h2, -l2 },
-                .color = RED,
                 .normal = { 0.0f, 1.0f, 0.0f },
                 .texture_coordinates = { 0.0f, 1.0f }
             },
             {
                 .position = { -w2,  h2,  l2 },
-                .color = RED,
                 .normal = { 0.0f, 1.0f, 0.0f },
                 .texture_coordinates = { 0.0f, 0.0f }
             },
             {
                 .position = {  w2,  h2,  l2 },
-                .color = RED,
                 .normal = { 0.0f, 1.0f, 0.0f },
                 .texture_coordinates = { 1.0f, 0.0f }
             },
             {
                 .position = {  w2,  h2, -l2 },
-                .color = RED,
                 .normal = { 0.0f, 1.0f, 0.0f },
                 .texture_coordinates = { 1.0f, 1.0f }
             },
@@ -108,25 +96,21 @@ namespace QCE {
             // bottom face
             {
                 .position = { -w2, -h2, -l2 },
-                .color = GREEN,
                 .normal = { 0.0f, -1.0f, 0.0f },
                 .texture_coordinates = { 1.0f, 1.0f }
             },
             {
                 .position = {  w2, -h2, -l2 },
-                .color = GREEN,
                 .normal = { 0.0f, -1.0f, 0.0f },
                 .texture_coordinates = { 0.0f, 1.0f }
             },
             {
                 .position = {  w2, -h2,  l2 },
-                .color = GREEN,
                 .normal = { 0.0f, -1.0f, 0.0f },
                 .texture_coordinates = { 0.0f, 0.0f }
             },
             {
                 .position = { -w2, -h2,  l2 },
-                .color = GREEN,
                 .normal = { 0.0f, -1.0f, 0.0f },
                 .texture_coordinates = { 1.0f, 0.0f }
             },
@@ -134,25 +118,21 @@ namespace QCE {
             // left face
             {
                 .position = { -w2, -h2,  l2 },
-                .color = BLUE,
                 .normal = { -1.0f, 0.0f, 0.0f },
                 .texture_coordinates = { 0.0f, 1.0f }
             },
             {
                 .position = { -w2,  h2,  l2 },
-                .color = BLUE,
                 .normal = { -1.0f, 0.0f, 0.0f },
                 .texture_coordinates = { 0.0f, 0.0f }
             },
             {
                 .position = { -w2,  h2, -l2 },
-                .color = BLUE,
                 .normal = { -1.0f, 0.0f, 0.0f },
                 .texture_coordinates = { 1.0f, 0.0f }
             },
             {
                 .position = { -w2, -h2, -l2 },
-                .color = BLUE,
                 .normal = { -1.0f, 0.0f, 0.0f },
                 .texture_coordinates = { 1.0f, 1.0f }
             },
@@ -160,25 +140,21 @@ namespace QCE {
             // right face
             {
                 .position = {  w2, -h2, -l2 },
-                .color = YELLOW,
                 .normal = { 1.0f, 0.0f, 0.0f },
                 .texture_coordinates = { 0.0f, 1.0f }
             },
             {
                 .position = {  w2,  h2, -l2 },
-                .color = YELLOW,
                 .normal = { 1.0f, 0.0f, 0.0f },
                 .texture_coordinates = { 0.0f, 0.0f }
             },
             {
                 .position = {  w2,  h2,  l2 },
-                .color = YELLOW,
                 .normal = { 1.0f, 0.0f, 0.0f },
                 .texture_coordinates = { 1.0f, 0.0f }
             },
             {
                 .position = {  w2, -h2,  l2 },
-                .color = YELLOW,
                 .normal = { 1.0f, 0.0f, 0.0f },
                 .texture_coordinates = { 1.0f, 1.0f }
             }

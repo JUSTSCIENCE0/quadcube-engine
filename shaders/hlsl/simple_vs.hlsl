@@ -11,7 +11,5 @@ VertexOut main(VertexIn vin) {
     float4 pos_w = mul(float4(vin.pos_l, 1.0f), world_matrix);
     vout.pos_h = mul(pos_w, view_proj_matrix);
 
-    vout.color = vin.color;
-
     return vout;
 }

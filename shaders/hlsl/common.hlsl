@@ -36,12 +36,10 @@ cbuffer PassConstants : register(b2)
 struct VertexIn
 {
     float3 pos_l : POSITION;
-    float4 color : COLOR;
 };
 
 struct VertexOut
 {
     float4 pos_h : SV_POSITION;
-    float4 color : COLOR;
 };
 
