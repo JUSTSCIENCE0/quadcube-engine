@@ -111,7 +111,7 @@ namespace QCE {
         struct MaterialConstants {
             float albedo_color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
             float fresnel[3] = { 0.01f, 0.01f, 0.01f };
-            float roughness = 0.25f;
+            float shininess = 0.75f;
         };
 
         /// consts

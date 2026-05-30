@@ -27,7 +27,7 @@ namespace QCE {
         /// base
         color_rgba albedo_color = WHITE;
         float3d    fresnel = { 0.01f, 0.01f, 0.01f };
-        float      roughness = 0.25f;
+        float      shininess = 0.75f;
 
         /// textures
         //  cpu resource indices

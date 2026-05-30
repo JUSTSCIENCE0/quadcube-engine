@@ -91,7 +91,8 @@ namespace QCE {
         auto entities = m_entities.QueryEntities<
             MeshComponent,
             TransformComponents,
-            TransformMatrix>();
+            TransformMatrix,
+            MaterialComponent>();
         const auto units_count = UINT(entities.size());
 
         for (int i = 0; i < FRAME_RESOURCE_COUNT; i++) {
@@ -402,7 +403,7 @@ namespace QCE {
             if (m_scene_materials.dirty_frames[buffer_index] > 0) {
                 auto& material = ResourceManager::Get().Read<Material>(material_index);
                 MaterialConstants mat_const {
-                    .roughness = material.roughness
+                    .shininess = material.shininess
                 };
                 std::memcpy(mat_const.albedo_color, material.albedo_color.arr, sizeof(mat_const.albedo_color));
                 std::memcpy(mat_const.fresnel, material.fresnel.arr, sizeof(mat_const.fresnel));
@@ -659,7 +660,8 @@ namespace QCE {
         auto entities = m_entities.QueryEntities<
             MeshComponent,
             TransformComponents,
-            TransformMatrix>();
+            TransformMatrix,
+            MaterialComponent>();
         const auto units_count = UINT(entities.size());
         const auto descr_count = (units_count + 1) * FRAME_RESOURCE_COUNT; // +1 for pass constants
 
@@ -683,7 +685,8 @@ namespace QCE {
         auto entities = m_entities.QueryEntities<
             MeshComponent,
             TransformComponents,
-            TransformMatrix>();
+            TransformMatrix,
+            MaterialComponent>();
         const auto units_count = UINT(entities.size());
         int unit_heap_index = 0;
         int pass_heap_index = m_pass_cbv_offset;

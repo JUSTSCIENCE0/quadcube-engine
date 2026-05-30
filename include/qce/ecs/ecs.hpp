@@ -18,6 +18,7 @@
 #include <qce/components/camera.hpp>
 #include <qce/components/movement.hpp>
 #include <qce/components/transform.hpp>
+#include <qce/components/light.hpp>
 
 #include <qce/objects/mesh.hpp>
 #include <qce/objects/material.hpp>
@@ -37,6 +38,7 @@ namespace QCE {
             CameraView,
             CameraProj,
             FirstPersonCameraControl,
+            Light,
             AdditionalComponents... > {};
 
     using Entities = EcsCore< QCE_ECS_ADDITIONAL_COMPONENTS >;
