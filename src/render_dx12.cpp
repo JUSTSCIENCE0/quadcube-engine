@@ -331,6 +331,8 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::UpdateConstantBuffers() {
+        // TODO: refactor this method, split it into several methods
+
         auto cameras_indeces = m_entities.QueryEntities<CameraView, CameraProj>();
         assert(cameras_indeces.size() == 1); // TODO: support more than one camera
         auto& camera_view = m_entities.GetComponent<CameraView>(*cameras_indeces.begin());
@@ -365,6 +367,82 @@ namespace QCE {
         pass_constants.near_z = camera_proj.znear;
         pass_constants.far_z  = camera_proj.zfar;
         pass_constants.delta_time = static_cast<float>(FrameTime::Get().Elapsed());
+
+        // lighting
+        int light_index = 0;
+
+        auto directional_lights = m_entities.QueryEntities<DirectionalLight>();
+        for (const auto& light_entity : directional_lights) {
+            const auto& light = m_entities.GetComponent<DirectionalLight>(light_entity);
+            if (light_index < MAX_LIGHTS) {
+                std::memcpy(
+                    pass_constants.scene_lights.lights[light_index].color,
+                    light.color.arr,
+                    sizeof(pass_constants.scene_lights.lights[light_index].color));
+                std::memcpy(
+                    pass_constants.scene_lights.lights[light_index].direction,
+                    light.direction.arr,
+                    sizeof(pass_constants.scene_lights.lights[light_index].direction));
+                light_index++;
+            }
+            else {
+                // TODO: use log system
+                std::cerr << "Maximum number of supported lights is over" << std::endl;
+                break;
+            }
+        }
+        pass_constants.scene_lights.directional_light_end = light_index;
+
+        auto point_lights = m_entities.QueryEntities<PointLight>();
+        for (const auto& light_entity : point_lights) {
+            const auto& light = m_entities.GetComponent<PointLight>(light_entity);
+            if (light_index < MAX_LIGHTS) {
+                std::memcpy(
+                    pass_constants.scene_lights.lights[light_index].color,
+                    light.color.arr,
+                    sizeof(pass_constants.scene_lights.lights[light_index].color));
+                std::memcpy(
+                    pass_constants.scene_lights.lights[light_index].position,
+                    light.position.arr,
+                    sizeof(pass_constants.scene_lights.lights[light_index].position));
+                pass_constants.scene_lights.lights[light_index].falloff_begin = light.falloff_begin;
+                pass_constants.scene_lights.lights[light_index].falloff_end = light.falloff_end;
+                light_index++;
+            }
+            else {
+                // TODO: use log system
+                std::cerr << "Maximum number of supported lights is over" << std::endl;
+                break;
+            }
+        }
+
+        auto spot_lights = m_entities.QueryEntities<SpotLight>();
+        for (const auto& light_entity : spot_lights) {
+            const auto& light = m_entities.GetComponent<SpotLight>(light_entity);
+            if (light_index < MAX_LIGHTS) {
+                std::memcpy(
+                    pass_constants.scene_lights.lights[light_index].color,
+                    light.color.arr,
+                    sizeof(pass_constants.scene_lights.lights[light_index].color));
+                std::memcpy(
+                    pass_constants.scene_lights.lights[light_index].position,
+                    light.position.arr,
+                    sizeof(pass_constants.scene_lights.lights[light_index].position));
+                std::memcpy(
+                    pass_constants.scene_lights.lights[light_index].direction,
+                    light.direction.arr,
+                    sizeof(pass_constants.scene_lights.lights[light_index].direction));
+                pass_constants.scene_lights.lights[light_index].falloff_begin = light.falloff_begin;
+                pass_constants.scene_lights.lights[light_index].falloff_end = light.falloff_end;
+                pass_constants.scene_lights.lights[light_index].spot_power = light.spot_power;
+                light_index++;
+            }
+            else {
+                // TODO: use log system
+                std::cerr << "Maximum number of supported lights is over" << std::endl;
+                break;
+            }
+        }
 
         auto current_pass_constant_buffer = m_current_frame_resource->m_pass_constant_buffer.get();
         current_pass_constant_buffer->CopyData(0, pass_constants);

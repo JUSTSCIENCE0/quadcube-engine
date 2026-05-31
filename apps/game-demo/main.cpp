@@ -55,5 +55,13 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, QCE::TransformMatrix{}));
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, material_component));
 
+    auto sun = app.m_entities.AddEntity();
+    QCE_CRITICAL(app.m_entities.AddComponent(sun,
+        QCE::DirectionalLight{
+            .color = { 0.5f, 0.5f, 0.5f, 1.0f },
+            .direction = { 1.0f, -2.0f, 3.0f }
+        }
+    ));
+
     return app.Run();
 }

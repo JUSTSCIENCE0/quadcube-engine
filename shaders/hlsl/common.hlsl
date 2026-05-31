@@ -31,8 +31,8 @@ cbuffer PassConstants : register(b2) {
     float    delta_time;
     float    padding2;
 
-    // float4      ambient_light_color;
-    // SceneLights scene_lights;
+    float4      ambient_light_color;
+    SceneLights scene_lights;
 };
 
 struct VertexIn {

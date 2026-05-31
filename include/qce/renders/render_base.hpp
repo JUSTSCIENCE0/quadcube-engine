@@ -43,6 +43,10 @@ namespace QCE {
         ErrorCode UseShader(const std::string& name, ShaderType type);
 
     protected:
+        /// consts
+        static constexpr auto FRAME_RESOURCE_COUNT = 3;
+        static constexpr auto MAX_LIGHTS = 16;
+
         /// types
         using ShaderMap = std::array<
             size_t /* index*/,
@@ -106,6 +110,24 @@ namespace QCE {
             float far_z = 0.0f;
             float delta_time = 0.0f;
             float padding2;
+
+            float  ambient_light_color[4] = { 0.25f, 0.25f, 0.25f, 1.0f };
+            struct SceneLights {
+                struct Light {
+                    float color[3] = {};
+                    float falloff_begin = 0.0f;
+                    float direction[3] = {};
+                    float falloff_end = 0.0f;
+                    float position[3] = {};
+                    float spot_power = 0.0f;
+                };
+                Light lights[MAX_LIGHTS];
+
+                int directional_light_end = 0;
+                int point_light_end = 0;
+                int spot_light_end = 0;
+                int padding;
+            } scene_lights;
         };
 
         struct MaterialConstants {
@@ -113,9 +135,6 @@ namespace QCE {
             float fresnel[3] = { 0.01f, 0.01f, 0.01f };
             float shininess = 0.75f;
         };
-
-        /// consts
-        static constexpr auto FRAME_RESOURCE_COUNT = 3;
 
         /// attributes
         Entities&      m_entities;

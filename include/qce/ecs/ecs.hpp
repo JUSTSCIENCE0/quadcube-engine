@@ -38,7 +38,9 @@ namespace QCE {
             CameraView,
             CameraProj,
             FirstPersonCameraControl,
-            Light,
+            DirectionalLight,
+            PointLight,
+            SpotLight,
             AdditionalComponents... > {};
 
     using Entities = EcsCore< QCE_ECS_ADDITIONAL_COMPONENTS >;
