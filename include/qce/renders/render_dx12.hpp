@@ -104,6 +104,10 @@ namespace QCE {
         ErrorCode CreateInputLayout();
         ErrorCode CreatePSO();
         ErrorCode UpdateConstantBuffers();
+        ErrorCode UpdatePassConstants();
+        ErrorCode UpdateLighting(PassConstants& pass_constants);
+        ErrorCode UpdateUnitBuffers();
+        ErrorCode UpdateMaterialBuffers();
         ErrorCode UploadMeshes();
         ErrorCode UploadTextures();
 

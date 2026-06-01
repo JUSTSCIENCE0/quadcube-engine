@@ -330,9 +330,7 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode RenderDX12::UpdateConstantBuffers() {
-        // TODO: refactor this method, split it into several methods
-
+    ErrorCode RenderDX12::UpdatePassConstants() {
         auto cameras_indeces = m_entities.QueryEntities<CameraView, CameraProj>();
         assert(cameras_indeces.size() == 1); // TODO: support more than one camera
         auto& camera_view = m_entities.GetComponent<CameraView>(*cameras_indeces.begin());
@@ -358,8 +356,8 @@ namespace QCE {
         matrix_copy(matrix_transpose(vp), pass_constants.view_proj_matrix);
         matrix_copy(matrix_transpose(inv_vp), pass_constants.view_proj_matrix_inv);
         std::memcpy(pass_constants.eye_position,
-                    camera_view.position.arr,
-                    sizeof(pass_constants.eye_position));
+            camera_view.position.arr,
+            sizeof(pass_constants.eye_position));
         pass_constants.render_target_size[0] = static_cast<float>(m_config.width);
         pass_constants.render_target_size[1] = static_cast<float>(m_config.height);
         pass_constants.render_target_size_inv[0] = 1.0f / pass_constants.render_target_size[0];
@@ -368,7 +366,15 @@ namespace QCE {
         pass_constants.far_z  = camera_proj.zfar;
         pass_constants.delta_time = static_cast<float>(FrameTime::Get().Elapsed());
 
-        // lighting
+        QCE_CRITICAL(UpdateLighting(pass_constants));
+
+        auto current_pass_constant_buffer = m_current_frame_resource->m_pass_constant_buffer.get();
+        current_pass_constant_buffer->CopyData(0, pass_constants);
+
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::UpdateLighting(PassConstants& pass_constants) {
         int light_index = 0;
 
         auto directional_lights = m_entities.QueryEntities<DirectionalLight>();
@@ -444,9 +450,10 @@ namespace QCE {
             }
         }
 
-        auto current_pass_constant_buffer = m_current_frame_resource->m_pass_constant_buffer.get();
-        current_pass_constant_buffer->CopyData(0, pass_constants);
+        return ErrorCode::SUCCESS;
+    }
 
+    ErrorCode RenderDX12::UpdateUnitBuffers() {
         auto entities = m_entities.QueryEntities<
             MeshComponent,
             TransformComponents,
@@ -467,7 +474,7 @@ namespace QCE {
             if (world.dirty_frames > 0) {
                 UnitConstants transform{};
                 std::memcpy(transform.world_matrix,
-                            world.transposed_data.arr, sizeof(world.transposed_data.arr));
+                    world.transposed_data.arr, sizeof(world.transposed_data.arr));
                 current_units_constant_buffers->CopyData(index, transform);
 
                 world.dirty_frames--;
@@ -475,6 +482,10 @@ namespace QCE {
             index++;
         }
 
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::UpdateMaterialBuffers() {
         for (const auto& material_index : m_scene_materials.resources) {
             assert(m_material_buffer_map.exists(material_index));
             auto buffer_index = m_material_buffer_map[material_index];
@@ -490,6 +501,14 @@ namespace QCE {
                 m_scene_materials.dirty_frames[buffer_index]--;
             }
         }
+
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode RenderDX12::UpdateConstantBuffers() {
+        QCE_CRITICAL(UpdatePassConstants());
+        QCE_CRITICAL(UpdateUnitBuffers());
+        QCE_CRITICAL(UpdateMaterialBuffers());
 
         return ErrorCode::SUCCESS;
     }
