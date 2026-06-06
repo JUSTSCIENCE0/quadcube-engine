@@ -713,6 +713,23 @@ namespace QCE {
             }
         }
 
+        // create SRV for each texture
+        CD3DX12_CPU_DESCRIPTOR_HANDLE descr(m_srv_heap->GetCPUDescriptorHandleForHeapStart());
+        D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+        srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        srv_desc.Texture2D.MostDetailedMip = 0;
+        srv_desc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+        for (const auto& gpu_texture : m_geometry_buffers.textures) {
+            auto texture_resource = gpu_texture.buffer;
+            srv_desc.Format = texture_resource->GetDesc().Format;
+            srv_desc.Texture2D.MipLevels = texture_resource->GetDesc().MipLevels;
+            m_d3d_device->CreateShaderResourceView(texture_resource.Get(), &srv_desc, descr);
+
+            descr.Offset(1, m_cbv_srv_uav_descr_size);
+        }
+
         return ErrorCode::SUCCESS;
     }
 
@@ -880,19 +897,6 @@ namespace QCE {
             D3D12_RESOURCE_STATE_COPY_DEST,
             D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         m_cmd_list->ResourceBarrier(1, &barrier);
-
-        CD3DX12_CPU_DESCRIPTOR_HANDLE descr(m_srv_heap->GetCPUDescriptorHandleForHeapStart());
-        auto texture_resource = gpu_texture.buffer;
-
-        D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
-        srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        srv_desc.Format = texture_resource->GetDesc().Format;
-        srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-        srv_desc.Texture2D.MostDetailedMip = 0;
-        srv_desc.Texture2D.MipLevels = texture_resource->GetDesc().MipLevels;
-        srv_desc.Texture2D.ResourceMinLODClamp = 0.0f;
-
-        m_d3d_device->CreateShaderResourceView(texture_resource.Get(), &srv_desc, descr);
 
         m_geometry_buffers.textures.emplace_back(std::move(gpu_texture));
         return ErrorCode::SUCCESS;
