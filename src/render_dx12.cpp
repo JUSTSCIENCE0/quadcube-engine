@@ -598,9 +598,6 @@ namespace QCE {
         auto dsv = DepthStencilView();
         m_cmd_list->OMSetRenderTargets(1, &current_bbv, true, &dsv);
 
-        ID3D12DescriptorHeap* descr_heaps[] = { m_cbv_heap.Get() };
-        m_cmd_list->SetDescriptorHeaps(_countof(descr_heaps), descr_heaps);
-
         m_cmd_list->SetGraphicsRootSignature(m_root_signature.Get());
 
         auto pass_cb = m_current_frame_resource->m_pass_constant_buffer->Resource();
@@ -648,8 +645,6 @@ namespace QCE {
         QCE_CRITICAL(UploadMeshes());
 
         QCE_CRITICAL(CreateFrameResources());
-        QCE_CRITICAL(CreateCBVDescriptorHeap());
-        QCE_CRITICAL(CreateConstantBuffers());
 
         QCE_CRITICAL(UploadTextures());
 
@@ -749,82 +744,6 @@ namespace QCE {
                     serializedRootSig->GetBufferSize(),
                     IID_PPV_ARGS(&m_root_signature))))
             return ErrorCode::E_DX12_CREATE_ROOT_SIGNATURE_FAILED;
-
-        return ErrorCode::SUCCESS;
-    }
-
-    ErrorCode RenderDX12::CreateCBVDescriptorHeap() {
-        auto entities = m_entities.QueryEntities<
-            MeshComponent,
-            TransformComponents,
-            TransformMatrix,
-            MaterialComponent>();
-        const auto units_count = UINT(entities.size());
-        const auto descr_count = (units_count + 1) * FRAME_RESOURCE_COUNT; // +1 for pass constants
-
-        m_pass_cbv_offset = units_count * FRAME_RESOURCE_COUNT;
-
-        D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
-        cbvHeapDesc.NumDescriptors = descr_count;
-        cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        cbvHeapDesc.NodeMask = 0;
-
-        auto hr = m_d3d_device->CreateDescriptorHeap(
-            &cbvHeapDesc, IID_PPV_ARGS(m_cbv_heap.GetAddressOf()));
-        if (FAILED(hr))
-            return ErrorCode::E_DX12_CREATE_CBV_HEAP_FAILED;
-
-        return ErrorCode::SUCCESS;
-    }
-
-    ErrorCode RenderDX12::CreateConstantBuffers() {
-        auto entities = m_entities.QueryEntities<
-            MeshComponent,
-            TransformComponents,
-            TransformMatrix,
-            MaterialComponent>();
-        const auto units_count = UINT(entities.size());
-        int unit_heap_index = 0;
-        int pass_heap_index = m_pass_cbv_offset;
-
-        assert(m_frame_resources.size() == FRAME_RESOURCE_COUNT);
-        for (int frame_index = 0; frame_index < FRAME_RESOURCE_COUNT; frame_index++) {
-            assert(m_frame_resources[frame_index]->m_units_constant_buffers);
-            auto& units_cb = m_frame_resources[frame_index]->m_units_constant_buffers;
-            const auto unit_cb_size = units_cb->m_element_size;
-            D3D12_GPU_VIRTUAL_ADDRESS unit_cb_address = units_cb->Resource()->GetGPUVirtualAddress();
-
-            for (UINT index = 0; index < units_count; index++) {
-                auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetCPUDescriptorHandleForHeapStart());
-                handle.Offset(unit_heap_index, m_cbv_srv_uav_descr_size);
-
-                D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_descr;
-                cbv_descr.BufferLocation = unit_cb_address;
-                cbv_descr.SizeInBytes = unit_cb_size;
-
-                m_d3d_device->CreateConstantBufferView(&cbv_descr, handle);
-
-                unit_cb_address += unit_cb_size;
-                unit_heap_index++;
-            }
-
-            assert(m_frame_resources[frame_index]->m_pass_constant_buffer);
-            auto& pass_cb = m_frame_resources[frame_index]->m_pass_constant_buffer;
-            const auto pass_cb_size = pass_cb->m_element_size;
-
-            D3D12_GPU_VIRTUAL_ADDRESS pass_cb_address = pass_cb->Resource()->GetGPUVirtualAddress();
-            auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_cbv_heap->GetCPUDescriptorHandleForHeapStart());
-            handle.Offset(pass_heap_index, m_cbv_srv_uav_descr_size);
-
-            D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_descr;
-            cbv_descr.BufferLocation = pass_cb_address;
-            cbv_descr.SizeInBytes = pass_cb_size;
-
-            m_d3d_device->CreateConstantBufferView(&cbv_descr, handle);
-
-            pass_heap_index++;
-        }
 
         return ErrorCode::SUCCESS;
     }
