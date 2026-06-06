@@ -143,6 +143,7 @@ set(QCE_RENDERS_HDRS
     include/qce/renders/render.hpp
     include/qce/renders/windows_output.hpp
     include/qce/renders/render_base.hpp
+    include/qce/renders/render_samplers.hpp
 
     # TODO: include/qce/renders/render_vulkan.hpp
 )
@@ -206,6 +207,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         ${QCE_RENDERS_HDRS}
         include/qce/renders/render_dx12.hpp
         include/qce/renders/render_dx12_helpers.hpp
+        include/qce/renders/render_dx12_static_samplers.hpp
     )
     set(QCE_RENDERS_IMPL
         ${QCE_RENDERS_IMPL}
