@@ -735,34 +735,38 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::CreateRootSignature() {
-        CD3DX12_ROOT_PARAMETER slotRootParameter[3] = {};
+        CD3DX12_DESCRIPTOR_RANGE textures_table;
+        textures_table.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // (t0)
 
-        slotRootParameter[0].InitAsConstantBufferView(0); // unit constants     (b0)
-        slotRootParameter[1].InitAsConstantBufferView(1); // material constants (b1)
-        slotRootParameter[2].InitAsConstantBufferView(2); // pass constants     (b2)
+        std::array<CD3DX12_ROOT_PARAMETER, 3> slot_root_parameter{};
+        // TODO: slot_root_parameter[0].InitAsDescriptorTable(1, &textures_table, D3D12_SHADER_VISIBILITY_PIXEL);
+        slot_root_parameter[0].InitAsConstantBufferView(0); // unit constants     (b0)
+        slot_root_parameter[1].InitAsConstantBufferView(1); // material constants (b1)
+        slot_root_parameter[2].InitAsConstantBufferView(2); // pass constants     (b2)
 
         const auto static_samplers = dx12_get_static_samplers();
 
-        CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(3, slotRootParameter,
+        CD3DX12_ROOT_SIGNATURE_DESC root_signature_descr(
+            UINT(slot_root_parameter.size()), slot_root_parameter.data(),
             UINT(static_samplers.size()), static_samplers.data(),
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-        MsPtr<ID3DBlob> serializedRootSig = nullptr;
-        MsPtr<ID3DBlob> errorBlob = nullptr;
-        auto hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,
-            serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+        MsPtr<ID3DBlob> serialized_root_signature = nullptr;
+        MsPtr<ID3DBlob> error_blob = nullptr;
+        auto hr = D3D12SerializeRootSignature(&root_signature_descr, D3D_ROOT_SIGNATURE_VERSION_1,
+            serialized_root_signature.GetAddressOf(), error_blob.GetAddressOf());
 
-        if (errorBlob) {
+        if (error_blob) {
             // use log system
-            std::cout << reinterpret_cast<char*>(errorBlob->GetBufferPointer()) << std::endl;
+            std::cout << reinterpret_cast<char*>(error_blob->GetBufferPointer()) << std::endl;
         }
         if (FAILED(hr))
             return ErrorCode::E_DX12_SERIALIZE_ROOT_SIGNATURE_FAILED;
 
         if (FAILED(m_d3d_device->CreateRootSignature(
                     0,
-                    serializedRootSig->GetBufferPointer(),
-                    serializedRootSig->GetBufferSize(),
+                    serialized_root_signature->GetBufferPointer(),
+                    serialized_root_signature->GetBufferSize(),
                     IID_PPV_ARGS(&m_root_signature))))
             return ErrorCode::E_DX12_CREATE_ROOT_SIGNATURE_FAILED;
 
