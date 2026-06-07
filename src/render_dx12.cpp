@@ -5,6 +5,7 @@
 
 #include <qce/ancillary/timer.hpp>
 #include <qce/renders/render_dx12.hpp>
+#include <qce/renders/render_dx12_static_samplers.hpp>
 
 namespace QCE {
     RenderDX12::RenderDX12(Entities& entities, RenderConfig initial_config, HWND window) :
@@ -736,11 +737,14 @@ namespace QCE {
     ErrorCode RenderDX12::CreateRootSignature() {
         CD3DX12_ROOT_PARAMETER slotRootParameter[3] = {};
 
-        slotRootParameter[0].InitAsConstantBufferView(0); // world matrices
-        slotRootParameter[1].InitAsConstantBufferView(1); // materials
-        slotRootParameter[2].InitAsConstantBufferView(2); // pass constants
+        slotRootParameter[0].InitAsConstantBufferView(0); // unit constants     (b0)
+        slotRootParameter[1].InitAsConstantBufferView(1); // material constants (b1)
+        slotRootParameter[2].InitAsConstantBufferView(2); // pass constants     (b2)
 
-        CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(3, slotRootParameter, 0, nullptr,
+        const auto static_samplers = dx12_get_static_samplers();
+
+        CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(3, slotRootParameter,
+            UINT(static_samplers.size()), static_samplers.data(),
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
         MsPtr<ID3DBlob> serializedRootSig = nullptr;
