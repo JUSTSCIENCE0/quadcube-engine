@@ -550,8 +550,10 @@ namespace QCE {
                 continue;
             }
 
-            m_cmd_list->SetGraphicsRootConstantBufferView(0, unit_cb_gpu_addr);
-            m_cmd_list->SetGraphicsRootConstantBufferView(1,
+            m_cmd_list->SetGraphicsRootConstantBufferView(
+                E_DX12RPI_UNIT_CONSTANTS_B0, unit_cb_gpu_addr);
+            m_cmd_list->SetGraphicsRootConstantBufferView(
+                E_DX12RPI_MATERIAL_CONSTANTS_B1,
                 material_cb_gpu_addr + material_cb_size * m_material_buffer_map[material_comp.index]);
 
             const auto& unit_descr = m_scene_geometry.units[m_geometry_unit_map[mesh_comp.index]];
@@ -602,7 +604,8 @@ namespace QCE {
         m_cmd_list->SetGraphicsRootSignature(m_root_signature.Get());
 
         auto pass_cb = m_current_frame_resource->m_pass_constant_buffer->Resource();
-        m_cmd_list->SetGraphicsRootConstantBufferView(2, pass_cb->GetGPUVirtualAddress());
+        m_cmd_list->SetGraphicsRootConstantBufferView(
+            E_DX12RPI_PASS_CONSTANTS_B2, pass_cb->GetGPUVirtualAddress());
 
         DrawSceneEntities();
 
@@ -736,18 +739,19 @@ namespace QCE {
 
     ErrorCode RenderDX12::CreateRootSignature() {
         CD3DX12_DESCRIPTOR_RANGE textures_table;
-        textures_table.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // (t0)
+        textures_table.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
-        std::array<CD3DX12_ROOT_PARAMETER, 3> slot_root_parameter{};
-        // TODO: slot_root_parameter[0].InitAsDescriptorTable(1, &textures_table, D3D12_SHADER_VISIBILITY_PIXEL);
-        slot_root_parameter[0].InitAsConstantBufferView(0); // unit constants     (b0)
-        slot_root_parameter[1].InitAsConstantBufferView(1); // material constants (b1)
-        slot_root_parameter[2].InitAsConstantBufferView(2); // pass constants     (b2)
+        CD3DX12_ROOT_PARAMETER slot_root_parameter[E_DX12RPI_COUNT] = {};
+        slot_root_parameter[E_DX12RPI_TEXTURES_TABLE_T0].InitAsDescriptorTable(
+            1, &textures_table, D3D12_SHADER_VISIBILITY_PIXEL);
+        slot_root_parameter[E_DX12RPI_UNIT_CONSTANTS_B0].InitAsConstantBufferView(0);
+        slot_root_parameter[E_DX12RPI_MATERIAL_CONSTANTS_B1].InitAsConstantBufferView(1);
+        slot_root_parameter[E_DX12RPI_PASS_CONSTANTS_B2].InitAsConstantBufferView(2);
 
         const auto static_samplers = dx12_get_static_samplers();
 
         CD3DX12_ROOT_SIGNATURE_DESC root_signature_descr(
-            UINT(slot_root_parameter.size()), slot_root_parameter.data(),
+            E_DX12RPI_COUNT, slot_root_parameter,
             UINT(static_samplers.size()), static_samplers.data(),
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 

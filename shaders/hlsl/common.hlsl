@@ -5,6 +5,8 @@
 
 #include "base_lighting.hlsl"
 
+Texture2D diffuse_map : register(t0);
+
 cbuffer UnitConstants : register(b0) {
     float4x4 world_matrix;
 };

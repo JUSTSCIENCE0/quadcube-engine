@@ -18,6 +18,17 @@
 #include <directx/d3dx12.h>
 
 namespace QCE {
+#define CU_ENUMS_DESCRIPTION \
+    CU_BEGIN_ENUM(Dx12RootParameterIndex) \
+        CU_ENUM_UNIT(E_DX12RPI_TEXTURES_TABLE_T0) \
+        CU_ENUM_UNIT(E_DX12RPI_UNIT_CONSTANTS_B0) \
+        CU_ENUM_UNIT(E_DX12RPI_MATERIAL_CONSTANTS_B1) \
+        CU_ENUM_UNIT(E_DX12RPI_PASS_CONSTANTS_B2) \
+        CU_ENUM_ANCILLARY_UNITS(E_DX12RPI) \
+    CU_END_ENUM(Dx12RootParameterIndex)
+#include <cu/enum-utils.hpp>
+#undef CU_ENUMS_DESCRIPTION
+
     class RenderDX12 final :
             public RenderBase {
     public:
