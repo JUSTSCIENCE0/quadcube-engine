@@ -31,7 +31,7 @@ namespace QCE {
             {
                 .position = { -w2, -h2, -l2 },
                 .normal = { 0.0f, 0.0f, -1.0f },
-                .texture_coordinates = { 0.0f, 1.0f }
+                .texture_coordinates = { 0.0f, 0.5f }
             },
             {
                 .position = { -w2,  h2, -l2 },
@@ -41,24 +41,24 @@ namespace QCE {
             {
                 .position = {  w2,  h2, -l2 },
                 .normal = { 0.0f, 0.0f, -1.0f },
-                .texture_coordinates = { 1.0f, 0.0f }
+                .texture_coordinates = { 0.5f, 0.0f }
             },
             {
                 .position = {  w2, -h2, -l2 },
                 .normal = { 0.0f, 0.0f, -1.0f },
-                .texture_coordinates = { 1.0f, 1.0f }
+                .texture_coordinates = { 0.5f, 0.5f }
             },
 
             // back face
             {
                 .position = { -w2, -h2,  l2 },
                 .normal = { 0.0f, 0.0f, 1.0f },
-                .texture_coordinates = { 1.0f, 1.0f }
+                .texture_coordinates = { 0.5f, 0.5f }
             },
             {
                 .position = {  w2, -h2,  l2 },
                 .normal = { 0.0f, 0.0f, 1.0f },
-                .texture_coordinates = { 0.0f, 1.0f }
+                .texture_coordinates = { 0.0f, 0.5f }
             },
             {
                 .position = {  w2,  h2,  l2 },
@@ -68,19 +68,19 @@ namespace QCE {
             {
                 .position = { -w2,  h2,  l2 },
                 .normal = { 0.0f, 0.0f, 1.0f },
-                .texture_coordinates = { 1.0f, 0.0f }
+                .texture_coordinates = { 0.5f, 0.0f }
             },
 
             // top face
              {
                 .position = { -w2,  h2, -l2 },
                 .normal = { 0.0f, 1.0f, 0.0f },
-                .texture_coordinates = { 0.0f, 1.0f }
+                .texture_coordinates = { 0.5f, 0.5f }
             },
             {
                 .position = { -w2,  h2,  l2 },
                 .normal = { 0.0f, 1.0f, 0.0f },
-                .texture_coordinates = { 0.0f, 0.0f }
+                .texture_coordinates = { 0.5f, 0.0f }
             },
             {
                 .position = {  w2,  h2,  l2 },
@@ -90,24 +90,24 @@ namespace QCE {
             {
                 .position = {  w2,  h2, -l2 },
                 .normal = { 0.0f, 1.0f, 0.0f },
-                .texture_coordinates = { 1.0f, 1.0f }
+                .texture_coordinates = { 1.0f, 0.5f }
             },
 
             // bottom face
             {
                 .position = { -w2, -h2, -l2 },
                 .normal = { 0.0f, -1.0f, 0.0f },
-                .texture_coordinates = { 1.0f, 1.0f }
+                .texture_coordinates = { 1.0f, 0.5f }
             },
             {
                 .position = {  w2, -h2, -l2 },
                 .normal = { 0.0f, -1.0f, 0.0f },
-                .texture_coordinates = { 0.0f, 1.0f }
+                .texture_coordinates = { 0.5f, 0.5f }
             },
             {
                 .position = {  w2, -h2,  l2 },
                 .normal = { 0.0f, -1.0f, 0.0f },
-                .texture_coordinates = { 0.0f, 0.0f }
+                .texture_coordinates = { 0.5f, 0.0f }
             },
             {
                 .position = { -w2, -h2,  l2 },
@@ -124,34 +124,34 @@ namespace QCE {
             {
                 .position = { -w2,  h2,  l2 },
                 .normal = { -1.0f, 0.0f, 0.0f },
-                .texture_coordinates = { 0.0f, 0.0f }
+                .texture_coordinates = { 0.0f, 0.5f }
             },
             {
                 .position = { -w2,  h2, -l2 },
                 .normal = { -1.0f, 0.0f, 0.0f },
-                .texture_coordinates = { 1.0f, 0.0f }
+                .texture_coordinates = { 0.5f, 0.5f }
             },
             {
                 .position = { -w2, -h2, -l2 },
                 .normal = { -1.0f, 0.0f, 0.0f },
-                .texture_coordinates = { 1.0f, 1.0f }
+                .texture_coordinates = { 0.5f, 1.0f }
             },
 
             // right face
             {
                 .position = {  w2, -h2, -l2 },
                 .normal = { 1.0f, 0.0f, 0.0f },
-                .texture_coordinates = { 0.0f, 1.0f }
+                .texture_coordinates = { 0.5f, 1.0f }
             },
             {
                 .position = {  w2,  h2, -l2 },
                 .normal = { 1.0f, 0.0f, 0.0f },
-                .texture_coordinates = { 0.0f, 0.0f }
+                .texture_coordinates = { 0.5f, 0.5f }
             },
             {
                 .position = {  w2,  h2,  l2 },
                 .normal = { 1.0f, 0.0f, 0.0f },
-                .texture_coordinates = { 1.0f, 0.0f }
+                .texture_coordinates = { 1.0f, 0.5f }
             },
             {
                 .position = {  w2, -h2,  l2 },

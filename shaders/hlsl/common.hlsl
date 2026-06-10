@@ -7,6 +7,9 @@
 
 Texture2D diffuse_map : register(t0);
 
+SamplerState bilinear_sampler : register(s0);
+SamplerState anisotropic_sampler : register(s1);
+
 cbuffer UnitConstants : register(b0) {
     float4x4 world_matrix;
 };
@@ -40,11 +43,13 @@ cbuffer PassConstants : register(b2) {
 struct VertexIn {
     float3 pos_l : POSITION;
     float3 normal_l : NORMAL;
+    float2 uv_coord : TEXTURE;
 };
 
 struct VertexOut {
     float4 pos_h : SV_POSITION;
     float3 pos_w : POSITION;
     float3 normal_w : NORMAL;
+    float2 uv_coord : TEXTURE;
 };
 

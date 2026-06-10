@@ -550,6 +550,13 @@ namespace QCE {
                 continue;
             }
 
+            auto& material = ResourceManager::Get().Read<Material>(material_comp.index);
+            assert(material.gpu_albedo_index.has_value());
+            assert(material.gpu_albedo_index.value() < m_geometry_buffers.textures.size());
+            CD3DX12_GPU_DESCRIPTOR_HANDLE tex(m_srv_heap->GetGPUDescriptorHandleForHeapStart());
+            tex.Offset(UINT(material.gpu_albedo_index.value()), m_cbv_srv_uav_descr_size);
+
+            m_cmd_list->SetGraphicsRootDescriptorTable(0, tex);
             m_cmd_list->SetGraphicsRootConstantBufferView(
                 E_DX12RPI_UNIT_CONSTANTS_B0, unit_cb_gpu_addr);
             m_cmd_list->SetGraphicsRootConstantBufferView(
@@ -600,6 +607,9 @@ namespace QCE {
 
         auto dsv = DepthStencilView();
         m_cmd_list->OMSetRenderTargets(1, &current_bbv, true, &dsv);
+
+        ID3D12DescriptorHeap* descriptor_heaps[] = { m_srv_heap.Get() };
+        m_cmd_list->SetDescriptorHeaps(_countof(descriptor_heaps), descriptor_heaps);
 
         m_cmd_list->SetGraphicsRootSignature(m_root_signature.Get());
 

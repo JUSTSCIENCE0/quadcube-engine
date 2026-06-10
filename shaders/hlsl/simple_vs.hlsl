@@ -14,5 +14,7 @@ VertexOut main(VertexIn vin) {
 
     vout.normal_w = mul(vin.normal_l, (float3x3) world_matrix);
 
+    vout.uv_coord = vin.uv_coord;
+
     return vout;
 }
