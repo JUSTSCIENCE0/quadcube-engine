@@ -87,7 +87,7 @@ namespace QCE {
         };
 
         struct SceneMaterials {
-            std::vector<size_t> resources;
+            std::vector<size_t> components;
             std::vector<int>    dirty_frames; // same indeces as material buffer
         };
 

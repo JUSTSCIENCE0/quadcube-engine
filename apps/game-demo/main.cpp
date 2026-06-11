@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     QCE::Material material{};
     material.id = "simple_material";
     material.albedo_color = QCE::GRAY;
-    material.cpu_albedo_index = app.Resources().GetIndex<QCE::Texture2D>("squares.bc7");
+    material.albedo_texture = app.Resources().GetIndex<QCE::Texture2D>("squares.bc7");
     QCE_CRITICAL(app.Resources().Add(std::move(material)));
 
     QCE::MeshComponent cuboid_mesh_component{

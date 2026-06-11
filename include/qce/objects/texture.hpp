@@ -46,7 +46,6 @@ namespace QCE {
         };
         std::vector<MipLevel> mip_levels;
 
-        std::optional<size_t> gpu_texture_index = std::nullopt;
         void* ktx = nullptr;
     };
 

@@ -51,18 +51,16 @@ namespace QCE {
 
             constexpr static DXGI_FORMAT INDEX_FORMAT = dx12_get_index_format();
 
-            struct Texture {
-                DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;
-
-                MsPtr<ID3D12Resource> buffer   = nullptr;
-                MsPtr<ID3D12Resource> uploader = nullptr;
-            };
-            std::vector<Texture> textures{};
-
             void DisposeUploaders() {
                 vertex_buffer_uploader = nullptr;
                 index_buffer_uploader = nullptr;
             }
+        };
+        struct TextureBuffer {
+            DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;
+
+            MsPtr<ID3D12Resource> buffer = nullptr;
+            MsPtr<ID3D12Resource> uploader = nullptr;
         };
         struct FrameResource {
             FrameResource(ID3D12Device* device, UINT units_count, UINT material_count) {
@@ -197,6 +195,9 @@ namespace QCE {
         UINT m_cbv_srv_uav_descr_size = 0;
 
         uint64_t m_current_fence = 0;
+
+        BufferMap m_texture_buffer_map{};
+        std::vector<TextureBuffer> m_texture_buffers{};
     };
 }
 

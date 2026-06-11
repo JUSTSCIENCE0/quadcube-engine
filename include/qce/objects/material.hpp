@@ -30,14 +30,11 @@ namespace QCE {
         float      shininess = 0.75f;
 
         /// textures
-        //  cpu resource indices
-        std::optional<size_t> cpu_albedo_index = std::nullopt;
-        std::optional<size_t> cpu_normal_index = std::nullopt;
-        std::optional<size_t> cpu_metallic_index = std::nullopt;
-        std::optional<size_t> cpu_roughness_index = std::nullopt;
-        std::optional<size_t> cpu_occlusion_index = std::nullopt;
-        std::optional<size_t> cpu_emissive_index = std::nullopt;
-        //  gpu resource indices
-        std::optional<size_t> gpu_albedo_index = std::nullopt;
+        std::optional<size_t> albedo_texture    = std::nullopt;
+        std::optional<size_t> normal_texture    = std::nullopt;
+        std::optional<size_t> metallic_texture  = std::nullopt;
+        std::optional<size_t> roughness_texture = std::nullopt;
+        std::optional<size_t> occlusion_texture = std::nullopt;
+        std::optional<size_t> emissive_texture  = std::nullopt;
     };
 }

@@ -100,7 +100,7 @@ namespace QCE {
             try {
                 m_frame_resources.emplace_back(
                     std::make_unique<FrameResource>(
-                        m_d3d_device.Get(), units_count, UINT(m_scene_materials.resources.size())));
+                        m_d3d_device.Get(), units_count, UINT(m_scene_materials.components.size())));
             }
             catch (const ErrorCodeException& e) {
                 return e.code_value();
@@ -487,7 +487,7 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::UpdateMaterialBuffers() {
-        for (const auto& material_index : m_scene_materials.resources) {
+        for (const auto& material_index : m_scene_materials.components) {
             assert(m_material_buffer_map.exists(material_index));
             auto buffer_index = m_material_buffer_map[material_index];
             if (m_scene_materials.dirty_frames[buffer_index] > 0) {
@@ -551,10 +551,18 @@ namespace QCE {
             }
 
             auto& material = ResourceManager::Get().Read<Material>(material_comp.index);
-            assert(material.gpu_albedo_index.has_value());
-            assert(material.gpu_albedo_index.value() < m_geometry_buffers.textures.size());
+
+            // TODO: use default white texture
+            assert(material.albedo_texture.has_value());
+            auto albedo_texture_index = material.albedo_texture.value();
+
+            if (!m_texture_buffer_map.exists(albedo_texture_index)) {
+                // TODO: use log system
+                std::cerr << "Albedo texture index " << albedo_texture_index << " not found in texture buffers" << std::endl;
+                continue;
+            }
             CD3DX12_GPU_DESCRIPTOR_HANDLE tex(m_srv_heap->GetGPUDescriptorHandleForHeapStart());
-            tex.Offset(UINT(material.gpu_albedo_index.value()), m_cbv_srv_uav_descr_size);
+            tex.Offset(UINT(m_texture_buffer_map[albedo_texture_index]), m_cbv_srv_uav_descr_size);
 
             m_cmd_list->SetGraphicsRootDescriptorTable(0, tex);
             m_cmd_list->SetGraphicsRootConstantBufferView(
@@ -700,30 +708,23 @@ namespace QCE {
             MaterialComponent>();
 
         // reset
-        m_geometry_buffers.textures.clear();
-        for (auto& entity : entities) {
-            auto& material_component = m_entities.GetComponent<MaterialComponent>(entity);
-            auto& material = ResourceManager::Get().Read<Material>(material_component.index);
+        m_texture_buffers.clear();
+        m_texture_buffer_map.clear();
 
-            if (material.cpu_albedo_index.has_value()) {
-                auto& albedo = ResourceManager::Get().Read<Texture2D>(material.cpu_albedo_index.value());
-                albedo.gpu_texture_index.reset();
-            }
-        }
+        // TODO: upload default white texture here
 
         for (auto& entity : entities) {
             auto& material_component = m_entities.GetComponent<MaterialComponent>(entity);
             auto& material = ResourceManager::Get().Read<Material>(material_component.index);
 
-            if (material.cpu_albedo_index.has_value()) {
-                auto& albedo = ResourceManager::Get().Read<Texture2D>(material.cpu_albedo_index.value());
-                if (!albedo.gpu_texture_index.has_value()) {
-                    auto index = m_geometry_buffers.textures.size();
+            if (material.albedo_texture.has_value()) {
+                auto albedo_texture_index = material.albedo_texture.value();
+                auto& albedo = ResourceManager::Get().Read<Texture2D>(albedo_texture_index);
+                if (!m_texture_buffer_map.exists(albedo_texture_index)) {
+                    auto texture_buffer_index = m_texture_buffers.size();
                     QCE_CRITICAL(LoadTexture(albedo));
-                    albedo.gpu_texture_index = index;
+                    m_texture_buffer_map.add(albedo_texture_index, texture_buffer_index);
                 }
-
-                material.gpu_albedo_index = albedo.gpu_texture_index;
             }
         }
 
@@ -735,7 +736,7 @@ namespace QCE {
         srv_desc.Texture2D.MostDetailedMip = 0;
         srv_desc.Texture2D.ResourceMinLODClamp = 0.0f;
 
-        for (const auto& gpu_texture : m_geometry_buffers.textures) {
+        for (const auto& gpu_texture : m_texture_buffers) {
             auto texture_resource = gpu_texture.buffer;
             srv_desc.Format = texture_resource->GetDesc().Format;
             srv_desc.Texture2D.MipLevels = texture_resource->GetDesc().MipLevels;
@@ -848,7 +849,7 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::LoadTexture(Texture2D& texture) {
-        GeometryBuffers::Texture gpu_texture;
+        TextureBuffer gpu_texture;
         gpu_texture.format = dx12_get_texture_format(texture.format);
         if (DXGI_FORMAT_UNKNOWN == gpu_texture.format)
             return ErrorCode::E_DX12_UNSUPPORTED_TEXTURE_FORMAT;
@@ -920,7 +921,7 @@ namespace QCE {
             D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         m_cmd_list->ResourceBarrier(1, &barrier);
 
-        m_geometry_buffers.textures.emplace_back(std::move(gpu_texture));
+        m_texture_buffers.emplace_back(std::move(gpu_texture));
         return ErrorCode::SUCCESS;
     }
 }

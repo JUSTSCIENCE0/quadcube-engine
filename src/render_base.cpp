@@ -27,7 +27,7 @@ namespace QCE {
         m_scene_geometry.vertex_buffer.clear();
         m_scene_geometry.index_buffer_size = 0;
         m_scene_geometry.vertex_buffer_size = 0;
-        m_scene_materials.resources.clear();
+        m_scene_materials.components.clear();
         m_scene_materials.dirty_frames.clear();
         m_geometry_unit_map.clear();
         m_material_buffer_map.clear();
@@ -73,13 +73,13 @@ namespace QCE {
             if (m_material_buffer_map.exists(material_comp.index))
                 continue;
 
-            m_scene_materials.resources.push_back(material_comp.index);
+            m_scene_materials.components.push_back(material_comp.index);
             m_material_buffer_map.add(material_comp.index, material_index);
             material_index++;
         }
 
         m_scene_materials.dirty_frames.resize(
-            m_scene_materials.resources.size(), FRAME_RESOURCE_COUNT);
+            m_scene_materials.components.size(), FRAME_RESOURCE_COUNT);
 
         return ErrorCode::SUCCESS;
     }

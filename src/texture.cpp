@@ -16,7 +16,6 @@ namespace QCE {
         base_width(other.base_width),
         base_height(other.base_height),
         mip_levels(std::move(other.mip_levels)),
-        gpu_texture_index(std::move(other.gpu_texture_index)),
         ktx(other.ktx) {
         other.ktx = nullptr;
     }
@@ -28,7 +27,6 @@ namespace QCE {
             base_width = other.base_width;
             base_height = other.base_height;
             mip_levels = std::move(other.mip_levels);
-            gpu_texture_index = std::move(other.gpu_texture_index);
             ktx = other.ktx;
             other.ktx = nullptr;
         }
