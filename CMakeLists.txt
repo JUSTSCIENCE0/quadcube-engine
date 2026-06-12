@@ -48,7 +48,7 @@ include(FetchContent)
 FetchContent_Declare(
     common-utils
     GIT_REPOSITORY https://github.com/JUSTSCIENCE0/common-utils.git
-    GIT_TAG        dev # TODO: use commit hash when sync with main
+    GIT_TAG        c7135cc7a609c428b1575d626bbe0d679dc7370c # main 12.06.2026
 )
 if (BUILD_QCE_TEST)
     set(ENABLE_CU_TEST_UTILS ON CACHE BOOL "" FORCE)
