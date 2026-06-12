@@ -65,6 +65,7 @@ namespace QCE {
             auto& mip_level = texture.mip_levels.emplace_back();
             mip_level.width  = std::max(1u, ktx_texture->baseWidth  >> level);
             mip_level.height = std::max(1u, ktx_texture->baseHeight >> level);
+            // TODO: calc from format, now BC7 only
             mip_level.row_pitch = ((mip_level.width + 3) / 4) * 16 ;
             mip_level.slice_pitch = mip_level.row_pitch * ((mip_level.height + 3) / 4);
 
@@ -80,6 +81,65 @@ namespace QCE {
             }
             mip_level.data = ktx_texture->pData + offset;
         }
+
+        texture.ktx = ktx_texture;
+        return ErrorCode::SUCCESS;
+    }
+
+    ErrorCode texture2d_color(const color_rgba& color, Texture2D& texture) {
+        ktxTextureCreateInfo createInfo{};
+        createInfo.vkFormat = TextureFormat::E_TEXFMT_R32G32B32A32_SFLOAT;
+
+        createInfo.baseWidth = 1;
+        createInfo.baseHeight = 1;
+        createInfo.baseDepth = 1;
+
+        createInfo.numDimensions = 2;
+        createInfo.numLevels = 1;
+        createInfo.numLayers = 1;
+        createInfo.numFaces = 1;
+
+        createInfo.isArray = KTX_FALSE;
+        createInfo.generateMipmaps = KTX_FALSE;
+
+        ktxTexture2* ktx_texture = nullptr;
+        auto ktx_result = ktxTexture2_Create(&createInfo, KTX_TEXTURE_CREATE_ALLOC_STORAGE, &ktx_texture);
+
+        if (ktx_result != KTX_SUCCESS) {
+            // TODO: use log system
+            std::cerr << "KTX: Failed to create texture: " << ktxErrorString(ktx_result) << '\n';
+            return ErrorCode::E_RM_TEXTURE_CREATE_FAILED;
+        }
+
+        ktx_size_t offset;
+        ktx_result = ktxTexture2_GetImageOffset(
+            ktx_texture,
+            0, // mip level
+            0, // layer
+            0, // face
+            &offset);
+
+        if (ktx_result != KTX_SUCCESS) {
+            // TODO: use log system
+            std::cerr << "KTX: Failed to get image offset: " << ktxErrorString(ktx_result) << '\n';
+            ktxTexture2_Destroy(ktx_texture);
+            return ErrorCode::E_RM_TEXTURE_CREATE_FAILED;
+        }
+
+        memcpy(ktx_texture->pData + offset,
+            color.arr,
+            sizeof(color.arr));
+
+        texture.format = TextureFormat::E_TEXFMT_R32G32B32A32_SFLOAT;
+        texture.base_width = 1;
+        texture.base_height = 1;
+
+        auto& mip_level = texture.mip_levels.emplace_back();
+        mip_level.width = 1;
+        mip_level.height = 1;
+        mip_level.row_pitch = 16;
+        mip_level.slice_pitch = 16;
+        mip_level.data = ktx_texture->pData + offset;
 
         texture.ktx = ktx_texture;
         return ErrorCode::SUCCESS;

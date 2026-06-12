@@ -550,13 +550,17 @@ namespace QCE {
                 continue;
             }
 
-            if (!m_material_texture_map.exists(material_comp.index)) {
-                // TODO: use log system
-                std::cerr << "Albedo texture index for material " << material_comp.index << " not found in texture buffers" << std::endl;
-                continue;
-            }
             CD3DX12_GPU_DESCRIPTOR_HANDLE tex(m_srv_heap->GetGPUDescriptorHandleForHeapStart());
-            tex.Offset(UINT(m_material_texture_map[material_comp.index]), m_cbv_srv_uav_descr_size);
+            auto texture_index = MISSED_TEXTURE_INDEX;
+            if (m_material_texture_map.exists(material_comp.index)) {
+                texture_index = m_material_texture_map[material_comp.index];
+            }
+            else {
+                // TODO: use log system
+                std::cerr << "Albedo texture index for material " << material_comp.index <<
+                    " not found in texture buffers" << std::endl;
+            }
+            tex.Offset(UINT(texture_index), m_cbv_srv_uav_descr_size);
 
             m_cmd_list->SetGraphicsRootDescriptorTable(0, tex);
             m_cmd_list->SetGraphicsRootConstantBufferView(
@@ -706,7 +710,11 @@ namespace QCE {
         m_texture_buffer_map.clear();
         m_material_texture_map.clear();
 
-        // TODO: upload default white texture here
+        // load default textures
+        const auto& no_texture2d = ResourceManager::Get().Read<Texture2D>("no_texture2d");
+        QCE_CRITICAL(LoadTexture(no_texture2d));
+        const auto& missed_texture2d = ResourceManager::Get().Read<Texture2D>("missed_texture2d");
+        QCE_CRITICAL(LoadTexture(missed_texture2d));
 
         for (auto& entity : entities) {
             auto& material_component = m_entities.GetComponent<MaterialComponent>(entity);
@@ -725,6 +733,10 @@ namespace QCE {
                 }
                 m_material_texture_map.add(
                     material_component.index, m_texture_buffer_map[albedo_texture_index]);
+            }
+            else {
+                m_material_texture_map.add(
+                    material_component.index, NO_TEXTURE_INDEX);
             }
         }
 
@@ -848,7 +860,7 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode RenderDX12::LoadTexture(Texture2D& texture) {
+    ErrorCode RenderDX12::LoadTexture(const Texture2D& texture) {
         TextureBuffer gpu_texture;
         gpu_texture.format = dx12_get_texture_format(texture.format);
         if (DXGI_FORMAT_UNKNOWN == gpu_texture.format)

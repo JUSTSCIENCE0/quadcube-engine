@@ -46,6 +46,8 @@ namespace QCE {
         /// consts
         static constexpr auto FRAME_RESOURCE_COUNT = 3;
         static constexpr auto MAX_LIGHTS = 16;
+        static constexpr size_t NO_TEXTURE_INDEX = 0;
+        static constexpr size_t MISSED_TEXTURE_INDEX = 1;
 
         /// types
         using ShaderMap = std::array<

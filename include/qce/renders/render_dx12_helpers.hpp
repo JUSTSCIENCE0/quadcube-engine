@@ -38,6 +38,8 @@ namespace QCE {
 
     constexpr static DXGI_FORMAT dx12_get_texture_format(TextureFormat format) {
         switch (format) {
+            case TextureFormat::E_TEXFMT_R32G32B32A32_SFLOAT:
+                return DXGI_FORMAT_R32G32B32A32_FLOAT;
             case TextureFormat::E_TEXFMT_BC7_UNORM_BLOCK:
                 return DXGI_FORMAT_BC7_UNORM;
             case TextureFormat::E_TEXFMT_BC7_SRGB_BLOCK:

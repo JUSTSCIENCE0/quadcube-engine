@@ -123,6 +123,7 @@ namespace QCE {
             m_shaders_bytecode_directory(m_resources_directory / SHADERS_BYTECODE_SUBDIRECTORY),
             m_textures_directory(m_resources_directory / TEXTURES_SUBDIRECTORY) {
             RegisterDefaultCommands();
+            AddDefaultTextures();
         }
 
         /// singleton
@@ -218,6 +219,7 @@ namespace QCE {
         /// methods
         static std::filesystem::path GetResourcesDirectory();
         void RegisterDefaultCommands();
+        void AddDefaultTextures();
 
         /// attributes
         RenderType m_render_type = DEFAULT_RENDER_TYPE;

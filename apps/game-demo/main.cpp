@@ -21,17 +21,24 @@ int main(int argc, char* argv[]) {
     };
     QCE_CRITICAL(app.Resources().AddFigure(cuboid, "cuboid"));
     QCE_CRITICAL(app.Resources().AddTexture("squares.bc7"));
-    QCE::Material material{};
-    material.id = "simple_material";
-    material.albedo_color = QCE::GRAY;
-    material.albedo_texture = app.Resources().GetIndex<QCE::Texture2D>("squares.bc7");
-    QCE_CRITICAL(app.Resources().Add(std::move(material)));
+    QCE::Material textured_material{};
+    textured_material.id = "textured_material";
+    textured_material.albedo_color = QCE::LIGHT_GRAY;
+    textured_material.albedo_texture = app.Resources().GetIndex<QCE::Texture2D>("squares.bc7");
+    QCE_CRITICAL(app.Resources().Add(std::move(textured_material)));
+    QCE::Material untextured_material{};
+    untextured_material.id = "untextured_material";
+    untextured_material.albedo_color = QCE::GRAY;
+    QCE_CRITICAL(app.Resources().Add(std::move(untextured_material)));
 
     QCE::MeshComponent cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
-    QCE::MaterialComponent material_component{
-        .index = app.Resources().GetIndex<QCE::Material>("simple_material")
+    QCE::MaterialComponent textured_material_component{
+        .index = app.Resources().GetIndex<QCE::Material>("textured_material")
+    };
+    QCE::MaterialComponent untextured_material_component{
+        .index = app.Resources().GetIndex<QCE::Material>("untextured_material")
     };
     auto entity0 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, cuboid_mesh_component));
@@ -42,7 +49,7 @@ int main(int argc, char* argv[]) {
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0, material_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity0, untextured_material_component));
 
     auto entity1 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, cuboid_mesh_component));
@@ -53,7 +60,7 @@ int main(int argc, char* argv[]) {
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity1, material_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity1, textured_material_component));
 
     auto sun = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(sun,

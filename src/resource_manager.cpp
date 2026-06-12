@@ -23,6 +23,18 @@ namespace QCE {
         });
     }
 
+    void ResourceManager::AddDefaultTextures() {
+        QCE::Texture2D no_texture2d{};
+        no_texture2d.id = "no_texture2d";
+        QCE_SOFT(QCE::texture2d_color(WHITE, no_texture2d));
+        Add(std::move(no_texture2d));
+
+        QCE::Texture2D missed_texture2d{};
+        missed_texture2d.id = "missed_texture2d";
+        QCE_SOFT(QCE::texture2d_color(RED, missed_texture2d));
+        Add(std::move(missed_texture2d));
+    }
+
     ErrorCode ResourceManager::AddFigure(const FigureParams& params, const std::string& mesh_name) {
         if (!mesh_name.empty()) {
             if (Exists<Mesh>(mesh_name))

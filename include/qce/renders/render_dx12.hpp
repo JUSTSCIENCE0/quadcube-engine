@@ -121,7 +121,7 @@ namespace QCE {
         // Utils
         ErrorCode FlushCommandQueue();
         ErrorCode NextFrameResource();
-        ErrorCode LoadTexture(Texture2D& texture);
+        ErrorCode LoadTexture(const Texture2D& texture);
         D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView() const {
             return m_dsv_heap->GetCPUDescriptorHandleForHeapStart();
         }

@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/ancillary/error_codes.hpp>
+#include <qce/math/color.hpp>
 
 #include <stdint.h>
 
@@ -16,6 +17,7 @@ namespace QCE {
 #define CU_ENUMS_DESCRIPTION \
     CU_BEGIN_ENUM(TextureFormat) \
         CU_VALUED_ENUM_UNIT(E_TEXFMT_UNKNOWN, -1) \
+        CU_VALUED_ENUM_UNIT(E_TEXFMT_R32G32B32A32_SFLOAT, 109) \
         CU_VALUED_ENUM_UNIT(E_TEXFMT_BC7_UNORM_BLOCK, 145) \
         CU_VALUED_ENUM_UNIT(E_TEXFMT_BC7_SRGB_BLOCK, 146) \
     CU_END_ENUM(TextureFormat)
@@ -50,4 +52,5 @@ namespace QCE {
     };
 
     ErrorCode texture2d_load(const std::filesystem::path& path, Texture2D& texture);
+    ErrorCode texture2d_color(const color_rgba& color, Texture2D& texture);
 }
