@@ -197,6 +197,7 @@ namespace QCE {
         uint64_t m_current_fence = 0;
 
         BufferMap m_texture_buffer_map{};
+        BufferMap m_material_texture_map{};
         std::vector<TextureBuffer> m_texture_buffers{};
     };
 }

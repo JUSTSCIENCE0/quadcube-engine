@@ -550,19 +550,13 @@ namespace QCE {
                 continue;
             }
 
-            auto& material = ResourceManager::Get().Read<Material>(material_comp.index);
-
-            // TODO: use default white texture
-            assert(material.albedo_texture.has_value());
-            auto albedo_texture_index = material.albedo_texture.value();
-
-            if (!m_texture_buffer_map.exists(albedo_texture_index)) {
+            if (!m_material_texture_map.exists(material_comp.index)) {
                 // TODO: use log system
-                std::cerr << "Albedo texture index " << albedo_texture_index << " not found in texture buffers" << std::endl;
+                std::cerr << "Albedo texture index for material " << material_comp.index << " not found in texture buffers" << std::endl;
                 continue;
             }
             CD3DX12_GPU_DESCRIPTOR_HANDLE tex(m_srv_heap->GetGPUDescriptorHandleForHeapStart());
-            tex.Offset(UINT(m_texture_buffer_map[albedo_texture_index]), m_cbv_srv_uav_descr_size);
+            tex.Offset(UINT(m_material_texture_map[material_comp.index]), m_cbv_srv_uav_descr_size);
 
             m_cmd_list->SetGraphicsRootDescriptorTable(0, tex);
             m_cmd_list->SetGraphicsRootConstantBufferView(
@@ -710,13 +704,17 @@ namespace QCE {
         // reset
         m_texture_buffers.clear();
         m_texture_buffer_map.clear();
+        m_material_texture_map.clear();
 
         // TODO: upload default white texture here
 
         for (auto& entity : entities) {
             auto& material_component = m_entities.GetComponent<MaterialComponent>(entity);
-            auto& material = ResourceManager::Get().Read<Material>(material_component.index);
+            if (m_material_texture_map.exists(material_component.index)) {
+                continue;
+            }
 
+            auto& material = ResourceManager::Get().Read<Material>(material_component.index);
             if (material.albedo_texture.has_value()) {
                 auto albedo_texture_index = material.albedo_texture.value();
                 auto& albedo = ResourceManager::Get().Read<Texture2D>(albedo_texture_index);
@@ -725,6 +723,8 @@ namespace QCE {
                     QCE_CRITICAL(LoadTexture(albedo));
                     m_texture_buffer_map.add(albedo_texture_index, texture_buffer_index);
                 }
+                m_material_texture_map.add(
+                    material_component.index, m_texture_buffer_map[albedo_texture_index]);
             }
         }
 
