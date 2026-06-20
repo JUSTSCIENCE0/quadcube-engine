@@ -10,6 +10,7 @@
 
 namespace QCE {
     Mesh generate_cuboid(const CuboidParams& params, std::string name) {
+    static inline Mesh generate_cuboid(const CuboidParams& params, std::string name) {
         if (name.empty()) {
             name = std::format("Cuboid[{:.4f}.{:.4f}.{:.4f}]", params.length, params.width, params.height);
         }
@@ -182,7 +183,7 @@ namespace QCE {
         return result;
     }
 
-    Mesh generate_sphere(const SphereParams& params, std::string name) {
+    static inline Mesh generate_sphere(const SphereParams& params, std::string name) {
         if (name.empty()) {
             name = std::format("Sphere[{:.4f}]", params.radius);
         }
