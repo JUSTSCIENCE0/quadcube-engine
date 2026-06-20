@@ -17,6 +17,7 @@
 namespace QCE {
     static constexpr float PI     = 3.1415926535f;
     static constexpr float PI_DEG = 180.0f;
+    static constexpr float _2PI   = 6.283185307f;
 
     struct float2d {
         float arr[2] = { 0.0f, 0.0f };

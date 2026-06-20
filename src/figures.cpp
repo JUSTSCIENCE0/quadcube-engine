@@ -6,26 +6,20 @@
 #include <qce/objects/figures.hpp>
 
 #include <iomanip>
-#include <sstream>
+#include <format>
 
 namespace QCE {
-    Mesh generate_cuboid(
-        float length, float width, float height,
-        /*TODO: int subdivisions,*/
-        std::string name) {
+    Mesh generate_cuboid(const CuboidParams& params, std::string name) {
         if (name.empty()) {
-            std::stringstream ss_name;
-            ss_name << "Cuboid[" << std::fixed << std::setprecision(4)
-                << length << ";" << width << ";" << height << "]";
-            name = ss_name.str();
+            name = std::format("Cuboid[{:.4f}.{:.4f}.{:.4f}]", params.length, params.width, params.height);
         }
 
-        float l2 = length / 2.0f;
-        float w2 = width / 2.0f;
-        float h2 = height / 2.0f;
+        float l2 = params.length / 2.0f;
+        float w2 = params.width / 2.0f;
+        float h2 = params.height / 2.0f;
 
         Mesh result{};
-        result.id = std::move(name),
+        result.id = std::move(name);
         result.vertices = std::vector<vertex>{
             // front face
             {
@@ -188,20 +182,89 @@ namespace QCE {
         return result;
     }
 
+    Mesh generate_sphere(const SphereParams& params, std::string name) {
+        if (name.empty()) {
+            name = std::format("Sphere[{:.4f}]", params.radius);
+        }
+
+        constexpr float K1 = 0.52573111f;
+        constexpr float K2 = 0.85065081f;
+
+        Mesh result{};
+        result.id = std::move(name);
+        result.vertices = std::vector<vertex>{
+            {
+                .position = { -K1, 0.0f, K2 },
+            },
+            {
+                .position = { K1, 0.0f, K2 },
+            },
+            {
+                .position = { -K1, 0.0f, -K2 },
+            },
+            {
+                .position = { K1, 0.0f, -K2 },
+            },
+            {
+                .position = { 0.0f, K2, K1 },
+            },
+            {
+                .position = { 0.0f, K2, -K1 },
+            },
+            {
+                .position = { 0.0f, -K2, K1 },
+            },
+            {
+                .position = { 0.0f, -K2, -K1 },
+            },
+            {
+                .position = { K2, K1, 0.0f },
+            },
+            {
+                .position = { -K2, K1, 0.0f },
+            },
+            {
+                .position = { K2, -K1, 0.0f },
+            },
+            {
+                .position = { -K2, -K1, 0.0f },
+            }
+        };
+        result.indices = std::vector<index_t>{
+             1,  4, 0,    4,  9,  0,     4,  5, 9,     8, 5, 4,
+             1,  8, 4,    1, 10,  8,    10,  3, 8,     8, 3, 5,
+             3,  2, 5,    3,  7,  2,     3, 10, 7,    10, 6, 7,
+             6, 11, 7,    6,  0, 11,     6,  1, 0,    10, 1, 6,
+            11,  0, 9,    2, 11,  9,     5,  2, 9,    11, 2, 7
+        };
+
+        for (auto& vertex : result.vertices) {
+            auto pos  = vector_init(vertex.position.arr);
+            auto norm = vector_normalize(pos);
+            pos = norm * params.radius;
+
+            vector_copy(pos,  vertex.position.arr);
+            vector_copy(norm, vertex.normal.arr);
+
+            float theta = atan2f(vertex.position.z(), vertex.position.x());
+            if (theta < 0.0f)
+                theta += _2PI;
+            float phi = acosf(vertex.position.y() / params.radius);
+            vertex.texture_coordinates = { theta / _2PI, phi / PI };
+        }
+
+        return result;
+    }
+
     Mesh generate_figure(const FigureParams& params, const std::string& name) {
         if (std::holds_alternative<CuboidParams>(params)) {
             const auto& cube_params = std::get<CuboidParams>(params);
-            return generate_cuboid(
-                cube_params.length,
-                cube_params.width,
-                cube_params.height,
-                name);
+            return generate_cuboid(cube_params, name);
         }
 
         if (std::holds_alternative<SphereParams>(params)) {
-            // TODO
-            //const auto& sphere_params = std::get<SphereParams>(params);
-            return {};
+            const auto& sphere_params = std::get<SphereParams>(params);
+            return generate_sphere(sphere_params, name);
         }
 
         return {};
