@@ -9,7 +9,84 @@
 #include <format>
 
 namespace QCE {
-    Mesh generate_cuboid(const CuboidParams& params, std::string name) {
+    static inline vertex middle_vertex(const vertex& v1, const vertex& v2) {
+        auto p0 = vector_init(v1.position.arr);
+        auto p1 = vector_init(v2.position.arr);
+        auto n0 = vector_init(v1.normal.arr);
+        auto n1 = vector_init(v2.normal.arr);
+
+        auto pos = (p0 + p1) * 0.5f;
+        auto normal = vector_normalize((n0 + n1) * 0.5f);
+
+        vertex result{};
+        vector_copy(pos, result.position.arr);
+        vector_copy(normal, result.normal.arr);
+        result.texture_coordinates.x() = (v1.texture_coordinates.x() + v2.texture_coordinates.x()) * 0.5f;
+        result.texture_coordinates.y() = (v1.texture_coordinates.y() + v2.texture_coordinates.y()) * 0.5f;
+        return result;
+    }
+
+    static inline void subdivide_mesh(Mesh& mesh, int subdivisions) {
+        // TODO: Hard edges mode
+
+        if (subdivisions < 1) {
+            return;
+        }
+        assert(mesh.indices.size() % 3 == 0);
+
+        mesh.vertices.reserve(mesh.vertices.size() * 2 * subdivisions);
+        mesh.indices.reserve(mesh.indices.size() * 4 * subdivisions);
+
+        std::vector<vertex> vertices;
+        vertices.reserve(mesh.vertices.capacity());
+        std::vector<index_t> indices;
+        indices.reserve(mesh.indices.capacity());
+
+        for (int subdivision = 0; subdivision < subdivisions; subdivision++) {
+            auto num_triangles = static_cast<index_t>(mesh.indices.size() / 3 );
+            for (index_t i = 0; i < num_triangles; i++) {
+                auto i0 = mesh.indices[i * 3 + 0];
+                auto i1 = mesh.indices[i * 3 + 1];
+                auto i2 = mesh.indices[i * 3 + 2];
+                auto v0 = mesh.vertices[i0];
+                auto v1 = mesh.vertices[i1];
+                auto v2 = mesh.vertices[i2];
+
+                auto m0 = middle_vertex(v0, v1);
+                auto m1 = middle_vertex(v1, v2);
+                auto m2 = middle_vertex(v2, v0);
+
+                vertices.push_back(v0);
+                vertices.push_back(v1);
+                vertices.push_back(v2);
+                vertices.push_back(m0);
+                vertices.push_back(m1);
+                vertices.push_back(m2);
+
+                indices.push_back(i * 6 + 0);
+                indices.push_back(i * 6 + 3);
+                indices.push_back(i * 6 + 5);
+
+                indices.push_back(i * 6 + 3);
+                indices.push_back(i * 6 + 1);
+                indices.push_back(i * 6 + 4);
+
+                indices.push_back(i * 6 + 5);
+                indices.push_back(i * 6 + 4);
+                indices.push_back(i * 6 + 2);
+
+                indices.push_back(i * 6 + 3);
+                indices.push_back(i * 6 + 4);
+                indices.push_back(i * 6 + 5);
+            }
+
+            mesh.vertices.swap(vertices);
+            mesh.indices.swap(indices);
+            vertices.clear();
+            indices.clear();
+        }
+    }
+
     static inline Mesh generate_cuboid(const CuboidParams& params, std::string name) {
         if (name.empty()) {
             name = std::format("Cuboid[{:.4f}.{:.4f}.{:.4f}]", params.length, params.width, params.height);
@@ -238,6 +315,8 @@ namespace QCE {
              6, 11, 7,    6,  0, 11,     6,  1, 0,    10, 1, 6,
             11,  0, 9,    2, 11,  9,     5,  2, 9,    11, 2, 7
         };
+
+        subdivide_mesh(result, params.subdivisions);
 
         for (auto& vertex : result.vertices) {
             auto pos  = vector_init(vertex.position.arr);
