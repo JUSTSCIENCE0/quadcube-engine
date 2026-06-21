@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity0,
         QCE::TransformComponents{
             { 0.0f, 0.3826834f, 0.0f, 0.9238795f },
-            { 2.0f, 0.0f, 2.0f },
+            { -2.0f, 0.0f, 2.0f },
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, QCE::TransformMatrix{}));
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity1,
         QCE::TransformComponents{
             { 0.0f, 0.3826834f, 0.0f, 0.9238795f },
-            { -2.0f, 0.0f, -2.0f },
+            { 2.0f, 0.0f, -2.0f },
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, QCE::TransformMatrix{}));
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity2,
         QCE::TransformComponents{
             { 0.0f, 0.0f, 0.0f, 1.0f },
-            { 0.7f, 0.0f, 0.7f },
+            { -.7f, 0.0f, 0.7f },
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity2, QCE::TransformMatrix{}));
@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity3,
         QCE::TransformComponents{
             { 0.0f, 0.0f, 0.0f, 1.0f },
-            { -.7f, 0.0f, -.7f },
+            { 0.7f, 0.0f, -.7f },
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::TransformMatrix{}));
