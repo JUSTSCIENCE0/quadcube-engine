@@ -27,8 +27,6 @@ namespace QCE {
     }
 
     static inline void subdivide_mesh(Mesh& mesh, int subdivisions) {
-        // TODO: Hard edges mode
-
         if (subdivisions < 1) {
             return;
         }
@@ -45,12 +43,12 @@ namespace QCE {
         for (int subdivision = 0; subdivision < subdivisions; subdivision++) {
             auto num_triangles = static_cast<index_t>(mesh.indices.size() / 3 );
             for (index_t i = 0; i < num_triangles; i++) {
-                auto i0 = mesh.indices[i * 3 + 0];
+                auto i0 = mesh.indices[i * 3];
                 auto i1 = mesh.indices[i * 3 + 1];
                 auto i2 = mesh.indices[i * 3 + 2];
-                auto v0 = mesh.vertices[i0];
-                auto v1 = mesh.vertices[i1];
-                auto v2 = mesh.vertices[i2];
+                const auto& v0 = mesh.vertices[i0];
+                const auto& v1 = mesh.vertices[i1];
+                const auto& v2 = mesh.vertices[i2];
 
                 auto m0 = middle_vertex(v0, v1);
                 auto m1 = middle_vertex(v1, v2);
@@ -84,6 +82,63 @@ namespace QCE {
             mesh.indices.swap(indices);
             vertices.clear();
             indices.clear();
+        }
+    }
+
+    static inline void cut_edges(Mesh& mesh) {
+        assert(mesh.indices.size() % 3 == 0);
+
+        auto num_triangles = static_cast<index_t>(mesh.indices.size() / 3);
+        std::vector<vertex> vertices;
+        vertices.reserve(mesh.indices.size());
+        std::vector<index_t> indices;
+        indices.reserve(mesh.indices.size());
+
+        for (index_t i = 0; i < num_triangles; i++) {
+            auto i0 = mesh.indices[i * 3];
+            auto i1 = mesh.indices[i * 3 + 1];
+            auto i2 = mesh.indices[i * 3 + 2];
+            vertices.push_back(mesh.vertices[i0]);
+            vertices.push_back(mesh.vertices[i1]);
+            vertices.push_back(mesh.vertices[i2]);
+            indices.push_back(i * 3);
+            indices.push_back(i * 3 + 1);
+            indices.push_back(i * 3 + 2);
+        }
+
+        mesh.vertices.swap(vertices);
+        mesh.indices.swap(indices);
+    }
+
+    static inline float3d compute_normal(const vertex& v0, const vertex& v1, const vertex& v2) {
+        auto p0 = vector_init(v0.position.arr);
+        auto p1 = vector_init(v1.position.arr);
+        auto p2 = vector_init(v2.position.arr);
+        auto edge1 = p1 - p0;
+        auto edge2 = p2 - p0;
+        auto normal = vector_cross_product(edge1, edge2);
+        normal = vector_normalize(normal);
+
+        float3d result;
+        vector_copy(normal, result.arr);
+        return result;
+    }
+
+    static inline void compute_edge_normals(Mesh& mesh) {
+        assert(mesh.indices.size() % 3 == 0);
+
+        auto num_triangles = static_cast<index_t>(mesh.indices.size() / 3);
+        for (index_t i = 0; i < num_triangles; i++) {
+            auto i0 = mesh.indices[i * 3];
+            auto i1 = mesh.indices[i * 3 + 1];
+            auto i2 = mesh.indices[i * 3 + 2];
+            auto& v0 = mesh.vertices[i0];
+            auto& v1 = mesh.vertices[i1];
+            auto& v2 = mesh.vertices[i2];
+
+            v0.normal = compute_normal(v0, v1, v2);
+            v1.normal = v0.normal;
+            v2.normal = v0.normal;
         }
     }
 
@@ -324,13 +379,20 @@ namespace QCE {
             pos = norm * params.radius;
 
             vector_copy(pos,  vertex.position.arr);
-            vector_copy(norm, vertex.normal.arr);
+            if (!params.hard_edges) {
+                vector_copy(norm, vertex.normal.arr);
+            }
 
             float theta = atan2f(vertex.position.z(), vertex.position.x());
             if (theta < 0.0f)
                 theta += _2PI;
             float phi = acosf(vertex.position.y() / params.radius);
             vertex.texture_coordinates = { theta / _2PI, phi / PI };
+        }
+
+        if (params.hard_edges) {
+            cut_edges(result);
+            compute_edge_normals(result);
         }
 
         return result;

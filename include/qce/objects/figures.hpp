@@ -15,11 +15,11 @@ namespace QCE {
         float length = 1.0;
         float width = 1.0;
         float height = 1.0;
-        int   subdivisions = 1;
     };
     struct SphereParams {
         float radius = 1.0;
         int   subdivisions = 1;
+        bool  hard_edges = false;
     };
     using FigureParams = std::variant<CuboidParams, SphereParams>;
 

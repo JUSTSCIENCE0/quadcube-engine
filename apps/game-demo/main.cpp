@@ -20,11 +20,18 @@ int main(int argc, char* argv[]) {
         .height = 1.0f
     };
     QCE_CRITICAL(app.Resources().AddFigure(cuboid, "cuboid"));
-    QCE::SphereParams sphere{
-        .radius = 1.0f,
-        .subdivisions = 3
+    QCE::SphereParams sphere_smooth{
+        .radius = 0.5f,
+        .subdivisions = 2,
+        .hard_edges = false
     };
-    QCE_CRITICAL(app.Resources().AddFigure(sphere, "sphere"));
+    QCE_CRITICAL(app.Resources().AddFigure(sphere_smooth, "sphere_smooth"));
+    QCE::SphereParams sphere_hard{
+        .radius = 0.5f,
+        .subdivisions = 2,
+        .hard_edges = true
+    };
+    QCE_CRITICAL(app.Resources().AddFigure(sphere_hard, "sphere_hard"));
     QCE_CRITICAL(app.Resources().AddTexture("squares.bc7"));
     QCE::Material textured_material{};
     textured_material.id = "textured_material";
@@ -39,8 +46,11 @@ int main(int argc, char* argv[]) {
     QCE::MeshComponent cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
-    QCE::MeshComponent sphere_mesh_component{
-        .index = app.Resources().GetIndex<QCE::Mesh>("sphere")
+    QCE::MeshComponent sphere_smooth_mesh_component{
+        .index = app.Resources().GetIndex<QCE::Mesh>("sphere_smooth")
+    };
+    QCE::MeshComponent sphere_hard_mesh_component{
+        .index = app.Resources().GetIndex<QCE::Mesh>("sphere_hard")
     };
     QCE::MaterialComponent textured_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("textured_material")
@@ -48,6 +58,7 @@ int main(int argc, char* argv[]) {
     QCE::MaterialComponent untextured_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("untextured_material")
     };
+
     auto entity0 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, cuboid_mesh_component));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0,
@@ -71,15 +82,26 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, textured_material_component));
 
     auto entity2 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity2, sphere_mesh_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity2, sphere_smooth_mesh_component));
     QCE_CRITICAL(app.m_entities.AddComponent(entity2,
         QCE::TransformComponents{
             { 0.0f, 0.0f, 0.0f, 1.0f },
-            { 0.0f, 0.0f, 0.0f },
+            { 0.7f, 0.0f, 0.7f },
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity2, QCE::TransformMatrix{}));
     QCE_CRITICAL(app.m_entities.AddComponent(entity2, untextured_material_component));
+
+    auto entity3 = app.m_entities.AddEntity();
+    QCE_CRITICAL(app.m_entities.AddComponent(entity3, sphere_hard_mesh_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity3,
+        QCE::TransformComponents{
+            { 0.0f, 0.0f, 0.0f, 1.0f },
+            { -.7f, 0.0f, -.7f },
+            { 1.0f, 1.0f, 1.0f }
+        }));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::TransformMatrix{}));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity3, untextured_material_component));
 
     auto sun = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(sun,
