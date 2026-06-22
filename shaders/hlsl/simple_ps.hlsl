@@ -7,7 +7,7 @@
 
 float4 main(VertexOut pin) : SV_Target {
     float4 albedo = 
-        diffuse_map.Sample(bilinear_sampler, pin.uv_coord) * 
+        diffuse_map.Sample(anisotropic_sampler, pin.uv_coord) *
         albedo_color;
 
     pin.normal_w = normalize(pin.normal_w);
