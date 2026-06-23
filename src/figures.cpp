@@ -144,7 +144,7 @@ namespace QCE {
 
     static inline Mesh generate_cuboid(const CuboidParams& params, std::string name) {
         if (name.empty()) {
-            name = std::format("Cuboid[{:.4f}.{:.4f}.{:.4f}]", params.length, params.width, params.height);
+            name = std::format("Cuboid[{:.4f};{:.4f};{:.4f}]", params.length, params.width, params.height);
         }
 
         float l2 = params.length / 2.0f;
@@ -398,6 +398,61 @@ namespace QCE {
         return result;
     }
 
+    static inline Mesh generate_plane(const PlaneParams& params, std::string name) {
+        if (name.empty()) {
+            name = std::format("Plane[{:.4f};{:.4f}]", params.length, params.width);
+        }
+
+        Mesh result{};
+        result.id = std::move(name);
+
+        float step_x = params.unit_squares ? 1.0f : params.width;
+        float step_z = params.unit_squares ? 1.0f : params.length;
+        float step_u = params.repeat_uv ? 1.0f : step_x / params.width;
+        float step_v = params.repeat_uv ? 1.0f : step_z / params.length;
+
+        float half_width = params.width * 0.5f;
+        float half_length = params.length * 0.5f;
+
+        auto num_x = static_cast<index_t>(params.width  / step_x);
+        auto num_z = static_cast<index_t>(params.length / step_z);
+
+        float z = half_length, v = 0;
+        for (index_t zi = 0; zi <= num_z; zi++) {
+            float x = -half_width, u = 0;
+            for (index_t xi = 0; xi <= num_x; xi++) {
+                result.vertices.push_back({
+                    .position = { x, 0.0f, z },
+                    .normal = { 0.0f, 1.0f, 0.0f },
+                    .texture_coordinates = { u, v }
+                });
+
+                x += step_x;
+                u += step_u;
+            }
+
+            z -= step_z;
+            v += step_v;
+        }
+
+        for (index_t zi = 0; zi < num_z; zi++) {
+            for (index_t xi = 0; xi < num_x; xi++) {
+                index_t i0 = zi * (num_x + 1) + xi;
+                index_t i1 = i0 + 1;
+                index_t i2 = i0 + (num_x + 1);
+                index_t i3 = i2 + 1;
+                result.indices.push_back(i0);
+                result.indices.push_back(i1);
+                result.indices.push_back(i2);
+                result.indices.push_back(i1);
+                result.indices.push_back(i3);
+                result.indices.push_back(i2);
+            }
+        }
+
+        return result;
+    }
+
     Mesh generate_figure(const FigureParams& params, const std::string& name) {
         if (std::holds_alternative<CuboidParams>(params)) {
             const auto& cube_params = std::get<CuboidParams>(params);
@@ -407,6 +462,11 @@ namespace QCE {
         if (std::holds_alternative<SphereParams>(params)) {
             const auto& sphere_params = std::get<SphereParams>(params);
             return generate_sphere(sphere_params, name);
+        }
+
+        if (std::holds_alternative<PlaneParams>(params)) {
+            const auto& plane_params = std::get<PlaneParams>(params);
+            return generate_plane(plane_params, name);
         }
 
         return {};
