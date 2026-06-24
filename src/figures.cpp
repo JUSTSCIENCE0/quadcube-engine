@@ -450,6 +450,10 @@ namespace QCE {
             }
         }
 
+        if (params.hard_edges) {
+            cut_edges(result);
+        }
+
         return result;
     }
 
