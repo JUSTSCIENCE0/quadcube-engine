@@ -36,8 +36,8 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.Resources().AddFigure(sphere_hard, "sphere_hard"));
 
     QCE::PlaneParams plane{
-        .length = 100.0f,
-        .width = 50.0f,
+        .length = 50.0f,
+        .width = 5.0f,
         .hard_edges = false,
         .repeat_uv = true,
         .unit_squares = true
@@ -66,15 +66,6 @@ int main(int argc, char* argv[]) {
     QCE::MeshComponent cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
-    QCE::MeshComponent sphere_smooth_mesh_component{
-        .index = app.Resources().GetIndex<QCE::Mesh>("sphere_smooth")
-    };
-    QCE::MeshComponent sphere_hard_mesh_component{
-        .index = app.Resources().GetIndex<QCE::Mesh>("sphere_hard")
-    };
-    QCE::MeshComponent plane_mesh_component{
-        .index = app.Resources().GetIndex<QCE::Mesh>("plane")
-    };
     QCE::MaterialComponent textured_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("textured_material")
     };
@@ -89,8 +80,9 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, cuboid_mesh_component));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0,
         QCE::TransformComponents{
-            { 0.0f, 0.3826834f, 0.0f, 0.9238795f },
-            { -2.0f, 0.0f, 2.0f },
+            //{ 0.0f, 0.3826834f, 0.0f, 0.9238795f },
+            { 0.0f, 0.0f, 0.0f, 1.0f },
+            { 1.0f, 0.0f, 0.0f },
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, QCE::TransformMatrix{}));
@@ -100,42 +92,50 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, cuboid_mesh_component));
     QCE_CRITICAL(app.m_entities.AddComponent(entity1,
         QCE::TransformComponents{
-            { 0.0f, 0.3826834f, 0.0f, 0.9238795f },
-            { 2.0f, 0.0f, -2.0f },
+            //{ 0.0f, 0.3826834f, 0.0f, 0.9238795f },
+            { 0.0f, 0.0f, 0.0f, 1.0f },
+            { -1.f, 0.0f, 0.0f },
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, QCE::TransformMatrix{}));
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, textured_material_component));
 
     auto entity2 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity2, sphere_smooth_mesh_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity2, QCE::MeshComponent{
+        .index = app.Resources().GetIndex<QCE::Mesh>("sphere_smooth")
+        }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity2,
         QCE::TransformComponents{
             { 0.0f, 0.0f, 0.0f, 1.0f },
-            { -.7f, 0.0f, 0.7f },
+            { 0.0f, 0.0f, 0.0f },
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity2, QCE::TransformMatrix{}));
     QCE_CRITICAL(app.m_entities.AddComponent(entity2, untextured_material_component));
 
     auto entity3 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3, sphere_hard_mesh_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::MeshComponent{
+        .index = app.Resources().GetIndex<QCE::Mesh>("sphere_hard")
+    }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity3,
         QCE::TransformComponents{
             { 0.0f, 0.0f, 0.0f, 1.0f },
-            { 0.7f, 0.0f, -.7f },
+            { 0.0f, 3.0f, 0.0f },
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::TransformMatrix{}));
     QCE_CRITICAL(app.m_entities.AddComponent(entity3, untextured_material_component));
 
     auto entity4 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity4, plane_mesh_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity4, QCE::MeshComponent{
+        .index = app.Resources().GetIndex<QCE::Mesh>("plane")
+    }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity4,
         QCE::TransformComponents{
-            { 0.0f, 0.3826834f, 0.0f, 0.9238795f },
-            { 0.0f, -0.5f, 0.0f },
-            { 0.5f, 0.5f, 0.5f }
+            //{ 0.0f, 0.3826834f, 0.0f, 0.9238795f },
+            { 0.0f, 0.0f, 0.0f, 1.0f },
+            { 0.0f, -0.5f, 20.5f },
+            { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity4, QCE::TransformMatrix{}));
     QCE_CRITICAL(app.m_entities.AddComponent(entity4, edges_material_component));
