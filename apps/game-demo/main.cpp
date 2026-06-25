@@ -3,6 +3,8 @@
 //
 // License: MIT
 
+#include "mesh_deformator.hpp"
+
 #include <qce/qce.hpp>
 #include <qce/ancillary/directories.hpp>
 
@@ -44,14 +46,19 @@ int main(int argc, char* argv[]) {
     };
     QCE_CRITICAL(app.Resources().AddFigure(flat_plane, "flat_plane"));
 
-    QCE::PlaneParams peaks_plane{
+    QCE::PlaneParams hills{
         .length = 100.0f,
         .width = 20.0f,
         .hard_edges = true,
         .repeat_uv = true,
         .unit_squares = true
     };
-    QCE_CRITICAL(app.Resources().AddFigure(peaks_plane, "peaks_plane"));
+    QCE_CRITICAL(app.Resources().AddFigure(hills, "hills"));
+
+    QCE::Command animate_hills_right{
+        "AnimateHillsRight", std::make_shared<AnimateHills>(hills)
+    };
+    QCE_CRITICAL(app.Resources().Add(std::move(animate_hills_right)));
 
     QCE_CRITICAL(app.Resources().AddTexture("squares.bc7"));
     QCE::Material textured_material{};
@@ -76,7 +83,7 @@ int main(int argc, char* argv[]) {
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
     QCE::MeshComponent peaks_plane_mesh_component{
-        .index = app.Resources().GetIndex<QCE::Mesh>("peaks_plane")
+        .index = app.Resources().GetIndex<QCE::Mesh>("hills")
     };
     QCE::MaterialComponent textured_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("textured_material")

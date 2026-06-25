@@ -9,6 +9,8 @@ project(game-demo)
 
 add_executable(${PROJECT_NAME}
     main.cpp
+    mesh_deformator.hpp
+    mesh_deformator.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
