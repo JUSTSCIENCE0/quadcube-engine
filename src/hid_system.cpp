@@ -85,7 +85,7 @@ namespace QCE {
             m_move_event.reset();
         }
 
-        for (const auto& event : m_events_queue) {
+        for (auto& event : m_events_queue) {
             auto& handler = m_single_event_handlers[event.GetCode()];
             if (handler)
                 QCE_SOFT(handler->Execute(&event));

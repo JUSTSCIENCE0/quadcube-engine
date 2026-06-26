@@ -14,7 +14,7 @@ struct AnimateHills : public QCE::BaseCommand {
     AnimateHills(const QCE::PlaneParams& plane_params, bool is_reflected = false);
     virtual ~AnimateHills() = default;
 
-    QCE::ErrorCode Execute(const QCE::CommandContext* context) override;
+    QCE::ErrorCode Execute(QCE::CommandContext* context) override;
 
 private:
     static index_t CalculateVerticiesCount(const QCE::PlaneParams& plane_params, bool row);

@@ -19,7 +19,7 @@ namespace QCE {
     struct HidDescribe : BaseCommand {
         HidDescribe() :
             BaseCommand("HidDescribe") {}
-        ErrorCode Execute(const CommandContext* context) override {
+        ErrorCode Execute(CommandContext* context) override {
             assert(context);
             assert(context->type == CommandContextType::E_CCT_HID_EVENT);
             auto hid_event = static_cast<const HidEvent*>(context);

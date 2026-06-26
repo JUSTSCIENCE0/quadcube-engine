@@ -35,7 +35,7 @@ namespace QCE {
         BaseCommand& operator=(BaseCommand&&) = delete;
         virtual ~BaseCommand() = default;
 
-        virtual ErrorCode Execute(const CommandContext* context) = 0;
+        virtual ErrorCode Execute(CommandContext* context) = 0;
 
         const std::string m_name;
     };
@@ -58,7 +58,7 @@ namespace QCE {
         ExitCommand() :
             BaseCommand("Exit") {};
 
-        ErrorCode Execute(const CommandContext* context) {
+        ErrorCode Execute(CommandContext* context) {
             std::exit(0);
         }
     };

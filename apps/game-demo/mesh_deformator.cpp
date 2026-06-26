@@ -15,7 +15,7 @@ AnimateHills::AnimateHills(const QCE::PlaneParams& plane_params, bool is_reflect
     
 }
 
-QCE::ErrorCode AnimateHills::Execute(const QCE::CommandContext* context) {
+QCE::ErrorCode AnimateHills::Execute(QCE::CommandContext* context) {
     return QCE::ErrorCode::SUCCESS;
 }
 

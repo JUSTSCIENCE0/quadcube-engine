@@ -40,7 +40,7 @@ namespace QCE {
             }
 
         private:
-            ErrorCode Execute(const CommandContext* context) override;
+            ErrorCode Execute(CommandContext* context) override;
 
             Entities& m_entities;
             const entity_id_t m_camera_id;
@@ -61,7 +61,7 @@ namespace QCE {
             }
 
         private:
-            ErrorCode Execute(const CommandContext* context) override;
+            ErrorCode Execute(CommandContext* context) override;
 
             Entities& m_entities;
             const entity_id_t m_camera_id;

@@ -143,7 +143,7 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode CameraSystem::MoveCommand::Execute(const CommandContext* context) {
+    ErrorCode CameraSystem::MoveCommand::Execute(CommandContext* context) {
         assert(context);
 
         auto& move = m_entities.GetComponent<Movement>(m_camera_id);
@@ -209,7 +209,7 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
-    ErrorCode CameraSystem::RotateCommand::Execute(const CommandContext* context) {
+    ErrorCode CameraSystem::RotateCommand::Execute(CommandContext* context) {
         assert(context);
 
         auto& camera = m_entities.GetComponent<FirstPersonCameraControl>(m_camera_id);
