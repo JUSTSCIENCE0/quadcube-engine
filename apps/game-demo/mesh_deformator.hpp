@@ -11,17 +11,33 @@
 using index_t = QCE::index_t;
 
 struct AnimateHills : public QCE::BaseCommand {
-    AnimateHills(const QCE::PlaneParams& plane_params, bool is_reflected = false);
+    AnimateHills(
+        const QCE::PlaneParams& plane_params,
+        const QCE::Mesh& base_mesh,
+        bool is_reflected = false);
     virtual ~AnimateHills() = default;
 
     QCE::ErrorCode Execute(QCE::CommandContext* context) override;
 
 private:
-    static index_t CalculateVerticiesCount(const QCE::PlaneParams& plane_params, bool row);
+    static size_t CalculateVerticiesCount(const QCE::PlaneParams& plane_params, bool row);
+    void CalculateBaseHeights();
+    void CalculateHillsHeights();
+    void UpdateMesh();
 
-    const float m_width;
-    const float m_length;
-    const index_t m_number_columns; // along width
-    const index_t m_number_rows;    // along length
-    const bool m_is_reflected;
+    const QCE::Mesh& m_base_mesh;
+    QCE::Mesh m_calculated_mesh{};
+    std::vector<float> m_hills_base{};
+    std::vector<float> m_hills_cache{};
+
+    const float  m_width;
+    const float  m_length;
+    const size_t m_number_columns; // along width
+    const size_t m_number_rows;    // along length
+    const float  m_wstep;
+    const float  m_lstep;
+    const float  m_whalf;
+    const float  m_lhalf;
+    const size_t m_poligons_count;
+    const bool   m_is_reflected;
 };
