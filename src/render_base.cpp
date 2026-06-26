@@ -53,10 +53,29 @@ namespace QCE {
                 .vertex_offset = uint32_t(m_scene_geometry.vertex_buffer.size())
             };
 
-            m_scene_geometry.index_buffer.insert(
-                m_scene_geometry.index_buffer.end(), mesh.indices.begin(), mesh.indices.end());
-            m_scene_geometry.vertex_buffer.insert(
-                m_scene_geometry.vertex_buffer.end(), mesh.vertices.begin(), mesh.vertices.end());
+            // TODO: temporal code - move it to deformation system
+            if (mesh_comp.deformator.has_value()) {
+                auto& deformator = ResourceManager::Get().Read<Command>(mesh_comp.deformator.value());
+
+                DeformatedMesh deformated_mesh{};
+                deformator.command->Execute(&deformated_mesh);
+
+                assert(deformated_mesh.deformation_result);
+                auto& dmesh = *deformated_mesh.deformation_result;
+
+                assert(mesh.indices.size() == dmesh.indices.size());
+
+                m_scene_geometry.index_buffer.insert(
+                    m_scene_geometry.index_buffer.end(), dmesh.indices.begin(), dmesh.indices.end());
+                m_scene_geometry.vertex_buffer.insert(
+                    m_scene_geometry.vertex_buffer.end(), dmesh.vertices.begin(), dmesh.vertices.end());
+            }
+            else {
+                m_scene_geometry.index_buffer.insert(
+                    m_scene_geometry.index_buffer.end(), mesh.indices.begin(), mesh.indices.end());
+                m_scene_geometry.vertex_buffer.insert(
+                    m_scene_geometry.vertex_buffer.end(), mesh.vertices.begin(), mesh.vertices.end());
+            }
             m_scene_geometry.units.emplace_back(std::move(unit));
 
             m_geometry_unit_map.add(mesh_comp.index, unit_index);

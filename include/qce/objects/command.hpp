@@ -13,6 +13,7 @@ namespace QCE {
 #define CU_ENUMS_DESCRIPTION \
     CU_BEGIN_ENUM(CommandContextType) \
         CU_ENUM_UNIT(E_CCT_HID_EVENT) \
+        CU_ENUM_UNIT(E_CCT_DEFORMATED_MESH) \
     CU_END_ENUM(CommandContextType)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION

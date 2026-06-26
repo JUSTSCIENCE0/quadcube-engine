@@ -7,6 +7,7 @@
 
 #include <qce/math/math.hpp>
 #include <qce/objects/index.hpp>
+#include <qce/objects/command.hpp>
 
 #include <string>
 #include <vector>
@@ -16,6 +17,7 @@
 namespace QCE {
     struct MeshComponent {
         size_t index{};
+        std::optional<size_t> deformator{};
     };
 
     struct Mesh {
@@ -28,5 +30,13 @@ namespace QCE {
         std::string          id{};
         std::vector<vertex>  vertices{};
         std::vector<index_t> indices{};
+    };
+
+    struct DeformatedMesh : CommandContext {
+        DeformatedMesh() :
+            CommandContext(CommandContextType::E_CCT_DEFORMATED_MESH) {}
+        virtual ~DeformatedMesh() = default;
+
+        const Mesh* deformation_result = nullptr;
     };
 }
