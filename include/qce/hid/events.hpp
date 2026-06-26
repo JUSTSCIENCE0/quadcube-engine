@@ -270,6 +270,7 @@ namespace QCE {
             descriptor(descr),
             param1(p1),
             param2(p2) {}
+        virtual ~HidEvent() = default;
 
         using clock = std::chrono::steady_clock;
 

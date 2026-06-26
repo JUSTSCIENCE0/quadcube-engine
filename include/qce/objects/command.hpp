@@ -20,6 +20,7 @@ namespace QCE {
     struct CommandContext {
         CommandContext(CommandContextType cct):
             type(cct) {}
+        virtual ~CommandContext() = default;
 
         const CommandContextType type =
             CommandContextType::E_CommandContextType_UNKNOWN;
