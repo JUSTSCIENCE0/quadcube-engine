@@ -110,20 +110,6 @@ namespace QCE {
         mesh.indices.swap(indices);
     }
 
-    static inline float3d compute_normal(const vertex& v0, const vertex& v1, const vertex& v2) {
-        auto p0 = vector_init(v0.position.arr);
-        auto p1 = vector_init(v1.position.arr);
-        auto p2 = vector_init(v2.position.arr);
-        auto edge1 = p1 - p0;
-        auto edge2 = p2 - p0;
-        auto normal = vector_cross_product(edge1, edge2);
-        normal = vector_normalize(normal);
-
-        float3d result;
-        vector_copy(normal, result.arr);
-        return result;
-    }
-
     static inline void compute_edge_normals(Mesh& mesh) {
         assert(mesh.indices.size() % 3 == 0);
 
