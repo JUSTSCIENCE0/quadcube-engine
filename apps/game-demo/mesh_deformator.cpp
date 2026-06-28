@@ -40,14 +40,15 @@ QCE::ErrorCode AnimateHills::Execute(QCE::CommandContext* context) {
     assert(context);
     assert(context->type == QCE::CommandContextType::E_CCT_DEFORMATED_MESH);
     assert(dynamic_cast<QCE::DeformatedMesh*>(context));
+    auto ctx = static_cast<QCE::DeformatedMesh*>(context);
 
-    if (m_timer.Check(1.0f)) {
+    if (ctx->update_mesh && m_timer.Check(1.0f)) {
         CalculateHillsHeights();
         UpdateMesh();
     }
 
-    auto ctx = static_cast<QCE::DeformatedMesh*>(context);
     ctx->deformation_result = &m_calculated_mesh;
+    ctx->max_vertices_count = m_calculated_mesh.vertices.size();
 
     return QCE::ErrorCode::SUCCESS;
 }
