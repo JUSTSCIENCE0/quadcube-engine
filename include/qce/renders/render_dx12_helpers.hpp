@@ -110,16 +110,14 @@ namespace QCE {
             return size;
     }
 
-    template<typename T>
+    template<typename T, bool _is_constant_buffer = false>
     class Dx12UploadBuffer {
     public:
         Dx12UploadBuffer(
                 ID3D12Device* device,
-                UINT elements_count,
-                bool is_constant_buffer = false) :
-            m_is_constant_buffer(is_constant_buffer),
+                UINT elements_count) :
             m_elements_count(elements_count),
-            m_element_size(calculate_element_size(is_constant_buffer)) {
+            m_element_size(calculate_element_size(_is_constant_buffer)) {
 
             auto heap_props = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
             auto resource_desc = CD3DX12_RESOURCE_DESC::Buffer(m_element_size * elements_count);
@@ -152,16 +150,26 @@ namespace QCE {
             return m_upload_buffer.Get();
         }
 
-        void CopyData(int elementIndex, const T& data) {
-            memcpy(&m_mapped_data[elementIndex * m_element_size], &data, sizeof(T));
+        void CopyData(int start_index, const T& data) {
+            memcpy(&m_mapped_data[start_index * m_element_size], &data, sizeof(T));
         }
 
-        const bool m_is_constant_buffer;
+        void CopyData(int start_index, const T* data, int count) {
+            if constexpr (_is_constant_buffer) {
+                for (int i = 0; i < count; ++i) {
+                    CopyData(start_index + i, data[i]);
+                }
+            }
+            else {
+                memcpy(&m_mapped_data[start_index * m_element_size], data, count * sizeof(T));
+            }
+        }
+
         const UINT m_elements_count;
         const UINT m_element_size;
 
     private:
-        static UINT calculate_element_size(bool is_constant_buffer) {
+        static constexpr UINT calculate_element_size(bool is_constant_buffer) {
             if (is_constant_buffer)
                 return dx12_calculate_constant_buffer_size(sizeof(T));
 

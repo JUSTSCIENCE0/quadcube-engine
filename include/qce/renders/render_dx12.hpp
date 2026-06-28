@@ -69,12 +69,9 @@ namespace QCE {
                         IID_PPV_ARGS(&m_cmd_alloc))))
                     throw ErrorCodeException(ErrorCode::E_DX12_CREATE_COMMAND_ALLOCATOR_FAILED);
 
-                m_units_constant_buffers = std::make_unique<Dx12UploadBuffer<UnitConstants>>(
-                    device, units_count, true);
-                m_pass_constant_buffer = std::make_unique<Dx12UploadBuffer<PassConstants>>(
-                    device, 1, true);
-                m_material_constant_buffer = std::make_unique<Dx12UploadBuffer<MaterialConstants>>(
-                    device, material_count, true);
+                m_units_constant_buffers = std::make_unique<Dx12UploadBuffer<UnitConstants, true>>(device, units_count);
+                m_pass_constant_buffer = std::make_unique<Dx12UploadBuffer<PassConstants,true>>(device, 1);
+                m_material_constant_buffer = std::make_unique<Dx12UploadBuffer<MaterialConstants, true>>(device, material_count);
             }
             FrameResource(const FrameResource&) = delete;
             FrameResource& operator=(const FrameResource&) = delete;
@@ -83,9 +80,9 @@ namespace QCE {
 
             MsPtr<ID3D12CommandAllocator> m_cmd_alloc = nullptr;
 
-            std::unique_ptr<Dx12UploadBuffer<UnitConstants>>     m_units_constant_buffers{};
-            std::unique_ptr<Dx12UploadBuffer<MaterialConstants>> m_material_constant_buffer{};
-            std::unique_ptr<Dx12UploadBuffer<PassConstants>>     m_pass_constant_buffer{};
+            std::unique_ptr<Dx12UploadBuffer<UnitConstants, /*_is_constant_buffer*/true>>     m_units_constant_buffers{};
+            std::unique_ptr<Dx12UploadBuffer<MaterialConstants, /*_is_constant_buffer*/true>> m_material_constant_buffer{};
+            std::unique_ptr<Dx12UploadBuffer<PassConstants, /*_is_constant_buffer*/true>>     m_pass_constant_buffer{};
 
             uint64_t m_fence_value = 0;
         };
