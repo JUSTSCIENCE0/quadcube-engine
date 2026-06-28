@@ -8,6 +8,8 @@
 #include <qce/objects/command.hpp>
 #include <qce/objects/figures.hpp>
 
+#include <random>
+
 using index_t = QCE::index_t;
 
 struct AnimateHills : public QCE::BaseCommand {
@@ -40,4 +42,8 @@ private:
     const float  m_lhalf;
     const size_t m_poligons_count;
     const bool   m_is_reflected;
+
+    std::random_device m_rd{};
+    std::mt19937 m_prng{m_rd()};
+    std::uniform_real_distribution<float> m_uniform_dist{0.25f, 1.25f};
 };

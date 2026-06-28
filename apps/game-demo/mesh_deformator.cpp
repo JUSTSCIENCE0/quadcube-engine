@@ -62,14 +62,27 @@ void AnimateHills::CalculateBaseHeights() {
     const auto hills_count = m_number_columns * m_number_rows;
     m_hills_base.reserve(hills_count);
 
+    int xi = 0;
+    int zi = 0;
+
     for (float z =   m_lhalf;
                z >= -m_lhalf;
-               z -=  m_lstep)
+               z -=  m_lstep) {
         for (float x = -m_whalf;
                    x <= m_whalf;
                    x += m_wstep) {
-        auto y = std::sqrtf(x + m_whalf);
-        m_hills_base.push_back(y);
+            auto y = std::sqrtf(x + m_whalf) * (std::sqrtf(0.05f * (z + m_lhalf)) + 0.5f);
+            if (xi % 2 == 0 || zi % 2 == 0) {
+                y *= 0.75f;
+            }
+
+
+            m_hills_base.push_back(y);
+
+            xi++;
+        }
+
+        zi++;
     }
 
     assert(m_hills_base.size() == hills_count);
@@ -78,10 +91,10 @@ void AnimateHills::CalculateBaseHeights() {
 void AnimateHills::CalculateHillsHeights() {
     const auto hills_count = m_number_columns * m_number_rows;
     assert(m_hills_base.size() == hills_count);
-    m_hills_cache.resize(hills_count);
-
-    // TODO
     m_hills_cache = m_hills_base;
+
+    for (auto& height : m_hills_cache)
+        height *= m_uniform_dist(m_prng);
 }
 
 void AnimateHills::UpdateMesh() {
