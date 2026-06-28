@@ -22,14 +22,14 @@ namespace QCE {
 
     ErrorCode RenderBase::UpdateScene() {
         // reset
-        m_scene_geometry.units.clear();
-        m_scene_geometry.index_buffer.clear();
-        m_scene_geometry.vertex_buffer.clear();
-        m_scene_geometry.index_buffer_size = 0;
-        m_scene_geometry.vertex_buffer_size = 0;
+        m_scene_static_geometry.units.clear();
+        m_scene_static_geometry.index_buffer.clear();
+        m_scene_static_geometry.vertex_buffer.clear();
+        m_scene_static_geometry.index_buffer_size = 0;
+        m_scene_static_geometry.vertex_buffer_size = 0;
         m_scene_materials.components.clear();
         m_scene_materials.dirty_frames.clear();
-        m_geometry_unit_map.clear();
+        m_static_geometry_unit_map.clear();
         m_material_buffer_map.clear();
 
         auto entities = m_entities.QueryEntities<
@@ -38,52 +38,62 @@ namespace QCE {
             TransformMatrix,
             MaterialComponent>();
 
-        // scene geometry
+        // scene static geometry
         size_t unit_index = 0;
         for (const auto& entity_id : entities) {
             auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
-            if (m_geometry_unit_map.exists(mesh_comp.index))
+            if (m_static_geometry_unit_map.exists(mesh_comp.index))
                 continue;
 
             auto& mesh = ResourceManager::Get().Read<Mesh>(mesh_comp.index);
 
             SceneGeometry::Unit unit{
                 .indeces_count = uint32_t(mesh.indices.size()),
-                .index_offset = uint32_t(m_scene_geometry.index_buffer.size()),
-                .vertex_offset = uint32_t(m_scene_geometry.vertex_buffer.size())
+                .index_offset = uint32_t(m_scene_static_geometry.index_buffer.size()),
+                .vertex_offset = uint32_t(m_scene_static_geometry.vertex_buffer.size())
             };
 
-            // TODO: temporal code - move it to deformation system
-            if (mesh_comp.deformator.has_value()) {
-                auto& deformator = ResourceManager::Get().Read<Command>(mesh_comp.deformator.value());
+            m_scene_static_geometry.index_buffer.insert(
+                m_scene_static_geometry.index_buffer.end(), mesh.indices.begin(), mesh.indices.end());
+            m_scene_static_geometry.vertex_buffer.insert(
+                m_scene_static_geometry.vertex_buffer.end(), mesh.vertices.begin(), mesh.vertices.end());
+            m_scene_static_geometry.units.emplace_back(std::move(unit));
 
-                DeformatedMesh deformated_mesh{};
-                deformator.command->Execute(&deformated_mesh);
-
-                assert(deformated_mesh.deformation_result);
-                auto& dmesh = *deformated_mesh.deformation_result;
-
-                assert(mesh.indices.size() == dmesh.indices.size());
-
-                m_scene_geometry.index_buffer.insert(
-                    m_scene_geometry.index_buffer.end(), dmesh.indices.begin(), dmesh.indices.end());
-                m_scene_geometry.vertex_buffer.insert(
-                    m_scene_geometry.vertex_buffer.end(), dmesh.vertices.begin(), dmesh.vertices.end());
-            }
-            else {
-                m_scene_geometry.index_buffer.insert(
-                    m_scene_geometry.index_buffer.end(), mesh.indices.begin(), mesh.indices.end());
-                m_scene_geometry.vertex_buffer.insert(
-                    m_scene_geometry.vertex_buffer.end(), mesh.vertices.begin(), mesh.vertices.end());
-            }
-            m_scene_geometry.units.emplace_back(std::move(unit));
-
-            m_geometry_unit_map.add(mesh_comp.index, unit_index);
+            m_static_geometry_unit_map.add(mesh_comp.index, unit_index);
             unit_index++;
         }
 
-        m_scene_geometry.vertex_buffer_size = uint32_t(m_scene_geometry.vertex_buffer.size()) * m_scene_geometry.VERTEX_STRIDE;
-        m_scene_geometry.index_buffer_size = uint32_t(m_scene_geometry.index_buffer.size()) * sizeof(index_t);
+        // TODO: temporal code - dynamic geometry
+        // entities = m_entities.QueryEntities<
+        //     DynamicMesh,
+        //     TransformComponents,
+        //     TransformMatrix,
+        //     MaterialComponent>();
+        // for (const auto& entity_id : entities) {
+        //     auto& dynamic_mesh = m_entities.GetComponent<DynamicMesh>(entity_id);
+        //     auto& deformator = ResourceManager::Get().Read<Command>(dynamic_mesh.index);
+
+        //     DeformatedMesh deformated_mesh{};
+        //     deformator.command->Execute(&deformated_mesh);
+
+        //     assert(deformated_mesh.deformation_result);
+        //     auto& mesh = *deformated_mesh.deformation_result;
+
+        //     SceneGeometry::Unit unit{
+        //         .indeces_count = uint32_t(mesh.indices.size()),
+        //         .index_offset = uint32_t(m_scene_static_geometry.index_buffer.size()),
+        //         .vertex_offset = uint32_t(m_scene_static_geometry.vertex_buffer.size())
+        //     };
+
+        //     m_scene_static_geometry.index_buffer.insert(
+        //         m_scene_static_geometry.index_buffer.end(), mesh.indices.begin(), mesh.indices.end());
+        //     m_scene_static_geometry.vertex_buffer.insert(
+        //         m_scene_static_geometry.vertex_buffer.end(), mesh.vertices.begin(), mesh.vertices.end());
+        //     m_scene_static_geometry.units.emplace_back(std::move(unit));
+        // }
+
+        m_scene_static_geometry.vertex_buffer_size = uint32_t(m_scene_static_geometry.vertex_buffer.size()) * m_scene_static_geometry.VERTEX_STRIDE;
+        m_scene_static_geometry.index_buffer_size = uint32_t(m_scene_static_geometry.index_buffer.size()) * sizeof(index_t);
 
         // scene materials
         size_t material_index = 0;

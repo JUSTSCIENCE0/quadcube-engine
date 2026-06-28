@@ -537,7 +537,7 @@ namespace QCE {
 
         for (const auto& entity_id : entities) {
             const auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
-            if (!m_geometry_unit_map.exists(mesh_comp.index)) {
+            if (!m_static_geometry_unit_map.exists(mesh_comp.index)) {
                 // TODO: use log system
                 std::cerr << "Mesh index " << mesh_comp.index << " not found in geometry buffers" << std::endl;
                 continue;
@@ -569,7 +569,7 @@ namespace QCE {
                 E_DX12RPI_MATERIAL_CONSTANTS_B1,
                 material_cb_gpu_addr + material_cb_size * m_material_buffer_map[material_comp.index]);
 
-            const auto& unit_descr = m_scene_geometry.units[m_geometry_unit_map[mesh_comp.index]];
+            const auto& unit_descr = m_scene_static_geometry.units[m_static_geometry_unit_map[mesh_comp.index]];
             m_cmd_list->DrawIndexedInstanced(
                 unit_descr.indeces_count,
                 1,
@@ -685,16 +685,16 @@ namespace QCE {
         QCE_CRITICAL(dx12_create_default_buffer(
             m_d3d_device.Get(),
             m_cmd_list.Get(),
-            m_scene_geometry.vertex_buffer.data(),
-            m_scene_geometry.vertex_buffer_size,
+            m_scene_static_geometry.vertex_buffer.data(),
+            m_scene_static_geometry.vertex_buffer_size,
             m_geometry_buffers.vertex_buffer,
             m_geometry_buffers.vertex_buffer_uploader));
 
         QCE_CRITICAL(dx12_create_default_buffer(
             m_d3d_device.Get(),
             m_cmd_list.Get(),
-            m_scene_geometry.index_buffer.data(),
-            m_scene_geometry.index_buffer_size,
+            m_scene_static_geometry.index_buffer.data(),
+            m_scene_static_geometry.index_buffer_size,
             m_geometry_buffers.index_buffer,
             m_geometry_buffers.index_buffer_uploader));
 

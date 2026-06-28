@@ -136,22 +136,22 @@ namespace QCE {
         }
         D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() const {
             assert(m_geometry_buffers.vertex_buffer);
-            assert(m_scene_geometry.vertex_buffer_size);
+            assert(m_scene_static_geometry.vertex_buffer_size);
 
             D3D12_VERTEX_BUFFER_VIEW vbv;
             vbv.BufferLocation = m_geometry_buffers.vertex_buffer->GetGPUVirtualAddress();
-            vbv.StrideInBytes = m_scene_geometry.VERTEX_STRIDE;
-            vbv.SizeInBytes = m_scene_geometry.vertex_buffer_size;
+            vbv.StrideInBytes = m_scene_static_geometry.VERTEX_STRIDE;
+            vbv.SizeInBytes = m_scene_static_geometry.vertex_buffer_size;
             return vbv;
         }
         D3D12_INDEX_BUFFER_VIEW GetIndexBufferView() const {
             assert(m_geometry_buffers.index_buffer);
-            assert(m_scene_geometry.index_buffer_size);
+            assert(m_scene_static_geometry.index_buffer_size);
 
             D3D12_INDEX_BUFFER_VIEW ibv;
             ibv.BufferLocation = m_geometry_buffers.index_buffer->GetGPUVirtualAddress();
             ibv.Format = m_geometry_buffers.INDEX_FORMAT;
-            ibv.SizeInBytes = m_scene_geometry.index_buffer_size;
+            ibv.SizeInBytes = m_scene_static_geometry.index_buffer_size;
             return ibv;
         }
 

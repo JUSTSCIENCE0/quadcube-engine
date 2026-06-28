@@ -141,12 +141,12 @@ namespace QCE {
         /// attributes
         Entities&      m_entities;
         RenderConfig   m_config{};
-        SceneGeometry  m_scene_geometry{};
+        SceneGeometry  m_scene_static_geometry{};
         SceneMaterials m_scene_materials{};
 
         // buffers map
-        ShaderMap m_shader_map{};          // shader type -> shader index
-        BufferMap m_geometry_unit_map{};   // mesh resource index -> scene geometry unit index
-        BufferMap m_material_buffer_map{}; // material resource index -> scene materials buffer index
+        ShaderMap m_shader_map{};               // shader type -> shader index
+        BufferMap m_static_geometry_unit_map{}; // mesh resource index -> scene geometry unit index
+        BufferMap m_material_buffer_map{};      // material resource index -> scene materials buffer index
     };
 }
