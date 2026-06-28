@@ -96,11 +96,15 @@ namespace QCE {
             MaterialComponent>();
         const auto units_count = UINT(entities.size());
 
+        const auto verteces_count = m_scene_dynamic_geometry.vertex_buffer_size / m_scene_dynamic_geometry.VERTEX_STRIDE;
+        const auto indeces_count = m_scene_dynamic_geometry.index_buffer_size / UINT(sizeof(index_t));
+
         for (int i = 0; i < FRAME_RESOURCE_COUNT; i++) {
             try {
                 m_frame_resources.emplace_back(
                     std::make_unique<FrameResource>(
-                        m_d3d_device.Get(), units_count, UINT(m_scene_materials.components.size())));
+                        m_d3d_device.Get(), units_count, UINT(m_scene_materials.components.size()),
+                        verteces_count, indeces_count));
             }
             catch (const ErrorCodeException& e) {
                 return e.code_value();
@@ -662,7 +666,7 @@ namespace QCE {
         QCE_CRITICAL(CreateRootSignature());
         QCE_CRITICAL(CreateInputLayout());
 
-        QCE_CRITICAL(UploadMeshes());
+        QCE_CRITICAL(UploadStaticMeshes());
 
         QCE_CRITICAL(CreateFrameResources());
 
@@ -679,7 +683,7 @@ namespace QCE {
         return FlushCommandQueue();
     }
 
-    ErrorCode RenderDX12::UploadMeshes() {
+    ErrorCode RenderDX12::UploadStaticMeshes() {
         m_static_geometry.DisposeUploaders();
 
         QCE_CRITICAL(dx12_create_default_buffer(

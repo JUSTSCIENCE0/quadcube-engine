@@ -63,7 +63,12 @@ namespace QCE {
             MsPtr<ID3D12Resource> uploader = nullptr;
         };
         struct FrameResource {
-            FrameResource(ID3D12Device* device, UINT units_count, UINT material_count) {
+            FrameResource(
+                    ID3D12Device* device,
+                    UINT units_count,
+                    UINT material_count,
+                    UINT dynamic_vertices_count,
+                    UINT dynamic_indeces_count) {
                 if (FAILED(device->CreateCommandAllocator(
                         D3D12_COMMAND_LIST_TYPE_DIRECT,
                         IID_PPV_ARGS(&m_cmd_alloc))))
@@ -72,6 +77,9 @@ namespace QCE {
                 m_units_constant_buffers = std::make_unique<Dx12UploadBuffer<UnitConstants, true>>(device, units_count);
                 m_pass_constant_buffer = std::make_unique<Dx12UploadBuffer<PassConstants,true>>(device, 1);
                 m_material_constant_buffer = std::make_unique<Dx12UploadBuffer<MaterialConstants, true>>(device, material_count);
+
+                m_dynamic_vertex_buffer = std::make_unique<Dx12UploadBuffer<vertex, false>>(device, dynamic_vertices_count);
+                m_dynamic_index_buffer = std::make_unique<Dx12UploadBuffer<index_t, false>>(device, dynamic_indeces_count);
             }
             FrameResource(const FrameResource&) = delete;
             FrameResource& operator=(const FrameResource&) = delete;
@@ -80,9 +88,12 @@ namespace QCE {
 
             MsPtr<ID3D12CommandAllocator> m_cmd_alloc = nullptr;
 
-            std::unique_ptr<Dx12UploadBuffer<UnitConstants, /*_is_constant_buffer*/true>>     m_units_constant_buffers{};
+            std::unique_ptr<Dx12UploadBuffer<UnitConstants,     /*_is_constant_buffer*/true>> m_units_constant_buffers{};
             std::unique_ptr<Dx12UploadBuffer<MaterialConstants, /*_is_constant_buffer*/true>> m_material_constant_buffer{};
-            std::unique_ptr<Dx12UploadBuffer<PassConstants, /*_is_constant_buffer*/true>>     m_pass_constant_buffer{};
+            std::unique_ptr<Dx12UploadBuffer<PassConstants,     /*_is_constant_buffer*/true>> m_pass_constant_buffer{};
+
+            std::unique_ptr<Dx12UploadBuffer<vertex,  /*_is_constant_buffer*/false>> m_dynamic_vertex_buffer{};
+            std::unique_ptr<Dx12UploadBuffer<index_t, /*_is_constant_buffer*/false>> m_dynamic_index_buffer{};
 
             uint64_t m_fence_value = 0;
         };
@@ -112,7 +123,7 @@ namespace QCE {
         ErrorCode UpdateLighting(PassConstants& pass_constants);
         ErrorCode UpdateUnitBuffers();
         ErrorCode UpdateMaterialBuffers();
-        ErrorCode UploadMeshes();
+        ErrorCode UploadStaticMeshes();
         ErrorCode UploadTextures();
 
         // Utils
