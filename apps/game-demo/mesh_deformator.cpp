@@ -31,6 +31,9 @@ AnimateHills::AnimateHills(
 
     m_calculated_mesh.vertices = m_base_mesh.vertices;
     m_calculated_mesh.indices  = m_base_mesh.indices;
+
+    CalculateHillsHeights();
+    UpdateMesh();
 }
 
 QCE::ErrorCode AnimateHills::Execute(QCE::CommandContext* context) {
@@ -38,8 +41,10 @@ QCE::ErrorCode AnimateHills::Execute(QCE::CommandContext* context) {
     assert(context->type == QCE::CommandContextType::E_CCT_DEFORMATED_MESH);
     assert(dynamic_cast<QCE::DeformatedMesh*>(context));
 
-    CalculateHillsHeights();
-    UpdateMesh();
+    if (m_timer.Check(1.0f)) {
+        CalculateHillsHeights();
+        UpdateMesh();
+    }
 
     auto ctx = static_cast<QCE::DeformatedMesh*>(context);
     ctx->deformation_result = &m_calculated_mesh;

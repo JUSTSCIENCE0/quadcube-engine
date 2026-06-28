@@ -8,6 +8,8 @@
 #include <qce/objects/command.hpp>
 #include <qce/objects/figures.hpp>
 
+#include <qce/ancillary/timer.hpp>
+
 #include <random>
 
 using index_t = QCE::index_t;
@@ -42,6 +44,8 @@ private:
     const float  m_lhalf;
     const size_t m_poligons_count;
     const bool   m_is_reflected;
+
+    QCE::Timer m_timer{};
 
     std::random_device m_rd{};
     std::mt19937 m_prng{m_rd()};
