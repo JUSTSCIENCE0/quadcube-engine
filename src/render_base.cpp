@@ -22,15 +22,25 @@ namespace QCE {
 
     ErrorCode RenderBase::UpdateScene() {
         // reset
+        m_scene_materials.components.clear();
+        m_scene_materials.dirty_frames.clear();
+        m_material_buffer_map.clear();
+
+        // update
+        UpdateStaticGeometry();
+        UpdateDynamicGeometry();
+
+        return ErrorCode::SUCCESS;
+    }
+
+    void RenderBase::UpdateStaticGeometry() {
+        // reset
         m_scene_static_geometry.units.clear();
         m_scene_static_geometry.index_buffer.clear();
         m_scene_static_geometry.vertex_buffer.clear();
         m_scene_static_geometry.index_buffer_size = 0;
         m_scene_static_geometry.vertex_buffer_size = 0;
-        m_scene_materials.components.clear();
-        m_scene_materials.dirty_frames.clear();
         m_static_geometry_unit_map.clear();
-        m_material_buffer_map.clear();
 
         auto entities = m_entities.QueryEntities<
             MeshComponent,
@@ -38,7 +48,6 @@ namespace QCE {
             TransformMatrix,
             MaterialComponent>();
 
-        // scene static geometry
         size_t unit_index = 0;
         for (const auto& entity_id : entities) {
             auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
@@ -63,39 +72,50 @@ namespace QCE {
             unit_index++;
         }
 
-        // TODO: temporal code - dynamic geometry
-        // entities = m_entities.QueryEntities<
-        //     DynamicMesh,
-        //     TransformComponents,
-        //     TransformMatrix,
-        //     MaterialComponent>();
-        // for (const auto& entity_id : entities) {
-        //     auto& dynamic_mesh = m_entities.GetComponent<DynamicMesh>(entity_id);
-        //     auto& deformator = ResourceManager::Get().Read<Command>(dynamic_mesh.index);
-
-        //     DeformatedMesh deformated_mesh{};
-        //     deformator.command->Execute(&deformated_mesh);
-
-        //     assert(deformated_mesh.deformation_result);
-        //     auto& mesh = *deformated_mesh.deformation_result;
-
-        //     SceneGeometry::Unit unit{
-        //         .indeces_count = uint32_t(mesh.indices.size()),
-        //         .index_offset = uint32_t(m_scene_static_geometry.index_buffer.size()),
-        //         .vertex_offset = uint32_t(m_scene_static_geometry.vertex_buffer.size())
-        //     };
-
-        //     m_scene_static_geometry.index_buffer.insert(
-        //         m_scene_static_geometry.index_buffer.end(), mesh.indices.begin(), mesh.indices.end());
-        //     m_scene_static_geometry.vertex_buffer.insert(
-        //         m_scene_static_geometry.vertex_buffer.end(), mesh.vertices.begin(), mesh.vertices.end());
-        //     m_scene_static_geometry.units.emplace_back(std::move(unit));
-        // }
-
         m_scene_static_geometry.vertex_buffer_size = uint32_t(m_scene_static_geometry.vertex_buffer.size()) * m_scene_static_geometry.VERTEX_STRIDE;
         m_scene_static_geometry.index_buffer_size = uint32_t(m_scene_static_geometry.index_buffer.size()) * sizeof(index_t);
 
-        // scene materials
+        UpdateSceneMaterials(entities);
+    }
+
+    void RenderBase::UpdateDynamicGeometry() {
+        m_scene_dynamic_geometry.units.clear();
+        m_scene_dynamic_geometry.index_buffer_size = 0;
+        m_scene_dynamic_geometry.vertex_buffer_size = 0;
+
+        auto entities = m_entities.QueryEntities<
+            DynamicMesh,
+            TransformComponents,
+            TransformMatrix,
+            MaterialComponent>();
+        for (const auto& entity_id : entities) {
+            auto& dynamic_mesh = m_entities.GetComponent<DynamicMesh>(entity_id);
+            auto& deformator = ResourceManager::Get().Read<Command>(dynamic_mesh.index);
+
+            DeformatedMesh deformated_mesh{/*need_update_mesh*/false};
+            deformator.command->Execute(&deformated_mesh);
+
+            assert(deformated_mesh.max_vertices_count);
+            assert(deformated_mesh.max_indeces_count);
+
+            SceneGeometry::Unit unit{
+                .indeces_count = uint32_t(deformated_mesh.max_indeces_count),
+                .index_offset =  uint32_t(m_scene_dynamic_geometry.index_buffer_size),
+                .vertex_offset = uint32_t(m_scene_dynamic_geometry.vertex_buffer_size)
+            };
+
+            m_scene_dynamic_geometry.vertex_buffer_size += deformated_mesh.max_vertices_count;
+            m_scene_dynamic_geometry.index_buffer_size += deformated_mesh.max_indeces_count;
+            m_scene_dynamic_geometry.units.push_back(unit);
+        }
+
+        m_scene_dynamic_geometry.vertex_buffer_size *= m_scene_static_geometry.VERTEX_STRIDE;
+        m_scene_dynamic_geometry.index_buffer_size *= sizeof(index_t);
+
+        UpdateSceneMaterials(entities);
+    }
+
+    void RenderBase::UpdateSceneMaterials(const std::set<CU::id_t>& entities) {
         size_t material_index = 0;
         for (const auto& entity_id : entities) {
             auto& material_comp = m_entities.GetComponent<MaterialComponent>(entity_id);
@@ -109,7 +129,5 @@ namespace QCE {
 
         m_scene_materials.dirty_frames.resize(
             m_scene_materials.components.size(), FRAME_RESOURCE_COUNT);
-
-        return ErrorCode::SUCCESS;
     }
 }

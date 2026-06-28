@@ -48,7 +48,8 @@ QCE::ErrorCode AnimateHills::Execute(QCE::CommandContext* context) {
     }
 
     ctx->deformation_result = &m_calculated_mesh;
-    ctx->max_vertices_count = m_calculated_mesh.vertices.size();
+    ctx->max_vertices_count = static_cast<uint32_t>(m_calculated_mesh.vertices.size());
+    ctx->max_indeces_count  = static_cast<uint32_t>(m_calculated_mesh.indices.size());
 
     return QCE::ErrorCode::SUCCESS;
 }
