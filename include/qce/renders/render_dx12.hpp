@@ -42,7 +42,7 @@ namespace QCE {
     private:
         /// types
         template<typename T> using MsPtr = Microsoft::WRL::ComPtr<T>;
-        struct GeometryBuffers {
+        struct StaticGeometry {
             MsPtr<ID3D12Resource> vertex_buffer = nullptr;
             MsPtr<ID3D12Resource> index_buffer  = nullptr;
 
@@ -131,23 +131,23 @@ namespace QCE {
                 m_current_back_buffer,
                 m_rtv_descr_size);
         }
-        D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() const {
-            assert(m_geometry_buffers.vertex_buffer);
+        D3D12_VERTEX_BUFFER_VIEW GetStaticVertexBufferView() const {
+            assert(m_static_geometry.vertex_buffer);
             assert(m_scene_static_geometry.vertex_buffer_size);
 
             D3D12_VERTEX_BUFFER_VIEW vbv;
-            vbv.BufferLocation = m_geometry_buffers.vertex_buffer->GetGPUVirtualAddress();
+            vbv.BufferLocation = m_static_geometry.vertex_buffer->GetGPUVirtualAddress();
             vbv.StrideInBytes = m_scene_static_geometry.VERTEX_STRIDE;
             vbv.SizeInBytes = m_scene_static_geometry.vertex_buffer_size;
             return vbv;
         }
         D3D12_INDEX_BUFFER_VIEW GetIndexBufferView() const {
-            assert(m_geometry_buffers.index_buffer);
+            assert(m_static_geometry.index_buffer);
             assert(m_scene_static_geometry.index_buffer_size);
 
             D3D12_INDEX_BUFFER_VIEW ibv;
-            ibv.BufferLocation = m_geometry_buffers.index_buffer->GetGPUVirtualAddress();
-            ibv.Format = m_geometry_buffers.INDEX_FORMAT;
+            ibv.BufferLocation = m_static_geometry.index_buffer->GetGPUVirtualAddress();
+            ibv.Format = m_static_geometry.INDEX_FORMAT;
             ibv.SizeInBytes = m_scene_static_geometry.index_buffer_size;
             return ibv;
         }
@@ -183,7 +183,7 @@ namespace QCE {
         D3D12_VIEWPORT m_screen_viewport{};
         D3D12_RECT     m_scissor_rect{};
 
-        GeometryBuffers m_geometry_buffers{};
+        StaticGeometry m_static_geometry{};
         std::vector<D3D12_INPUT_ELEMENT_DESC> m_input_layout;
         MsPtr<ID3D12PipelineState> m_PSO{};
 

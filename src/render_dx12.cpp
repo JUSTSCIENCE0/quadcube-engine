@@ -515,7 +515,7 @@ namespace QCE {
     }
 
     void RenderDX12::DrawSceneEntities() {
-        auto vbv = GetVertexBufferView();
+        auto vbv = GetStaticVertexBufferView();
         auto ibv = GetIndexBufferView();
 
         m_cmd_list->IASetVertexBuffers(0, 1, &vbv);
@@ -680,23 +680,23 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::UploadMeshes() {
-        m_geometry_buffers.DisposeUploaders();
+        m_static_geometry.DisposeUploaders();
 
         QCE_CRITICAL(dx12_create_default_buffer(
             m_d3d_device.Get(),
             m_cmd_list.Get(),
             m_scene_static_geometry.vertex_buffer.data(),
             m_scene_static_geometry.vertex_buffer_size,
-            m_geometry_buffers.vertex_buffer,
-            m_geometry_buffers.vertex_buffer_uploader));
+            m_static_geometry.vertex_buffer,
+            m_static_geometry.vertex_buffer_uploader));
 
         QCE_CRITICAL(dx12_create_default_buffer(
             m_d3d_device.Get(),
             m_cmd_list.Get(),
             m_scene_static_geometry.index_buffer.data(),
             m_scene_static_geometry.index_buffer_size,
-            m_geometry_buffers.index_buffer,
-            m_geometry_buffers.index_buffer_uploader));
+            m_static_geometry.index_buffer,
+            m_static_geometry.index_buffer_uploader));
 
         return ErrorCode::SUCCESS;
     }
