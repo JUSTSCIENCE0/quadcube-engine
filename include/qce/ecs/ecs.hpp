@@ -31,6 +31,7 @@ namespace QCE {
             // Components
             EntityName,
             MeshComponent,
+            DynamicMesh,
             MaterialComponent,
             TransformComponents,
             TransformMatrix,

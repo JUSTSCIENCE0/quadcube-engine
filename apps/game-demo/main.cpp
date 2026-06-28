@@ -53,12 +53,11 @@ int main(int argc, char* argv[]) {
         .repeat_uv = true,
         .unit_squares = true
     };
-    QCE_CRITICAL(app.Resources().AddFigure(hills, "hills_left"));
-    QCE_CRITICAL(app.Resources().AddFigure(hills, "hills_right"));
+    QCE_CRITICAL(app.Resources().AddFigure(hills, "hills"));
 
     QCE::Command animate_hills_right{
         "AnimateHillsRight", std::make_shared<AnimateHills>(
-            hills, app.Resources().Read<QCE::Mesh>("hills_right"))
+            hills, app.Resources().Read<QCE::Mesh>("hills"))
     };
     QCE_CRITICAL(app.Resources().Add(std::move(animate_hills_right)));
 
@@ -85,11 +84,10 @@ int main(int argc, char* argv[]) {
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
     QCE::MeshComponent peaks_plane_mesh_component_left{
-        .index = app.Resources().GetIndex<QCE::Mesh>("hills_left")
+        .index = app.Resources().GetIndex<QCE::Mesh>("hills")
     };
-    QCE::MeshComponent peaks_plane_mesh_component_right{
-        .index = app.Resources().GetIndex<QCE::Mesh>("hills_right"),
-        .deformator = app.Resources().GetIndex<QCE::Command>("AnimateHillsRight")
+    QCE::DynamicMesh hills_mesh_component_right{
+        .index = app.Resources().GetIndex<QCE::Command>("AnimateHillsRight")
     };
     QCE::MaterialComponent textured_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("textured_material")
@@ -166,7 +164,7 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity4, edges_material_component));
 
     auto entity_id = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, peaks_plane_mesh_component_right));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_mesh_component_right));
     QCE_CRITICAL(app.m_entities.AddComponent(entity_id,
         QCE::TransformComponents{
             { 0.0f, 0.0f, 0.0f, 1.0f },

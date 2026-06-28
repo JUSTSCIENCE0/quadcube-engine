@@ -17,7 +17,10 @@
 namespace QCE {
     struct MeshComponent {
         size_t index{};
-        std::optional<size_t> deformator{};
+    };
+
+    struct DynamicMesh {
+        size_t index{};
     };
 
     struct Mesh {
