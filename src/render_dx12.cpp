@@ -96,15 +96,17 @@ namespace QCE {
             MaterialComponent>();
         const auto units_count = UINT(entities.size());
 
-        const auto verteces_count = m_scene_dynamic_geometry.vertex_buffer_size / m_scene_dynamic_geometry.VERTEX_STRIDE;
-        const auto indeces_count = m_scene_dynamic_geometry.index_buffer_size / UINT(sizeof(index_t));
+        const auto dynamic_verteces_count =
+            m_scene_dynamic_geometry.vertex_buffer_size / m_scene_dynamic_geometry.VERTEX_STRIDE;
+        const auto dynamic_indeces_count =
+            m_scene_dynamic_geometry.index_buffer_size / UINT(sizeof(index_t));
 
         for (int i = 0; i < FRAME_RESOURCE_COUNT; i++) {
             try {
                 m_frame_resources.emplace_back(
                     std::make_unique<FrameResource>(
                         m_d3d_device.Get(), units_count, UINT(m_scene_materials.components.size()),
-                        verteces_count, indeces_count));
+                        dynamic_verteces_count, dynamic_indeces_count));
             }
             catch (const ErrorCodeException& e) {
                 return e.code_value();
@@ -520,7 +522,7 @@ namespace QCE {
 
     void RenderDX12::DrawSceneEntities() {
         auto vbv = GetStaticVertexBufferView();
-        auto ibv = GetIndexBufferView();
+        auto ibv = GetStaticIndexBufferView();
 
         m_cmd_list->IASetVertexBuffers(0, 1, &vbv);
         m_cmd_list->IASetIndexBuffer(&ibv);

@@ -49,8 +49,6 @@ namespace QCE {
             MsPtr<ID3D12Resource> vertex_buffer_uploader = nullptr;
             MsPtr<ID3D12Resource> index_buffer_uploader  = nullptr;
 
-            constexpr static DXGI_FORMAT INDEX_FORMAT = dx12_get_index_format();
-
             void DisposeUploaders() {
                 vertex_buffer_uploader = nullptr;
                 index_buffer_uploader = nullptr;
@@ -103,6 +101,7 @@ namespace QCE {
         static constexpr D3D_DRIVER_TYPE D3D_DRIVER_TYPE = D3D_DRIVER_TYPE_HARDWARE;
         static constexpr DXGI_FORMAT BACK_BUFFER_FORMAT = DXGI_FORMAT_R8G8B8A8_UNORM;
         static constexpr DXGI_FORMAT DEPTH_STENCIL_FORMAT = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        static constexpr DXGI_FORMAT INDEX_FORMAT = dx12_get_index_format();
 
         /// methods
         // Initialization
@@ -152,14 +151,38 @@ namespace QCE {
             vbv.SizeInBytes = m_scene_static_geometry.vertex_buffer_size;
             return vbv;
         }
-        D3D12_INDEX_BUFFER_VIEW GetIndexBufferView() const {
+        D3D12_INDEX_BUFFER_VIEW GetStaticIndexBufferView() const {
             assert(m_static_geometry.index_buffer);
             assert(m_scene_static_geometry.index_buffer_size);
 
             D3D12_INDEX_BUFFER_VIEW ibv;
             ibv.BufferLocation = m_static_geometry.index_buffer->GetGPUVirtualAddress();
-            ibv.Format = m_static_geometry.INDEX_FORMAT;
+            ibv.Format = INDEX_FORMAT;
             ibv.SizeInBytes = m_scene_static_geometry.index_buffer_size;
+            return ibv;
+        }
+        D3D12_VERTEX_BUFFER_VIEW GetDynamicVertexBufferView() const {
+            assert(m_current_frame_resource);
+            assert(m_current_frame_resource->m_dynamic_vertex_buffer);
+            assert(m_scene_dynamic_geometry.vertex_buffer_size);
+
+            D3D12_VERTEX_BUFFER_VIEW vbv;
+            auto dyn_vb = m_current_frame_resource->m_dynamic_vertex_buffer->Resource();
+            vbv.BufferLocation = dyn_vb->GetGPUVirtualAddress();
+            vbv.StrideInBytes = m_scene_dynamic_geometry.VERTEX_STRIDE;
+            vbv.SizeInBytes = m_scene_dynamic_geometry.vertex_buffer_size;
+            return vbv;
+        }
+        D3D12_INDEX_BUFFER_VIEW GetDynamicIndexBufferView() const {
+            assert(m_current_frame_resource);
+            assert(m_current_frame_resource->m_dynamic_index_buffer);
+            assert(m_scene_dynamic_geometry.index_buffer_size);
+
+            D3D12_INDEX_BUFFER_VIEW ibv;
+            auto dyn_ib = m_current_frame_resource->m_dynamic_index_buffer->Resource();
+            ibv.BufferLocation = dyn_ib->GetGPUVirtualAddress();
+            ibv.Format = INDEX_FORMAT;
+            ibv.SizeInBytes = m_scene_dynamic_geometry.index_buffer_size;
             return ibv;
         }
 
