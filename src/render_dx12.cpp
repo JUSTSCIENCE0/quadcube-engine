@@ -378,7 +378,7 @@ namespace QCE {
         pass_constants.render_target_size_inv[1] = 1.0f / pass_constants.render_target_size[1];
         pass_constants.near_z = camera_proj.znear;
         pass_constants.far_z  = camera_proj.zfar;
-        pass_constants.delta_time = static_cast<float>(FrameTime::Get().Elapsed());
+        pass_constants.delta_time = FrameTime::Get().Elapsed<float>();
 
         QCE_CRITICAL(UpdateLighting(pass_constants));
 

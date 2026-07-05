@@ -14,7 +14,7 @@ namespace QCE {
             if (!movement.actual_velocity) {
                 movement_recalc_velocity(movement);
             }
-            auto translation = movement_calc_translation(movement, FrameTime::Get().Elapsed());
+            auto translation = movement_calc_translation(movement, FrameTime::Get().Elapsed<float>());
 
             if (m_entities.HasComponent<TransformComponents>(entity_id)) {
                 // TODO: apply movement to transform

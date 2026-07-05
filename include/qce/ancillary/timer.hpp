@@ -38,11 +38,12 @@ namespace QCE {
             return is_elapsed;
         }
 
-        template <TimerRatio DeltaRatio = std::ratio<1, 1>>
-        double GetDelta() const noexcept {
+        template <std::floating_point T = double,
+                  TimerRatio DeltaRatio = std::ratio<1, 1>>
+        T GetDelta() const noexcept {
             using namespace std::chrono;
 
-            return duration<double, DeltaRatio>(m_curr_time - m_prev_time).count();
+            return duration<T, DeltaRatio>(m_curr_time - m_prev_time).count();
         }
 
         int64_t GetDeltaNs() const noexcept {
@@ -70,9 +71,10 @@ namespace QCE {
             m_timer.Update();
         }
 
-        template <TimerRatio DeltaRatio = std::ratio<1, 1>>
-        double Elapsed() const noexcept {
-            return m_timer.GetDelta<DeltaRatio>();
+        template <std::floating_point T = double,
+                  TimerRatio DeltaRatio = std::ratio<1, 1>>
+        T Elapsed() const noexcept {
+            return m_timer.GetDelta<T, DeltaRatio>();
         }
 
         int64_t ElapsedNs() const noexcept {

@@ -20,10 +20,10 @@ namespace QCE {
     };
 
     // helpers
-    static inline float3d movement_calc_translation(const Movement& movement, double time) {
+    static inline float3d movement_calc_translation(const Movement& movement, float time) {
         vector vel = vector_init(movement.linear_velocity.arr);
         float3d result;
-        vector_copy(vel * static_cast<float>(time), result.arr);
+        vector_copy(vel * time, result.arr);
         return result;
     }
 
