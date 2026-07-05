@@ -114,6 +114,8 @@ namespace QCE {
 
         // Scene
         void DrawSceneEntities();
+        void DrawStaticMeshGeometry();
+        void DrawDynamicMeshGeometry();
         ErrorCode CreateRootSignature();
         ErrorCode CreateInputLayout();
         ErrorCode CreatePSO();

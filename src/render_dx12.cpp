@@ -94,6 +94,13 @@ namespace QCE {
             TransformComponents,
             TransformMatrix,
             MaterialComponent>();
+        auto dynamic_mesh_entities = m_entities.QueryEntities<
+            DynamicMesh,
+            TransformComponents,
+            TransformMatrix,
+            MaterialComponent>();
+        entities.merge(dynamic_mesh_entities);
+
         const auto units_count = UINT(entities.size());
 
         const auto dynamic_verteces_count =
@@ -461,33 +468,43 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::UpdateUnitBuffers() {
-        auto entities = m_entities.QueryEntities<
+        auto current_units_constant_buffers = m_current_frame_resource->m_units_constant_buffers.get();
+        UINT index = 0;
+
+        auto process_entities = [&](const std::set<CU::id_t>& entities) {
+            for (const auto& entity_id : entities) {
+                auto& world = m_entities.GetComponent<TransformMatrix>(entity_id);
+                if (!world.actual) {
+                    auto& transform_comp = m_entities.GetComponent<TransformComponents>(entity_id);
+                    calculate_transform_matrix(transform_comp, world);
+                    world.dirty_frames = FRAME_RESOURCE_COUNT;
+                }
+
+                if (world.dirty_frames > 0) {
+                    UnitConstants transform{};
+                    std::memcpy(transform.world_matrix,
+                        world.transposed_data.arr, sizeof(world.transposed_data.arr));
+                    current_units_constant_buffers->CopyData(index, transform);
+
+                    world.dirty_frames--;
+                }
+                index++;
+            }
+        };
+
+        auto static_mesh_entities = m_entities.QueryEntities<
             MeshComponent,
             TransformComponents,
             TransformMatrix,
             MaterialComponent>();
+        process_entities(static_mesh_entities);
 
-        auto current_units_constant_buffers = m_current_frame_resource->m_units_constant_buffers.get();
-
-        UINT index = 0;
-        for (const auto& entity_id : entities) {
-            auto& world = m_entities.GetComponent<TransformMatrix>(entity_id);
-            if (!world.actual) {
-                auto& transform_comp = m_entities.GetComponent<TransformComponents>(entity_id);
-                calculate_transform_matrix(transform_comp, world);
-                world.dirty_frames = FRAME_RESOURCE_COUNT;
-            }
-
-            if (world.dirty_frames > 0) {
-                UnitConstants transform{};
-                std::memcpy(transform.world_matrix,
-                    world.transposed_data.arr, sizeof(world.transposed_data.arr));
-                current_units_constant_buffers->CopyData(index, transform);
-
-                world.dirty_frames--;
-            }
-            index++;
-        }
+        auto dynamic_mesh_entities = m_entities.QueryEntities<
+            DynamicMesh,
+            TransformComponents,
+            TransformMatrix,
+            MaterialComponent>();
+        process_entities(dynamic_mesh_entities);
 
         return ErrorCode::SUCCESS;
     }
@@ -573,18 +590,17 @@ namespace QCE {
     }
 
     void RenderDX12::DrawSceneEntities() {
+        DrawStaticMeshGeometry();
+        //DrawDynamicMeshGeometry();
+    }
+
+    void RenderDX12::DrawStaticMeshGeometry() {
         auto vbv = GetStaticVertexBufferView();
         auto ibv = GetStaticIndexBufferView();
 
         m_cmd_list->IASetVertexBuffers(0, 1, &vbv);
         m_cmd_list->IASetIndexBuffer(&ibv);
         m_cmd_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-        auto entities = m_entities.QueryEntities<
-            MeshComponent,
-            TransformComponents,
-            TransformMatrix,
-            MaterialComponent>();
 
         auto unit_cb = m_current_frame_resource->m_units_constant_buffers->Resource();
         auto unit_cb_gpu_addr = unit_cb->GetGPUVirtualAddress();
@@ -593,6 +609,11 @@ namespace QCE {
         auto material_cb_gpu_addr = material_cb->GetGPUVirtualAddress();
         auto material_cb_size = m_current_frame_resource->m_material_constant_buffer->m_element_size;
 
+        auto entities = m_entities.QueryEntities<
+            MeshComponent,
+            TransformComponents,
+            TransformMatrix,
+            MaterialComponent>();
         for (const auto& entity_id : entities) {
             const auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
             if (!m_static_geometry_unit_map.exists(mesh_comp.index)) {
@@ -635,6 +656,73 @@ namespace QCE {
                 unit_descr.vertex_offset,
                 0
             );
+
+            unit_cb_gpu_addr += unit_cb_size;
+        }
+    }
+
+    void RenderDX12::DrawDynamicMeshGeometry() {
+        auto vbv = GetDynamicVertexBufferView();
+        auto ibv = GetDynamicIndexBufferView();
+
+        m_cmd_list->IASetVertexBuffers(0, 1, &vbv);
+        m_cmd_list->IASetIndexBuffer(&ibv);
+        m_cmd_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+        auto static_mesh_entities = m_entities.QueryEntities<
+            MeshComponent,
+            TransformComponents,
+            TransformMatrix,
+            MaterialComponent>();
+
+        auto unit_cb = m_current_frame_resource->m_units_constant_buffers->Resource();
+        auto unit_cb_size = m_current_frame_resource->m_units_constant_buffers->m_element_size;
+        auto unit_cb_gpu_addr = unit_cb->GetGPUVirtualAddress() + unit_cb_size * static_mesh_entities.size();
+        auto material_cb = m_current_frame_resource->m_material_constant_buffer->Resource();
+        auto material_cb_gpu_addr = material_cb->GetGPUVirtualAddress();
+        auto material_cb_size = m_current_frame_resource->m_material_constant_buffer->m_element_size;
+
+        auto entities = m_entities.QueryEntities<
+            DynamicMesh,
+            TransformComponents,
+            TransformMatrix,
+            MaterialComponent>();
+        for (const auto& entity_id : entities) {
+            const auto& material_comp = m_entities.GetComponent<MaterialComponent>(entity_id);
+            if (!m_material_buffer_map.exists(material_comp.index)) {
+                // TODO: use log system
+                std::cerr << "Material index " << material_comp.index << " not found in material buffers" << std::endl;
+                continue;
+            }
+
+            CD3DX12_GPU_DESCRIPTOR_HANDLE tex(m_srv_heap->GetGPUDescriptorHandleForHeapStart());
+            auto texture_index = MISSED_TEXTURE_INDEX;
+            if (m_material_texture_map.exists(material_comp.index)) {
+                texture_index = m_material_texture_map[material_comp.index];
+            }
+            else {
+                // TODO: use log system
+                std::cerr << "Albedo texture index for material " << material_comp.index <<
+                    " not found in texture buffers" << std::endl;
+            }
+            tex.Offset(UINT(texture_index), m_cbv_srv_uav_descr_size);
+
+            m_cmd_list->SetGraphicsRootDescriptorTable(0, tex);
+            m_cmd_list->SetGraphicsRootConstantBufferView(
+                E_DX12RPI_UNIT_CONSTANTS_B0, unit_cb_gpu_addr);
+            m_cmd_list->SetGraphicsRootConstantBufferView(
+                E_DX12RPI_MATERIAL_CONSTANTS_B1,
+                material_cb_gpu_addr + material_cb_size * m_material_buffer_map[material_comp.index]);
+
+            // TODO: m_dynamic_geometry_unit_map (entity_id -> unit_index)
+            //const auto& unit_descr = m_scene_dynamic_geometry.units[m_static_geometry_unit_map[mesh_comp.index]];
+            //m_cmd_list->DrawIndexedInstanced(
+            //    unit_descr.indeces_count,
+            //    1,
+            //    unit_descr.index_offset,
+            //    unit_descr.vertex_offset,
+            //    0
+            //);
 
             unit_cb_gpu_addr += unit_cb_size;
         }
