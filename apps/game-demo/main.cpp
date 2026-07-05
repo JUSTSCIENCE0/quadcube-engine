@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
 
     QCE::Command animate_hills_right{
         "AnimateHillsRight", std::make_shared<AnimateHills>(
-            hills, app.Resources().Read<QCE::Mesh>("hills"))
+            0.5f, hills, app.Resources().Read<QCE::Mesh>("hills"))
     };
     QCE_CRITICAL(app.Resources().Add(std::move(animate_hills_right)));
 

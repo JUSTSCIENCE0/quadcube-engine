@@ -10,6 +10,7 @@
 #include <cstring>
 
 AnimateHills::AnimateHills(
+    float update_period_sec,
     const QCE::PlaneParams& plane_params,
     const QCE::Mesh& base_mesh,
     bool is_reflected) :
@@ -19,12 +20,14 @@ AnimateHills::AnimateHills(
         m_length(plane_params.length),
         m_number_columns(CalculateVerticiesCount(plane_params, false)),
         m_number_rows(CalculateVerticiesCount(plane_params, true)),
+        m_hills_count(m_number_columns * m_number_rows),
         m_wstep(m_width / static_cast<float>(m_number_columns - 1)),
         m_lstep(m_length / static_cast<float>(m_number_rows - 1)),
         m_whalf(m_width * 0.5f),
         m_lhalf(m_length * 0.5f),
         m_poligons_count(m_base_mesh.indices.size() / 3),
-        m_is_reflected(is_reflected) {
+        m_is_reflected(is_reflected),
+        m_update_period(update_period_sec) {
     assert(m_base_mesh.indices.size() % 3 == 0);
 
     CalculateBaseHeights();
@@ -32,7 +35,7 @@ AnimateHills::AnimateHills(
     m_calculated_mesh.vertices = m_base_mesh.vertices;
     m_calculated_mesh.indices  = m_base_mesh.indices;
 
-    CalculateHillsHeights();
+    CalculateNewHillsHeights();
     UpdateMesh();
 }
 
@@ -42,8 +45,23 @@ QCE::ErrorCode AnimateHills::Execute(QCE::CommandContext* context) {
     assert(dynamic_cast<QCE::DeformatedMesh*>(context));
     auto ctx = static_cast<QCE::DeformatedMesh*>(context);
 
-    if (ctx->update_mesh && m_timer.Check(1.0f)) {
-        CalculateHillsHeights();
+    if (ctx->update_mesh) {
+        float elapsed_sec = 0.0f;
+
+        if (m_timer.Check(m_update_period, elapsed_sec)) {
+            CalculateNewHillsHeights();
+            m_hills_hight = m_hills_hight_prev;
+        }
+        else {
+            auto t = elapsed_sec / m_update_period;
+
+            assert(t >= 0.0f && t <= 1.0f);
+
+            for (size_t i = 0; i < m_hills_count; i++) {
+                m_hills_hight[i] = m_hills_hight_prev[i] + (m_hills_hight_next[i] - m_hills_hight_prev[i]) * t;
+            }
+        }
+
         UpdateMesh();
     }
 
@@ -66,8 +84,7 @@ size_t AnimateHills::CalculateVerticiesCount(const QCE::PlaneParams& plane_param
 }
 
 void AnimateHills::CalculateBaseHeights() {
-    const auto hills_count = m_number_columns * m_number_rows;
-    m_hills_base.reserve(hills_count);
+    m_hills_base.reserve(m_hills_count);
 
     int xi = 0;
     int zi = 0;
@@ -92,15 +109,19 @@ void AnimateHills::CalculateBaseHeights() {
         zi++;
     }
 
-    assert(m_hills_base.size() == hills_count);
+    assert(m_hills_base.size() == m_hills_count);
+
+    m_hills_hight.resize(m_hills_count);
+    m_hills_hight_next = m_hills_base;
 }
 
-void AnimateHills::CalculateHillsHeights() {
-    const auto hills_count = m_number_columns * m_number_rows;
-    assert(m_hills_base.size() == hills_count);
-    m_hills_cache = m_hills_base;
+void AnimateHills::CalculateNewHillsHeights() {
+    m_hills_hight_prev.swap(m_hills_hight_next);
 
-    for (auto& height : m_hills_cache)
+    assert(m_hills_base.size() == m_hills_count);
+    m_hills_hight_next = m_hills_base;
+
+    for (auto& height : m_hills_hight_next)
         height *= m_uniform_dist(m_prng);
 }
 
@@ -116,8 +137,8 @@ void AnimateHills::UpdateMesh() {
         assert(xi < m_number_columns && zi < m_number_rows);
 
         const auto index = xi + zi * m_number_columns;
-        assert(index < m_hills_cache.size());
-        y = m_hills_cache[index];
+        assert(index < m_hills_hight.size());
+        y = m_hills_hight[index];
     }
 
     assert(m_calculated_mesh.indices.size() % 3 == 0);
