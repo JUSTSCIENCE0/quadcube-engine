@@ -533,6 +533,7 @@ namespace QCE {
         assert(m_current_frame_resource);
 
         m_scene_dynamic_geometry.units.clear();
+        m_dynamic_geometry_unit_map.clear();
 
         const uint32_t max_index_offset  = m_scene_dynamic_geometry.index_buffer_size  / sizeof(index_t);
         const uint32_t max_vertex_offset = m_scene_dynamic_geometry.vertex_buffer_size / m_scene_dynamic_geometry.VERTEX_STRIDE;
@@ -567,6 +568,7 @@ namespace QCE {
                 .index_offset  = uint32_t(index_offset),
                 .vertex_offset = uint32_t(vertex_offset)
             };
+            m_dynamic_geometry_unit_map.add(entity_id, m_scene_dynamic_geometry.units.size());
             m_scene_dynamic_geometry.units.push_back(unit);
 
             m_current_frame_resource->m_dynamic_index_buffer->CopyData(
@@ -591,7 +593,7 @@ namespace QCE {
 
     void RenderDX12::DrawSceneEntities() {
         DrawStaticMeshGeometry();
-        //DrawDynamicMeshGeometry();
+        DrawDynamicMeshGeometry();
     }
 
     void RenderDX12::DrawStaticMeshGeometry() {
@@ -714,15 +716,14 @@ namespace QCE {
                 E_DX12RPI_MATERIAL_CONSTANTS_B1,
                 material_cb_gpu_addr + material_cb_size * m_material_buffer_map[material_comp.index]);
 
-            // TODO: m_dynamic_geometry_unit_map (entity_id -> unit_index)
-            //const auto& unit_descr = m_scene_dynamic_geometry.units[m_static_geometry_unit_map[mesh_comp.index]];
-            //m_cmd_list->DrawIndexedInstanced(
-            //    unit_descr.indeces_count,
-            //    1,
-            //    unit_descr.index_offset,
-            //    unit_descr.vertex_offset,
-            //    0
-            //);
+            const auto& unit_descr = m_scene_dynamic_geometry.units[m_dynamic_geometry_unit_map[entity_id]];
+            m_cmd_list->DrawIndexedInstanced(
+                unit_descr.indeces_count,
+                1,
+                unit_descr.index_offset,
+                unit_descr.vertex_offset,
+                0
+            );
 
             unit_cb_gpu_addr += unit_cb_size;
         }
