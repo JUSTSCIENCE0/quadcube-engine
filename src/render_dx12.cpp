@@ -512,6 +512,58 @@ namespace QCE {
         return ErrorCode::SUCCESS;
     }
 
+    ErrorCode RenderDX12::UpdateDynamicMeshes() {
+        assert(m_current_frame_resource);
+
+        m_scene_dynamic_geometry.units.clear();
+
+        const uint32_t max_index_offset  = m_scene_dynamic_geometry.index_buffer_size  / sizeof(index_t);
+        const uint32_t max_vertex_offset = m_scene_dynamic_geometry.vertex_buffer_size / m_scene_dynamic_geometry.VERTEX_STRIDE;
+
+        uint32_t index_offset = 0;
+        uint32_t vertex_offset = 0;
+
+        auto is_dynamic_buffer_overflow = [&](const Mesh* mesh) {
+            return (index_offset  + mesh->indices.size())  > max_index_offset ||
+                   (vertex_offset + mesh->vertices.size()) > max_vertex_offset;
+        };
+
+        auto entities = m_entities.QueryEntities<
+            DynamicMesh,
+            TransformComponents,
+            TransformMatrix,
+            MaterialComponent>();
+        for (const auto& entity_id : entities) {
+            auto& dynamic_mesh = m_entities.GetComponent<DynamicMesh>(entity_id);
+            auto& deformator = ResourceManager::Get().Read<Command>(dynamic_mesh.index);
+
+            DeformatedMesh deformated_mesh{};
+            deformator.command->Execute(&deformated_mesh);
+            auto mesh = deformated_mesh.deformation_result;
+
+            if (is_dynamic_buffer_overflow(mesh)) {
+                return ErrorCode::E_ENG_DYNAMIC_GEOMETRY_BUFFER_OVERFLOW;
+            }
+
+            SceneGeometry::Unit unit{
+                .indeces_count = uint32_t(mesh->indices.size()),
+                .index_offset  = uint32_t(index_offset),
+                .vertex_offset = uint32_t(vertex_offset)
+            };
+            m_scene_dynamic_geometry.units.push_back(unit);
+
+            m_current_frame_resource->m_dynamic_index_buffer->CopyData(
+                index_offset,  mesh->indices.data(),  int(mesh->indices.size()));
+            m_current_frame_resource->m_dynamic_vertex_buffer->CopyData(
+                vertex_offset, mesh->vertices.data(), int(mesh->vertices.size()));
+
+            index_offset  += uint32_t(mesh->indices.size());
+            vertex_offset += uint32_t(mesh->vertices.size());
+        }
+
+        return ErrorCode::SUCCESS;
+    }
+
     ErrorCode RenderDX12::UpdateConstantBuffers() {
         QCE_CRITICAL(UpdatePassConstants());
         QCE_CRITICAL(UpdateUnitBuffers());
@@ -590,6 +642,7 @@ namespace QCE {
 
     ErrorCode RenderDX12::Draw() {
         QCE_CRITICAL(NextFrameResource());
+        QCE_CRITICAL(UpdateDynamicMeshes());
         QCE_CRITICAL(UpdateConstantBuffers());
 
         auto& cmd_alloc = m_current_frame_resource->m_cmd_alloc;

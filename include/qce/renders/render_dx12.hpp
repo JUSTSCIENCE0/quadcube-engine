@@ -117,6 +117,7 @@ namespace QCE {
         ErrorCode CreateRootSignature();
         ErrorCode CreateInputLayout();
         ErrorCode CreatePSO();
+        ErrorCode UpdateDynamicMeshes();
         ErrorCode UpdateConstantBuffers();
         ErrorCode UpdatePassConstants();
         ErrorCode UpdateLighting(PassConstants& pass_constants);

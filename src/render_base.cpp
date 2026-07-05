@@ -98,18 +98,11 @@ namespace QCE {
             assert(deformated_mesh.max_vertices_count);
             assert(deformated_mesh.max_indeces_count);
 
-            SceneGeometry::Unit unit{
-                .indeces_count = uint32_t(deformated_mesh.max_indeces_count),
-                .index_offset =  uint32_t(m_scene_dynamic_geometry.index_buffer_size),
-                .vertex_offset = uint32_t(m_scene_dynamic_geometry.vertex_buffer_size)
-            };
-
             m_scene_dynamic_geometry.vertex_buffer_size += deformated_mesh.max_vertices_count;
             m_scene_dynamic_geometry.index_buffer_size += deformated_mesh.max_indeces_count;
-            m_scene_dynamic_geometry.units.push_back(unit);
         }
 
-        m_scene_dynamic_geometry.vertex_buffer_size *= m_scene_static_geometry.VERTEX_STRIDE;
+        m_scene_dynamic_geometry.vertex_buffer_size *= m_scene_dynamic_geometry.VERTEX_STRIDE;
         m_scene_dynamic_geometry.index_buffer_size *= sizeof(index_t);
 
         UpdateSceneMaterials(entities);
