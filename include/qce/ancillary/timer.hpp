@@ -26,13 +26,13 @@ namespace QCE {
             m_curr_time = curr;
         }
 
-        bool Check(double timeout_sec, bool update = true) noexcept {
+        template <std::floating_point T = double>
+        bool Check(T timeout_sec, T& elapsed_sec, bool update = true) noexcept {
             using namespace std::chrono;
 
             auto curr = clock::now();
-            auto delta = duration_cast<seconds>(curr - m_curr_time);
-            auto delta_sec = duration<double>(delta).count();
-            bool is_elapsed = delta_sec >= timeout_sec;
+            elapsed_sec = duration<T, std::ratio<1, 1>>(curr - m_curr_time).count();
+            bool is_elapsed = elapsed_sec >= timeout_sec;
             if (is_elapsed && update)
                 Update(curr);
             return is_elapsed;
