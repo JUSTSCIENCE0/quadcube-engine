@@ -86,15 +86,24 @@ size_t AnimateHills::CalculateVerticiesCount(const QCE::PlaneParams& plane_param
 void AnimateHills::CalculateBaseHeights() {
     m_hills_base.reserve(m_hills_count);
 
+    const auto start_x = m_is_reflected ?  m_whalf : -m_whalf;
+    const auto step_x  = m_is_reflected ? -m_wstep :  m_wstep;
+    auto is_finished_x = [&](float x) {
+        if (m_is_reflected)
+            return x < -m_whalf;
+        else
+            return x >  m_whalf;
+    };
+
     int xi = 0;
     int zi = 0;
 
     for (float z =   m_lhalf;
                z >= -m_lhalf;
                z -=  m_lstep) {
-        for (float x = -m_whalf;
-                   x <= m_whalf;
-                   x += m_wstep) {
+        for (float x =  start_x;
+                   !is_finished_x(x);
+                   x += step_x) {
             auto y = std::sqrtf(x + m_whalf) * (std::sqrtf(0.05f * (z + m_lhalf)) + 0.5f);
             if (xi % 2 == 0 || zi % 2 == 0) {
                 y *= 0.75f;

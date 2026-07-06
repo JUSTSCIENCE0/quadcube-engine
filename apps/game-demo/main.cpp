@@ -61,6 +61,12 @@ int main(int argc, char* argv[]) {
     };
     QCE_CRITICAL(app.Resources().Add(std::move(animate_hills_right)));
 
+    QCE::Command animate_hills_left{
+        "AnimateHillsLeft", std::make_shared<AnimateHills>(
+            0.5f, hills, app.Resources().Read<QCE::Mesh>("hills"), true)
+    };
+    QCE_CRITICAL(app.Resources().Add(std::move(animate_hills_left)));
+
     QCE_CRITICAL(app.Resources().AddTexture("squares.bc7"));
     QCE::Material textured_material{};
     textured_material.id = "textured_material";
@@ -88,6 +94,9 @@ int main(int argc, char* argv[]) {
     };
     QCE::DynamicMesh hills_mesh_component_right{
         .index = app.Resources().GetIndex<QCE::Command>("AnimateHillsRight")
+    };
+    QCE::DynamicMesh hills_mesh_component_left{
+        .index = app.Resources().GetIndex<QCE::Command>("AnimateHillsLeft")
     };
     QCE::MaterialComponent textured_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("textured_material")
@@ -175,7 +184,7 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity_id, edges_material_component));
 
     entity_id = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, peaks_plane_mesh_component_left));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_mesh_component_left));
     QCE_CRITICAL(app.m_entities.AddComponent(entity_id,
         QCE::TransformComponents{
             { 0.0f, 0.0f, 0.0f, 1.0f },
