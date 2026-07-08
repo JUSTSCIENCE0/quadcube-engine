@@ -8,6 +8,7 @@
 #include "configs_implementation.hpp"
 
 #include <qce/ancillary/error_codes.hpp>
+#include <qce/ancillary/structs.hpp>
 #include <qce/objects/resource_manager.hpp>
 #include <qce/ecs/ecs.hpp>
 
@@ -53,22 +54,6 @@ namespace QCE {
         using ShaderMap = std::array<
             size_t /* index*/,
             ShaderType::E_SHADERS_TYPE_COUNT>;
-
-        class BufferMap :
-                public std::vector<size_t> {
-            static constexpr auto INVALID_INDEX = std::numeric_limits<size_t>::max();
-        public:
-            void add(size_t index, size_t value) {
-                if (index >= this->size()) {
-                    this->resize(index + 1, INVALID_INDEX);
-                }
-                (*this)[index] = value;
-            }
-
-            bool exists(size_t index) const {
-                return (index < this->size()) && (*this)[index] != INVALID_INDEX;
-            }
-        };
 
         struct SceneGeometry {
             constexpr static uint32_t VERTEX_STRIDE = sizeof(vertex);
