@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <qce/ecs/ecs.hpp>
+#include <qce/configs/configs_traits.hpp>
 #include <qce/objects/command.hpp>
 #include <qce/objects/figures.hpp>
 
@@ -13,6 +15,32 @@
 #include <random>
 
 using index_t = QCE::index_t;
+
+class HillsAnimationSystem;
+struct HillsAnimationConfig {};
+namespace QCE {
+    template<>
+    struct config_corresponding_system<HillsAnimationConfig> {
+        using System = HillsAnimationSystem;
+    };
+}
+
+class HillsAnimationSystem {
+public:
+    using Config = HillsAnimationConfig;
+
+    explicit HillsAnimationSystem(QCE::Entities& entities) :
+        m_entities(entities) {}
+
+    QCE::ErrorCode Setup() {
+        return QCE::ErrorCode::SUCCESS;
+    }
+
+    QCE::ErrorCode Update();
+
+private:
+    QCE::Entities& m_entities;
+};
 
 struct AnimateHills : public QCE::BaseCommand {
     AnimateHills(

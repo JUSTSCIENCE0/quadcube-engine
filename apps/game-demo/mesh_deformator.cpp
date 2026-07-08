@@ -9,6 +9,10 @@
 #include <cmath>
 #include <cstring>
 
+QCE::ErrorCode HillsAnimationSystem::Update() {
+    return QCE::ErrorCode::SUCCESS;
+}
+
 AnimateHills::AnimateHills(
     float update_period_sec,
     const QCE::PlaneParams& plane_params,

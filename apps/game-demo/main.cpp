@@ -13,8 +13,13 @@ int main(int argc, char* argv[]) {
     FreeConsole();
 #endif
 
-    auto& app = QCE::Application<>::Get();
-    QCE_CRITICAL(app.Setup<>());
+    auto& app = QCE::Application<
+        HillsAnimationSystem
+    >::Get();
+    QCE_CRITICAL(
+    app.Setup<
+        HillsAnimationConfig
+    >());
 
     QCE::CuboidParams cuboid{
         .length = 1.0f,
