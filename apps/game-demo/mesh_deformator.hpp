@@ -7,6 +7,8 @@
 
 #include <qce/ecs/ecs.hpp>
 #include <qce/configs/configs_traits.hpp>
+#include <qce/ancillary/structs.hpp>
+
 #include <qce/objects/command.hpp>
 #include <qce/objects/figures.hpp>
 
@@ -36,10 +38,55 @@ public:
         return QCE::ErrorCode::SUCCESS;
     }
 
+    QCE::ErrorCode UpdateScene();
+
     QCE::ErrorCode Update();
 
 private:
+    struct AnimationCache {
+        std::vector<float> hills_base{};
+        std::vector<float> hills_hight{};
+        std::vector<float> hills_hight_prev{};
+        std::vector<float> hills_hight_next{};
+
+        const float  width;
+        const float  length;
+        const size_t number_columns; // along width
+        const size_t number_rows;    // along length
+        const size_t hills_count;
+        const float  wstep;
+        const float  lstep;
+        const float  whalf;
+        const float  lhalf;
+        const size_t poligons_count;
+        const bool   is_reflected;
+
+        QCE::Timer m_timer{};
+    };
+    std::vector<AnimationCache> m_animation_cache{};
+    QCE::BufferMap m_animation_cache_map{};
+
+    struct RandomGenerator {
+        RandomGenerator() = default;
+        RandomGenerator(const RandomGenerator&):
+            m_rd(),
+            m_prng(m_rd()),
+            m_uniform_dist(0.25f, 1.25f) {}
+
+        float get() {
+            return m_uniform_dist(m_prng);
+        }
+
+    private:
+        std::random_device m_rd{};
+        std::mt19937 m_prng{ m_rd() };
+        std::uniform_real_distribution<float> m_uniform_dist{ 0.25f, 1.25f };
+    } m_rnd;
+
     QCE::Entities& m_entities;
+
+    static size_t CalculateVerticiesCount(const QCE::PlaneParams& plane_params, bool row);
+    void CalculateBaseHeights(AnimationCache& out);
 };
 
 struct AnimateHills : public QCE::BaseCommand {

@@ -60,6 +60,14 @@ int main(int argc, char* argv[]) {
     };
     QCE_CRITICAL(app.Resources().AddFigure(hills, "hills"));
 
+    QCE::Mesh left_hills_mesh;
+    left_hills_mesh.id = "left_hills";
+    QCE_CRITICAL(app.Resources().Add(std::move(left_hills_mesh)));
+
+    QCE::Mesh right_hills_mesh;
+    right_hills_mesh.id = "right_hills";
+    QCE_CRITICAL(app.Resources().Add(std::move(right_hills_mesh)));
+
     QCE::Command animate_hills_right{
         "AnimateHillsRight", std::make_shared<AnimateHills>(
             0.5f, hills, app.Resources().Read<QCE::Mesh>("hills"))
@@ -98,10 +106,24 @@ int main(int argc, char* argv[]) {
         .index = app.Resources().GetIndex<QCE::Mesh>("hills")
     };
     QCE::DynamicMesh hills_mesh_component_right{
+        .base_mesh_index = app.Resources().GetIndex<QCE::Mesh>("hills"),
+        .deformated_mesh_index = app.Resources().GetIndex<QCE::Mesh>("right_hills"),
         .index = app.Resources().GetIndex<QCE::Command>("AnimateHillsRight")
     };
+    DeformationDescription hills_deformation_right{
+        .update_period_sec = 0.5f,
+        .plane_params = hills,
+        .is_reflected = false
+    };
     QCE::DynamicMesh hills_mesh_component_left{
+        .base_mesh_index = app.Resources().GetIndex<QCE::Mesh>("hills"),
+        .deformated_mesh_index = app.Resources().GetIndex<QCE::Mesh>("left_hills"),
         .index = app.Resources().GetIndex<QCE::Command>("AnimateHillsLeft")
+    };
+    DeformationDescription hills_deformation_left{
+        .update_period_sec = 0.5f,
+        .plane_params = hills,
+        .is_reflected = true
     };
     QCE::MaterialComponent textured_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("textured_material")
@@ -112,6 +134,7 @@ int main(int argc, char* argv[]) {
     QCE::MaterialComponent edges_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("edges_material")
     };
+
 
     auto entity0 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, cuboid_mesh_component));
@@ -179,6 +202,7 @@ int main(int argc, char* argv[]) {
 
     auto entity_id = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_mesh_component_right));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_deformation_right));
     QCE_CRITICAL(app.m_entities.AddComponent(entity_id,
         QCE::TransformComponents{
             { 0.0f, 0.0f, 0.0f, 1.0f },
@@ -190,6 +214,7 @@ int main(int argc, char* argv[]) {
 
     entity_id = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_mesh_component_left));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_deformation_left));
     QCE_CRITICAL(app.m_entities.AddComponent(entity_id,
         QCE::TransformComponents{
             { 0.0f, 0.0f, 0.0f, 1.0f },
@@ -207,5 +232,7 @@ int main(int argc, char* argv[]) {
         }
     ));
 
+    QCE_CRITICAL(
+        app.m_systems.Get<HillsAnimationSystem>().UpdateScene());
     return app.Run();
 }

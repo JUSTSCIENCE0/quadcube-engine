@@ -5,12 +5,106 @@
 
 #include "mesh_deformator.hpp"
 
+#include <qce/objects/resource_manager.hpp>
+
 #include <stdexcept>
 #include <cmath>
 #include <cstring>
 
+QCE::ErrorCode HillsAnimationSystem::UpdateScene() {
+    auto entities = m_entities.QueryEntities<
+        QCE::DynamicMesh,
+        DeformationDescription>();
+
+    for (const auto& entity_id : entities) {
+        auto& mesh_component = m_entities.GetComponent<QCE::DynamicMesh>(entity_id);
+        auto& base_mesh = QCE::ResourceManager::Get().Read<QCE::Mesh>(mesh_component.base_mesh_index);
+        assert(base_mesh.indices.size() % 3 == 0);
+
+        auto& deformated_mesh = QCE::ResourceManager::Get().Read<QCE::Mesh>(mesh_component.deformated_mesh_index);
+        deformated_mesh.indices = base_mesh.indices;
+        deformated_mesh.vertices = base_mesh.vertices;
+
+        auto& deformation_component = m_entities.GetComponent<DeformationDescription>(entity_id);
+        assert(deformation_component.update_period_sec > 0.0f);
+
+        m_animation_cache_map.add(entity_id, m_animation_cache.size());
+        const auto ncols = CalculateVerticiesCount(deformation_component.plane_params, false);
+        const auto nrows = CalculateVerticiesCount(deformation_component.plane_params, true);
+        m_animation_cache.emplace_back(AnimationCache{
+            .width = deformation_component.plane_params.width,
+            .length = deformation_component.plane_params.length,
+            .number_columns = ncols,
+            .number_rows = nrows,
+            .hills_count = ncols * nrows,
+            .wstep = deformation_component.plane_params.width / static_cast<float>(ncols - 1),
+            .lstep = deformation_component.plane_params.length / static_cast<float>(nrows - 1),
+            .whalf = deformation_component.plane_params.width * 0.5f,
+            .lhalf = deformation_component.plane_params.length * 0.5f,
+            .poligons_count = base_mesh.indices.size() / 3,
+            .is_reflected = deformation_component.is_reflected
+        });
+
+        CalculateBaseHeights(m_animation_cache.back());
+    }
+
+
+    return QCE::ErrorCode::SUCCESS;
+}
+
 QCE::ErrorCode HillsAnimationSystem::Update() {
     return QCE::ErrorCode::SUCCESS;
+}
+
+size_t HillsAnimationSystem::CalculateVerticiesCount(const QCE::PlaneParams& plane_params, bool rows) {
+    if (plane_params.unit_squares) {
+        if (rows)
+            return static_cast<size_t>(plane_params.length) + 1;
+        else
+            return static_cast<size_t>(plane_params.width) + 1;
+    }
+    else
+        return 2;
+}
+
+void HillsAnimationSystem::CalculateBaseHeights(AnimationCache& out) {
+    out.hills_base.reserve(out.hills_count);
+
+    const auto start_x = out.is_reflected ? out.whalf : -out.whalf;
+    const auto step_x = out.is_reflected ? -out.wstep : out.wstep;
+    auto is_finished_x = [&](float x) {
+        if (out.is_reflected)
+            return x < -out.whalf;
+        else
+            return x > out.whalf;
+        };
+
+    int xi = 0;
+    int zi = 0;
+
+    for (float z = out.lhalf;
+        z >= -out.lhalf;
+        z -= out.lstep) {
+        for (float x = start_x;
+            !is_finished_x(x);
+            x += step_x) {
+            auto y = std::sqrtf(x + out.whalf) * (std::sqrtf(0.05f * (z + out.lhalf)) + 0.5f);
+            if (xi % 2 == 0 || zi % 2 == 0) {
+                y *= 0.75f;
+            }
+
+            out.hills_base.push_back(y);
+
+            xi++;
+        }
+
+        zi++;
+    }
+
+    assert(out.hills_base.size() == out.hills_count);
+
+    out.hills_hight.resize(out.hills_count);
+    out.hills_hight_next = out.hills_base;
 }
 
 AnimateHills::AnimateHills(
