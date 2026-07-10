@@ -90,16 +90,11 @@ namespace QCE {
             MaterialComponent>();
         for (const auto& entity_id : entities) {
             auto& dynamic_mesh = m_entities.GetComponent<DynamicMesh>(entity_id);
-            auto& deformator = ResourceManager::Get().Read<Command>(dynamic_mesh.index);
+            assert(dynamic_mesh.max_vertices_count);
+            assert(dynamic_mesh.max_indeces_count);
 
-            DeformatedMesh deformated_mesh{/*need_update_mesh*/false};
-            deformator.command->Execute(&deformated_mesh);
-
-            assert(deformated_mesh.max_vertices_count);
-            assert(deformated_mesh.max_indeces_count);
-
-            m_scene_dynamic_geometry.vertex_buffer_size += deformated_mesh.max_vertices_count;
-            m_scene_dynamic_geometry.index_buffer_size += deformated_mesh.max_indeces_count;
+            m_scene_dynamic_geometry.vertex_buffer_size += dynamic_mesh.max_vertices_count;
+            m_scene_dynamic_geometry.index_buffer_size += dynamic_mesh.max_indeces_count;
         }
 
         m_scene_dynamic_geometry.vertex_buffer_size *= m_scene_dynamic_geometry.VERTEX_STRIDE;

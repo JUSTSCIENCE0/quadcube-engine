@@ -24,7 +24,6 @@ namespace QCE {
         uint32_t max_vertices_count = 0;
         uint32_t max_indeces_count = 0;
         size_t   deformated_mesh_index = 0;
-        size_t   index = 0;
     };
 
     struct Mesh {
