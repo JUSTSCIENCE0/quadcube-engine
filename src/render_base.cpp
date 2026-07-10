@@ -43,14 +43,14 @@ namespace QCE {
         m_static_geometry_unit_map.clear();
 
         auto entities = m_entities.QueryEntities<
-            MeshComponent,
+            StaticMesh,
             TransformComponents,
             TransformMatrix,
             MaterialComponent>();
 
         size_t unit_index = 0;
         for (const auto& entity_id : entities) {
-            auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
+            auto& mesh_comp = m_entities.GetComponent<StaticMesh>(entity_id);
             if (m_static_geometry_unit_map.exists(mesh_comp.index))
                 continue;
 

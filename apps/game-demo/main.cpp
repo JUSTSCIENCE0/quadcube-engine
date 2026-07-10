@@ -87,10 +87,10 @@ int main(int argc, char* argv[]) {
     edges_material.albedo_texture = app.Resources().GetIndex<QCE::Texture2D>("edges.bc7");
     QCE_CRITICAL(app.Resources().Add(std::move(edges_material)));
 
-    QCE::MeshComponent cuboid_mesh_component{
+    QCE::StaticMesh cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
-    QCE::MeshComponent peaks_plane_mesh_component_left{
+    QCE::StaticMesh peaks_plane_mesh_component_left{
         .index = app.Resources().GetIndex<QCE::Mesh>("hills")
     };
     QCE::DynamicMesh hills_mesh_component_right{
@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, textured_material_component));
 
     auto entity2 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity2, QCE::MeshComponent{
+    QCE_CRITICAL(app.m_entities.AddComponent(entity2, QCE::StaticMesh{
         .index = app.Resources().GetIndex<QCE::Mesh>("sphere_smooth")
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity2,
@@ -159,7 +159,7 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity2, untextured_material_component));
 
     auto entity3 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::MeshComponent{
+    QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::StaticMesh{
         .index = app.Resources().GetIndex<QCE::Mesh>("sphere_hard")
     }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity3,
@@ -172,7 +172,7 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity3, untextured_material_component));
 
     auto entity4 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity4, QCE::MeshComponent{
+    QCE_CRITICAL(app.m_entities.AddComponent(entity4, QCE::StaticMesh{
         .index = app.Resources().GetIndex<QCE::Mesh>("flat_plane")
     }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity4,

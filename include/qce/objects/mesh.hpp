@@ -15,7 +15,7 @@
 #include <optional>
 
 namespace QCE {
-    struct MeshComponent {
+    struct StaticMesh {
         size_t index{};
     };
 

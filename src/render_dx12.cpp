@@ -90,7 +90,7 @@ namespace QCE {
         m_frame_resources.clear();
 
         auto entities = m_entities.QueryEntities<
-            MeshComponent,
+            StaticMesh,
             TransformComponents,
             TransformMatrix,
             MaterialComponent>();
@@ -493,7 +493,7 @@ namespace QCE {
         };
 
         auto static_mesh_entities = m_entities.QueryEntities<
-            MeshComponent,
+            StaticMesh,
             TransformComponents,
             TransformMatrix,
             MaterialComponent>();
@@ -608,12 +608,12 @@ namespace QCE {
         auto material_cb_size = m_current_frame_resource->m_material_constant_buffer->m_element_size;
 
         auto entities = m_entities.QueryEntities<
-            MeshComponent,
+            StaticMesh,
             TransformComponents,
             TransformMatrix,
             MaterialComponent>();
         for (const auto& entity_id : entities) {
-            const auto& mesh_comp = m_entities.GetComponent<MeshComponent>(entity_id);
+            const auto& mesh_comp = m_entities.GetComponent<StaticMesh>(entity_id);
             if (!m_static_geometry_unit_map.exists(mesh_comp.index)) {
                 // TODO: use log system
                 std::cerr << "Mesh index " << mesh_comp.index << " not found in geometry buffers" << std::endl;
@@ -668,7 +668,7 @@ namespace QCE {
         m_cmd_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         auto static_mesh_entities = m_entities.QueryEntities<
-            MeshComponent,
+            StaticMesh,
             TransformComponents,
             TransformMatrix,
             MaterialComponent>();

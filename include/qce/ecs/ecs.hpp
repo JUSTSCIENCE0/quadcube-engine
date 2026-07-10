@@ -30,7 +30,7 @@ namespace QCE {
             QCE_ECS_ENTITY_MANAGER_CACHE_SIZE,
             // Components
             EntityName,
-            MeshComponent,
+            StaticMesh,
             DynamicMesh,
             MaterialComponent,
             TransformComponents,
