@@ -37,17 +37,4 @@ namespace QCE {
         std::vector<vertex>  vertices{};
         std::vector<index_t> indices{};
     };
-
-    struct DeformatedMesh : CommandContext {
-        explicit DeformatedMesh(bool need_update_mesh = true) :
-            CommandContext(CommandContextType::E_CCT_DEFORMATED_MESH),
-            update_mesh(need_update_mesh) {}
-        virtual ~DeformatedMesh() = default;
-
-        const bool update_mesh;
-
-        const Mesh* deformation_result = nullptr;
-        uint32_t max_vertices_count = 0;
-        uint32_t max_indeces_count = 0;
-    };
 }
