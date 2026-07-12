@@ -41,6 +41,15 @@ CU_CONFORMANCE_TEST_SIMD(
 )
 
 CU_CONFORMANCE_TEST_SIMD(
+    MatrixHadamardMultiplication,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    "matrix4x4_float32_hadamard_mul.bin",
+    QCE::matrix_hadamard_multiplication,
+    (def, sse2, avx2, avx512)
+)
+
+CU_CONFORMANCE_TEST_SIMD(
     VectorMatrixMultiplication,
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,

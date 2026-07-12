@@ -40,6 +40,14 @@ CU_PERFORMANCE_TEST_SIMD(
 )
 
 CU_PERFORMANCE_TEST_SIMD(
+    MatrixHadamardMultiplication,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    QCE::matrix_hadamard_multiplication,
+    (def, sse2, avx2, avx512)
+)
+
+CU_PERFORMANCE_TEST_SIMD(
     VectorMatrixMultiplication,
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,

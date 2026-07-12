@@ -15,6 +15,8 @@ namespace QCE {
         (const float* values, int64_t count, float* results);
     void CU_SIMD_IFACE(matrix_multiplication)
         (const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(matrix_hadamard_multiplication)
+        (const float* values, int64_t count, float* results);
     void CU_SIMD_IFACE(vector_matrix_multiplication)
         (const float* values, int64_t count, float* results);
     void CU_SIMD_IFACE(matrix_vector_multiplication)
