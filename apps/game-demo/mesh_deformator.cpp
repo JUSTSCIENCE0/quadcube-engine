@@ -3,6 +3,10 @@
 //
 // License: MIT
 
+#ifndef CU_BUILD_SPECIFIC_SIMD
+#  define CU_BUILD_SPECIFIC_SIMD sse2
+#endif // !CU_BUILD_SPECIFIC_SIMD
+
 #include "mesh_deformator.hpp"
 
 #include <qce/objects/resource_manager.hpp>
@@ -34,12 +38,14 @@ QCE::ErrorCode HillsAnimationSystem::UpdateScene() {
         m_animation_cache_map.add(entity_id, m_animation_cache.size());
         const auto ncols = CalculateVerticiesCount(deformation_component.plane_params, false);
         const auto nrows = CalculateVerticiesCount(deformation_component.plane_params, true);
+        const auto hcount = ncols * nrows;
         auto& entry = m_animation_cache.emplace_back(AnimationCache{
             .width = deformation_component.plane_params.width,
             .length = deformation_component.plane_params.length,
             .number_columns = ncols,
             .number_rows = nrows,
-            .hills_count = ncols * nrows,
+            .hills_count = hcount,
+            .hills_count_rounded = hcount - (hcount % 16),
             .wstep = deformation_component.plane_params.width / static_cast<float>(ncols - 1),
             .lstep = deformation_component.plane_params.length / static_cast<float>(nrows - 1),
             .whalf = deformation_component.plane_params.width * 0.5f,
@@ -79,9 +85,16 @@ QCE::ErrorCode HillsAnimationSystem::Update() {
 
             assert(t >= 0.0f && t <= 1.0f);
 
-            for (size_t i = 0; i < entry.hills_count; i++) {
-                entry.hills_hight[i] =
-                    entry.hills_hight_prev[i] + (entry.hills_hight_next[i] - entry.hills_hight_prev[i]) * t;
+            size_t i = 0;
+            auto prev = entry.hills_hight_prev.data();
+            auto next = entry.hills_hight_next.data();
+            auto out  = entry.hills_hight.data();
+            for (; i < entry.hills_count_rounded;
+                i += 16, prev += 16, next += 16, out += 16) {
+                QCE::lerp16(prev, next, t, out);
+            }
+            for (; i < entry.hills_count; i++) {
+                entry.hills_hight[i] = QCE::lerp(entry.hills_hight_prev[i], entry.hills_hight_next[i], t);
             }
         }
 

@@ -101,4 +101,21 @@ namespace QCE {
     static inline float constexpr rad_to_deg(float rad) {
         return (rad / PI) * PI_DEG;
     }
+
+    static inline float constexpr lerp(float a, float b, float t) {
+        return a + (b - a) * t;
+    }
+    static inline void lerp16(const float* a, const float* b, float t, float* result) {
+        assert(a && b && result);
+
+        auto am = matrix_init(a);
+        auto bm = matrix_init(b);
+        auto tm = matrix_init(
+            t, t, t, t,
+            t, t, t, t,
+            t, t, t, t,
+            t, t, t, t);
+        auto rm = am + matrix_hadamard_mul(bm - am, tm);
+        matrix_copy(rm, result);
+    }
 }

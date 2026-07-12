@@ -54,6 +54,7 @@ private:
         const size_t number_columns; // along width
         const size_t number_rows;    // along length
         const size_t hills_count;
+        const size_t hills_count_rounded;
         const float  wstep;
         const float  lstep;
         const float  whalf;

@@ -100,6 +100,14 @@ namespace QCE {
         return lhs;
     }
 
+    static inline matrix VECTOR_CALL matrix_hadamard_mul(matrix lhs, matrix rhs) noexcept {
+        lhs.v1 = _mm_mul_ps(lhs.v1, rhs.v1);
+        lhs.v2 = _mm_mul_ps(lhs.v2, rhs.v2);
+        lhs.v3 = _mm_mul_ps(lhs.v3, rhs.v3);
+        lhs.v4 = _mm_mul_ps(lhs.v4, rhs.v4);
+        return lhs;
+    }
+
     static inline void VECTOR_CALL matrix_copy(matrix value, float* dst) noexcept {
         assert(dst);
         _mm_storeu_ps(dst,      value.v1);

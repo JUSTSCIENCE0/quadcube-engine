@@ -102,6 +102,15 @@ namespace QCE {
         return lhs;
     }
 
+    static inline matrix matrix_hadamard_mul(const matrix& lhs, const matrix& rhs) noexcept {
+        return {
+            lhs.x1 * rhs.x1, lhs.y1 * rhs.y1, lhs.z1 * rhs.z1, lhs.w1 * rhs.w1,
+            lhs.x2 * rhs.x2, lhs.y2 * rhs.y2, lhs.z2 * rhs.z2, lhs.w2 * rhs.w2,
+            lhs.x3 * rhs.x3, lhs.y3 * rhs.y3, lhs.z3 * rhs.z3, lhs.w3 * rhs.w3,
+            lhs.x4 * rhs.x4, lhs.y4 * rhs.y4, lhs.z4 * rhs.z4, lhs.w4 * rhs.w4,
+        };
+    }
+
     static inline matrix matrix_mul(const matrix& lhs, const matrix& rhs) noexcept {
         auto v1 = vector_init(lhs.x1, lhs.y1, lhs.z1, lhs.w1);
         auto v2 = vector_init(lhs.x2, lhs.y2, lhs.z2, lhs.w2);

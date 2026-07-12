@@ -62,6 +62,10 @@ namespace QCE {
         return _mm512_setzero_ps();
     }
 
+    static inline matrix VECTOR_CALL matrix_hadamard_mul(matrix lhs, matrix rhs) noexcept {
+        return _mm512_mul_ps(lhs, rhs);
+    }
+
     static inline void VECTOR_CALL matrix_copy(matrix value, float* dst) noexcept {
         assert(dst);
         _mm512_storeu_ps(dst, value);
