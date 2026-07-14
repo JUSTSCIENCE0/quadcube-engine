@@ -197,7 +197,7 @@ namespace QCE {
                 if (INVALID_RESOURCE_INDEX == index)
                     return ErrorCode::E_RM_RESOURCE_NOT_FOUND;
 
-                Remove(index);
+                return Remove(index);
             }
 
         private:
