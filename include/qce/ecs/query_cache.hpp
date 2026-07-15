@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <list>
 #include <optional>
+#include <vector>
 
 #ifndef FRIEND_TEST
 #define  FRIEND_TEST(test_case_name, test_name)
@@ -21,6 +22,7 @@
 
 namespace QCE {
     using entity_id_t = CU::id_t;
+    using query_result = std::vector<entity_id_t>;
 
     static constexpr size_t DISABLE_ENTITY_QUERY_CACHE = 0;
     static constexpr auto   INFINITE_ENTITY_QUERY_CACHE = std::numeric_limits<size_t>::max();
@@ -29,7 +31,7 @@ namespace QCE {
     class EntityQueriesCache {
     public:
         template <typename... Query>
-        std::optional<std::set<entity_id_t>> Get() const noexcept {
+        std::optional<query_result> Get() const noexcept {
             if constexpr (CacheLimit == DISABLE_ENTITY_QUERY_CACHE) {
                 return std::nullopt;
             }
@@ -50,7 +52,7 @@ namespace QCE {
         }
 
         template <typename... Query>
-        void Put(std::set<entity_id_t> result) noexcept {
+        void Put(query_result result) noexcept {
             if constexpr (CacheLimit == DISABLE_ENTITY_QUERY_CACHE) {
                 return;
             }
@@ -110,7 +112,7 @@ namespace QCE {
             return CU::type_index_v<Component, Components...>;
         }
 
-        std::unordered_map<QueryMask, std::set<entity_id_t>> m_results{};
+        std::unordered_map<QueryMask, query_result> m_results{};
         mutable std::list<QueryMask> m_usage_order{};
     };
 }

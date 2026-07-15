@@ -52,7 +52,7 @@ void add_random_components(
 }
 
 template <size_t CacheLimit, size_t... I>
-std::set<entity_id_t> run_query(
+query_result run_query(
         EntityManagerT<CacheLimit>& ecm,
         std::index_sequence<I...>) {
     return ecm.template QueryEntities<C<I>...>();

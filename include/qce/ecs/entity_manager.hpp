@@ -85,8 +85,8 @@ namespace QCE {
         }
 
         template <typename... Query>
-        std::set<entity_id_t> QueryEntities() const {
-            std::set<entity_id_t> result;
+        query_result QueryEntities() const {
+            query_result result{};
             if constexpr (sizeof...(Query) == 0) {
                 return result;
             }

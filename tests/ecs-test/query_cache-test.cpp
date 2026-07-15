@@ -75,7 +75,7 @@ namespace QCE {
         m_test_cache.Put<Component1, Component2>({ 2, 3 });
 
         auto result = m_test_cache.Get<Component1, Component4>();
-        std::set<entity_id_t> expected{ 1, 2 };
+        query_result expected{ 1, 2 };
         ASSERT_TRUE(result.has_value());
         EXPECT_EQ(result.value(), expected);
 

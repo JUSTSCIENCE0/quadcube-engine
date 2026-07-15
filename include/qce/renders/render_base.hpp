@@ -139,6 +139,6 @@ namespace QCE {
     private:
         void UpdateStaticGeometry();
         void UpdateDynamicGeometry();
-        void UpdateSceneMaterials(const std::set<CU::id_t>& entities);
+        void UpdateSceneMaterials(const query_result& entities);
     };
 }

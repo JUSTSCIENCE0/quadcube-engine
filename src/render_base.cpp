@@ -103,7 +103,7 @@ namespace QCE {
         UpdateSceneMaterials(entities);
     }
 
-    void RenderBase::UpdateSceneMaterials(const std::set<CU::id_t>& entities) {
+    void RenderBase::UpdateSceneMaterials(const query_result& entities) {
         size_t material_index = m_scene_materials.components.size();
         for (const auto& entity_id : entities) {
             auto& material_comp = m_entities.GetComponent<MaterialComponent>(entity_id);

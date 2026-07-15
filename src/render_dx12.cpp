@@ -99,9 +99,8 @@ namespace QCE {
             TransformComponents,
             TransformMatrix,
             MaterialComponent>();
-        entities.merge(dynamic_mesh_entities);
 
-        const auto units_count = UINT(entities.size());
+        const auto units_count = UINT(entities.size() + dynamic_mesh_entities.size());
 
         const auto dynamic_verteces_count =
             m_scene_dynamic_geometry.vertex_buffer_size / m_scene_dynamic_geometry.VERTEX_STRIDE;
@@ -471,7 +470,7 @@ namespace QCE {
         auto current_units_constant_buffers = m_current_frame_resource->m_units_constant_buffers.get();
         UINT index = 0;
 
-        auto process_entities = [&](const std::set<CU::id_t>& entities) {
+        auto process_entities = [&](const query_result& entities) {
             for (const auto& entity_id : entities) {
                 auto& world = m_entities.GetComponent<TransformMatrix>(entity_id);
                 if (!world.actual) {

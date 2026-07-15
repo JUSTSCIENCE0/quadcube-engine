@@ -66,17 +66,17 @@ namespace QCE {
 
     TEST_F(EntityManagerTest, CheckQueries) {
         EXPECT_EQ(m_entity_manager.QueryEntities<Component1>(),
-                    std::set<QCE::entity_id_t>({ m_entity1 }));
+                    query_result({ m_entity1 }));
         EXPECT_EQ(m_entity_manager.QueryEntities<Component2>(),
-                    std::set<QCE::entity_id_t>({ m_entity1, m_entity3 }));
+                    query_result({ m_entity1, m_entity3 }));
         EXPECT_EQ(m_entity_manager.QueryEntities<Component3>(),
-                    std::set<QCE::entity_id_t>({ m_entity2, m_entity3 }));
+                    query_result({ m_entity2, m_entity3 }));
         EXPECT_EQ((m_entity_manager.QueryEntities<Component1,Component2>()),
-                    std::set<QCE::entity_id_t>({ m_entity1 }));
+                    query_result({ m_entity1 }));
         EXPECT_EQ((m_entity_manager.QueryEntities<Component1, Component3>()),
-            std::set<QCE::entity_id_t>({}));
+            query_result({}));
         EXPECT_EQ((m_entity_manager.QueryEntities<Component2, Component3>()),
-            std::set<QCE::entity_id_t>({ m_entity3 }));
+            query_result({ m_entity3 }));
 
         // remove entity
         ASSERT_EQ(QCE::ErrorCode::SUCCESS,
@@ -88,17 +88,17 @@ namespace QCE {
 
         // check queries
         EXPECT_EQ(m_entity_manager.QueryEntities<Component1>(),
-                    std::set<QCE::entity_id_t>({}));
+                    query_result({}));
         EXPECT_EQ(m_entity_manager.QueryEntities<Component2>(),
-                    std::set<QCE::entity_id_t>({ m_entity3 }));
+                    query_result({ m_entity3 }));
         EXPECT_EQ(m_entity_manager.QueryEntities<Component3>(),
-                    std::set<QCE::entity_id_t>({ m_entity2, m_entity3 }));
+                    query_result({ m_entity2, m_entity3 }));
         EXPECT_EQ((m_entity_manager.QueryEntities<Component1, Component2>()),
-            std::set<QCE::entity_id_t>({}));
+            query_result({}));
         EXPECT_EQ((m_entity_manager.QueryEntities<Component1, Component3>()),
-            std::set<QCE::entity_id_t>({}));
+            query_result({}));
         EXPECT_EQ((m_entity_manager.QueryEntities<Component2, Component3>()),
-            std::set<QCE::entity_id_t>({ m_entity3 }));
+            query_result({ m_entity3 }));
 
         // remove entity component
         ASSERT_EQ(QCE::ErrorCode::SUCCESS,
@@ -106,17 +106,17 @@ namespace QCE {
 
         // check queries
         EXPECT_EQ(m_entity_manager.QueryEntities<Component1>(),
-            std::set<QCE::entity_id_t>({}));
+            query_result({}));
         EXPECT_EQ(m_entity_manager.QueryEntities<Component2>(),
-            std::set<QCE::entity_id_t>({}));
+            query_result({}));
         EXPECT_EQ(m_entity_manager.QueryEntities<Component3>(),
-            std::set<QCE::entity_id_t>({ m_entity2, m_entity3 }));
+            query_result({ m_entity2, m_entity3 }));
         EXPECT_EQ((m_entity_manager.QueryEntities<Component1, Component2>()),
-            std::set<QCE::entity_id_t>({}));
+            query_result({}));
         EXPECT_EQ((m_entity_manager.QueryEntities<Component1, Component3>()),
-            std::set<QCE::entity_id_t>({}));
+            query_result({}));
         EXPECT_EQ((m_entity_manager.QueryEntities<Component2, Component3>()),
-            std::set<QCE::entity_id_t>({}));
+            query_result({}));
     }
 
     TEST_F(EntityManagerTest, ReadValues) {
