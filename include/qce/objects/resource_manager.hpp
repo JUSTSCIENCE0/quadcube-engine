@@ -11,6 +11,7 @@
 #include <qce/objects/figures.hpp>
 #include <qce/objects/command.hpp>
 #include <qce/objects/material.hpp>
+#include <qce/objects/animation.hpp>
 
 #include <cu/file-utils.hpp>
 
@@ -232,7 +233,8 @@ namespace QCE {
             Shader,
             Texture2D,
             Material,
-            Command
+            Command,
+            TransformAnimation
         > m_storages{};
     };
 }

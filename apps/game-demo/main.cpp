@@ -87,6 +87,56 @@ int main(int argc, char* argv[]) {
     edges_material.albedo_texture = app.Resources().GetIndex<QCE::Texture2D>("edges.bc7");
     QCE_CRITICAL(app.Resources().Add(std::move(edges_material)));
 
+    QCE::TransformAnimation square_path{};
+    square_path.id = "square_path";
+    square_path.keys = {
+        {
+            /*transform*/
+            QCE::TransformComponents{
+                { 0.0f, 0.0f, 0.0f, 1.0f },
+                { 1.0f, 0.0f, 1.0f },
+                { 1.0f, 1.0f, 1.0f }
+            },
+            /*start_time*/ 0.0f
+        },
+        {
+            /*transform*/
+            QCE::TransformComponents{
+                { 0.0f, 0.0f, 0.0f, 1.0f },
+                { 1.0f, 0.0f, -1.0f },
+                { 1.0f, 1.0f, 1.0f }
+            },
+            /*start_time*/ 1.0f
+        },
+        {
+            /*transform*/
+            QCE::TransformComponents{
+                { 0.0f, 0.0f, 0.0f, 1.0f },
+                { 1.0f, 2.0f, -1.0f },
+                { 1.0f, 1.0f, 1.0f }
+            },
+            /*start_time*/ 2.0f
+        },
+        {
+            /*transform*/
+            QCE::TransformComponents{
+                { 0.0f, 0.0f, 0.0f, 1.0f },
+                { -1.0f, 2.0f, 1.0f },
+                { 1.0f, 1.0f, 1.0f }
+            },
+            /*start_time*/ 3.0f
+        },
+        {
+            /*transform*/
+            QCE::TransformComponents{
+                { 0.0f, 0.0f, 0.0f, 1.0f },
+                { -1.0f, 0.0f, 1.0f },
+                { 1.0f, 1.0f, 1.0f }
+            },
+            /*start_time*/ 4.0f
+        }
+    };
+
     QCE::StaticMesh cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
