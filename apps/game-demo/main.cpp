@@ -136,6 +136,7 @@ int main(int argc, char* argv[]) {
             /*start_time*/ 4.0f
         }
     };
+    QCE_CRITICAL(app.Resources().Add(std::move(square_path)));
 
     QCE::StaticMesh cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
