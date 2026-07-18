@@ -22,6 +22,7 @@
 
 #include <qce/objects/mesh.hpp>
 #include <qce/objects/material.hpp>
+#include <qce/objects/animation.hpp>
 
 namespace QCE {
     template <typename... AdditionalComponents>
@@ -42,6 +43,7 @@ namespace QCE {
             DirectionalLight,
             PointLight,
             SpotLight,
+            TransformAnimationComponent,
             AdditionalComponents... > {};
 
     using Entities = EcsCore< QCE_ECS_ADDITIONAL_COMPONENTS >;

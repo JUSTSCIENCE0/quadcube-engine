@@ -146,6 +146,10 @@ int main(int argc, char* argv[]) {
     QCE::MaterialComponent edges_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("edges_material")
     };
+    QCE::TransformAnimationComponent square_path_component{
+        .index = app.Resources().GetIndex<QCE::TransformAnimation>("square_path"),
+        .is_looped = true
+    };
 
     auto entity0 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, cuboid_mesh_component));
@@ -158,6 +162,7 @@ int main(int argc, char* argv[]) {
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, QCE::TransformMatrix{}));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, edges_material_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity0, square_path_component));
 
     auto entity1 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, cuboid_mesh_component));
