@@ -64,6 +64,8 @@ namespace QCE {
         const float& w() const noexcept { return arr[3]; }
     };
 
+    using quaternion = float4d;
+
     struct float4x4 {
         float arr[16] = {};
 

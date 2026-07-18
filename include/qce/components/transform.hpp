@@ -8,8 +8,6 @@
 #include <qce/math/math.hpp>
 
 namespace QCE {
-    using quaternion = float4d;
-
     struct TransformComponents {
         quaternion rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
         float3d    position = { 0.0f, 0.0f, 0.0f };
