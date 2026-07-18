@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <qce/components/transform.hpp>
+#include <qce/math/math.hpp>
 
 #include <vector>
 
@@ -40,16 +40,31 @@ namespace QCE {
         TransformAnimation(TransformAnimation&&) noexcept = default;
         TransformAnimation& operator=(TransformAnimation&&) noexcept = default;
 
-        struct Key {
-            TransformComponents transform{};
+        struct RotationKey {
+            quaternion rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
             float start_time = 0.0f;
 
             InterpolationFunc interpolation_func =
                 InterpolationFunc::E_INTERPOLATION_LINEAR;
         };
+        struct PositionKey {
+            float3d position = { 0.0f, 0.0f, 0.0f };
+            float start_time = 0.0f;
+            InterpolationFunc interpolation_func =
+                InterpolationFunc::E_INTERPOLATION_LINEAR;
+        };
+        struct ScaleKey {
+            float3d scale = { 1.0f, 1.0f, 1.0f };
+            float start_time = 0.0f;
+            InterpolationFunc interpolation_func =
+                InterpolationFunc::E_INTERPOLATION_LINEAR;
+        };
 
         std::string id{};
-        std::vector<Key>  keys{};
+        std::vector<RotationKey> rotation_channel{};
+        std::vector<PositionKey> position_channel{};
+        std::vector<ScaleKey>    scale_channel{};
+
         PathInterpolationFunc path_interpolation_func =
             PathInterpolationFunc::E_PATH_INTERPOLATION_LINEAR;
     };
