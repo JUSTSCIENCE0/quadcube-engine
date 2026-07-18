@@ -132,12 +132,14 @@ set(QCE_SYSTEMS_HDRS
     include/qce/systems/movement_system.hpp
     include/qce/systems/camera_system.hpp
     include/qce/systems/hid_system.hpp
+    include/qce/systems/animation_systems.hpp
 )
 set(QCE_SYSTEMS_IMPL
     src/render_system.cpp
     src/camera_system.cpp
     src/movement_system.cpp
     src/hid_system.cpp
+    src/transform_animation_system.cpp
 )
 
 set(QCE_RENDERS_HDRS

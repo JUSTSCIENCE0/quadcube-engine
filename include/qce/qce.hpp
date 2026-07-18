@@ -13,28 +13,12 @@
 #include <qce/systems/camera_system.hpp>
 #include <qce/systems/hid_system.hpp>
 #include <qce/systems/render_system.hpp>
+#include <qce/systems/animation_systems.hpp>
 #include <qce/ancillary/directories.hpp>
 
 #include <cu/string-utils.hpp>
 
 namespace QCE {
-    template <typename... AdditionalConfigs>
-    struct ApplicationConfig {
-        GraphicsOutputConfig graphics_output{};
-
-        std::tuple<
-            RenderConfig,
-            CameraConfig,
-            MovementConfig,
-            HidConfig,
-            AdditionalConfigs...
-        > systems_configs{};
-    };
-    //struct ApplicationConfig {
-    //    GraphicsOutputConfig graphics_output{};
-    //    RenderConfig render{};
-    //};
-
     template <SystemT... AdditionalSystems>
     class Application {
         friend GraphicsOutput;
@@ -77,6 +61,7 @@ namespace QCE {
             return m_systems.Setup<
                 RenderConfig,
                 CameraConfig,
+                TransformAnimationConfig,
                 MovementConfig,
                 HidConfig,
                 AdditionalConfigs...
@@ -115,6 +100,7 @@ namespace QCE {
         using Systems = SystemsHub<
             HidSystem,
             MovementSystem,
+            TransformAnimationSystem,
             CameraSystem,
             RenderSystem,
             AdditionalSystems...

@@ -9,6 +9,7 @@ struct CameraConfig;
 struct HidConfig;
 struct MovementConfig;
 struct RenderConfig;
+struct TransformAnimationConfig;
 
 namespace QCE {
     template<typename T>
@@ -41,5 +42,11 @@ namespace QCE {
     template<>
     struct config_corresponding_system<RenderConfig> {
         using System = RenderSystem;
+    };
+
+    class TransformAnimationSystem;
+    template<>
+    struct config_corresponding_system<TransformAnimationConfig> {
+        using System = TransformAnimationSystem;
     };
 }

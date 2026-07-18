@@ -29,7 +29,9 @@ namespace QCE {
         size_t index = 0;
         bool   is_looped = false;
 
-        size_t current_key  = 0;
+        size_t current_rotation_key  = 0;
+        size_t current_position_key = 0;
+        size_t current_scale_key    = 0;
         float  current_time = 0.0f;
     };
 
