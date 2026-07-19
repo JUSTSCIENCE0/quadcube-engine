@@ -18,7 +18,8 @@ namespace QCE {
         return animation.scale_channel.size() > 1;
     }
 
-    static inline float update_position_key(
+    // TODO: make it template update_key
+    static inline void update_position_key(
             const TransformAnimation& animation,
             TransformAnimationComponent& animation_comp) {
         assert(has_position_animation(animation));
@@ -26,22 +27,33 @@ namespace QCE {
         // Now it only supports direct direction of time from the past to the future
         // TODO: support for negative time direction
 
-        const auto& positions = animation.position_channel;
-        const auto  last_key = positions.size() - 1;
+        const auto& keys = animation.position_channel;
+        const auto  last_key = keys.size() - 1;
         const auto  current_time = animation_comp.current_time;
         auto&       current_index = animation_comp.current_position_key;
 
         assert(current_time >= 0.0f);
         assert(current_index <= last_key);
 
-        //const auto& current_key = positions[current_index];
+        const auto* current_key = &keys[current_index];
+        assert(current_key->start_time <= current_time);
 
         // check if animation is already finished
         if (current_index == last_key) {
-            return 0.0f;
+            return;
         }
 
-        return 0.0f;
+        const auto* next_key = &keys[current_index + 1];
+
+        while (next_key->start_time <= current_time) {
+            current_index++;
+            next_key++;
+
+            if (current_index == last_key) {
+                // animation finished
+                return;
+            }
+        }
     }
 
     // updates position transform component
@@ -63,8 +75,24 @@ namespace QCE {
 
             // TODO: use a separate time source that can run at a speed different from real time,
             // stop, or go backwards
+
             animation_comp.current_time += FrameTime::Get().Elapsed<float>();
-            //auto is_animation_finished = false;
+            if (bool is_animation_finished =
+                    animation_comp.current_time >= animation.total_duration) {
+                if (animation_comp.is_looped) {
+
+                    animation_comp.current_time -= animation.total_duration;
+                    animation_comp.current_rotation_key = 0;
+                    animation_comp.current_position_key = 0;
+                    animation_comp.current_scale_key = 0;
+                }
+                else {
+                    QCE_CRITICAL(
+                        m_entities.RemoveComponent<TransformAnimationComponent>(entity_id));
+
+                    // TODO: if time can go backwards, we need to save animations history
+                }
+            }
 
             if (has_position_animation(animation)) {
                 update_position_key(animation, animation_comp);
