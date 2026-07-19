@@ -111,6 +111,8 @@ int main(int argc, char* argv[]) {
             /*start_time*/ 4.0f
         }
     };
+    square_path.total_duration = QCE::calculate_animation_duration(square_path);
+    QCE_CRITICAL(QCE::validate_animation(square_path));
     QCE_CRITICAL(app.Resources().Add(std::move(square_path)));
 
     QCE::StaticMesh cuboid_mesh_component{

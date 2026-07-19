@@ -85,6 +85,9 @@ namespace QCE {
         CU_ENUM_UNIT(E_RM_TEXTURE_LOAD_FAILED) \
         CU_ENUM_UNIT(E_RM_TEXTURE_PARSING_FAILED) \
         CU_ENUM_UNIT(E_RM_TEXTURE_CREATE_FAILED) \
+        CU_ENUM_UNIT(E_RM_ANIMATION_EMPTY) \
+        CU_ENUM_UNIT(E_RM_ANIMATION_INVALID_TIMELINE) \
+        CU_ENUM_UNIT(E_RM_ANIMATION_WRONG_DURATION) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -302,6 +305,15 @@ namespace QCE {
             break;
         case ErrorCode::E_RM_TEXTURE_CREATE_FAILED:
             result << "Resource Manager - Texture creation failed";
+            break;
+        case ErrorCode::E_RM_ANIMATION_EMPTY:
+            result << "Resource Manager - Animation does not contain any keys";
+            break;
+        case ErrorCode::E_RM_ANIMATION_INVALID_TIMELINE:
+            result << "Resource Manager - Animation has key with start time greater than previous";
+            break;
+        case ErrorCode::E_RM_ANIMATION_WRONG_DURATION:
+            result << "Resource Manager - Animation duration is less than maximum key time";
             break;
 
         default:
