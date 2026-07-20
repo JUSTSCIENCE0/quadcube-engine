@@ -13,16 +13,16 @@
 
 namespace QCE {
 #define CU_ENUMS_DESCRIPTION \
-    CU_BEGIN_ENUM(InterpolationFunc) \
-        CU_ENUM_UNIT(E_INTERPOLATION_LINEAR) \
-        CU_ENUM_UNIT(E_INTERPOLATION_EASE_IN) \
-        CU_ENUM_UNIT(E_INTERPOLATION_EASE_OUT) \
-        CU_ENUM_UNIT(E_INTERPOLATION_EASE_IN_OUT) \
-    CU_END_ENUM(InterpolationFunc) \
+    CU_BEGIN_ENUM(EasingFunc) \
+        CU_ENUM_UNIT(E_EASING_LINEAR) \
+        CU_ENUM_UNIT(E_EASING_EASE_IN) \
+        CU_ENUM_UNIT(E_EASING_EASE_OUT) \
+        CU_ENUM_UNIT(E_EASING_EASE_IN_OUT) \
+    CU_END_ENUM(EasingFunc) \
     CU_BEGIN_ENUM(PathInterpolationFunc) \
-        CU_ENUM_UNIT(E_PATH_INTERPOLATION_LINEAR) \
-        CU_ENUM_UNIT(E_PATH_INTERPOLATION_CATMULL_ROM) \
-        CU_ENUM_UNIT(E_PATH_INTERPOLATION_BEZIER) \
+        CU_ENUM_UNIT(E_PATH_FUNC_LINEAR) \
+        CU_ENUM_UNIT(E_PATH_FUNC_CATMULL_ROM) \
+        CU_ENUM_UNIT(E_PATH_FUNC_BEZIER) \
     CU_END_ENUM(PathInterpolationFunc)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -48,20 +48,20 @@ namespace QCE {
             quaternion rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
             float start_time = 0.0f;
 
-            InterpolationFunc interpolation_func =
-                InterpolationFunc::E_INTERPOLATION_LINEAR;
+            EasingFunc interpolation_func =
+                EasingFunc::E_EASING_LINEAR;
         };
         struct PositionKey {
             float3d position = { 0.0f, 0.0f, 0.0f };
             float start_time = 0.0f;
-            InterpolationFunc interpolation_func =
-                InterpolationFunc::E_INTERPOLATION_LINEAR;
+            EasingFunc interpolation_func =
+                EasingFunc::E_EASING_LINEAR;
         };
         struct ScaleKey {
             float3d scale = { 1.0f, 1.0f, 1.0f };
             float start_time = 0.0f;
-            InterpolationFunc interpolation_func =
-                InterpolationFunc::E_INTERPOLATION_LINEAR;
+            EasingFunc interpolation_func =
+                EasingFunc::E_EASING_LINEAR;
         };
 
         std::string id{};
@@ -71,7 +71,7 @@ namespace QCE {
         float                    total_duration = 0.0f;
 
         PathInterpolationFunc path_interpolation_func =
-            PathInterpolationFunc::E_PATH_INTERPOLATION_LINEAR;
+            PathInterpolationFunc::E_PATH_FUNC_LINEAR;
     };
 
     static inline float  calculate_animation_duration(const TransformAnimation& animation) {
