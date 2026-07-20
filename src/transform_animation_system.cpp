@@ -14,7 +14,7 @@ namespace QCE {
     }
 
     template<KeyChannel Channel>
-    static inline void update_channel_key(
+    void update_channel_key(
             const Channel& keys,
             TransformAnimationComponent& animation_comp) {
         assert(has_channel_animation(keys));
@@ -63,11 +63,48 @@ namespace QCE {
         }
     }
 
+    static inline float apply_easing(float t, EasingFunc easing) {
+        switch (easing) {
+            case EasingFunc::E_EASING_LINEAR:
+                return t;
+            case EasingFunc::E_EASING_EASE_IN:
+            case EasingFunc::E_EASING_EASE_OUT:
+            case EasingFunc::E_EASING_EASE_IN_OUT:
+                assert(!"TODO: Implement easing functions");
+                return t;
+            default:
+                assert(!"Unknown easing function");
+                return t;
+        };
+    }
+
+    static inline float calc_interpolation_factor(float start_time, float end_time, float current_time, EasingFunc easing) {
+        const auto delta_time = end_time - start_time;
+        const auto t = (current_time - start_time) / delta_time;
+        return apply_easing(t, easing);
+    }
+
     // updates position transform component
-    static inline void calc_position(
+    static inline void update_position(
             const TransformAnimation& animation,
             TransformAnimationComponent& animation_comp,
             TransformComponents& transform) {
+        // Now it only supports direct direction of time from the past to the future
+        // TODO: support for negative time direction
+
+        const auto  last_index = animation.position_channel.size() - 1;
+        const auto  current_index = animation_comp.current_position_key;
+        const auto& current_key = animation.position_channel[current_index];
+
+        if (last_index == current_index) {
+            transform.position = current_key.position;
+            return;
+        }
+
+        auto& next_key = animation.position_channel[current_index + 1];
+        const auto t = calc_interpolation_factor(
+            current_key.start_time, next_key.start_time, animation_comp.current_time, current_key.easing);
+        lerp4(current_key.position.arr, next_key.position.arr, t, transform.position.arr);
     }
 
     ErrorCode TransformAnimationSystem::Update() {
@@ -76,7 +113,7 @@ namespace QCE {
             TransformAnimationComponent>();
 
         for (const auto& entity_id : entities) {
-            //auto& transform_comp = m_entities.GetComponent<TransformComponents>(entity_id);
+            auto& transform_comp = m_entities.GetComponent<TransformComponents>(entity_id);
             auto& animation_comp = m_entities.GetComponent<TransformAnimationComponent>(entity_id);
             auto& animation = ResourceManager::Get().Read<TransformAnimation>(animation_comp.index);
 
@@ -103,7 +140,7 @@ namespace QCE {
 
             if (has_channel_animation(animation.position_channel)) {
                 update_channel_key(animation.position_channel, animation_comp);
-                // TODO
+                update_position(animation, animation_comp, transform_comp);
             }
 
             if (has_channel_animation(animation.rotation_channel)) {
@@ -116,6 +153,10 @@ namespace QCE {
                 // TODO
             }
 
+            if (m_entities.HasComponent<TransformMatrix>(entity_id)) {
+                auto& transform_matrix = m_entities.GetComponent<TransformMatrix>(entity_id);
+                transform_matrix.actual = false;
+            }
         }
 
 
