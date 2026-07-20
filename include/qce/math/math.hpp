@@ -107,6 +107,15 @@ namespace QCE {
     static inline float constexpr lerp(float a, float b, float t) {
         return a + (b - a) * t;
     }
+    static inline void lerp4(const float* a, const float* b, float t, float* result) {
+        assert(a && b && result);
+
+        auto av = vector_init(a);
+        auto bv = vector_init(b);
+        auto tv = vector_init(t, t, t, t);
+        auto rv = av + ((bv - av) * tv);
+        vector_copy(rv, result);
+    }
     static inline void lerp16(const float* a, const float* b, float t, float* result) {
         assert(a && b && result);
 
