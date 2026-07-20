@@ -8,48 +8,55 @@
 #include <qce/ancillary/timer.hpp>
 
 namespace QCE {
-    static inline bool has_position_animation(const TransformAnimation& animation) {
-        return animation.position_channel.size() > 1;
-    }
-    static inline bool has_rotation_animation(const TransformAnimation& animation) {
-        return animation.rotation_channel.size() > 1;
-    }
-    static inline bool has_scale_animation(const TransformAnimation& animation) {
-        return animation.scale_channel.size() > 1;
+    template<KeyChannel Channel>
+    bool has_channel_animation(const Channel& channel) {
+        return channel.size() > 1;
     }
 
-    // TODO: make it template update_key
-    static inline void update_position_key(
-            const TransformAnimation& animation,
+    template<KeyChannel Channel>
+    static inline void update_channel_key(
+            const Channel& keys,
             TransformAnimationComponent& animation_comp) {
-        assert(has_position_animation(animation));
+        assert(has_channel_animation(keys));
 
         // Now it only supports direct direction of time from the past to the future
         // TODO: support for negative time direction
 
-        const auto& keys = animation.position_channel;
         const auto  last_key = keys.size() - 1;
-        const auto  current_time = animation_comp.current_time;
-        auto&       current_index = animation_comp.current_position_key;
+        const auto  current_time  = animation_comp.current_time;
+
+        size_t* current_index = nullptr;
+        if constexpr (std::is_same_v<typename Channel::value_type, TransformAnimation::PositionKey>) {
+            current_index = &animation_comp.current_position_key;
+        }
+        else if constexpr (std::is_same_v<typename Channel::value_type, TransformAnimation::RotationKey>) {
+            current_index = &animation_comp.current_rotation_key;
+        }
+        else if constexpr (std::is_same_v<typename Channel::value_type, TransformAnimation::ScaleKey>) {
+            current_index = &animation_comp.current_scale_key;
+        }
+        else {
+            static_assert(0 == sizeof(Channel), "Unsupported channel type!");
+        }
 
         assert(current_time >= 0.0f);
-        assert(current_index <= last_key);
+        assert(*current_index <= last_key);
 
-        const auto* current_key = &keys[current_index];
+        const auto* current_key = &keys[*current_index];
         assert(current_key->start_time <= current_time);
 
         // check if animation is already finished
-        if (current_index == last_key) {
+        if (*current_index == last_key) {
             return;
         }
 
-        const auto* next_key = &keys[current_index + 1];
+        const auto* next_key = &keys[*current_index + 1];
 
         while (next_key->start_time <= current_time) {
-            current_index++;
+            (*current_index)++;
             next_key++;
 
-            if (current_index == last_key) {
+            if (*current_index == last_key) {
                 // animation finished
                 return;
             }
@@ -94,16 +101,18 @@ namespace QCE {
                 }
             }
 
-            if (has_position_animation(animation)) {
-                update_position_key(animation, animation_comp);
+            if (has_channel_animation(animation.position_channel)) {
+                update_channel_key(animation.position_channel, animation_comp);
                 // TODO
             }
 
-            if (has_rotation_animation(animation)) {
+            if (has_channel_animation(animation.rotation_channel)) {
+                update_channel_key(animation.rotation_channel, animation_comp);
                 // TODO
             }
 
-            if (has_scale_animation(animation)) {
+            if (has_channel_animation(animation.scale_channel)) {
+                update_channel_key(animation.scale_channel, animation_comp);
                 // TODO
             }
 
