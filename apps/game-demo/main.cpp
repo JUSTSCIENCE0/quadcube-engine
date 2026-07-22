@@ -91,23 +91,41 @@ int main(int argc, char* argv[]) {
     square_path.id = "square_path";
     square_path.position_channel = {
         {
-            /*position*/ { 1.0f, 0.0f, 1.0f },
+            /*value*/ { 1.0f, 0.0f, 1.0f },
             /*start_time*/ 0.0f
         },
         {
-            /*position*/ { 1.0f, 0.0f, -1.0f },
+            /*value*/ { 1.0f, 0.0f, -1.0f },
             /*start_time*/ 1.0f
         },
         {
-            /*position*/ { 1.0f, 2.0f, -1.0f },
+            /*value*/ { 1.0f, 2.0f, -1.0f },
             /*start_time*/ 2.0f
         },
         {
-            /*position*/ { 1.0f, 2.0f, 1.0f },
+            /*value*/ { 1.0f, 2.0f, 1.0f },
             /*start_time*/ 3.0f
         },
         {
-            /*position*/ { 1.0f, 0.0f, 1.0f },
+            /*value*/ { 1.0f, 0.0f, 1.0f },
+            /*start_time*/ 4.0f
+        }
+    };
+    square_path.scale_channel = {
+        {
+            /*value*/ { 1.0f, 1.0f, 1.0f },
+            /*start_time*/ 1.0f
+        },
+        {
+            /*value*/ { 1.0f, 5.0f, 1.0f },
+            /*start_time*/ 2.0f
+        },
+        {
+            /*value*/ { 3.0f, 1.0f, 1.0f },
+            /*start_time*/ 3.0f
+        },
+        {
+            /*value*/ { 1.0f, 1.0f, 1.0f },
             /*start_time*/ 4.0f
         }
     };

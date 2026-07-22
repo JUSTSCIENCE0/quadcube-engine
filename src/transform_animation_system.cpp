@@ -42,9 +42,6 @@ namespace QCE {
         assert(current_time >= 0.0f);
         assert(*current_index <= last_key);
 
-        const auto* current_key = &keys[*current_index];
-        assert(current_key->start_time <= current_time);
-
         // check if animation is already finished
         if (*current_index == last_key) {
             return;
@@ -84,27 +81,34 @@ namespace QCE {
         return apply_easing(t, easing);
     }
 
-    // updates position transform component
-    static inline void update_position(
-            const TransformAnimation& animation,
-            TransformAnimationComponent& animation_comp,
-            TransformComponents& transform) {
+    template<KeyChannel Channel, typename OutType>
+    static inline void update_transform_component(
+            const Channel& keys,
+            size_t current_index, float current_time,
+            OutType& output) {
         // Now it only supports direct direction of time from the past to the future
         // TODO: support for negative time direction
 
-        const auto  last_index = animation.position_channel.size() - 1;
-        const auto  current_index = animation_comp.current_position_key;
-        const auto& current_key = animation.position_channel[current_index];
+        const auto  last_index = keys.size() - 1;
+        const auto& current_key = keys[current_index];
 
-        if (last_index == current_index) {
-            transform.position = current_key.position;
+        bool is_not_started = (0 == current_index) && (current_time < current_key.start_time);
+        bool is_finished    = (last_index == current_index);
+        if (is_not_started || is_finished) {
+            output = current_key.value;
             return;
         }
 
-        auto& next_key = animation.position_channel[current_index + 1];
+        auto& next_key = keys[current_index + 1];
         const auto t = calc_interpolation_factor(
-            current_key.start_time, next_key.start_time, animation_comp.current_time, current_key.easing);
-        lerp4(current_key.position.arr, next_key.position.arr, t, transform.position.arr);
+            current_key.start_time, next_key.start_time, current_time, current_key.easing);
+        if constexpr (std::is_same_v<OutType, float3d>)
+            lerp4(current_key.value.arr, next_key.value.arr, t, output.arr);
+        // TODO: else if constexpr (std::is_same_v<OutType, quaternion>) {
+        //     slerp(current_key.value, next_key.value, t, output);
+        // }
+        else
+            static_assert(0 == sizeof(OutType), "Unsupported type for interpolation");
     }
 
     ErrorCode TransformAnimationSystem::Update() {
@@ -140,7 +144,11 @@ namespace QCE {
 
             if (has_channel_animation(animation.position_channel)) {
                 update_channel_key(animation.position_channel, animation_comp);
-                update_position(animation, animation_comp, transform_comp);
+                update_transform_component(
+                    animation.position_channel,
+                    animation_comp.current_position_key,
+                    animation_comp.current_time,
+                    transform_comp.position);
             }
 
             if (has_channel_animation(animation.rotation_channel)) {
@@ -150,7 +158,11 @@ namespace QCE {
 
             if (has_channel_animation(animation.scale_channel)) {
                 update_channel_key(animation.scale_channel, animation_comp);
-                // TODO
+                update_transform_component(
+                    animation.scale_channel,
+                    animation_comp.current_scale_key,
+                    animation_comp.current_time,
+                    transform_comp.scale);
             }
 
             if (m_entities.HasComponent<TransformMatrix>(entity_id)) {

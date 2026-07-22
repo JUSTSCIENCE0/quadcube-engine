@@ -45,20 +45,20 @@ namespace QCE {
         TransformAnimation& operator=(TransformAnimation&&) noexcept = default;
 
         struct RotationKey {
-            quaternion rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
+            quaternion value = { 0.0f, 0.0f, 0.0f, 1.0f };
             float start_time = 0.0f;
 
             EasingFunc easing =
                 EasingFunc::E_EASING_LINEAR;
         };
         struct PositionKey {
-            float3d position = { 0.0f, 0.0f, 0.0f };
+            float3d value = { 0.0f, 0.0f, 0.0f };
             float start_time = 0.0f;
             EasingFunc easing =
                 EasingFunc::E_EASING_LINEAR;
         };
         struct ScaleKey {
-            float3d scale = { 1.0f, 1.0f, 1.0f };
+            float3d value = { 1.0f, 1.0f, 1.0f };
             float start_time = 0.0f;
             EasingFunc easing =
                 EasingFunc::E_EASING_LINEAR;
