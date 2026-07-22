@@ -102,8 +102,8 @@ namespace QCE {
             MovementSystem,
             TransformAnimationSystem,
             CameraSystem,
-            RenderSystem,
-            AdditionalSystems...
+            AdditionalSystems...,
+            RenderSystem
         >;
 
         Entities m_entities{};
