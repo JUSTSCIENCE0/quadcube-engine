@@ -14,12 +14,6 @@
 #include <cassert>
 
 namespace QCE {
-    void normalize_quaternion(quaternion& quat) {
-        auto rotation_quat = vector_init(quat.arr);
-        rotation_quat = vector_normalize(rotation_quat);
-        vector_copy(rotation_quat, quat.arr);
-    }
-
     void calculate_transform_matrix(
             const TransformComponents& components, TransformMatrix& out) {
         // scale

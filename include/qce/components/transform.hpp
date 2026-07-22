@@ -38,7 +38,6 @@ namespace QCE {
     };
 
     // helpers
-    void normalize_quaternion(quaternion& quat);
     void calculate_transform_matrix(const TransformComponents& components, TransformMatrix& out);
     void decompose_transform_matrix(const TransformMatrix& matrix, TransformComponents& out);
 }

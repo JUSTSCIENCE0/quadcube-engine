@@ -104,6 +104,12 @@ namespace QCE {
         return (rad / PI) * PI_DEG;
     }
 
+    static inline void normalize_quaternion(quaternion& quat) noexcept {
+        auto rotation_quat = vector_init(quat.arr);
+        rotation_quat = vector_normalize(rotation_quat);
+        vector_copy(rotation_quat, quat.arr);
+    }
+
     static inline float constexpr lerp(float a, float b, float t) {
         return a + (b - a) * t;
     }
