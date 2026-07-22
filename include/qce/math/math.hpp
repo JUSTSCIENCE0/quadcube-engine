@@ -83,7 +83,7 @@ namespace QCE {
         float2d texture_coordinates{};
     };
 
-    static inline float3d compute_normal(const vertex& v0, const vertex& v1, const vertex& v2) {
+    static inline float3d compute_normal(const vertex& v0, const vertex& v1, const vertex& v2) noexcept {
         auto p0 = vector_init(v0.position.arr);
         auto p1 = vector_init(v1.position.arr);
         auto p2 = vector_init(v2.position.arr);
@@ -97,10 +97,10 @@ namespace QCE {
         return result;
     }
 
-    static inline float constexpr deg_to_rad(float deg) {
+    static inline float constexpr deg_to_rad(float deg) noexcept {
         return (deg / PI_DEG) * PI;
     }
-    static inline float constexpr rad_to_deg(float rad) {
+    static inline float constexpr rad_to_deg(float rad) noexcept {
         return (rad / PI) * PI_DEG;
     }
 
@@ -110,10 +110,10 @@ namespace QCE {
         vector_copy(rotation_quat, quat.arr);
     }
 
-    static inline float constexpr lerp(float a, float b, float t) {
+    static inline float constexpr lerp(float a, float b, float t) noexcept {
         return a + (b - a) * t;
     }
-    static inline void lerp4(const float* a, const float* b, float t, float* result) {
+    static inline void lerp4(const float* a, const float* b, float t, float* result) noexcept {
         assert(a && b && result);
 
         auto av = vector_init(a);
@@ -122,7 +122,7 @@ namespace QCE {
         auto rv = av + ((bv - av) * tv);
         vector_copy(rv, result);
     }
-    static inline void lerp16(const float* a, const float* b, float t, float* result) {
+    static inline void lerp16(const float* a, const float* b, float t, float* result) noexcept {
         assert(a && b && result);
 
         auto am = matrix_init(a);
