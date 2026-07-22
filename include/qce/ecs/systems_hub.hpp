@@ -18,6 +18,7 @@ namespace QCE {
     concept SystemT =
         requires(T s) {
             { s.Update() } -> std::same_as<ErrorCode>;
+            { s.Setup() } -> std::same_as<ErrorCode>;
         };
 
     template<SystemT... Systems>
