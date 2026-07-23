@@ -133,6 +133,34 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(QCE::validate_animation(square_path));
     QCE_CRITICAL(app.Resources().Add(std::move(square_path)));
 
+    QCE::TransformAnimation sphere_rotation{};
+    sphere_rotation.id = "sphere_rotation";
+    sphere_rotation.rotation_channel = {
+        {
+            /*value*/ { 0.0f, 0.0f, 0.0f, 1.0f },
+            /*start_time*/ 0.0f
+        },
+        {
+            /*value*/ { 0.0f, 0.7071068f, 0.0f, 0.7071068f },
+            /*start_time*/ 1.0f
+        },
+        {
+            /*value*/ { 0.0f, 1.0f, 0.0f, 0.0f },
+            /*start_time*/ 2.0f
+        },
+        {
+            /*value*/ { 0.0f, 0.7071068f, 0.0f, -0.7071068f },
+            /*start_time*/ 3.0f
+        },
+        {
+            /*value*/ { 0.0f, 0.0f, 0.0f, 1.0f },
+            /*start_time*/ 4.0f
+        }
+    };
+    sphere_rotation.total_duration = QCE::calculate_animation_duration(sphere_rotation);
+    QCE_CRITICAL(QCE::validate_animation(sphere_rotation));
+    QCE_CRITICAL(app.Resources().Add(std::move(sphere_rotation)));
+
     QCE::StaticMesh cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
@@ -169,6 +197,10 @@ int main(int argc, char* argv[]) {
     QCE::TransformAnimationComponent square_path_component{
         .index = app.Resources().GetIndex<QCE::TransformAnimation>("square_path"),
         .is_looped = true
+    };
+    QCE::TransformAnimationComponent sphere_rotation_component{
+        .index = app.Resources().GetIndex<QCE::TransformAnimation>("sphere_rotation"),
+         .is_looped = true
     };
 
     auto entity0 = app.m_entities.AddEntity();
@@ -221,6 +253,7 @@ int main(int argc, char* argv[]) {
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::TransformMatrix{}));
     QCE_CRITICAL(app.m_entities.AddComponent(entity3, untextured_material_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity3, sphere_rotation_component));
 
     auto entity4 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity4, QCE::StaticMesh{

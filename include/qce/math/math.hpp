@@ -113,7 +113,7 @@ namespace QCE {
     static inline float constexpr lerp(float a, float b, float t) noexcept {
         return a + (b - a) * t;
     }
-    static inline void lerp4(const float* a, const float* b, float t, float* result) noexcept {
+    static inline void lerp(const float* a, const float* b, float t, float* result) noexcept {
         assert(a && b && result);
 
         auto av = vector_init(a);
@@ -135,4 +135,19 @@ namespace QCE {
         auto rm = am + matrix_hadamard_mul(bm - am, tm);
         matrix_copy(rm, result);
     }
+    static inline void nlerp(const float* a, const float* b, float t, float* result) noexcept {
+        assert(a && b && result);
+
+        auto av = vector_init(a);
+        auto bv = vector_init(b);
+
+        if (vector_dot_product(av, bv) < 0.0f)
+            av = -av;
+
+        auto tv = vector_init(t, t, t, t);
+        auto rv = av + ((bv - av) * tv);
+        rv = vector_normalize(rv);
+        vector_copy(rv, result);
+    }
+    // TODO: static inline void slerp(const float* a, const float* b, float t, float* result) noexcept;
 }

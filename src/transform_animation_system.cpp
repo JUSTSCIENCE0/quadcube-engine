@@ -103,10 +103,10 @@ namespace QCE {
         const auto t = calc_interpolation_factor(
             current_key.start_time, next_key.start_time, current_time, current_key.easing);
         if constexpr (std::is_same_v<OutType, float3d>)
-            lerp4(current_key.value.arr, next_key.value.arr, t, output.arr);
-        // TODO: else if constexpr (std::is_same_v<OutType, quaternion>) {
-        //     slerp(current_key.value, next_key.value, t, output);
-        // }
+            lerp(current_key.value.arr, next_key.value.arr, t, output.arr);
+        else if constexpr (std::is_same_v<OutType, quaternion>) {
+            nlerp(current_key.value.arr, next_key.value.arr, t, output.arr);
+        }
         else
             static_assert(0 == sizeof(OutType), "Unsupported type for interpolation");
     }
@@ -153,7 +153,11 @@ namespace QCE {
 
             if (has_channel_animation(animation.rotation_channel)) {
                 update_channel_key(animation.rotation_channel, animation_comp);
-                // TODO
+                update_transform_component(
+                    animation.rotation_channel,
+                    animation_comp.current_rotation_key,
+                    animation_comp.current_time,
+                    transform_comp.rotation);
             }
 
             if (has_channel_animation(animation.scale_channel)) {
