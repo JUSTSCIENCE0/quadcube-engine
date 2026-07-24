@@ -19,11 +19,10 @@ namespace QCE {
         CU_ENUM_UNIT(E_EASING_EASE_OUT) \
         CU_ENUM_UNIT(E_EASING_EASE_IN_OUT) \
     CU_END_ENUM(EasingFunc) \
-    CU_BEGIN_ENUM(PathInterpolationFunc) \
-        CU_ENUM_UNIT(E_PATH_FUNC_LINEAR) \
-        CU_ENUM_UNIT(E_PATH_FUNC_CATMULL_ROM) \
-        CU_ENUM_UNIT(E_PATH_FUNC_BEZIER) \
-    CU_END_ENUM(PathInterpolationFunc)
+    CU_BEGIN_ENUM(SplineFunc) \
+        CU_ENUM_UNIT(E_SPLINE_LINEAR) \
+        CU_ENUM_UNIT(E_SPLINE_CATMULL_ROM) \
+    CU_END_ENUM(SplineFunc)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
 
@@ -70,8 +69,7 @@ namespace QCE {
         std::vector<ScaleKey>    scale_channel{};
         float                    total_duration = 0.0f;
 
-        PathInterpolationFunc path_interpolation_func =
-            PathInterpolationFunc::E_PATH_FUNC_LINEAR;
+        SplineFunc spline_func = SplineFunc::E_SPLINE_LINEAR;
     };
 
     static inline float  calculate_animation_duration(const TransformAnimation& animation) {
