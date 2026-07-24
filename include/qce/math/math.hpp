@@ -118,8 +118,7 @@ namespace QCE {
 
         auto av = vector_init(a);
         auto bv = vector_init(b);
-        auto tv = vector_init(t, t, t, t);
-        auto rv = av + ((bv - av) * tv);
+        auto rv = av + ((bv - av) * t);
         vector_copy(rv, result);
     }
     static inline void lerp16(const float* a, const float* b, float t, float* result) noexcept {
@@ -144,10 +143,32 @@ namespace QCE {
         if (vector_dot_product(av, bv) < 0.0f)
             av = -av;
 
-        auto tv = vector_init(t, t, t, t);
-        auto rv = av + ((bv - av) * tv);
+        auto rv = av + ((bv - av) * t);
         rv = vector_normalize(rv);
         vector_copy(rv, result);
     }
-    // TODO: static inline void slerp(const float* a, const float* b, float t, float* result) noexcept;
+    static inline void slerp(const float* a, const float* b, float t, float* result) noexcept {
+        assert(a && b && result);
+
+        auto av = vector_init(a);
+        auto bv = vector_init(b);
+
+        auto dot = vector_dot_product(av, bv);
+        if (dot < 0.0f) {
+            av = -av;
+            dot = -dot;
+        }
+        if (dot > 0.9995f) { // Use linear interpolation for close vectors
+            nlerp(a, b, t, result);
+            return;
+        }
+
+        const auto theta = std::acosf(dot);
+        const auto sin_theta = std::sinf(theta);
+        const auto ak = std::sinf((1.0f - t) * theta) / sin_theta;
+        const auto bk = std::sinf(t * theta) / sin_theta;
+
+        auto rv = av * ak + bv * bk;
+        vector_copy(rv, result);
+    }
 }
