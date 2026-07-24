@@ -99,11 +99,11 @@ int main(int argc, char* argv[]) {
             /*start_time*/ 1.0f
         },
         {
-            /*value*/ { 1.0f, 2.0f, -1.0f },
+            /*value*/ { 1.0f, 1.0f, -1.0f },
             /*start_time*/ 2.0f
         },
         {
-            /*value*/ { 1.0f, 2.0f, 1.0f },
+            /*value*/ { 1.0f, 1.0f, 1.0f },
             /*start_time*/ 3.0f
         },
         {
@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
             /*start_time*/ 1.0f
         },
         {
-            /*value*/ { 1.0f, 5.0f, 1.0f },
+            /*value*/ { 1.0f, 3.0f, 1.0f },
             /*start_time*/ 2.0f
         },
         {
