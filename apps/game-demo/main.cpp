@@ -137,23 +137,23 @@ int main(int argc, char* argv[]) {
     sphere_rotation.id = "sphere_rotation";
     sphere_rotation.rotation_channel = {
         {
-            /*value*/ { 0.0f, 0.0f, 0.0f, 1.0f },
+            /*value*/ QCE::euler_deg_to_quaternion(0.0f, 0.0f, 0.0f),
             /*start_time*/ 0.0f
         },
         {
-            /*value*/ { 0.0f, 0.7071068f, 0.0f, 0.7071068f },
+            /*value*/ QCE::euler_deg_to_quaternion(0.0f, 90.0f, 0.0f),
             /*start_time*/ 1.0f
         },
         {
-            /*value*/ { 0.0f, 1.0f, 0.0f, 0.0f },
+            /*value*/ QCE::euler_deg_to_quaternion(0.0f, 180.0f, 0.0f),
             /*start_time*/ 2.0f
         },
         {
-            /*value*/ { 0.0f, 0.7071068f, 0.0f, -0.7071068f },
+            /*value*/ QCE::euler_deg_to_quaternion(0.0f, 270.0f, 0.0f),
             /*start_time*/ 3.0f
         },
         {
-            /*value*/ { 0.0f, 0.0f, 0.0f, 1.0f },
+            /*value*/ QCE::euler_deg_to_quaternion(0.0f, 0.0f, 0.0f),
             /*start_time*/ 4.0f
         }
     };

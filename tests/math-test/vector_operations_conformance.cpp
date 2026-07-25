@@ -133,3 +133,12 @@ CU_CONFORMANCE_TEST_SIMD(
     QCE::vector_equality,
     (def, sse2, avx2, avx512)
 )
+
+CU_CONFORMANCE_TEST_SIMD(
+    EulerToQuaternion,
+    QCE_TEST_DATA_PATH,
+    SOURCE_FILE,
+    "vector4_float32_euler_rad_to_quaternion.bin",
+    QCE::euler_to_quaternion,
+    (def)
+)

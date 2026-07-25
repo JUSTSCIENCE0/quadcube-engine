@@ -131,6 +131,11 @@ namespace QCE {
         return _mm512_permute_ps(res, _MM_SHUFFLE(3, 0, 2, 1));
     }
 
+    static inline vector VECTOR_CALL quaternion_from_euler_rad(vector angles) noexcept {
+        assert(!"TODO: Not implemented");
+        return vector_zero();
+    }
+
     static inline void VECTOR_CALL vector_copy(vector value, float* dst) noexcept {
         assert(dst);
         _mm512_mask_storeu_ps(dst, 0b1111u, value);

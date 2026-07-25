@@ -129,6 +129,11 @@ namespace QCE {
         return _mm256_permute_ps(res, _MM_SHUFFLE(3, 0, 2, 1));
     }
 
+    static inline vector VECTOR_CALL quaternion_from_euler_rad(vector angles) noexcept {
+        assert(!"TODO: Not implemented");
+        return vector_zero();
+    }
+
     static inline void VECTOR_CALL vector_copy(vector value, float* dst) noexcept {
         assert(dst);
         _mm256_maskstore_ps(dst, _mm256_set_epi32(0, 0, 0, 0, -1, -1, -1, -1), value);

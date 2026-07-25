@@ -104,6 +104,20 @@ namespace QCE {
         return (rad / PI) * PI_DEG;
     }
 
+    static inline quaternion euler_rad_to_quaternion(float roll, float pitch, float yaw) noexcept {
+        auto angles = vector_init(roll, pitch, yaw, 0.0f);
+        auto quat = quaternion_from_euler_rad(angles);
+        quaternion result{};
+        vector_copy(quat, result.arr);
+        return result;
+    }
+    static inline quaternion euler_deg_to_quaternion(float roll, float pitch, float yaw) noexcept {
+        roll  = deg_to_rad(roll);
+        pitch = deg_to_rad(pitch);
+        yaw   = deg_to_rad(yaw);
+        return euler_rad_to_quaternion(roll, pitch, yaw);
+    }
+
     static inline void normalize_quaternion(quaternion& quat) noexcept {
         auto rotation_quat = vector_init(quat.arr);
         rotation_quat = vector_normalize(rotation_quat);

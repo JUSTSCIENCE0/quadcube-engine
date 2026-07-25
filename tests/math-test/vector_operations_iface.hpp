@@ -31,4 +31,6 @@ namespace QCE {
         (const float* values, int64_t count, float* results);
     void CU_SIMD_IFACE(vector_equality)
         (const float* values, int64_t count, float* results);
+    void CU_SIMD_IFACE(euler_to_quaternion)
+        (const float* values, int64_t count, float* results);
 }

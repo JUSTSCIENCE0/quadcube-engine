@@ -138,5 +138,21 @@ namespace QCE {
             results += 1;
         }
     }
+
+    void CU_SIMD(euler_to_quaternion)(const float* values, int64_t count, float* results) {
+        assert(values && count && results);
+        assert(count % 4 == 0);
+
+        while (count > 0) {
+            auto value = vector_init(values);
+
+            auto res = quaternion_from_euler_rad(value);
+            vector_copy(res, results);
+
+            values += 4;
+            count -= 4;
+            results += 4;
+        }
+    }
 }
 

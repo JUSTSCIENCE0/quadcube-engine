@@ -101,6 +101,26 @@ namespace QCE {
         };
     }
 
+    static inline vector quaternion_from_euler_rad(const vector& angles) noexcept {
+        auto roll = angles.x / 2;
+        auto pitch = angles.y / 2;
+        auto yaw = angles.z / 2;
+
+        auto cr = std::cosf(roll);
+        auto sr = std::sinf(roll);
+        auto cp = std::cosf(pitch);
+        auto sp = std::sinf(pitch);
+        auto cy = std::cosf(yaw);
+        auto sy = std::sinf(yaw);
+
+        return {
+            sr * cp * cy - cr * sp * sy,
+            cr * sp * cy + sr * cp * sy,
+            cr * cp * sy - sr * sp * cy,
+            cr * cp * cy + sr * sp * sy
+        };
+    }
+
     static inline void vector_copy(const vector& value, float* dst) noexcept {
         assert(dst);
         dst[0] = value.x;
