@@ -35,9 +35,9 @@ set(SHADERS_QCE
     simple_ps
 )
 use_qce_shaders(${PROJECT_NAME} ${SHADERS_QCE})
-qce_add_assets(${PROJECT_NAME} "${CMAKE_CURRENT_LIST_DIR}/assets" FALSE) # TODO: add option to copy assets to resources directory
+qce_add_assets(${PROJECT_NAME} "${CMAKE_CURRENT_LIST_DIR}/../common/assets" FALSE) # TODO: add option to copy assets to resources directory
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    qce_copy_configs_directory(${PROJECT_NAME} "${CMAKE_CURRENT_LIST_DIR}/configs_win")
+    qce_copy_configs_directory(${PROJECT_NAME} "${CMAKE_CURRENT_LIST_DIR}/../common/configs_win")
 endif() # Windows
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps")
