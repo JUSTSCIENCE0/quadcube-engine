@@ -134,11 +134,13 @@ CU_CONFORMANCE_TEST_SIMD(
     (def, sse2, avx2, avx512)
 )
 
-CU_CONFORMANCE_TEST_SIMD(
+// simd sin/cos implementation has different precision than non-simd version,
+// so we use weak comparison
+CU_CONFORMANCE_TEST_SIMD_WEAK(
     EulerToQuaternion,
     QCE_TEST_DATA_PATH,
     SOURCE_FILE,
     "vector4_float32_euler_rad_to_quaternion.bin",
     QCE::euler_to_quaternion,
-    (def)
+    (def, sse2)
 )

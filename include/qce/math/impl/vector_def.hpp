@@ -107,10 +107,11 @@ namespace QCE {
         auto yaw = angles.z / 2;
 
         auto cr = std::cosf(roll);
-        auto sr = std::sinf(roll);
         auto cp = std::cosf(pitch);
-        auto sp = std::sinf(pitch);
         auto cy = std::cosf(yaw);
+
+        auto sr = std::sinf(roll);
+        auto sp = std::sinf(pitch);
         auto sy = std::sinf(yaw);
 
         return {

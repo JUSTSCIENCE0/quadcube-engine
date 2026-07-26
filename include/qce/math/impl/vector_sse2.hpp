@@ -22,6 +22,7 @@
 
 #include <xmmintrin.h> // sse
 #include <emmintrin.h> // sse2
+#include <immintrin.h> // trigonometry
 
 #include <cassert>
 
@@ -130,8 +131,27 @@ namespace QCE {
     }
 
     static inline vector VECTOR_CALL quaternion_from_euler_rad(vector angles) noexcept {
-        assert(!"TODO: Not implemented");
-        return vector_zero();
+        angles /= 2;
+        auto tmp1 = _mm_cos_ps(angles);
+        auto tmp2 = _mm_sin_ps(angles);
+
+        auto crsrcpsp = _mm_unpacklo_ps(tmp1, tmp2);
+        auto cy_sy_ = _mm_unpackhi_ps(tmp1, tmp2);
+
+        tmp1 = _mm_shuffle_ps(crsrcpsp, crsrcpsp, _MM_SHUFFLE(0, 0, 0, 1)); // sr cr cr cr
+        tmp2 = _mm_shuffle_ps(crsrcpsp, crsrcpsp, _MM_SHUFFLE(2, 2, 3, 2)); // cp sp cp cp
+        tmp1 = _mm_mul_ps(tmp1, tmp2);
+        tmp2 = _mm_shuffle_ps(cy_sy_, cy_sy_, _MM_SHUFFLE(0, 1, 0, 0)); // cy cy sy cy
+        auto lhs = _mm_mul_ps(tmp1, tmp2);
+
+        tmp1 = _mm_shuffle_ps(crsrcpsp, crsrcpsp, _MM_SHUFFLE(1, 1, 1, 0)); // cr sr sr sr
+        tmp2 = _mm_shuffle_ps(crsrcpsp, crsrcpsp, _MM_SHUFFLE(3, 3, 2, 3)); // sp cp sp sp
+        tmp1 = _mm_mul_ps(tmp1, tmp2);
+        tmp2 = _mm_shuffle_ps(cy_sy_, cy_sy_, _MM_SHUFFLE(1, 0, 1, 1)); // sy sy cy sy
+        tmp1 = _mm_mul_ps(tmp1, tmp2);
+        tmp1 = _mm_mul_ps(_mm_set_ps(1.0f, -1.0f, 1.0f, -1.0f), tmp1);
+
+        return _mm_add_ps(lhs, tmp1);
     }
 
     static inline void VECTOR_CALL vector_copy(vector value, float* dst) noexcept {
