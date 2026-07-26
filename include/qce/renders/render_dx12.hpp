@@ -76,8 +76,10 @@ namespace QCE {
                 m_pass_constant_buffer = std::make_unique<Dx12UploadBuffer<PassConstants,true>>(device, 1);
                 m_material_constant_buffer = std::make_unique<Dx12UploadBuffer<MaterialConstants, true>>(device, material_count);
 
-                m_dynamic_vertex_buffer = std::make_unique<Dx12UploadBuffer<vertex, false>>(device, dynamic_vertices_count);
-                m_dynamic_index_buffer = std::make_unique<Dx12UploadBuffer<index_t, false>>(device, dynamic_indeces_count);
+                if (dynamic_vertices_count && dynamic_indeces_count) {
+                    m_dynamic_vertex_buffer = std::make_unique<Dx12UploadBuffer<vertex, false>>(device, dynamic_vertices_count);
+                    m_dynamic_index_buffer = std::make_unique<Dx12UploadBuffer<index_t, false>>(device, dynamic_indeces_count);
+                }
             }
             FrameResource(const FrameResource&) = delete;
             FrameResource& operator=(const FrameResource&) = delete;
@@ -94,6 +96,10 @@ namespace QCE {
             std::unique_ptr<Dx12UploadBuffer<index_t, /*_is_constant_buffer*/false>> m_dynamic_index_buffer{};
 
             uint64_t m_fence_value = 0;
+
+            bool HasDynamicGeometry() const {
+                return !!m_dynamic_vertex_buffer && !!m_dynamic_index_buffer;
+            }
         };
 
         /// consts

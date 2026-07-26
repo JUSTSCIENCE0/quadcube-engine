@@ -529,7 +529,18 @@ namespace QCE {
     }
 
     ErrorCode RenderDX12::UpdateDynamicMeshes() {
+        auto entities = m_entities.QueryEntities<
+            DynamicMesh,
+            TransformComponents,
+            TransformMatrix,
+            MaterialComponent>();
+
+        if (entities.empty())
+            return ErrorCode::SUCCESS;
+
         assert(m_current_frame_resource);
+        assert(m_current_frame_resource->m_dynamic_index_buffer);
+        assert(m_current_frame_resource->m_dynamic_vertex_buffer);
 
         m_scene_dynamic_geometry.units.clear();
         m_dynamic_geometry_unit_map.clear();
@@ -545,11 +556,6 @@ namespace QCE {
                    (vertex_offset + mesh.vertices.size()) > max_vertex_offset;
         };
 
-        auto entities = m_entities.QueryEntities<
-            DynamicMesh,
-            TransformComponents,
-            TransformMatrix,
-            MaterialComponent>();
         for (const auto& entity_id : entities) {
             auto& dynamic_mesh = m_entities.GetComponent<DynamicMesh>(entity_id);
             auto& mesh = ResourceManager::Get().Read<Mesh>(dynamic_mesh.deformated_mesh_index);
@@ -588,7 +594,10 @@ namespace QCE {
 
     void RenderDX12::DrawSceneEntities() {
         DrawStaticMeshGeometry();
-        DrawDynamicMeshGeometry();
+
+        assert(m_current_frame_resource);
+        if (m_current_frame_resource->HasDynamicGeometry())
+            DrawDynamicMeshGeometry();
     }
 
     void RenderDX12::DrawStaticMeshGeometry() {
