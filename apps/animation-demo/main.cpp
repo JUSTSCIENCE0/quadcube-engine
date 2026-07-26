@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 
     QCE::PlaneParams flat_plane{
         .length = 50.0f,
-        .width = 5.0f,
+        .width = 50.0f,
         .hard_edges = false,
         .repeat_uv = true,
         .unit_squares = true
@@ -54,31 +54,31 @@ int main(int argc, char* argv[]) {
     edges_material.albedo_texture = app.Resources().GetIndex<QCE::Texture2D>("edges.bc7");
     QCE_CRITICAL(app.Resources().Add(std::move(edges_material)));
 
-    QCE::TransformAnimation square_path{};
-    square_path.id = "square_path";
-    square_path.position_channel = {
+    QCE::TransformAnimation deformation_demo{};
+    deformation_demo.id = "deformation_demo";
+    deformation_demo.position_channel = {
         {
-            /*value*/ { 1.0f, 0.0f, 1.0f },
+            /*value*/ { 1.5f, 0.0f, 1.5f },
             /*start_time*/ 0.0f
         },
         {
-            /*value*/ { 1.0f, 0.0f, -1.0f },
+            /*value*/ { 1.5f, 0.0f, -1.5f },
             /*start_time*/ 1.0f
         },
         {
-            /*value*/ { 1.0f, 1.0f, -1.0f },
+            /*value*/ { 1.5f, 1.0f, -1.5f },
             /*start_time*/ 2.0f
         },
         {
-            /*value*/ { 1.0f, 1.0f, 1.0f },
+            /*value*/ { 1.5f, 1.0f, 1.5f },
             /*start_time*/ 3.0f
         },
         {
-            /*value*/ { 1.0f, 0.0f, 1.0f },
+            /*value*/ { 1.5f, 0.0f, 1.5f },
             /*start_time*/ 4.0f
         }
     };
-    square_path.scale_channel = {
+    deformation_demo.scale_channel = {
         {
             /*value*/ { 1.0f, 1.0f, 1.0f },
             /*start_time*/ 1.0f
@@ -96,9 +96,9 @@ int main(int argc, char* argv[]) {
             /*start_time*/ 4.0f
         }
     };
-    square_path.total_duration = QCE::calculate_animation_duration(square_path);
-    QCE_CRITICAL(QCE::validate_animation(square_path));
-    QCE_CRITICAL(app.Resources().Add(std::move(square_path)));
+    deformation_demo.total_duration = QCE::calculate_animation_duration(deformation_demo);
+    QCE_CRITICAL(QCE::validate_animation(deformation_demo));
+    QCE_CRITICAL(app.Resources().Add(std::move(deformation_demo)));
 
     QCE::TransformAnimation sphere_rotation{};
     sphere_rotation.id = "sphere_rotation";
@@ -131,6 +131,12 @@ int main(int argc, char* argv[]) {
     QCE::StaticMesh cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
+    QCE::StaticMesh sphere_mesh_component{
+        .index = app.Resources().GetIndex<QCE::Mesh>("sphere_hard")
+    };
+    QCE::StaticMesh plane_mesh_component{
+        .index = app.Resources().GetIndex<QCE::Mesh>("flat_plane")
+    };
 
     QCE::MaterialComponent untextured_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("untextured_material")
@@ -138,8 +144,8 @@ int main(int argc, char* argv[]) {
     QCE::MaterialComponent edges_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("edges_material")
     };
-    QCE::TransformAnimationComponent square_path_component{
-        .index = app.Resources().GetIndex<QCE::TransformAnimation>("square_path"),
+    QCE::TransformAnimationComponent deformation_demo_component{
+        .index = app.Resources().GetIndex<QCE::TransformAnimation>("deformation_demo"),
         .is_looped = true
     };
     QCE::TransformAnimationComponent sphere_rotation_component{
@@ -147,46 +153,91 @@ int main(int argc, char* argv[]) {
          .is_looped = true
     };
 
-    auto entity0 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0, cuboid_mesh_component));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0,
+    // floor plane
+    auto entity_id = app.m_entities.AddEntity();
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, plane_mesh_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id,
         QCE::TransformComponents{
             { 0.0f, 0.0f, 0.0f, 1.0f },
-            { 1.0f, 0.0f, 0.0f },
+            { 0.0f, -.5f, 0.0f },
             { 1.0f, 1.0f, 1.0f }
         }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0, edges_material_component));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0, square_path_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformMatrix{}));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, edges_material_component));
 
-    auto entity3 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::StaticMesh{
-        .index = app.Resources().GetIndex<QCE::Mesh>("sphere_hard")
-    }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3,
+    // sphere
+    entity_id = app.m_entities.AddEntity();
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, sphere_mesh_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id,
         QCE::TransformComponents{
             { 0.0f, 0.0f, 0.0f, 1.0f },
-            { 0.0f, 3.0f, 0.0f },
+            { 0.0f, 0.0f, 0.0f },
             { 1.0f, 1.0f, 1.0f }
         }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3, untextured_material_component));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3, sphere_rotation_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformMatrix{}));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, untextured_material_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, sphere_rotation_component));
 
-    auto entity4 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity4, QCE::StaticMesh{
-        .index = app.Resources().GetIndex<QCE::Mesh>("flat_plane")
-    }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity4,
-        QCE::TransformComponents{
-            //{ 0.0f, 0.3826834f, 0.0f, 0.9238795f },
-            { 0.0f, 0.0f, 0.0f, 1.0f },
-            { 0.0f, -.5f, 20.5f },
-            { 1.0f, 1.0f, 1.0f }
+    // cuboid deformation
+    entity_id = app.m_entities.AddEntity();
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, cuboid_mesh_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformComponents{}));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformMatrix{}));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, edges_material_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, deformation_demo_component));
+
+    // easing demos
+    float x_coord = -1.5f;
+    auto add_easing_demo_animation = [&app, &x_coord, &cuboid_mesh_component, &untextured_material_component](
+            QCE::EasingFunc easing_func) {
+        std::string name = QCE::to_string(easing_func);
+
+        QCE::TransformAnimation animation{};
+        animation.id = name;
+        animation.position_channel = {
+            {
+                /*value*/ { x_coord, 0.0f, 2.5f },
+                /*start_time*/ 0.0f,
+                /*easing_func*/ easing_func
+            },
+            {
+                /*value*/ { x_coord, 0.0f, -2.5f },
+                /*start_time*/ 1.0f,
+                /*easing_func*/ easing_func
+            },
+            {
+                /*value*/ { x_coord, 0.0f, 2.5f },
+                /*start_time*/ 2.0f,
+                /*easing_func*/ easing_func
+            }
+        };
+        animation.total_duration = QCE::calculate_animation_duration(animation);
+        QCE_CRITICAL(QCE::validate_animation(animation));
+        QCE_CRITICAL(app.Resources().Add(std::move(animation)));
+
+        x_coord -= 1.0f;
+
+        auto entity_id = app.m_entities.AddEntity();
+        QCE_CRITICAL(app.m_entities.AddComponent(entity_id, cuboid_mesh_component));
+        QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformComponents{}));
+        QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformMatrix{}));
+        QCE_CRITICAL(app.m_entities.AddComponent(entity_id, untextured_material_component));
+        QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformAnimationComponent{
+            .index = app.Resources().GetIndex<QCE::TransformAnimation>(name),
+            .is_looped = true
         }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity4, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity4, edges_material_component));
 
+        return QCE::ErrorCode::SUCCESS;
+    };
+    QCE_CRITICAL(add_easing_demo_animation(QCE::EasingFunc::E_EASING_LINEAR));
+    QCE_CRITICAL(add_easing_demo_animation(QCE::EasingFunc::E_EASING_EASE_IN_QUAD));
+    QCE_CRITICAL(add_easing_demo_animation(QCE::EasingFunc::E_EASING_EASE_IN_EXPO));
+    QCE_CRITICAL(add_easing_demo_animation(QCE::EasingFunc::E_EASING_EASE_OUT_QUAD));
+    QCE_CRITICAL(add_easing_demo_animation(QCE::EasingFunc::E_EASING_EASE_OUT_SQRT));
+    QCE_CRITICAL(add_easing_demo_animation(QCE::EasingFunc::E_EASING_SMOOTH_STEP));
+    QCE_CRITICAL(add_easing_demo_animation(QCE::EasingFunc::E_EASING_SMOOTHER_STEP));
+
+    // light
     auto sun = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(sun,
         QCE::DirectionalLight{

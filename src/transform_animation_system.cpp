@@ -64,11 +64,22 @@ namespace QCE {
         switch (easing) {
             case EasingFunc::E_EASING_LINEAR:
                 return t;
-            case EasingFunc::E_EASING_EASE_IN:
-            case EasingFunc::E_EASING_EASE_OUT:
-            case EasingFunc::E_EASING_EASE_IN_OUT:
-                assert(!"TODO: Implement easing functions");
-                return t;
+            case EasingFunc::E_EASING_EASE_IN_QUAD:
+                return t * t;
+            case EasingFunc::E_EASING_EASE_IN_EXPO:
+                return std::powf(2.0f, 10.0f * (t - 1.0f));
+            case EasingFunc::E_EASING_EASE_OUT_QUAD:
+                return 2 * t - t * t;
+            case EasingFunc::E_EASING_EASE_OUT_SQRT:
+                return std::sqrtf(1.0f - (t - 1.0f) * (t - 1.0f));
+            case EasingFunc::E_EASING_SMOOTH_STEP: {
+                const auto tt = t * t;
+                return tt * (3.0f - 2.0f * t);
+            }
+            case EasingFunc::E_EASING_SMOOTHER_STEP: {
+                const auto ttt = t * t * t;
+                return ttt * (6.0f * t * t - 15.0f * t + 10.0f);
+            }
             default:
                 assert(!"Unknown easing function");
                 return t;
