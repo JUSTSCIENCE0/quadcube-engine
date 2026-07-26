@@ -3,6 +3,10 @@
 //
 // License: MIT
 
+#ifndef CU_BUILD_SPECIFIC_SIMD
+#  define CU_BUILD_SPECIFIC_SIMD sse2
+#endif // !CU_BUILD_SPECIFIC_SIMD
+
 #include "mesh_deformator.hpp"
 
 #include <qce/qce.hpp>

@@ -202,12 +202,12 @@ namespace QCE {
     }
 
     static inline matrix VECTOR_CALL quaternion_to_rotation_matrix(vector q) noexcept {
-        // TODO
+        assert(!"TODO: Not implemented");
         return matrix_identity();
     }
 
     static inline vector VECTOR_CALL rotation_matrix_to_quaternion(matrix m) noexcept {
-        // TODO
+        assert(!"TODO: Not implemented");
         return vector_zero();
     }
 
@@ -215,7 +215,7 @@ namespace QCE {
             vector position,
             vector target,
             vector up) noexcept {
-        // TODO
+        assert(!"TODO: Not implemented");
         return matrix_identity();
     }
 }
