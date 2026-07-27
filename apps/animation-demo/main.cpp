@@ -186,6 +186,66 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity_id, edges_material_component));
     QCE_CRITICAL(app.m_entities.AddComponent(entity_id, deformation_demo_component));
 
+    // spline demo
+    float z_coord = 3.5f;
+    auto add_spline_demo_animation= [&app, &z_coord, &cuboid_mesh_component, &untextured_material_component](
+            QCE::SplineFunc spline_func) {
+        std::string name = QCE::to_string(spline_func);
+
+        QCE::TransformAnimation animation{};
+        animation.id = name;
+        animation.position_channel = {
+            {
+                /*value*/ { -1.5f, 0.0f, z_coord },
+                /*start_time*/ 0.0f
+            },
+            {
+                /*value*/ { -2.5f, 0.0f, z_coord + 1.0f },
+                /*start_time*/ 1.0f
+            },
+            {
+                /*value*/ { -1.5f, 0.0f, z_coord + 2.0f },
+                /*start_time*/ 2.0f
+            },
+            {
+                /*value*/ { 1.5f, 0.0f, z_coord },
+                /*start_time*/ 3.0f
+            },
+            {
+                /*value*/ { 2.5f, 0.0f, z_coord + 1.0f },
+                /*start_time*/ 4.0f
+            },
+            {
+                /*value*/ { 1.5f, 0.0f, z_coord + 2.0f },
+                /*start_time*/ 5.0f
+            },
+            {
+                /*value*/ { -1.5f, 0.0f, z_coord },
+                /*start_time*/ 6.0f
+            }
+        };
+        animation.spline_func = spline_func;
+        animation.total_duration = QCE::calculate_animation_duration(animation);
+        QCE_CRITICAL(QCE::validate_animation(animation));
+        QCE_CRITICAL(app.Resources().Add(std::move(animation)));
+
+        z_coord += 3.0f;
+
+        auto entity_id = app.m_entities.AddEntity();
+        QCE_CRITICAL(app.m_entities.AddComponent(entity_id, cuboid_mesh_component));
+        QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformComponents{}));
+        QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformMatrix{}));
+        QCE_CRITICAL(app.m_entities.AddComponent(entity_id, untextured_material_component));
+        QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformAnimationComponent{
+            .index = app.Resources().GetIndex<QCE::TransformAnimation>(name),
+            .is_looped = true
+        }));
+
+        return QCE::ErrorCode::SUCCESS;
+    };
+    QCE_CRITICAL(add_spline_demo_animation(QCE::SplineFunc::E_SPLINE_LINEAR));
+    QCE_CRITICAL(add_spline_demo_animation(QCE::SplineFunc::E_SPLINE_CATMULL_ROM));
+
     // easing demos
     float x_coord = -1.5f;
     auto add_easing_demo_animation = [&app, &x_coord, &cuboid_mesh_component, &untextured_material_component](

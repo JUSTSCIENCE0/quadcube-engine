@@ -122,6 +122,44 @@ namespace QCE {
             static_assert(0 == sizeof(OutType), "Unsupported type for interpolation");
     }
 
+    static inline void update_position_catmull_rom_spline(
+            TransformAnimation& animation,
+            size_t current_index, float current_time,
+            float3d& output) {
+        assert(!animation.position_channel.empty());
+        const auto& keys = animation.position_channel;
+        const auto  last_index = keys.size() - 1;
+        const auto& cache = animation.spline_cache;
+
+        if (cache.size() != last_index) {
+            update_spline_cache(animation);
+        }
+
+        // Now it only supports direct direction of time from the past to the future
+        // TODO: support for negative time direction
+
+        const auto& current_key = keys[current_index];
+
+        bool is_not_started = (0 == current_index) && (current_time < current_key.start_time);
+        bool is_finished    = (last_index == current_index);
+        if (is_not_started || is_finished) {
+            output = current_key.value;
+            return;
+        }
+
+        auto& next_key = keys[current_index + 1];
+        const auto t = calc_interpolation_factor(
+            current_key.start_time, next_key.start_time, current_time, current_key.easing);
+
+        const auto& current_cache = cache[current_index];
+        auto a = vector_init(current_cache.a.arr);
+        auto b = vector_init(current_cache.b.arr);
+        auto c = vector_init(current_cache.c.arr);
+        auto d = vector_init(current_key.value.arr);
+        auto r = ((a * t + b) * t + c) * t + d;
+        vector_copy(r, output.arr);
+    }
+
     ErrorCode TransformAnimationSystem::Update() {
         auto entities = m_entities.QueryEntities<
             TransformComponents,
@@ -155,11 +193,25 @@ namespace QCE {
 
             if (has_channel_animation(animation.position_channel)) {
                 update_channel_key(animation.position_channel, animation_comp);
-                update_transform_component(
-                    animation.position_channel,
-                    animation_comp.current_position_key,
-                    animation_comp.current_time,
-                    transform_comp.position);
+                switch (animation.spline_func) {
+                case SplineFunc::E_SPLINE_LINEAR:
+                    update_transform_component(
+                        animation.position_channel,
+                        animation_comp.current_position_key,
+                        animation_comp.current_time,
+                        transform_comp.position);
+                    break;
+                case SplineFunc::E_SPLINE_CATMULL_ROM:
+                    update_position_catmull_rom_spline(
+                        animation,
+                        animation_comp.current_position_key,
+                        animation_comp.current_time,
+                        transform_comp.position);
+                    break;
+                default:
+                    assert(!"Unknown spline function");
+                    break;
+                }
             }
 
             if (has_channel_animation(animation.rotation_channel)) {

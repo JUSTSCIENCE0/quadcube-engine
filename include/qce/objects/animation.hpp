@@ -73,6 +73,14 @@ namespace QCE {
         float                    total_duration = 0.0f;
 
         SplineFunc spline_func = SplineFunc::E_SPLINE_LINEAR;
+
+        // cache
+        struct SplineCoeffs {
+            float3d a;
+            float3d b;
+            float3d c;
+        };
+        std::vector<SplineCoeffs> spline_cache{};
     };
 
     static inline float  calculate_animation_duration(const TransformAnimation& animation) {
@@ -118,5 +126,69 @@ namespace QCE {
         QCE_CRITICAL(validate_key_channel(animation.scale_channel, animation.total_duration));
 
         return ErrorCode::SUCCESS;
+    }
+
+    static inline void calculate_catmull_rom_spline(TransformAnimation& animation, bool is_looped) {
+        assert(animation.position_channel.size() >= 4);
+        animation.spline_cache.reserve(animation.position_channel.size());
+
+        vector p0, p1, p2, p3;
+        const auto last_index = animation.position_channel.size() - 1;
+
+        for (size_t i = 0; i < last_index; i++) {
+            auto p0_index = i - 1;
+            auto p1_index = i;
+            auto p2_index = i + 1;
+            auto p3_index = i + 2;
+            if (i == 0) {
+                if (is_looped)
+                    p0_index = last_index - 1;
+                else
+                    p0_index = 0;
+            }
+            if (p3_index > last_index) {
+                if (is_looped)
+                    p3_index = 1;
+                else
+                    p3_index = last_index;
+            }
+
+            p0 = vector_init(animation.position_channel[p0_index].value.arr);
+            p1 = vector_init(animation.position_channel[p1_index].value.arr);
+            p2 = vector_init(animation.position_channel[p2_index].value.arr);
+            p3 = vector_init(animation.position_channel[p3_index].value.arr);
+
+            auto a = (p1 - p2) * 1.5f + (p3 - p0) * 0.5f;
+            auto b = p0 - p1 * 2.5f + p2 * 2.0f - p3 * 0.5f;
+            auto c = (p2 - p0) * 0.5f;
+
+            TransformAnimation::SplineCoeffs& coeffs = animation.spline_cache.emplace_back();
+            vector_copy(a,  coeffs.a.arr);
+            vector_copy(b,  coeffs.b.arr);
+            vector_copy(c,  coeffs.c.arr);
+        }
+    }
+
+    static inline void update_spline_cache(TransformAnimation& animation, bool is_looped = true) {
+        animation.spline_cache.clear();
+
+        if (animation.position_channel.empty())
+            return;
+
+        switch (animation.spline_func) {
+        case SplineFunc::E_SPLINE_CATMULL_ROM:
+            if (animation.position_channel.size() < 4) {
+                // TODO: use log system
+                std::cout << "Warning: Catmull-Rom requires at least 4 points!" << std::endl;
+                return;
+            }
+            calculate_catmull_rom_spline(animation, is_looped);
+            break;
+        case SplineFunc::E_SPLINE_LINEAR:
+            break;
+        default:
+            assert(!"Unsupported spline function");
+            break;
+        }
     }
 }
