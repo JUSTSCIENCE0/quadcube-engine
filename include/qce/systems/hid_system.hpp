@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "configs_implementation.hpp"
+#include "json_implementation.hpp"
 
 #include <qce/ecs/ecs.hpp>
 #include <qce/hid/events_handler.hpp>

@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "configs_implementation.hpp"
+#include "json_implementation.hpp"
 
 #include <qce/ancillary/error_codes.hpp>
 #include <cu/file-utils.hpp>

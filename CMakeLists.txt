@@ -62,8 +62,8 @@ find_package(ktx REQUIRED)
 
 # generate mjson headers from configs_description.h
 macrojson_generate_header_cu_ex(
-    qce/configs/configs_description.hpp
-    configs_implementation.hpp
+    qce/mjson/description_hub.hpp
+    json_implementation.hpp
     TRUE
 )
 
@@ -73,10 +73,12 @@ set(QCE_INTERFACE
 )
 
 set(QCE_CONFIGS_HDRS
-    include/qce/configs/configs_description.hpp
-    generated/configs_implementation.hpp
+    include/qce/mjson/configs_description.hpp
+    include/qce/mjson/resources_description.hpp
+    include/qce/mjson/description_hub.hpp
+    generated/json_implementation.hpp
 
-    include/qce/configs/configs_traits.hpp
+    include/qce/mjson/configs_traits.hpp
 )
 
 set(QCE_OBJECTS_HDRS
