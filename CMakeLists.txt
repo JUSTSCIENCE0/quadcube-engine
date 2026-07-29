@@ -48,7 +48,7 @@ include(FetchContent)
 FetchContent_Declare(
     common-utils
     GIT_REPOSITORY https://github.com/JUSTSCIENCE0/common-utils.git
-    GIT_TAG        c7135cc7a609c428b1575d626bbe0d679dc7370c # main 16.07.2026
+    GIT_TAG        dev
 )
 if (BUILD_QCE_TEST)
     set(ENABLE_CU_TEST_UTILS ON CACHE BOOL "" FORCE)
@@ -63,7 +63,7 @@ find_package(ktx REQUIRED)
 # generate mjson headers from configs_description.h
 macrojson_generate_header_cu_ex(
     qce/mjson/description_hub.hpp
-    json_implementation.hpp
+    mjson_output.hpp
     TRUE
 )
 
@@ -76,7 +76,7 @@ set(QCE_MJSON_HDRS
     include/qce/mjson/configs_description.hpp
     include/qce/mjson/resources_description.hpp
     include/qce/mjson/description_hub.hpp
-    generated/json_implementation.hpp
+    generated/mjson_output.hpp
 
     include/qce/ancillary/configs_traits.hpp
 )
