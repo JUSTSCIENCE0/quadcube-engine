@@ -72,7 +72,7 @@ set(QCE_INTERFACE
     include/qce/qce.hpp
 )
 
-set(QCE_CONFIGS_HDRS
+set(QCE_MJSON_HDRS
     include/qce/mjson/configs_description.hpp
     include/qce/mjson/resources_description.hpp
     include/qce/mjson/description_hub.hpp
@@ -245,7 +245,7 @@ target_sources(${PROJECT_NAME}
 
         ${QCE_HID_HDRS}
 
-        ${QCE_CONFIGS_HDRS}
+        ${QCE_MJSON_HDRS}
 
         ${QCE_ECS_HDRS}
 
@@ -274,7 +274,7 @@ source_group("Renders/Implementation"    FILES ${QCE_RENDERS_IMPL})
 
 source_group("HID/Headers"               FILES ${QCE_HID_HDRS})
 
-source_group("Configs/Headers"           FILES ${QCE_CONFIGS_HDRS})
+source_group("MJson/Headers"             FILES ${QCE_MJSON_HDRS})
 
 source_group("ECS/Headers"               FILES ${QCE_ECS_HDRS})
 
