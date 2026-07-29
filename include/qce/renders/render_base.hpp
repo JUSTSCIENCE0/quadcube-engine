@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "json_implementation.hpp"
+#include <qce/mjson/generated_objects.hpp>
 
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/ancillary/structs.hpp>

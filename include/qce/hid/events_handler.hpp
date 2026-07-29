@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "json_implementation.hpp"
+#include <qce/mjson/generated_objects.hpp>
 
 #include <qce/hid/events.hpp>
 #include <qce/objects/resource_manager.hpp>
