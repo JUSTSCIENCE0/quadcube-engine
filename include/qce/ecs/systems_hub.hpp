@@ -7,7 +7,7 @@
 
 #include <qce/ecs/ecs.hpp>
 #include <qce/ancillary/error_codes.hpp>
-#include <qce/mjson/configs_traits.hpp>
+#include <qce/ancillary/configs_traits.hpp>
 
 #include <cu/file-utils.hpp>
 

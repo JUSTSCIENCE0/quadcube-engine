@@ -6,7 +6,7 @@
 #pragma once
 
 #include <qce/ecs/ecs.hpp>
-#include <qce/mjson/configs_traits.hpp>
+#include <qce/ancillary/configs_traits.hpp>
 #include <qce/ancillary/structs.hpp>
 
 #include <qce/objects/command.hpp>

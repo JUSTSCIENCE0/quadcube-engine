@@ -78,7 +78,7 @@ set(QCE_CONFIGS_HDRS
     include/qce/mjson/description_hub.hpp
     generated/json_implementation.hpp
 
-    include/qce/mjson/configs_traits.hpp
+    include/qce/ancillary/configs_traits.hpp
 )
 
 set(QCE_OBJECTS_HDRS
