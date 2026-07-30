@@ -73,6 +73,7 @@ set(QCE_INTERFACE
 )
 
 set(QCE_MJSON_HDRS
+    include/qce/mjson/math_types.hpp
     include/qce/mjson/configs_description.hpp
     include/qce/mjson/resources_description.hpp
     include/qce/mjson/description_hub.hpp
