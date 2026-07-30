@@ -26,13 +26,13 @@ namespace QCE {
         const auto  current_time  = animation_comp.current_time;
 
         size_t* current_index = nullptr;
-        if constexpr (std::is_same_v<typename Channel::value_type, TransformAnimation::PositionKey>) {
+        if constexpr (std::is_same_v<typename Channel::value_type, AnimationPositionKey>) {
             current_index = &animation_comp.current_position_key;
         }
-        else if constexpr (std::is_same_v<typename Channel::value_type, TransformAnimation::RotationKey>) {
+        else if constexpr (std::is_same_v<typename Channel::value_type, AnimationRotationKey>) {
             current_index = &animation_comp.current_rotation_key;
         }
-        else if constexpr (std::is_same_v<typename Channel::value_type, TransformAnimation::ScaleKey>) {
+        else if constexpr (std::is_same_v<typename Channel::value_type, AnimationScaleKey>) {
             current_index = &animation_comp.current_scale_key;
         }
         else {

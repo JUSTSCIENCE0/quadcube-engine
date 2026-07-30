@@ -39,6 +39,26 @@ namespace QCE {
         float  current_time = 0.0f;
     };
 
+    struct AnimationRotationKey {
+        quaternion value = { 0.0f, 0.0f, 0.0f, 1.0f };
+        float start_time = 0.0f;
+
+        EasingFunc easing =
+            EasingFunc::E_EASING_LINEAR;
+    };
+    struct AnimationPositionKey {
+        float3d value = { 0.0f, 0.0f, 0.0f };
+        float start_time = 0.0f;
+        EasingFunc easing =
+            EasingFunc::E_EASING_LINEAR;
+    };
+    struct AnimationScaleKey {
+        float3d value = { 1.0f, 1.0f, 1.0f };
+        float start_time = 0.0f;
+        EasingFunc easing =
+            EasingFunc::E_EASING_LINEAR;
+    };
+
     struct TransformAnimation {
         TransformAnimation() = default;
         TransformAnimation(const TransformAnimation&) = delete;
@@ -46,31 +66,11 @@ namespace QCE {
         TransformAnimation(TransformAnimation&&) noexcept = default;
         TransformAnimation& operator=(TransformAnimation&&) noexcept = default;
 
-        struct RotationKey {
-            quaternion value = { 0.0f, 0.0f, 0.0f, 1.0f };
-            float start_time = 0.0f;
-
-            EasingFunc easing =
-                EasingFunc::E_EASING_LINEAR;
-        };
-        struct PositionKey {
-            float3d value = { 0.0f, 0.0f, 0.0f };
-            float start_time = 0.0f;
-            EasingFunc easing =
-                EasingFunc::E_EASING_LINEAR;
-        };
-        struct ScaleKey {
-            float3d value = { 1.0f, 1.0f, 1.0f };
-            float start_time = 0.0f;
-            EasingFunc easing =
-                EasingFunc::E_EASING_LINEAR;
-        };
-
         std::string id{};
-        std::vector<RotationKey> rotation_channel{};
-        std::vector<PositionKey> position_channel{};
-        std::vector<ScaleKey>    scale_channel{};
-        float                    total_duration = 0.0f;
+        std::vector<AnimationRotationKey> rotation_channel{};
+        std::vector<AnimationPositionKey> position_channel{};
+        std::vector<AnimationScaleKey>    scale_channel{};
+        float total_duration = 0.0f;
 
         SplineFunc spline_func = SplineFunc::E_SPLINE_LINEAR;
 
