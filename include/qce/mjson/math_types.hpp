@@ -23,6 +23,13 @@ namespace macrojson {
         write_to_json(name, std::move(jarr), alloc, root);
     }
 
+    static inline void write_to_json(
+            const char* name, const QCE::float4d& value, Document::AllocatorType& alloc, Value& root) {
+        write_to_json(name, static_cast<const QCE::float3d&>(value), alloc, root);
+        Value jw(value.w());
+        root[name].PushBack(jw, alloc);
+    }
+
     static inline MJsonErrorCode read_from_json(const char* name, const Value& root, QCE::float3d& val) {
         if (name && !root.HasMember(name)) {
             return E_MJSON_NOT_EXISTS;
@@ -34,7 +41,7 @@ namespace macrojson {
         }
 
         const auto& arr = jval.GetArray();
-        if (arr.Size() != 3) {
+        if (arr.Size() < 3) {
             return E_MJSON_TYPE_MISMATCH;
         }
 
@@ -42,6 +49,23 @@ namespace macrojson {
             val.x() = arr[0].GetFloat();
             val.y() = arr[1].GetFloat();
             val.z() = arr[2].GetFloat();
+            return E_MJSON_OK;
+        }
+
+        return E_MJSON_TYPE_MISMATCH;
+    }
+
+    static inline MJsonErrorCode read_from_json(const char* name, const Value& root, QCE::float4d& val) {
+        MJSON_CHECK_ERROR(read_from_json(name, root, static_cast<QCE::float3d&>(val)));
+
+        const Value& jval = name ? root[name] : root;
+        const auto& arr = jval.GetArray();
+        if (arr.Size() != 4) {
+            return E_MJSON_TYPE_MISMATCH;
+        }
+
+        if (arr[3].IsFloat()) {
+            val.w() = arr[3].GetFloat();
             return E_MJSON_OK;
         }
 
@@ -59,6 +83,21 @@ namespace macrojson {
         add_validation_fields<std::vector<float>>(alloc, jobj, ArrayParams{
             .minItems = 3,
             .maxItems = 3
+        });
+        generate_schema_base("items", nullptr, nullptr, "number", alloc, schema);
+    }
+
+    template<
+        typename Float4dT,
+        std::enable_if_t<std::is_same_v<Float4dT, QCE::float4d>, bool> = true>
+    inline void generate_schema(
+            const char* name, const char* title, const char* description,
+            Document::AllocatorType& alloc, Value& schema) {
+        generate_schema_base(name, title, description, "array", alloc, schema);
+        Value& jobj = name ? schema[name] : schema;
+        add_validation_fields<std::vector<float>>(alloc, jobj, ArrayParams{
+            .minItems = 4,
+            .maxItems = 4
         });
         generate_schema_base("items", nullptr, nullptr, "number", alloc, schema);
     }
