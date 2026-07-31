@@ -77,4 +77,20 @@ namespace QCE {
 
         return Add(std::move(texture));
     }
+
+    ErrorCode ResourceManager::AddAnimation(
+            const std::string& animation_name
+            /*TODO: TextureType texture_type = TextureType::TEXTURE_2D*/) {
+        auto file_name = m_animations_directory / animation_name;
+
+        // TODO: try load from binary file
+
+        file_name.replace_extension("json");
+        if (!std::filesystem::exists(file_name))
+            return ErrorCode::E_RM_ANIMATION_NOT_FOUND;
+
+        // TODO: load from json file
+
+        return ErrorCode::SUCCESS;
+    }
 }

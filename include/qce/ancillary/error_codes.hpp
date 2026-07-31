@@ -85,6 +85,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_RM_TEXTURE_LOAD_FAILED) \
         CU_ENUM_UNIT(E_RM_TEXTURE_PARSING_FAILED) \
         CU_ENUM_UNIT(E_RM_TEXTURE_CREATE_FAILED) \
+        CU_ENUM_UNIT(E_RM_ANIMATION_NOT_FOUND) \
         CU_ENUM_UNIT(E_RM_ANIMATION_EMPTY) \
         CU_ENUM_UNIT(E_RM_ANIMATION_INVALID_TIMELINE) \
         CU_ENUM_UNIT(E_RM_ANIMATION_WRONG_DURATION) \
@@ -305,6 +306,9 @@ namespace QCE {
             break;
         case ErrorCode::E_RM_TEXTURE_CREATE_FAILED:
             result << "Resource Manager - Texture creation failed";
+            break;
+        case ErrorCode::E_RM_ANIMATION_NOT_FOUND:
+            result << "Resource Manager - Animation file not found";
             break;
         case ErrorCode::E_RM_ANIMATION_EMPTY:
             result << "Resource Manager - Animation does not contain any keys";

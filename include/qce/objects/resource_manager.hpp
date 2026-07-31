@@ -65,8 +65,11 @@ namespace QCE {
 
         ErrorCode AddTexture(
             const std::string& texture_name
-            /*TODO: TextureType texture_type = TextureType::TEXTURE_2D*/
-        );
+            /*TODO: TextureType texture_type = TextureType::TEXTURE_2D*/);
+
+        ErrorCode AddAnimation(
+            const std::string& animation_name
+            /*TODO: AnimationType animation_type = AnimationType::TRANSFORM_ANIMATION*/);
 
         template <Resource ResourceT>
         ErrorCode Add(ResourceT resource) {
@@ -122,7 +125,8 @@ namespace QCE {
             m_render_type(render_type),
             m_resources_directory(GetResourcesDirectory()),
             m_shaders_bytecode_directory(m_resources_directory / SHADERS_BYTECODE_SUBDIRECTORY),
-            m_textures_directory(m_resources_directory / TEXTURES_SUBDIRECTORY) {
+            m_textures_directory(m_resources_directory / TEXTURES_SUBDIRECTORY),
+            m_animations_directory(m_resources_directory / ANIMATIONS_SUBDIRECTORY) {
             RegisterDefaultCommands();
             AddDefaultTextures();
         }
@@ -214,6 +218,7 @@ namespace QCE {
         static constexpr auto RESOURCES_DIRECTORY = "resources";
         static constexpr auto SHADERS_BYTECODE_SUBDIRECTORY = "shaders";
         static constexpr auto TEXTURES_SUBDIRECTORY = "assets/textures";
+        static constexpr auto ANIMATIONS_SUBDIRECTORY = "assets/animations";
 
         static constexpr auto TEXTURE_CONTAINER = "ktx2";
 
@@ -227,6 +232,7 @@ namespace QCE {
         const std::filesystem::path m_resources_directory;
         const std::filesystem::path m_shaders_bytecode_directory;
         const std::filesystem::path m_textures_directory;
+        const std::filesystem::path m_animations_directory;
 
         Resources<
             Mesh,
