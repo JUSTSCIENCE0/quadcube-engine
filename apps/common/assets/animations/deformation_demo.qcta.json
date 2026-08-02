@@ -1,0 +1,91 @@
+{
+    "id": "deformation_demo",
+    "rotation_channel": [],
+    "position_channel": [
+        {
+            "value": [
+                1.0,
+                0.0,
+                1.0
+            ],
+            "start_time": 0.0,
+            "easing": "linear"
+        },
+        {
+            "value": [
+                1.0,
+                0.0,
+                -1.0
+            ],
+            "start_time": 1.0,
+            "easing": "linear"
+        },
+        {
+            "value": [
+                1.0,
+                1.0,
+                -1.0
+            ],
+            "start_time": 2.0,
+            "easing": "linear"
+        },
+        {
+            "value": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "start_time": 3.0,
+            "easing": "linear"
+        },
+        {
+            "value": [
+                1.0,
+                0.0,
+                1.0
+            ],
+            "start_time": 4.0,
+            "easing": "linear"
+        }
+    ],
+    "scale_channel": [
+        {
+            "value": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "start_time": 1.0,
+            "easing": "linear"
+        },
+        {
+            "value": [
+                1.0,
+                3.0,
+                1.0
+            ],
+            "start_time": 2.0,
+            "easing": "linear"
+        },
+        {
+            "value": [
+                3.0,
+                1.0,
+                1.0
+            ],
+            "start_time": 3.0,
+            "easing": "linear"
+        },
+        {
+            "value": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "start_time": 4.0,
+            "easing": "linear"
+        }
+    ],
+    "total_duration": 4.0,
+    "spline_func": "linear"
+}

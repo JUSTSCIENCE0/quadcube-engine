@@ -1,0 +1,59 @@
+{
+    "id": "full_rotation",
+    "rotation_channel": [
+        {
+            "value": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "start_time": 0.0,
+            "easing": "linear"
+        },
+        {
+            "value": [
+                0.0,
+                0.7071067690849304,
+                0.0,
+                0.7071067690849304
+            ],
+            "start_time": 1.0,
+            "easing": "linear"
+        },
+        {
+            "value": [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+            ],
+            "start_time": 2.0,
+            "easing": "linear"
+        },
+        {
+            "value": [
+                0.0,
+                0.7071067690849304,
+                0.0,
+                -0.7071067690849304
+            ],
+            "start_time": 3.0,
+            "easing": "linear"
+        },
+        {
+            "value": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "start_time": 4.0,
+            "easing": "linear"
+        }
+    ],
+    "position_channel": [],
+    "scale_channel": [],
+    "total_duration": 4.0,
+    "spline_func": "linear"
+}
