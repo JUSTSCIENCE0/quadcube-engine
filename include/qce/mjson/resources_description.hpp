@@ -55,6 +55,7 @@ MJSON_OBJECT_BEGIN(QCE::TransformAnimation,
     MJSON_FIELD(std::vector<QCE::AnimationRotationKey>, rotation_channel, "Rotation channel", nullptr)
     MJSON_FIELD(std::vector<QCE::AnimationPositionKey>, position_channel, "Position channel", nullptr)
     MJSON_FIELD(std::vector<QCE::AnimationScaleKey>,    scale_channel,    "Scale channel", nullptr)
+    MJSON_FIELD(float, total_duration, "Total Duration", nullptr)
     MJSON_FIELD(QCE::SplineFunc, spline_func, "Spline Function", nullptr)
 MJSON_OBJECT_END(QCE::TransformAnimation)
 
