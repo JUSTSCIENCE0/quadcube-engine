@@ -221,6 +221,7 @@ namespace QCE {
         static constexpr auto ANIMATIONS_SUBDIRECTORY = "assets/animations";
 
         static constexpr auto TEXTURE_CONTAINER = "ktx2";
+        static constexpr auto ANIMATION_CONTAINER = "qcta";
 
         /// methods
         static std::filesystem::path GetResourcesDirectory();

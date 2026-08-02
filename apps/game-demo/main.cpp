@@ -91,79 +91,8 @@ int main(int argc, char* argv[]) {
     edges_material.albedo_texture = app.Resources().GetIndex<QCE::Texture2D>("edges.bc7");
     QCE_CRITICAL(app.Resources().Add(std::move(edges_material)));
 
-    QCE::TransformAnimation square_path{};
-    square_path.id = "square_path";
-    square_path.position_channel = {
-        {
-            /*value*/ { 1.0f, 0.0f, 1.0f },
-            /*start_time*/ 0.0f
-        },
-        {
-            /*value*/ { 1.0f, 0.0f, -1.0f },
-            /*start_time*/ 1.0f
-        },
-        {
-            /*value*/ { 1.0f, 1.0f, -1.0f },
-            /*start_time*/ 2.0f
-        },
-        {
-            /*value*/ { 1.0f, 1.0f, 1.0f },
-            /*start_time*/ 3.0f
-        },
-        {
-            /*value*/ { 1.0f, 0.0f, 1.0f },
-            /*start_time*/ 4.0f
-        }
-    };
-    square_path.scale_channel = {
-        {
-            /*value*/ { 1.0f, 1.0f, 1.0f },
-            /*start_time*/ 1.0f
-        },
-        {
-            /*value*/ { 1.0f, 3.0f, 1.0f },
-            /*start_time*/ 2.0f
-        },
-        {
-            /*value*/ { 3.0f, 1.0f, 1.0f },
-            /*start_time*/ 3.0f
-        },
-        {
-            /*value*/ { 1.0f, 1.0f, 1.0f },
-            /*start_time*/ 4.0f
-        }
-    };
-    square_path.total_duration = QCE::calculate_animation_duration(square_path);
-    QCE_CRITICAL(QCE::validate_animation(square_path));
-    QCE_CRITICAL(app.Resources().Add(std::move(square_path)));
-
-    QCE::TransformAnimation sphere_rotation{};
-    sphere_rotation.id = "sphere_rotation";
-    sphere_rotation.rotation_channel = {
-        {
-            /*value*/ QCE::euler_deg_to_quaternion(0.0f, 0.0f, 0.0f),
-            /*start_time*/ 0.0f
-        },
-        {
-            /*value*/ QCE::euler_deg_to_quaternion(0.0f, 90.0f, 0.0f),
-            /*start_time*/ 1.0f
-        },
-        {
-            /*value*/ QCE::euler_deg_to_quaternion(0.0f, 180.0f, 0.0f),
-            /*start_time*/ 2.0f
-        },
-        {
-            /*value*/ QCE::euler_deg_to_quaternion(0.0f, 270.0f, 0.0f),
-            /*start_time*/ 3.0f
-        },
-        {
-            /*value*/ QCE::euler_deg_to_quaternion(0.0f, 0.0f, 0.0f),
-            /*start_time*/ 4.0f
-        }
-    };
-    sphere_rotation.total_duration = QCE::calculate_animation_duration(sphere_rotation);
-    QCE_CRITICAL(QCE::validate_animation(sphere_rotation));
-    QCE_CRITICAL(app.Resources().Add(std::move(sphere_rotation)));
+    QCE_CRITICAL(app.Resources().AddAnimation("deformation_demo"));
+    QCE_CRITICAL(app.Resources().AddAnimation("full_rotation"));
 
     QCE::StaticMesh cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
@@ -198,12 +127,12 @@ int main(int argc, char* argv[]) {
     QCE::MaterialComponent edges_material_component{
         .index = app.Resources().GetIndex<QCE::Material>("edges_material")
     };
-    QCE::TransformAnimationComponent square_path_component{
-        .index = app.Resources().GetIndex<QCE::TransformAnimation>("square_path"),
+    QCE::TransformAnimationComponent deformation_demo_component{
+        .index = app.Resources().GetIndex<QCE::TransformAnimation>("deformation_demo"),
         .is_looped = true
     };
-    QCE::TransformAnimationComponent sphere_rotation_component{
-        .index = app.Resources().GetIndex<QCE::TransformAnimation>("sphere_rotation"),
+    QCE::TransformAnimationComponent full_rotation_component{
+        .index = app.Resources().GetIndex<QCE::TransformAnimation>("full_rotation"),
          .is_looped = true
     };
 
@@ -211,20 +140,18 @@ int main(int argc, char* argv[]) {
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, cuboid_mesh_component));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0,
         QCE::TransformComponents{
-            //{ 0.0f, 0.3826834f, 0.0f, 0.9238795f },
             { 0.0f, 0.0f, 0.0f, 1.0f },
             { 1.0f, 0.0f, 0.0f },
             { 1.0f, 1.0f, 1.0f }
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, QCE::TransformMatrix{}));
     QCE_CRITICAL(app.m_entities.AddComponent(entity0, edges_material_component));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0, square_path_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity0, deformation_demo_component));
 
     auto entity1 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity1, cuboid_mesh_component));
     QCE_CRITICAL(app.m_entities.AddComponent(entity1,
         QCE::TransformComponents{
-            //{ 0.0f, 0.3826834f, 0.0f, 0.9238795f },
             { 0.0f, 0.0f, 0.0f, 1.0f },
             { -1.f, 0.0f, 0.0f },
             { 1.0f, 1.0f, 1.0f }
@@ -257,7 +184,7 @@ int main(int argc, char* argv[]) {
         }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::TransformMatrix{}));
     QCE_CRITICAL(app.m_entities.AddComponent(entity3, untextured_material_component));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3, sphere_rotation_component));
+    QCE_CRITICAL(app.m_entities.AddComponent(entity3, full_rotation_component));
 
     auto entity4 = app.m_entities.AddEntity();
     QCE_CRITICAL(app.m_entities.AddComponent(entity4, QCE::StaticMesh{
@@ -265,7 +192,6 @@ int main(int argc, char* argv[]) {
     }));
     QCE_CRITICAL(app.m_entities.AddComponent(entity4,
         QCE::TransformComponents{
-            //{ 0.0f, 0.3826834f, 0.0f, 0.9238795f },
             { 0.0f, 0.0f, 0.0f, 1.0f },
             { 0.0f, -.5f, 20.5f },
             { 1.0f, 1.0f, 1.0f }
