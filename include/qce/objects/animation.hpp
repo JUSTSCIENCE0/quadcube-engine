@@ -39,6 +39,12 @@ namespace QCE {
         float  current_time = 0.0f;
     };
 
+    // TODO: Explore possible optimization
+    // Store animation channels and quaternions in memory in compressed form
+    // This will definitely reduce RAM consumption and potentially optimize CPU cache usage
+    // Presumably the second one provides a performance gain greater than the overhead of decompression
+    // This needs to be verified using a benchmark
+
     struct AnimationRotationKey {
         quaternion value = { 0.0f, 0.0f, 0.0f, 1.0f };
         float start_time = 0.0f;
