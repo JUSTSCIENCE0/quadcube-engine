@@ -45,18 +45,31 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 include(FetchContent)
-FetchContent_Declare(
-    common-utils
-    GIT_REPOSITORY https://github.com/JUSTSCIENCE0/common-utils.git
-    GIT_TAG        dev
-)
-if (BUILD_QCE_TEST)
-    set(ENABLE_CU_TEST_UTILS ON CACHE BOOL "" FORCE)
-    set(ENABLE_CU_PROFILE ON CACHE BOOL "" FORCE)
-endif(BUILD_QCE_TEST)
-FetchContent_MakeAvailable(common-utils)
+
+if (NOT TARGET common-utils)
+    FetchContent_Declare(
+        common-utils
+        GIT_REPOSITORY https://github.com/JUSTSCIENCE0/common-utils.git
+        GIT_TAG        dev
+    )
+    if (BUILD_QCE_TEST)
+        set(ENABLE_CU_TEST_UTILS ON CACHE BOOL "" FORCE)
+        set(ENABLE_CU_PROFILE ON CACHE BOOL "" FORCE)
+    endif(BUILD_QCE_TEST)
+    FetchContent_MakeAvailable(common-utils)
+endif()
 set_property(TARGET common-utils PROPERTY FOLDER "externals")
 list(APPEND CMAKE_MODULE_PATH "${common-utils_SOURCE_DIR}/cmake")
+
+if (NOT TARGET bitsery)
+    FetchContent_Declare(
+        bitsery
+        GIT_REPOSITORY https://github.com/fraillt/bitsery.git
+        GIT_TAG        9bebfd4911b8ef52c5a67754ccb87a8fd5223414 # v5.2.5
+    )
+    FetchContent_MakeAvailable(bitsery)
+endif()
+set_property(TARGET bitsery PROPERTY FOLDER "externals")
 
 find_package(ktx REQUIRED)
 
@@ -80,6 +93,11 @@ set(QCE_MJSON_HDRS
     generated/mjson_output.hpp
 
     include/qce/ancillary/configs_traits.hpp
+)
+
+set(QCE_BINARY_SERIALIZATION_HDRS
+    include/qce/binary/math.hpp
+    include/qce/binary/resources.hpp
 )
 
 set(QCE_OBJECTS_HDRS
@@ -247,6 +265,7 @@ target_sources(${PROJECT_NAME}
         ${QCE_HID_HDRS}
 
         ${QCE_MJSON_HDRS}
+        ${QCE_BINARY_SERIALIZATION_HDRS}
 
         ${QCE_ECS_HDRS}
 
@@ -276,6 +295,7 @@ source_group("Renders/Implementation"    FILES ${QCE_RENDERS_IMPL})
 source_group("HID/Headers"               FILES ${QCE_HID_HDRS})
 
 source_group("MJson/Headers"             FILES ${QCE_MJSON_HDRS})
+source_group("Binary/Headers"            FILES ${QCE_BINARY_SERIALIZATION_HDRS})
 
 source_group("ECS/Headers"               FILES ${QCE_ECS_HDRS})
 
@@ -330,6 +350,7 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
         common-utils
         KTX::ktx
+        bitsery
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
