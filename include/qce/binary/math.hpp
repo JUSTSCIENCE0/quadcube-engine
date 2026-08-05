@@ -9,7 +9,6 @@
 
 #include <bitsery/bitsery.h>
 #include <bitsery/adapter/buffer.h>
-#include <bitsery/traits/vector.h>
 
 namespace QCE {
     template<typename S>
