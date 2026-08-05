@@ -13,7 +13,7 @@
 
 namespace QCE {
 #define CU_ENUMS_DESCRIPTION \
-    CU_BEGIN_ENUM(EasingFunc) \
+    CU_BEGIN_ENUM_TYPED(EasingFunc, int8_t) \
         CU_ENUM_UNIT(E_EASING_LINEAR) \
         CU_ENUM_UNIT(E_EASING_EASE_IN_QUAD) \
         CU_ENUM_UNIT(E_EASING_EASE_IN_EXPO) \
@@ -21,10 +21,12 @@ namespace QCE {
         CU_ENUM_UNIT(E_EASING_EASE_OUT_SQRT) \
         CU_ENUM_UNIT(E_EASING_SMOOTH_STEP) \
         CU_ENUM_UNIT(E_EASING_SMOOTHER_STEP) \
+        CU_ENUM_ANCILLARY_UNITS(E_EASING) \
     CU_END_ENUM(EasingFunc) \
-    CU_BEGIN_ENUM(SplineFunc) \
+    CU_BEGIN_ENUM_TYPED(SplineFunc, int8_t) \
         CU_ENUM_UNIT(E_SPLINE_LINEAR) \
         CU_ENUM_UNIT(E_SPLINE_CATMULL_ROM) \
+        CU_ENUM_ANCILLARY_UNITS(E_SPLINE) \
     CU_END_ENUM(SplineFunc)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
