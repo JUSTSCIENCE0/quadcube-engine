@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <qce/mjson/generated_objects.hpp>
+#include <qce/loaders/mjson/generated_objects.hpp>
 
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/ancillary/structs.hpp>

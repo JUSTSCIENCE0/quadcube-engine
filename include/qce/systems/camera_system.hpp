@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <qce/mjson/generated_objects.hpp>
+#include <qce/loaders/mjson/generated_objects.hpp>
 
 #include <qce/ecs/ecs.hpp>
 #include <qce/hid/events_handler.hpp>

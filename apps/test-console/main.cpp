@@ -3,7 +3,7 @@
 //
 // License: MIT
 
-#include <qce/binary/resources.hpp>
+#include <qce/loaders/binary/resources.hpp>
 
 #include <vector>
 

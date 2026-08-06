@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <qce/binary/math.hpp>
+#include <qce/loaders/binary/math.hpp>
 #include <qce/objects/animation.hpp>
 
 #include <bitsery/traits/string.h>

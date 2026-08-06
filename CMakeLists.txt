@@ -75,7 +75,7 @@ find_package(ktx REQUIRED)
 
 # generate mjson headers from configs_description.h
 macrojson_generate_header_cu_ex(
-    qce/mjson/description_hub.hpp
+    qce/loaders/mjson/description_hub.hpp
     mjson_output.hpp
     TRUE
 )
@@ -85,19 +85,19 @@ set(QCE_INTERFACE
     include/qce/qce.hpp
 )
 
-set(QCE_MJSON_HDRS
-    include/qce/mjson/math_types.hpp
-    include/qce/mjson/configs_description.hpp
-    include/qce/mjson/resources_description.hpp
-    include/qce/mjson/description_hub.hpp
+set(QCE_JSON_SERIALIZATION_HDRS
+    include/qce/loaders/mjson/math_types.hpp
+    include/qce/loaders/mjson/configs_description.hpp
+    include/qce/loaders/mjson/resources_description.hpp
+    include/qce/loaders/mjson/description_hub.hpp
     generated/mjson_output.hpp
 
     include/qce/ancillary/configs_traits.hpp
 )
 
 set(QCE_BINARY_SERIALIZATION_HDRS
-    include/qce/binary/math.hpp
-    include/qce/binary/resources.hpp
+    include/qce/loaders/binary/math.hpp
+    include/qce/loaders/binary/resources.hpp
 )
 
 set(QCE_OBJECTS_HDRS
@@ -264,7 +264,7 @@ target_sources(${PROJECT_NAME}
 
         ${QCE_HID_HDRS}
 
-        ${QCE_MJSON_HDRS}
+        ${QCE_JSON_SERIALIZATION_HDRS}
         ${QCE_BINARY_SERIALIZATION_HDRS}
 
         ${QCE_ECS_HDRS}
@@ -294,8 +294,8 @@ source_group("Renders/Implementation"    FILES ${QCE_RENDERS_IMPL})
 
 source_group("HID/Headers"               FILES ${QCE_HID_HDRS})
 
-source_group("MJson/Headers"             FILES ${QCE_MJSON_HDRS})
-source_group("Binary/Headers"            FILES ${QCE_BINARY_SERIALIZATION_HDRS})
+source_group("Loaders/MJson/Headers"    FILES ${QCE_JSON_SERIALIZATION_HDRS})
+source_group("Loaders/Binary/Headers"   FILES ${QCE_BINARY_SERIALIZATION_HDRS})
 
 source_group("ECS/Headers"               FILES ${QCE_ECS_HDRS})
 

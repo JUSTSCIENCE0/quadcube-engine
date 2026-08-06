@@ -4,7 +4,7 @@
 // License: MIT
 
 #include <qce/objects/resource_manager.hpp>
-#include <qce/mjson/generated_objects.hpp>
+#include <qce/loaders/mjson/generated_objects.hpp>
 
 namespace QCE {
     std::filesystem::path ResourceManager::GetResourcesDirectory() {
