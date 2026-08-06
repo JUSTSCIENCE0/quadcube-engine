@@ -390,4 +390,6 @@ if (BUILD_QCE_TEST)
     add_subdirectory(tests)
 endif(BUILD_QCE_TEST)
 
+add_subdirectory(utils)
+
 target_interface_group(common-utils)
