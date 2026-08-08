@@ -10,6 +10,7 @@
 
 #include <bitsery/traits/string.h>
 #include <bitsery/traits/vector.h>
+#include <bitsery/adapter/stream.h>
 
 #include <limits>
 

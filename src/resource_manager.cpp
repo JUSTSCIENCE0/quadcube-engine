@@ -4,7 +4,7 @@
 // License: MIT
 
 #include <qce/objects/resource_manager.hpp>
-#include <qce/loaders/mjson/generated_objects.hpp>
+#include <qce/loaders/read.hpp>
 
 namespace QCE {
     std::filesystem::path ResourceManager::GetResourcesDirectory() {
@@ -84,26 +84,8 @@ namespace QCE {
             /*TODO: AnimationType animation_type = AnimationType::TRANSFORM_ANIMATION*/) {
         const auto file_name = m_animations_directory / (animation_name + "." + ANIMATION_CONTAINER);
 
-        if (std::filesystem::exists(file_name)) {
-            // TODO: try load from binary file
-            // return ErrorCode::SUCCESS;
-        }
-
-        auto json_file_name = file_name;
-        json_file_name += ".json";
-        if (!std::filesystem::exists(json_file_name))
-            return ErrorCode::E_RM_ANIMATION_NOT_FOUND;
-
-        std::string error_descr;
         QCE::TransformAnimation animation{};
-        if (macrojson::E_MJSON_OK != 
-            macrojson::json_file_to_object(json_file_name, animation, error_descr)) {
-            // TODO: use log system
-            std::cout << "Failed to load animation from json file: " << json_file_name
-                      << " with error: " << error_descr << std::endl;
-            return ErrorCode::E_RM_ANIMATION_LOAD_FAILED;
-        }
-
+        QCE_CRITICAL(read_from_file(file_name, animation));
         QCE_CRITICAL(QCE::validate_animation(animation));
         return Add(std::move(animation));
     }

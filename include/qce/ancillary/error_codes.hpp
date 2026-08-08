@@ -56,8 +56,10 @@ namespace QCE {
         CU_ENUM_UNIT(E_DX12_UNSUPPORTED_TEXTURE_FORMAT) \
         CU_VALUED_ENUM_UNIT(GROUP_VULKAN,           0x40000) \
         CU_VALUED_ENUM_UNIT(GROUP_ENGINE,           0x50000) \
+        CU_ENUM_UNIT(E_ENG_FILE_NOT_FOUND) \
         CU_ENUM_UNIT(E_ENG_FILE_OPEN_FAILED) \
         CU_ENUM_UNIT(E_ENG_FILE_READ_FAILED) \
+        CU_ENUM_UNIT(E_ENG_FILE_WRITE_FAILED) \
         CU_ENUM_UNIT(E_ENG_ENTITY_ALREADY_EXISTS) \
         CU_ENUM_UNIT(E_ENG_ENTITY_NOT_FOUND) \
         CU_ENUM_UNIT(E_ENG_SHADER_BYTECODE_NOT_FOUND) \
@@ -222,11 +224,17 @@ namespace QCE {
         /* Group Vulkan*/
 
         /* Group Engine*/
+        case ErrorCode::E_ENG_FILE_NOT_FOUND:
+            result << "ENGINE - File not found";
+            break;
         case ErrorCode::E_ENG_FILE_OPEN_FAILED:
             result << "ENGINE - File open Failed";
             break;
         case ErrorCode::E_ENG_FILE_READ_FAILED:
             result << "ENGINE - Reading from file Failed";
+            break;
+        case ErrorCode::E_ENG_FILE_WRITE_FAILED:
+            result << "ENGINE - Writing to file Failed";
             break;
         case ErrorCode::E_ENG_ENTITY_ALREADY_EXISTS:
             result << "ENGINE - Entity with such name already exists";

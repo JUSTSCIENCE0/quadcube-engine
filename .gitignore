@@ -3,3 +3,6 @@ tests/test_data*/
 .vscode/*
 **/generated/**
 .vs/*
+
+# QCE binary formats
+*.qcta
