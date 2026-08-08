@@ -40,6 +40,8 @@ namespace QCE {
     class ResourceManager final {
     public:
         static constexpr auto INVALID_RESOURCE_INDEX = std::numeric_limits<size_t>::max();
+        static constexpr auto TEXTURE_CONTAINER = "ktx2";
+        static constexpr auto ANIMATION_CONTAINER = "qcta";
 
         ResourceManager(const ResourceManager&) = delete;
         ResourceManager(ResourceManager&&) = delete;
@@ -219,9 +221,6 @@ namespace QCE {
         static constexpr auto SHADERS_BYTECODE_SUBDIRECTORY = "shaders";
         static constexpr auto TEXTURES_SUBDIRECTORY = "assets/textures";
         static constexpr auto ANIMATIONS_SUBDIRECTORY = "assets/animations";
-
-        static constexpr auto TEXTURE_CONTAINER = "ktx2";
-        static constexpr auto ANIMATION_CONTAINER = "qcta";
 
         /// methods
         static std::filesystem::path GetResourcesDirectory();
