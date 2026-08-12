@@ -105,6 +105,17 @@ namespace QCE {
         return (rad / PI) * PI_DEG;
     }
 
+    static inline uint32_t constexpr quantize(float value, float min, float max, uint32_t bits) noexcept {
+        const auto range = max - min;
+        const auto scale = (1 << bits) - 1;
+        return static_cast<uint32_t>((value - min) / range * scale);
+    }
+    static inline float constexpr dequantize(uint32_t value, float min, float max, uint32_t bits) noexcept {
+        const auto range = max - min;
+        const auto scale = (1 << bits) - 1;
+        return static_cast<float>(value) / scale * range + min;
+    }
+
     static inline quaternion euler_rad_to_quaternion(float roll, float pitch, float yaw) noexcept {
         auto angles = vector_init(roll, pitch, yaw, 0.0f);
         auto quat = quaternion_from_euler_rad(angles);
@@ -123,6 +134,59 @@ namespace QCE {
         auto rotation_quat = vector_init(quat.arr);
         rotation_quat = vector_normalize(rotation_quat);
         vector_copy(rotation_quat, quat.arr);
+    }
+
+    static inline uint32_t compress_quaternion(const quaternion& q) noexcept {
+        float tmp[4] = {
+            std::fabs(q.x()), std::fabs(q.y()),
+            std::fabs(q.z()), std::fabs(q.w())
+        };
+        const auto max_abs   = std::max_element(tmp, tmp + 4);
+        const auto max_index = static_cast<uint32_t>(std::distance(tmp, max_abs));
+
+        const auto max_it = &q.arr[max_index];
+        const auto k = (*max_it < 0.0f) ? -1.0f : 1.0f;
+
+        int i = 0;
+        for (auto it = q.arr; it != q.arr + 4; ++it) {
+            if (it == max_it)
+                continue;
+            tmp[i++] = (*it) * k;
+        }
+
+        constexpr uint32_t BITS_PER_COMPONENT = 10;
+        constexpr uint32_t MAX_INDEX_SHIFT = 30;
+
+        uint32_t result = max_index << MAX_INDEX_SHIFT;
+        result |= (quantize(tmp[0], -SIN45, SIN45, BITS_PER_COMPONENT) << 20);
+        result |= (quantize(tmp[1], -SIN45, SIN45, BITS_PER_COMPONENT) << 10);
+        result |= (quantize(tmp[2], -SIN45, SIN45, BITS_PER_COMPONENT));
+        return result;
+    }
+
+    static inline quaternion decompress_quaternion(uint32_t compressed) noexcept {
+        constexpr uint32_t BITS_PER_COMPONENT = 10;
+        constexpr uint32_t MAX_INDEX_SHIFT = 30;
+        constexpr uint32_t COMPONENT_MASK = (1 << BITS_PER_COMPONENT) - 1;
+
+        const auto max_index = compressed >> MAX_INDEX_SHIFT;
+        const float tmp[3] = {
+            dequantize((compressed >> 20) & COMPONENT_MASK, -SIN45, SIN45, BITS_PER_COMPONENT),
+            dequantize((compressed >> 10) & COMPONENT_MASK, -SIN45, SIN45, BITS_PER_COMPONENT),
+            dequantize(compressed         & COMPONENT_MASK, -SIN45, SIN45, BITS_PER_COMPONENT)
+        };
+        const float max_value = std::sqrtf(1.0f - (tmp[0] * tmp[0] + tmp[1] * tmp[1] + tmp[2] * tmp[2]));
+
+        quaternion result{};
+        for (uint32_t i = 0, j = 0; i < 4; ++i) {
+            if (i == max_index) {
+                result.arr[i] = max_value;
+            }
+            else {
+                result.arr[i] = tmp[j++];
+            }
+        }
+        return result;
     }
 
     static inline float constexpr lerp(float a, float b, float t) noexcept {

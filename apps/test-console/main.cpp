@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
     //square_path.total_duration = calculate_animation_duration(square_path);
     //TransformAnimation out{};
 
-    QCE::quaternion q = QCE::euler_deg_to_quaternion(67.0f, 68.0f, 69.0f);
+    QCE::quaternion q = { 0.1f, 0.3f, 0.3f, -0.9f };
     QCE::quaternion out{};
 
     Buffer buffer;

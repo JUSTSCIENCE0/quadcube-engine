@@ -19,19 +19,17 @@ namespace bitsery {
         class QuaternionCompressor {
         public:
             template<typename Ser, typename Fnc>
-            void serialize(Ser& ser, const QCE::quaternion& q, Fnc&&) const
-            {
-                // TODO: remove debug output
+            void serialize(Ser& ser, const QCE::quaternion& q, Fnc&&) const {
+#if !defined(USE_BITSERY_SERIALIZER)
+                auto compressed = QCE::compress_quaternion(q);
+                ser.adapter().template writeBytes<sizeof(compressed)>(compressed);
+#else
+                float tmp[4] = { std::fabs(q.x()), std::fabs(q.y()), std::fabs(q.z()), std::fabs(q.w()) };
 
-                std::cout << "Serialize quaternion:\n";
-                std::cout << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << std::endl;
-                auto max_it = std::max_element(q.arr, q.arr + 4);
-
-                std::cout << "Max value: " << *max_it << std::endl;
-                auto max_index = static_cast<uint8_t>(std::distance(q.arr, max_it));
-                std::cout << "Max index: " << int(max_index) << std::endl;
-
-                auto k = (*max_it < 0.0f) ? -1.0f : 1.0f;
+                const auto max_abs = std::max_element(tmp, tmp + 4);
+                const auto max_index = static_cast<uint8_t>(std::distance(tmp, max_abs));
+                const auto max_it = &q.arr[max_index];
+                const auto k = (*max_it < 0.0f) ? -1.0f : 1.0f;
 
                 float smallest_three[3];
                 int i = 0;
@@ -41,11 +39,6 @@ namespace bitsery {
                     }
                 }
 
-                std::cout << "Smallest three:\n";
-                std::cout << smallest_three[0] << " "
-                          << smallest_three[1] << " "
-                          << smallest_three[2] << std::endl;
-
                 auto write = [&ser](auto value, size_t Bits) {
                     using T = decltype(value);
                     ser.adapter().template writeBits<T>(value, Bits);
@@ -54,19 +47,21 @@ namespace bitsery {
                     return details::getRangeValue(value, RANGE_SPEC);
                 };
 
-                std::cout << quantize(smallest_three[0]) << " "
-                          << quantize(smallest_three[1]) << " "
-                          << quantize(smallest_three[2]) << std::endl;
-
                 write(max_index, 2);
                 write(quantize(smallest_three[0]), BITS_PER_COMPONENT);
                 write(quantize(smallest_three[1]), BITS_PER_COMPONENT);
                 write(quantize(smallest_three[2]), BITS_PER_COMPONENT);
+#endif
             }
 
             template<typename Des, typename Fnc>
-            void deserialize(Des& des, QCE::quaternion&, Fnc&&) const
-            {
+            void deserialize(Des& des, QCE::quaternion& q, Fnc&&) const {
+#if !defined(USE_BITSERY_SERIALIZER)
+                auto& reader = des.adapter();
+                uint32_t compressed = 0;
+                reader.template readBytes<sizeof(uint32_t)>(compressed);
+                q = QCE::decompress_quaternion(compressed);
+#else
                 auto& reader = des.adapter();
                 uint8_t max_index = 0;
                 reader.readBits(max_index, 2);
@@ -85,13 +80,7 @@ namespace bitsery {
                 details::setRangeValue(smallest_three[2], RANGE_SPEC);
                 CheckRange(
                     reader, smallest_three[2], std::integral_constant<bool, Des::TConfig::CheckDataErrors>{});
-
-                std::cout << "\nDeserialize quaternion:\n";
-                std::cout << "Max index: " << int(max_index) << std::endl;
-                std::cout << "Smallest three:\n";
-                std::cout << smallest_three[0] << " "
-                          << smallest_three[1] << " "
-                          << smallest_three[2] << std::endl;
+#endif
             }
 
         private:
@@ -137,10 +126,5 @@ namespace QCE {
         s.enableBitPacking([&value](typename S::BPEnabledType& sbp) {
             sbp.ext(value, bitsery::ext::QuaternionCompressor{});
         });
-
-        s.value4b(value.x());
-        s.value4b(value.y());
-        s.value4b(value.z());
-        s.value4b(value.w());
     }
 }
