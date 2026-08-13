@@ -5,6 +5,10 @@
 
 #pragma once
 
+// Currently, only single vector and matrix operations are implemented
+// TODO: add batch math functions implementation
+// to take full advantage of SIMD instructions
+
 #include <qce/math/vector.hpp>
 #include <qce/math/matrix.hpp>
 #include <qce/math/color.hpp>

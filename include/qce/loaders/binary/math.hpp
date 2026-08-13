@@ -80,6 +80,8 @@ namespace bitsery {
                 details::setRangeValue(smallest_three[2], RANGE_SPEC);
                 CheckRange(
                     reader, smallest_three[2], std::integral_constant<bool, Des::TConfig::CheckDataErrors>{});
+
+                static_assert(false, "Not fully implemented yet");
 #endif
             }
 
