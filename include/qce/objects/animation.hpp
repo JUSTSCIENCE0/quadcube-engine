@@ -91,6 +91,13 @@ namespace QCE {
         std::vector<SplineCoeffs> spline_cache{};
     };
 
+    struct TransformAnimationCompressionContext {
+        float3d position_min{};
+        float3d position_max{};
+        float3d scale_min{};
+        float3d scale_max{};
+    };
+
     static inline float  calculate_animation_duration(const TransformAnimation& animation) {
         float max_duration = 0.0f;
         if (!animation.rotation_channel.empty())
@@ -110,6 +117,13 @@ namespace QCE {
             { key.start_time } -> std::convertible_to<float>;
         };
 
+    template<typename T>
+    concept Float3dChannel =
+        KeyChannel<T> &&
+        requires(typename T::value_type key) {
+            { key.value } -> std::convertible_to<float3d>;
+    };
+
     template<KeyChannel T>
     static inline ErrorCode validate_key_channel(const T& channel, float max_duration) {
         for (size_t i = 1; i < channel.size(); i++) {
@@ -121,6 +135,23 @@ namespace QCE {
                 return ErrorCode::E_RM_ANIMATION_WRONG_DURATION;
         }
         return ErrorCode::SUCCESS;
+    }
+
+    template<Float3dChannel T>
+    static inline void calculate_min_max(
+            const T& channel, float3d& min_value, float3d& max_value) {
+        min_value = channel.front().value;
+        max_value = channel.front().value;
+
+        for (const auto& key : channel) {
+            const float* value = key.value.arr;
+            for (size_t i = 0; i < 3; i++) {
+                if (value[i] < min_value.arr[i])
+                    min_value.arr[i] = value[i];
+                if (value[i] > max_value.arr[i])
+                    max_value.arr[i] = value[i];
+            }
+        }
     }
 
     static inline ErrorCode validate_animation(const TransformAnimation& animation) {
@@ -198,5 +229,16 @@ namespace QCE {
             assert(!"Unsupported spline function");
             break;
         }
+    }
+
+    static inline TransformAnimationCompressionContext calculate_compression_context(const TransformAnimation& animation) {
+        TransformAnimationCompressionContext context{};
+        if (!animation.position_channel.empty()) {
+            calculate_min_max(animation.position_channel, context.position_min, context.position_max);
+        }
+        if (!animation.scale_channel.empty()) {
+            calculate_min_max(animation.scale_channel, context.scale_min, context.scale_max);
+        }
+        return context;
     }
 }
