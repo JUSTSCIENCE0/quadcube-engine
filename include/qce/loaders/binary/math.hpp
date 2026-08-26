@@ -10,9 +10,9 @@
 #include <bitsery/bitsery.h>
 #include <bitsery/adapter/buffer.h>
 
-#include <bitsery/ext/value_range.h>
-
-#include <iostream> // TODO: remove this
+#if defined(USE_BITSERY_SERIALIZER)
+#  include <bitsery/ext/value_range.h>
+#endif // USE_BITSERY_SERIALIZER
 
 namespace bitsery {
     namespace ext {
@@ -51,7 +51,7 @@ namespace bitsery {
                 write(quantize(smallest_three[0]), BITS_PER_COMPONENT);
                 write(quantize(smallest_three[1]), BITS_PER_COMPONENT);
                 write(quantize(smallest_three[2]), BITS_PER_COMPONENT);
-#endif
+#endif // !USE_BITSERY_SERIALIZER
             }
 
             template<typename Des, typename Fnc>
@@ -82,9 +82,10 @@ namespace bitsery {
                     reader, smallest_three[2], std::integral_constant<bool, Des::TConfig::CheckDataErrors>{});
 
                 static_assert(false, "Not fully implemented yet");
-#endif
+#endif // !USE_BITSERY_SERIALIZER
             }
 
+#if defined(USE_BITSERY_SERIALIZER)
         private:
             template<typename Reader>
             void CheckRange(Reader& reader, float& v, std::true_type) const {
@@ -100,6 +101,7 @@ namespace bitsery {
             static constexpr size_t BITS_PER_COMPONENT = 10;
             static constexpr auto   RANGE_SPEC = bitsery::details::RangeSpec<float>(
                 -QCE::SIN45, QCE::SIN45, bitsery::ext::BitsConstraint(BITS_PER_COMPONENT));
+#endif // USE_BITSERY_SERIALIZER
         };
     }
 
