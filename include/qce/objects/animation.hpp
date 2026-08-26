@@ -144,13 +144,13 @@ namespace QCE {
         max_value = channel.front().value;
 
         for (const auto& key : channel) {
-            const float* value = key.value.arr;
-            for (size_t i = 0; i < 3; i++) {
-                if (value[i] < min_value.arr[i])
-                    min_value.arr[i] = value[i];
-                if (value[i] > max_value.arr[i])
-                    max_value.arr[i] = value[i];
-            }
+            min_value.x() = std::min(min_value.x(), key.value.x());
+            min_value.y() = std::min(min_value.y(), key.value.y());
+            min_value.z() = std::min(min_value.z(), key.value.z());
+
+            max_value.x() = std::max(max_value.x(), key.value.x());
+            max_value.y() = std::max(max_value.y(), key.value.y());
+            max_value.z() = std::max(max_value.z(), key.value.z());
         }
     }
 
@@ -231,7 +231,8 @@ namespace QCE {
         }
     }
 
-    static inline TransformAnimationCompressionContext calculate_compression_context(const TransformAnimation& animation) {
+    static inline TransformAnimationCompressionContext calculate_compression_context(
+            const TransformAnimation& animation) {
         TransformAnimationCompressionContext context{};
         if (!animation.position_channel.empty()) {
             calculate_min_max(animation.position_channel, context.position_min, context.position_max);
