@@ -99,9 +99,14 @@ set(QCE_JSON_SERIALIZATION
     include/qce/ancillary/configs_traits.hpp
 )
 
-set(QCE_BINARY_SERIALIZATION
+set(QCE_BINARY_SERIALIZATION_HDRS
     include/qce/loaders/binary/math.hpp
     include/qce/loaders/binary/resources.hpp
+    include/qce/loaders/binary/compression.hpp
+)
+
+set(QCE_BINARY_SERIALIZATION_IMPL
+    src/binary_compression.cpp
 )
 
 set(QCE_OBJECTS_HDRS
@@ -270,7 +275,9 @@ target_sources(${PROJECT_NAME}
 
         ${QCE_SERIALIZATION}
         ${QCE_JSON_SERIALIZATION}
-        ${QCE_BINARY_SERIALIZATION}
+
+        ${QCE_BINARY_SERIALIZATION_HDRS}
+        ${QCE_BINARY_SERIALIZATION_IMPL}
 
         ${QCE_ECS_HDRS}
 
@@ -301,7 +308,8 @@ source_group("HID/Headers"               FILES ${QCE_HID_HDRS})
 
 source_group("Loaders"                   FILES ${QCE_SERIALIZATION})
 source_group("Loaders/MJson"             FILES ${QCE_JSON_SERIALIZATION})
-source_group("Loaders/Binary"            FILES ${QCE_BINARY_SERIALIZATION})
+source_group("Loaders/Binary"            FILES ${QCE_BINARY_SERIALIZATION_HDRS})
+source_group("Loaders/Implementation"    FILES ${QCE_BINARY_SERIALIZATION_IMPL})
 
 source_group("ECS/Headers"               FILES ${QCE_ECS_HDRS})
 

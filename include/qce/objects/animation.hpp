@@ -27,19 +27,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_SPLINE_LINEAR) \
         CU_ENUM_UNIT(E_SPLINE_CATMULL_ROM) \
         CU_ENUM_ANCILLARY_UNITS(E_SPLINE) \
-    CU_END_ENUM(SplineFunc) \
-    CU_BEGIN_ENUM_TYPED(FloatQuantization, int8_t) \
-        CU_VALUED_ENUM_UNIT(E_0_BIT_FQ,  0) \
-        CU_VALUED_ENUM_UNIT(E_8_BIT_FQ,  1) \
-        CU_VALUED_ENUM_UNIT(E_16_BIT_FQ, 2) \
-        CU_VALUED_ENUM_UNIT(E_24_BIT_FQ, 3) \
-        CU_VALUED_ENUM_UNIT(E_NO_FQ,     4) \
-    CU_END_ENUM(FloatQuantization) \
-    CU_BEGIN_ENUM_TYPED(QuaternionQuantization, int8_t) \
-        CU_VALUED_ENUM_UNIT(E_32_BIT_QQ, 0) \
-        CU_VALUED_ENUM_UNIT(E_64_BIT_QQ, 1) \
-        CU_VALUED_ENUM_UNIT(E_NO_QQ,     3) \
-    CU_END_ENUM(QuaternionQuantization)
+    CU_END_ENUM(SplineFunc)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
 
@@ -103,18 +91,6 @@ namespace QCE {
         std::vector<SplineCoeffs> spline_cache{};
     };
 
-    struct TransformAnimationCompressionContext {
-        FloatQuantization position_quantization[3] = {
-            E_NO_FQ, E_NO_FQ, E_NO_FQ };
-        float3d position_min{};
-        float3d position_max{};
-        FloatQuantization scale_quantization[3] = {
-            E_NO_FQ, E_NO_FQ, E_NO_FQ };
-        float3d scale_min{};
-        float3d scale_max{};
-        QuaternionQuantization rotation_quantization = E_32_BIT_QQ;
-    };
-
     static inline float  calculate_animation_duration(const TransformAnimation& animation) {
         float max_duration = 0.0f;
         if (!animation.rotation_channel.empty())
@@ -134,13 +110,6 @@ namespace QCE {
             { key.start_time } -> std::convertible_to<float>;
         };
 
-    template<typename T>
-    concept Float3dChannel =
-        KeyChannel<T> &&
-        requires(typename T::value_type key) {
-            { key.value } -> std::convertible_to<float3d>;
-    };
-
     template<KeyChannel T>
     static inline ErrorCode validate_key_channel(const T& channel, float max_duration) {
         for (size_t i = 1; i < channel.size(); i++) {
@@ -152,23 +121,6 @@ namespace QCE {
                 return ErrorCode::E_RM_ANIMATION_WRONG_DURATION;
         }
         return ErrorCode::SUCCESS;
-    }
-
-    template<Float3dChannel T>
-    static inline void calculate_min_max(
-            const T& channel, float3d& min_value, float3d& max_value) {
-        min_value = channel.front().value;
-        max_value = channel.front().value;
-
-        for (const auto& key : channel) {
-            min_value.x() = std::min(min_value.x(), key.value.x());
-            min_value.y() = std::min(min_value.y(), key.value.y());
-            min_value.z() = std::min(min_value.z(), key.value.z());
-
-            max_value.x() = std::max(max_value.x(), key.value.x());
-            max_value.y() = std::max(max_value.y(), key.value.y());
-            max_value.z() = std::max(max_value.z(), key.value.z());
-        }
     }
 
     static inline ErrorCode validate_animation(const TransformAnimation& animation) {
@@ -246,39 +198,5 @@ namespace QCE {
             assert(!"Unsupported spline function");
             break;
         }
-    }
-
-    static inline FloatQuantization calculate_float_quantization(float min_value, float max_value, float eps) {
-        if (eps <= 0.0f)
-            return FloatQuantization::E_NO_FQ;
-
-        assert(min_value <= max_value);
-        float range = max_value - min_value;
-        if (range <= eps)
-            return FloatQuantization::E_0_BIT_FQ;
-
-        float quantization_levels = range / eps;
-        if (quantization_levels <= 256.0f)
-            return FloatQuantization::E_8_BIT_FQ;
-        if (quantization_levels <= 65536.0f)
-            return FloatQuantization::E_16_BIT_FQ;
-        if (quantization_levels <= 16777216.0f)
-            return FloatQuantization::E_24_BIT_FQ;
-        return FloatQuantization::E_NO_FQ;
-    }
-
-    static inline TransformAnimationCompressionContext calculate_compression_context(
-            const TransformAnimation& animation,
-            float position_eps = 0.0005f,
-            float scale_eps    = 0.0005f,
-            QuaternionQuantization qq = E_32_BIT_QQ) {
-        TransformAnimationCompressionContext context{};
-        if (!animation.position_channel.empty()) {
-            calculate_min_max(animation.position_channel, context.position_min, context.position_max);
-        }
-        if (!animation.scale_channel.empty()) {
-            calculate_min_max(animation.scale_channel, context.scale_min, context.scale_max);
-        }
-        return context;
     }
 }

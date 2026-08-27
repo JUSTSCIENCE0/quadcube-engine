@@ -4,6 +4,7 @@
 // License: MIT
 
 #include <qce/loaders/binary/resources.hpp>
+#include <qce/loaders/binary/compression.hpp>
 
 #include <vector>
 
@@ -96,8 +97,14 @@ static inline void animation_deserialization() {
     TransformAnimationCompressionContext ctx = calculate_compression_context(square_path);
     (void)ctx;
 
+    Buffer buffer;
+    auto written_bytes = bitsery::quickSerialization<OutputAdapter>(buffer, square_path);
+
     TransformAnimation out{};
-    (void)out;
+    auto state = bitsery::quickDeserialization<InputAdapter>(
+        { buffer.begin(), written_bytes }, out);
+
+    assert(state.first == bitsery::ReaderError::NoError && state.second);
 }
 
 int main(int argc, char* argv[]) {
