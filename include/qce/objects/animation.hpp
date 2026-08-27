@@ -27,7 +27,19 @@ namespace QCE {
         CU_ENUM_UNIT(E_SPLINE_LINEAR) \
         CU_ENUM_UNIT(E_SPLINE_CATMULL_ROM) \
         CU_ENUM_ANCILLARY_UNITS(E_SPLINE) \
-    CU_END_ENUM(SplineFunc)
+    CU_END_ENUM(SplineFunc) \
+    CU_BEGIN_ENUM_TYPED(FloatQuantization, int8_t) \
+        CU_VALUED_ENUM_UNIT(E_0_BIT_FQ,  0) \
+        CU_VALUED_ENUM_UNIT(E_8_BIT_FQ,  1) \
+        CU_VALUED_ENUM_UNIT(E_16_BIT_FQ, 2) \
+        CU_VALUED_ENUM_UNIT(E_24_BIT_FQ, 3) \
+        CU_VALUED_ENUM_UNIT(E_NO_FQ,     4) \
+    CU_END_ENUM(FloatQuantization) \
+    CU_BEGIN_ENUM_TYPED(QuaternionQuantization, int8_t) \
+        CU_VALUED_ENUM_UNIT(E_32_BIT_QQ, 0) \
+        CU_VALUED_ENUM_UNIT(E_64_BIT_QQ, 1) \
+        CU_VALUED_ENUM_UNIT(E_NO_QQ,     3) \
+    CU_END_ENUM(QuaternionQuantization)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
 
@@ -92,10 +104,15 @@ namespace QCE {
     };
 
     struct TransformAnimationCompressionContext {
+        FloatQuantization position_quantization[3] = {
+            E_NO_FQ, E_NO_FQ, E_NO_FQ };
         float3d position_min{};
         float3d position_max{};
+        FloatQuantization scale_quantization[3] = {
+            E_NO_FQ, E_NO_FQ, E_NO_FQ };
         float3d scale_min{};
         float3d scale_max{};
+        QuaternionQuantization rotation_quantization = E_32_BIT_QQ;
     };
 
     static inline float  calculate_animation_duration(const TransformAnimation& animation) {
@@ -231,8 +248,30 @@ namespace QCE {
         }
     }
 
+    static inline FloatQuantization calculate_float_quantization(float min_value, float max_value, float eps) {
+        if (eps <= 0.0f)
+            return FloatQuantization::E_NO_FQ;
+
+        assert(min_value <= max_value);
+        float range = max_value - min_value;
+        if (range <= eps)
+            return FloatQuantization::E_0_BIT_FQ;
+
+        float quantization_levels = range / eps;
+        if (quantization_levels <= 256.0f)
+            return FloatQuantization::E_8_BIT_FQ;
+        if (quantization_levels <= 65536.0f)
+            return FloatQuantization::E_16_BIT_FQ;
+        if (quantization_levels <= 16777216.0f)
+            return FloatQuantization::E_24_BIT_FQ;
+        return FloatQuantization::E_NO_FQ;
+    }
+
     static inline TransformAnimationCompressionContext calculate_compression_context(
-            const TransformAnimation& animation) {
+            const TransformAnimation& animation,
+            float position_eps = 0.0005f,
+            float scale_eps    = 0.0005f,
+            QuaternionQuantization qq = E_32_BIT_QQ) {
         TransformAnimationCompressionContext context{};
         if (!animation.position_channel.empty()) {
             calculate_min_max(animation.position_channel, context.position_min, context.position_max);
