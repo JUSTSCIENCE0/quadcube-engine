@@ -22,7 +22,7 @@ namespace bitsery {
             void serialize(Ser& ser, const QCE::quaternion& q, Fnc&&) const {
 #if !defined(USE_BITSERY_SERIALIZER)
                 auto compressed = QCE::compress_quaternion(q);
-                ser.adapter().template writeBytes<sizeof(compressed)>(compressed);
+                ser.value4b(compressed);
 #else
                 float tmp[4] = { std::fabs(q.x()), std::fabs(q.y()), std::fabs(q.z()), std::fabs(q.w()) };
 
@@ -57,9 +57,8 @@ namespace bitsery {
             template<typename Des, typename Fnc>
             void deserialize(Des& des, QCE::quaternion& q, Fnc&&) const {
 #if !defined(USE_BITSERY_SERIALIZER)
-                auto& reader = des.adapter();
                 uint32_t compressed = 0;
-                reader.template readBytes<sizeof(uint32_t)>(compressed);
+                des.value4b(compressed);
                 q = QCE::decompress_quaternion(compressed);
 #else
                 auto& reader = des.adapter();
