@@ -127,8 +127,6 @@ namespace QCE {
 
     template<typename S>
     void serialize(S& s, quaternion& value) {
-        s.enableBitPacking([&value](typename S::BPEnabledType& sbp) {
-            sbp.ext(value, bitsery::ext::QuaternionCompressor{});
-        });
+        s.ext(value, bitsery::ext::QuaternionCompressor{});
     }
 }
