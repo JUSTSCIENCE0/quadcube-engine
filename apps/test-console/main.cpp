@@ -4,7 +4,6 @@
 // License: MIT
 
 #include <qce/loaders/binary/resources.hpp>
-#include <qce/loaders/binary/compression.hpp>
 
 #include <vector>
 
