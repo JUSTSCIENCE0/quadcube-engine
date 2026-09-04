@@ -16,7 +16,7 @@ namespace QCE {
 
     template<Float3dChannel T>
     static inline void calculate_min_max(
-        const T& channel, float3d& min_value, float3d& max_value) {
+        const T& channel, float3d& min_value, float3d& max_value, float eps) {
         min_value = channel.front().value;
         max_value = channel.front().value;
 
@@ -29,6 +29,13 @@ namespace QCE {
             max_value.y() = std::max(max_value.y(), key.value.y());
             max_value.z() = std::max(max_value.z(), key.value.z());
         }
+
+        min_value.x() -= eps;
+        min_value.y() -= eps;
+        min_value.z() -= eps;
+        max_value.x() += eps;
+        max_value.y() += eps;
+        max_value.z() += eps;
     }
 
     static inline FloatQuantization calculate_float_quantization(float min_value, float max_value, float eps) {
@@ -66,13 +73,14 @@ namespace QCE {
         TransformAnimationCompressionContext context{};
         context.has_position_channel = !animation.position_channel.empty();
         if (context.has_position_channel) {
-            calculate_min_max(animation.position_channel, context.position_min, context.position_max);
+            calculate_min_max(
+                animation.position_channel, context.position_min, context.position_max, position_eps);
             calculate_float_quantization(
                 context.position_min, context.position_max, position_eps, context.position_quantization);
         }
         context.has_scale_channel = !animation.scale_channel.empty();
         if (context.has_scale_channel) {
-            calculate_min_max(animation.scale_channel, context.scale_min, context.scale_max);
+            calculate_min_max(animation.scale_channel, context.scale_min, context.scale_max, scale_eps);
             calculate_float_quantization(
                 context.scale_min, context.scale_max, scale_eps, context.scale_quantization);
         }
