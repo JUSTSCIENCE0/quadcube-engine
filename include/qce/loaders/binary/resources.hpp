@@ -99,22 +99,22 @@ private:
 
     template<typename Des>
     void read_context_flags(Des& des, QCE::TransformAnimationCompressionContext& compression_ctx) const {
-        auto read = [&des](auto value, size_t Bits) {
-            des.adapter().readBits(value, Bits);
+        auto read = [&des](auto& value, size_t Bits) {
+            des.adapter().readBits(reinterpret_cast<uint8_t&>(value), Bits);
         };
 
-        read(compression_ctx.has_position_channel,              1);
-        read(uint8_t(compression_ctx.position_quantization[0]), 3);
-        read(uint8_t(compression_ctx.position_quantization[1]), 3);
-        read(uint8_t(compression_ctx.position_quantization[2]), 3);
+        read(compression_ctx.has_position_channel,     1);
+        read(compression_ctx.position_quantization[0], 3);
+        read(compression_ctx.position_quantization[1], 3);
+        read(compression_ctx.position_quantization[2], 3);
 
-        read(compression_ctx.has_scale_channel,              1);
-        read(uint8_t(compression_ctx.scale_quantization[0]), 3);
-        read(uint8_t(compression_ctx.scale_quantization[1]), 3);
-        read(uint8_t(compression_ctx.scale_quantization[2]), 3);
+        read(compression_ctx.has_scale_channel,     1);
+        read(compression_ctx.scale_quantization[0], 3);
+        read(compression_ctx.scale_quantization[1], 3);
+        read(compression_ctx.scale_quantization[2], 3);
 
-        read(compression_ctx.has_rotation_channel,           1);
-        read(uint8_t(compression_ctx.rotation_quantization), 3);
+        read(compression_ctx.has_rotation_channel,  1);
+        read(compression_ctx.rotation_quantization, 3);
     }
 
     template<typename S>
