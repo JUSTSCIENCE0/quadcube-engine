@@ -146,7 +146,14 @@ private:
         s.text1b(animation.id, MAX_ID_LENGTH);
 
         if (compression_ctx.has_rotation_channel) {
-            s.container(animation.rotation_channel, MAX_ANIMATION_KEYS_COUNT);
+            QuaternionCompressor compressor{};
+            compressor.quantization = compression_ctx.rotation_quantization;
+            s.container(animation.rotation_channel, MAX_ANIMATION_KEYS_COUNT, 
+                [&compressor](S& sl, auto& key) {
+                    sl.ext(key.value, compressor);
+                    sl.value4b(key.start_time);
+                    sl.value1b(key.easing);
+                });
         }
 
         Float3dChannelCompressor compressor{};
