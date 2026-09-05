@@ -140,13 +140,15 @@ namespace QCE {
         vector_copy(rotation_quat, quat.arr);
     }
 
-    static inline uint32_t compress_quaternion(const quaternion& q) noexcept {
+    template<typename OutType>
+        requires std::same_as<OutType, uint32_t> || std::same_as<OutType, uint64_t>
+    inline OutType compress_quaternion(const quaternion& q) noexcept {
         float tmp[4] = {
             std::fabs(q.x()), std::fabs(q.y()),
             std::fabs(q.z()), std::fabs(q.w())
         };
         const auto max_abs   = std::max_element(tmp, tmp + 4);
-        const auto max_index = static_cast<uint32_t>(std::distance(tmp, max_abs));
+        const auto max_index = static_cast<OutType>(std::distance(tmp, max_abs));
 
         const auto max_it = &q.arr[max_index];
         const auto k = (*max_it < 0.0f) ? -1.0f : 1.0f;
@@ -158,26 +160,28 @@ namespace QCE {
             tmp[i++] = (*it) * k;
         }
 
-        constexpr uint32_t BITS_PER_COMPONENT = 10;
-        constexpr uint32_t MAX_INDEX_SHIFT = 30;
+        constexpr OutType BITS_PER_COMPONENT = std::is_same_v<OutType, uint32_t> ? 10 : 20;
+        constexpr OutType MAX_INDEX_SHIFT = BITS_PER_COMPONENT * 3;
 
-        uint32_t result = max_index << MAX_INDEX_SHIFT;
-        result |= (quantize(tmp[0], -SIN45, SIN45, BITS_PER_COMPONENT) << 20);
-        result |= (quantize(tmp[1], -SIN45, SIN45, BITS_PER_COMPONENT) << 10);
-        result |= (quantize(tmp[2], -SIN45, SIN45, BITS_PER_COMPONENT));
+        OutType result = max_index << MAX_INDEX_SHIFT;
+        result |= (OutType(quantize(tmp[0], -SIN45, SIN45, BITS_PER_COMPONENT)) << (BITS_PER_COMPONENT * 2));
+        result |= (OutType(quantize(tmp[1], -SIN45, SIN45, BITS_PER_COMPONENT)) << BITS_PER_COMPONENT);
+        result |=  OutType(quantize(tmp[2], -SIN45, SIN45, BITS_PER_COMPONENT));
         return result;
     }
 
-    static inline quaternion decompress_quaternion(uint32_t compressed) noexcept {
-        constexpr uint32_t BITS_PER_COMPONENT = 10;
-        constexpr uint32_t MAX_INDEX_SHIFT = 30;
-        constexpr uint32_t COMPONENT_MASK = (1 << BITS_PER_COMPONENT) - 1;
+    template<typename InType>
+        requires std::same_as<InType, uint32_t> || std::same_as<InType, uint64_t>
+    inline quaternion decompress_quaternion(InType compressed) noexcept {
+        constexpr InType BITS_PER_COMPONENT = std::is_same_v<InType, uint32_t> ? 10 : 20;;
+        constexpr InType MAX_INDEX_SHIFT = BITS_PER_COMPONENT * 3;
+        constexpr InType COMPONENT_MASK = (1 << BITS_PER_COMPONENT) - 1;
 
         const auto max_index = compressed >> MAX_INDEX_SHIFT;
         const float tmp[3] = {
-            dequantize((compressed >> 20) & COMPONENT_MASK, -SIN45, SIN45, BITS_PER_COMPONENT),
-            dequantize((compressed >> 10) & COMPONENT_MASK, -SIN45, SIN45, BITS_PER_COMPONENT),
-            dequantize(compressed         & COMPONENT_MASK, -SIN45, SIN45, BITS_PER_COMPONENT)
+            dequantize((compressed >> (BITS_PER_COMPONENT * 2)) & COMPONENT_MASK, -SIN45, SIN45, BITS_PER_COMPONENT),
+            dequantize((compressed >>  BITS_PER_COMPONENT) & COMPONENT_MASK, -SIN45, SIN45, BITS_PER_COMPONENT),
+            dequantize(compressed & COMPONENT_MASK, -SIN45, SIN45, BITS_PER_COMPONENT)
         };
         const float max_value = std::sqrtf(1.0f - (tmp[0] * tmp[0] + tmp[1] * tmp[1] + tmp[2] * tmp[2]));
 
