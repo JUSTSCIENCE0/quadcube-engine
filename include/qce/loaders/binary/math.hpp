@@ -5,102 +5,63 @@
 
 #pragma once
 
-#include <qce/math/math.hpp>
+#include <qce/loaders/binary/compression.hpp>
 
 #include <bitsery/bitsery.h>
 #include <bitsery/adapter/buffer.h>
 
-#if defined(USE_BITSERY_SERIALIZER)
-#  include <bitsery/ext/value_range.h>
-#endif // USE_BITSERY_SERIALIZER
 
 namespace bitsery {
     namespace ext {
         class QuaternionCompressor {
         public:
+            QCE::QuaternionQuantization quantization = QCE::E_32_BIT_QQ;
+
             template<typename Ser, typename Fnc>
             void serialize(Ser& ser, const QCE::quaternion& q, Fnc&&) const {
-#if !defined(USE_BITSERY_SERIALIZER)
-                auto compressed = QCE::compress_quaternion(q);
-                ser.value4b(compressed);
-#else
-                float tmp[4] = { std::fabs(q.x()), std::fabs(q.y()), std::fabs(q.z()), std::fabs(q.w()) };
-
-                const auto max_abs = std::max_element(tmp, tmp + 4);
-                const auto max_index = static_cast<uint8_t>(std::distance(tmp, max_abs));
-                const auto max_it = &q.arr[max_index];
-                const auto k = (*max_it < 0.0f) ? -1.0f : 1.0f;
-
-                float smallest_three[3];
-                int i = 0;
-                for (auto it = q.arr; it != q.arr + 4; ++it) {
-                    if (it != max_it) {
-                        smallest_three[i++] = (*it) * k;
-                    }
+                switch (quantization) {
+                case QCE::E_32_BIT_QQ: {
+                    auto compressed = QCE::compress_quaternion<uint32_t>(q);
+                    ser.value4b(compressed);
+                    break;
                 }
-
-                auto write = [&ser](auto value, size_t Bits) {
-                    using T = decltype(value);
-                    ser.adapter().template writeBits<T>(value, Bits);
-                };
-                auto quantize = [this](float value) {
-                    return details::getRangeValue(value, RANGE_SPEC);
-                };
-
-                write(max_index, 2);
-                write(quantize(smallest_three[0]), BITS_PER_COMPONENT);
-                write(quantize(smallest_three[1]), BITS_PER_COMPONENT);
-                write(quantize(smallest_three[2]), BITS_PER_COMPONENT);
-#endif // !USE_BITSERY_SERIALIZER
+                case QCE::E_64_BIT_QQ: {
+                    auto compressed = QCE::compress_quaternion<uint64_t>(q);
+                    ser.value8b(compressed);
+                    break;
+                }
+                default:
+                    ser.value4b(q.x());
+                    ser.value4b(q.y());
+                    ser.value4b(q.z());
+                    ser.value4b(q.w());
+                    break;
+                }
             }
 
             template<typename Des, typename Fnc>
             void deserialize(Des& des, QCE::quaternion& q, Fnc&&) const {
-#if !defined(USE_BITSERY_SERIALIZER)
-                uint32_t compressed = 0;
-                des.value4b(compressed);
-                q = QCE::decompress_quaternion(compressed);
-#else
-                auto& reader = des.adapter();
-                uint8_t max_index = 0;
-                reader.readBits(max_index, 2);
-                float smallest_three[3];
-                reader.readBits(reinterpret_cast<details::SameSizeUnsigned<float>&>(smallest_three[0]), BITS_PER_COMPONENT);
-                details::setRangeValue(smallest_three[0], RANGE_SPEC);
-                CheckRange(
-                    reader, smallest_three[0], std::integral_constant<bool, Des::TConfig::CheckDataErrors>{});
-
-                reader.readBits(reinterpret_cast<details::SameSizeUnsigned<float>&>(smallest_three[1]), BITS_PER_COMPONENT);
-                details::setRangeValue(smallest_three[1], RANGE_SPEC);
-                CheckRange(
-                    reader, smallest_three[1], std::integral_constant<bool, Des::TConfig::CheckDataErrors>{});
-
-                reader.readBits(reinterpret_cast<details::SameSizeUnsigned<float>&>(smallest_three[2]), BITS_PER_COMPONENT);
-                details::setRangeValue(smallest_three[2], RANGE_SPEC);
-                CheckRange(
-                    reader, smallest_three[2], std::integral_constant<bool, Des::TConfig::CheckDataErrors>{});
-
-                static_assert(false, "Not fully implemented yet");
-#endif // !USE_BITSERY_SERIALIZER
-            }
-
-#if defined(USE_BITSERY_SERIALIZER)
-        private:
-            template<typename Reader>
-            void CheckRange(Reader& reader, float& v, std::true_type) const {
-                if (!details::isRangeValid(v, RANGE_SPEC)) {
-                    reader.error(ReaderError::InvalidData);
-                    v = RANGE_SPEC.min;
+                switch (quantization) {
+                case QCE::E_32_BIT_QQ: {
+                    uint32_t compressed = 0;
+                    des.value4b(compressed);
+                    q = QCE::decompress_quaternion(compressed);
+                    break;
+                }
+                case QCE::E_64_BIT_QQ: {
+                    uint64_t compressed = 0;
+                    des.value8b(compressed);
+                    q = QCE::decompress_quaternion(compressed);
+                    break;
+                }
+                default:
+                    des.value4b(q.x());
+                    des.value4b(q.y());
+                    des.value4b(q.z());
+                    des.value4b(q.w());
+                    break;
                 }
             }
-
-            template<typename Reader>
-            void CheckRange(Reader&, float&, std::false_type) const {}
-
-            static constexpr size_t BITS_PER_COMPONENT = 10;
-            static constexpr auto   RANGE_SPEC = bitsery::details::RangeSpec<float>(
-                -QCE::SIN45, QCE::SIN45, bitsery::ext::BitsConstraint(BITS_PER_COMPONENT));
-#endif // USE_BITSERY_SERIALIZER
         };
     }
 
