@@ -32,3 +32,4 @@ endif()
 
 add_subdirectory(math-test)
 add_subdirectory(ecs-test)
+add_subdirectory(binary-test)
