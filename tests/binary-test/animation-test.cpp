@@ -60,7 +60,9 @@ private:
     float GetQuaternionDotError() {
         switch (compression_params.rotation_quantization) {
         case E_32_BIT_QQ: {
-            constexpr float AngularError = deg_to_rad(0.5f);
+            // empirically found values
+            // TODO: find values ​​from verified sources
+            constexpr float AngularError = deg_to_rad(0.25f);
             return std::cos(AngularError / 2);
         }
         case E_64_BIT_QQ: {
