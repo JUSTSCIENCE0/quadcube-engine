@@ -26,7 +26,17 @@ class TransformAnimationCompressor {
 public:
     template<typename Ser, typename Fnc>
     void serialize(Ser& ser, const QCE::TransformAnimation& animation, Fnc&&) const {
-        auto compression_ctx = QCE::calculate_compression_context(animation);
+        auto compression_params = ser.template contextOrNull<QCE::TransformAnimationCompressionParams>();
+        QCE::TransformAnimationCompressionParams def_params{};
+        if (!compression_params) {
+            compression_params = &def_params;
+        }
+
+        auto compression_ctx = QCE::calculate_compression_context(
+            animation,
+            compression_params->position_eps,
+            compression_params->scale_eps,
+            compression_params->rotation_quantization);
         write_context_flags(ser, compression_ctx);
         process_context_floats(ser, compression_ctx);
 

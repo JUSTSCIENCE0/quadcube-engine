@@ -27,6 +27,12 @@ namespace QCE {
 
     struct TransformAnimation;
 
+    struct TransformAnimationCompressionParams {
+        float position_eps = 0.0005f;
+        float scale_eps = 0.0005f;
+        QuaternionQuantization rotation_quantization = E_32_BIT_QQ;
+    };
+
     struct TransformAnimationCompressionContext {
         bool has_position_channel = false;
         FloatQuantization position_quantization[3] = {
