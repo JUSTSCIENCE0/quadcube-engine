@@ -58,6 +58,10 @@ private:
         template<typename S, typename T>
         void operator()(S& sbp, T& key) {
             for (int i = 0; i < 3; i++) {
+                if (m_quantization[i] == QCE::E_0_BIT_FQ) {
+                    key.value.arr[i] = m_min.arr[i];
+                    continue;
+                }
                 if (m_quantization[i] != QCE::E_NO_FQ) {
                     const auto RANGE_SPEC = bitsery::ext::ValueRange<float>(
                         m_min.arr[i], m_max.arr[i],
