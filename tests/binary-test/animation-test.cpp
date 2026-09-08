@@ -15,7 +15,8 @@ class AnimationSerializationTest :
 protected:
     void Process() {
         Buffer buffer;
-        auto written_bytes = bitsery::quickSerialization<OutputAdapter>(buffer, source_animation);
+        auto written_bytes = bitsery::quickSerialization(
+            compression_params, OutputAdapter{ buffer }, source_animation);
         ASSERT_GT(written_bytes, 0) << "Failed to serialize animation";
 
         auto state = bitsery::quickDeserialization<InputAdapter>(
@@ -103,7 +104,7 @@ private:
     using InputAdapter = bitsery::InputBufferAdapter<Buffer>;
 
     const TransformAnimation& source_animation = *std::get<0>(GetParam());
-    const TransformAnimationCompressionParams& compression_params = std::get<1>(GetParam());
+    TransformAnimationCompressionParams compression_params = std::get<1>(GetParam());
     TransformAnimation deserialized_animation{};
 };
 
@@ -176,15 +177,94 @@ static inline TransformAnimation generate_full_sample_animation() {
 
     return square_path;
 }
+static inline TransformAnimation generate_only_position_animation() {
+    TransformAnimation square_path{};
+    square_path.id = "square_path";
+    square_path.position_channel = {
+        {
+            /*value*/ { -6.968599f, 1.783926f, 0.204209f },
+            /*start_time*/ 0.0f
+        },
+        {
+            /*value*/ { -7.277121f, 9.905811f, 6.174850f },
+            /*start_time*/ 1.0f
+        },
+        {
+            /*value*/ { -2.614493f, 3.784512f, -4.221519f },
+            /*start_time*/ 2.0f
+        },
+        {
+            /*value*/ { 3.799920f, 9.625124f, 0.092419f },
+            /*start_time*/ 3.0f
+        },
+        {
+            /*value*/ { -6.587712f, 0.703252f, 5.143878f },
+            /*start_time*/ 4.0f
+        }
+    };
+    square_path.scale_channel = {};
+    square_path.rotation_channel = {};
+    square_path.total_duration = calculate_animation_duration(square_path);
+
+    return square_path;
+}
+static inline TransformAnimation generate_static_x_animation() {
+    TransformAnimation square_path{};
+    square_path.id = "square_path";
+    square_path.position_channel = {
+        {
+            /*value*/ { 1.0f, 1.783926f, 0.204209f },
+            /*start_time*/ 0.0f
+        },
+        {
+            /*value*/ { 1.0f, 9.905811f, 6.174850f },
+            /*start_time*/ 1.0f
+        },
+        {
+            /*value*/ { 1.0f, 3.784512f, -4.221519f },
+            /*start_time*/ 2.0f
+        },
+        {
+            /*value*/ { 1.0f, 9.625124f, 0.092419f },
+            /*start_time*/ 3.0f
+        },
+        {
+            /*value*/ { 1.0f, 0.703252f, 5.143878f },
+            /*start_time*/ 4.0f
+        }
+    };
+    square_path.scale_channel = {};
+    square_path.rotation_channel = {};
+    square_path.total_duration = calculate_animation_duration(square_path);
+
+    return square_path;
+}
 
 static TransformAnimation full_sample_animation = generate_full_sample_animation();
-static TransformAnimationCompressionParams default_compression{};
+static TransformAnimation only_position_animation = generate_only_position_animation();
+static TransformAnimation static_x_animation = generate_static_x_animation();
+static TransformAnimationCompressionParams compression_example_1{
+    .position_eps = 0.0005f,  // 16 bit
+    .scale_eps = 0.00005f,    // 24 bit
+    .rotation_quantization = E_32_BIT_QQ
+};
+static TransformAnimationCompressionParams compression_example_2{
+    .position_eps = 0.05f,   // 8 bit
+    .scale_eps = 1e-7f,      // no compression
+    .rotation_quantization = E_64_BIT_QQ
+};
 
 INSTANTIATE_TEST_SUITE_P(
     Base,
     AnimationSerializationTest,
-    ::testing::Values(
-        std::make_tuple(&full_sample_animation, default_compression)
+    ::testing::Combine(
+        ::testing::Values(
+            &full_sample_animation,
+            &only_position_animation,
+            &static_x_animation),
+        ::testing::Values(
+            compression_example_1,
+            compression_example_2)
     )
 );
 
