@@ -30,9 +30,6 @@ namespace QCE {
             max_value.z() = std::max(max_value.z(), key.value.z());
         }
 
-        min_value.x() -= eps;
-        min_value.y() -= eps;
-        min_value.z() -= eps;
         max_value.x() += eps;
         max_value.y() += eps;
         max_value.z() += eps;
