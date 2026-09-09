@@ -4,14 +4,27 @@
 // License: MIT
 
 #define CLI_CONFIGURATION \
-    CLI_REQUIRED_PROPERTY(input, SYMBOL(i), input_file, "input file path", \
+    CLI_REQUIRED_PROPERTY(input, SYMBOL(i), input_file, "Input file path", \
         std::string, BaseValidator) \
-    CLI_REQUIRED_PROPERTY(output, SYMBOL(o), output_file, "output file path", \
+    CLI_REQUIRED_PROPERTY(output, SYMBOL(o), output_file, "Output file path", \
         std::string, BaseValidator) \
-    CLI_REQUIRED_PROPERTY(convertion, SYMBOL(c), convertion, "convertion type", \
+    CLI_REQUIRED_PROPERTY(convertion, SYMBOL(c), convertion, "Conversion type", \
         std::string, ListValidator, "to_json", "to_bin" ) \
-    CLI_OPTIONAL_PROPERTY(format, SYMBOL(f), format, "input file format", \
-        std::string, "autodetect", ListValidator, "autodetect", "animation" )
+    CLI_OPTIONAL_PROPERTY(format, SYMBOL(f), format, "Input file format", \
+        std::string, "autodetect", ListValidator, \
+            "autodetect", "animation" ) \
+    CLI_OPTIONAL_PROPERTY(animation-position-eps, WO_SYMBOL, animation_position_eps, \
+        "This parameter applies only when the input file format is an animation.\n" \
+    "    Specifies the maximum allowable error for animation position channel compression.", \
+        float, 0.0005f, BaseValidator) \
+    CLI_OPTIONAL_PROPERTY(animation-rotation-eps, WO_SYMBOL, animation_rotation_eps, \
+        "This parameter applies only when the input file format is an animation.\n" \
+    "    Specifies the maximum allowable error for animation rotation channel compression.", \
+        float, 0.0005f, BaseValidator) \
+    CLI_OPTIONAL_PROPERTY(animation-quternion-size, WO_SYMBOL, animation_quternion_size, \
+        "This parameter applies only when the input file format is an animation.\n" \
+    "    Specifies the number of bits used to pack quaternions in the animation rotation channel.", \
+        int, 32, ListValidator, 32, 64, 128)
 
 #define CLI_ABOUT \
     "Copyright (c) 2026, Yakov Usoltsev\n" \
@@ -71,11 +84,12 @@ bool load_file(const std::filesystem::path& input_path, T& data) {
     return QCE::read_from_binary(input_path, data) == QCE::ErrorCode::SUCCESS;
 }
 
-template<typename T>
+template<typename T, typename CtxT = QCE::Private::NoContext>
 int convert_file(
         const std::filesystem::path& input_path,
         const std::filesystem::path& output_path,
-        Convertion convertion) {
+        Convertion convertion,
+        CtxT&& ctx = {}) {
     T data{};
     if (!load_file(input_path, data)) {
         std::cerr << "Failed to load file: " << input_path.string() << std::endl;
@@ -90,7 +104,7 @@ int convert_file(
         }
         break;
     case Convertion::to_bin:
-        if (QCE::write_to_binary(output_path, data) != QCE::ErrorCode::SUCCESS) {
+        if (QCE::write_to_binary(output_path, data, std::forward<CtxT>(ctx)) != QCE::ErrorCode::SUCCESS) {
             std::cerr << "Failed to write binary file: " << output_path.string() << std::endl;
             return -1;
         }
@@ -118,9 +132,19 @@ int main(int argc, char* argv[]) {
     }
 
     switch (format) {
-    case Format::animation:
+    case Format::animation: {
+        QCE::TransformAnimationCompressionParams ctx{
+            .position_eps = cli_config.animation_position_eps,
+            .scale_eps = cli_config.animation_position_eps,
+            .rotation_quantization =
+                (cli_config.animation_quternion_size == 32) ?
+                QCE::E_32_BIT_QQ :
+                    (cli_config.animation_quternion_size == 64) ?
+                    QCE::E_64_BIT_QQ : QCE::E_NO_QQ
+        };
         return convert_file<QCE::TransformAnimation>(
-            cli_config.input_file, cli_config.output_file, convertion);
+            cli_config.input_file, cli_config.output_file, convertion, std::move(ctx));
+    }
     default:
         assert(!"Unsupported format");
         return -1;

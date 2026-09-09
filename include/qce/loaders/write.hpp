@@ -13,14 +13,28 @@
 #include <fstream>
 
 namespace QCE {
+    namespace Private {
+        struct NoContext {};
+    }
+
     // defaults
-    template<typename T>
-    ErrorCode write_to_binary(const std::filesystem::path& path, T&& object) {
+    template<typename T, typename CtxT = Private::NoContext>
+    ErrorCode write_to_binary(const std::filesystem::path& path, T&& object, CtxT&& ctx = {}) {
         std::fstream s{ path, std::ios::out | std::ios::binary | std::ios::trunc };
         if (!s.is_open())
             return ErrorCode::E_ENG_FILE_OPEN_FAILED;
 
         try {
+            if constexpr (std::is_same_v<CtxT, Private::NoContext>) {
+                bitsery::Serializer<bitsery::OutputBufferedStreamAdapter> ser{ s };
+                ser.object(object);
+                ser.adapter().flush();
+            }
+            else {
+                bitsery::Serializer<bitsery::OutputBufferedStreamAdapter, CtxT> ser{ ctx, s };
+                ser.object(object);
+                ser.adapter().flush();
+            }
             bitsery::Serializer<bitsery::OutputBufferedStreamAdapter> ser{ s };
             ser.object(object);
             ser.adapter().flush();
