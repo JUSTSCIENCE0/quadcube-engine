@@ -35,9 +35,6 @@ namespace QCE {
                 ser.object(object);
                 ser.adapter().flush();
             }
-            bitsery::Serializer<bitsery::OutputBufferedStreamAdapter> ser{ s };
-            ser.object(object);
-            ser.adapter().flush();
             s.close();
         }
         catch (std::exception& exp) {
