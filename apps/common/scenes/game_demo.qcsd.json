@@ -112,11 +112,107 @@
             "static_mesh": "cuboid",
             "transform": {
                 "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
-                "position": [ 0.0, 0.0, 0.5 ],
+                "position": [ 1.0, 0.0, 0.0 ],
                 "scale": [ 1.0, 1.0, 1.0 ]
             },
             "material": "edges_material",
             "transform_animation": "deformation_demo"
+        },
+        {
+            "name": "left_cuboid",
+            "static_mesh": "cuboid",
+            "transform": {
+                "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                "position": [ -1.0, 0.0, 0.0 ],
+                "scale": [ 1.0, 1.0, 1.0 ]
+            },
+            "material": "textured_material"
+        },
+        {
+            "name": "down_sphere",
+            "static_mesh": "sphere_smooth",
+            "transform": {
+                "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                "position": [ 0.0, 0.0, 0.0 ],
+                "scale": [ 1.0, 1.0, 1.0 ]
+            },
+            "material": "untextured_material"
+        },
+        {
+            "name": "up_sphere",
+            "static_mesh": "sphere_hard",
+            "transform": {
+                "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                "position": [ 0.0, 3.0, 0.0 ],
+                "scale":    [ 1.0, 1.0, 1.0 ]
+            },
+            "material": "untextured_material",
+            "transform_animation": "full_rotation"
+        },
+        {
+            "name": "middle_plane",
+            "static_mesh": "flat_plane",
+            "transform": {
+                "rotation": [ 0.0,  0.0,  0.0, 1.0 ],
+                "position": [ 0.0, -0.5, 20.5 ],
+                "scale":    [ 1.0,  1.0,  1.0 ]
+            },
+            "material": "edges_material"
+        },
+        {
+            "name": "right_hills",
+            "dynamic_mesh": {
+                "base": "hills",
+                "deformated": "right_hills"
+            },
+            "transform": {
+                "rotation": [ 0.0,  0.0,  0.0, 1.0 ],
+                "position": [ 7.5, -0.5, 20.5 ],
+                "scale":    [ 0.5,  0.5,  0.5 ]
+            },
+            "material": "edges_material",
+            "deformation": {
+                "update_period": 0.5,
+                "plane_params": {
+                    "length": 100.0,
+                    "width": 20.0,
+                    "hard_edges": true,
+                    "repeat_uv": true,
+                    "unit_squares": true
+                },
+                "is_reflected":  false
+            }
+        },
+        {
+            "name": "left_hills",
+            "dynamic_mesh": {
+                "base": "hills",
+                "deformated": "left_hills"
+            },
+            "transform": {
+                "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                "position": [ -7.5, -0.5, 20.5 ],
+                "scale": [ 0.5, 0.5, 0.5 ]
+            },
+            "material": "edges_material",
+            "deformation": {
+                "update_period": 0.5,
+                "plane_params": {
+                    "length": 100.0,
+                    "width": 20.0,
+                    "hard_edges": true,
+                    "repeat_uv": true,
+                    "unit_squares": true
+                },
+                "is_reflected": true
+            }
+        },
+        {
+            "name": "sun",
+            "directional_light": {
+                "color": "gray",
+                "direction": [ 1.0, -2.0, 3.0 ]
+            }
         }
     ]
 }
