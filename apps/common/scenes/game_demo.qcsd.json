@@ -1,0 +1,122 @@
+{
+    "resources": [
+        {
+            "type": "figure",
+            "name": "cuboid",
+            "params": {
+                "type":  "cuboid",
+                "length": 1.0,
+                "width":  1.0,
+                "height": 1.0
+            }
+        },
+        {
+            "type": "figure",
+            "name": "sphere_smooth",
+            "params": {
+                "type": "sphere",
+                "subdivisions": 2,
+                "hard_edges": false
+            }
+        },
+        {
+            "type": "figure",
+            "name": "sphere_hard",
+            "params": {
+                "type": "sphere",
+                "subdivisions": 2,
+                "hard_edges": true
+            }
+        },
+        {
+            "type": "figure",
+            "name": "flat_plane",
+            "params": {
+                "type": "plane",
+                "length": 50.0,
+                "width": 5.0,
+                "hard_edges": false,
+                "repeat_uv": true,
+                "unit_squares": true
+            }
+        },
+        {
+            "type": "figure",
+            "name": "hills",
+            "params": {
+                "type": "plane",
+                "length": 100.0,
+                "width": 20.0,
+                "hard_edges": true,
+                "repeat_uv": true,
+                "unit_squares": true
+            }
+        },
+        {
+            "type": "mesh",
+            "name": "left_hills",
+            "params": {
+                "is_empty": true
+            }
+        },
+        {
+            "type": "mesh",
+            "name": "right_hills",
+            "params": {
+                "is_empty": true
+            }
+        },
+        {
+            "type": "texture",
+            "name": "squares.bc7"
+        },
+        {
+            "type": "texture",
+            "name": "edges.bc7"
+        },
+        {
+            "type": "material",
+            "name": "textured_material",
+            "params": {
+                "albedo_color": "light_gray",
+                "albedo_texture": "squares.bc7"
+            }
+        },
+        {
+            "type": "material",
+            "name": "edges_material",
+            "params": {
+                "albedo_color": "white",
+                "albedo_texture": "edges.bc7"
+            }
+        },
+        {
+            "type": "material",
+            "name": "untextured_material",
+            "params": {
+                "albedo_color": "gray"
+            }
+        },
+        {
+            "type": "animation",
+            "name": "deformation_demo"
+        },
+        {
+            "type": "animation",
+            "name": "full_rotation"
+        }
+    ],
+    "entities": [
+        {
+            "name": "right_cuboid",
+            "static_mesh": "cuboid",
+            "transform": {
+                "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                "position": [ 0.0, 0.0, 0.5 ],
+                "scale": [ 1.0, 1.0, 1.0 ]
+            },
+            "material": "edges_material",
+            "transform_animation": "deformation_demo"
+        }
+    ]
+}
