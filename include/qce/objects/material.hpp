@@ -37,4 +37,19 @@ namespace QCE {
         std::optional<size_t> occlusion_texture = std::nullopt;
         std::optional<size_t> emissive_texture  = std::nullopt;
     };
+
+    struct MaterialParams {
+        /// base
+        color_rgba albedo_color = WHITE;
+        float3d    fresnel = { 0.01f, 0.01f, 0.01f };
+        float      shininess = 0.75f;
+
+        /// textures
+        std::optional<std::string> albedo_texture    = std::nullopt;
+        std::optional<std::string> normal_texture    = std::nullopt;
+        std::optional<std::string> metallic_texture  = std::nullopt;
+        std::optional<std::string> roughness_texture = std::nullopt;
+        std::optional<std::string> occlusion_texture = std::nullopt;
+        std::optional<std::string> emissive_texture  = std::nullopt;
+    };
 }

@@ -37,4 +37,8 @@ namespace QCE {
         std::vector<vertex>  vertices{};
         std::vector<index_t> indices{};
     };
+
+    struct MeshParams {
+        bool is_empty = false;
+    };
 }
