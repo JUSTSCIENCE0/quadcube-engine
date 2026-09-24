@@ -50,7 +50,7 @@ if (NOT TARGET common-utils)
     FetchContent_Declare(
         common-utils
         GIT_REPOSITORY https://github.com/JUSTSCIENCE0/common-utils.git
-        GIT_TAG        b5b3391cfac8b32780898660a604ad134c7acc82 # main 09.08.2026
+        GIT_TAG        f0cb0d6e2b7d030848e07c5f59e84d9ab6a883c7 # main 24.09.2026
     )
     if (BUILD_QCE_TEST)
         set(ENABLE_CU_TEST_UTILS ON CACHE BOOL "" FORCE)
