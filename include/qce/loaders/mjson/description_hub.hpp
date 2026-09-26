@@ -5,3 +5,4 @@
 
 #include <qce/loaders/mjson/configs_description.hpp>
 #include <qce/loaders/mjson/resources_description.hpp>
+#include <qce/loaders/mjson/scene_description.hpp>

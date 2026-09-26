@@ -5,10 +5,11 @@
 
 #pragma once
 
-#include <qce/objects/resource_manager.hpp>
+#include <qce/objects/texture.hpp>
+#include <qce/objects/figures.hpp>
+#include <qce/objects/material.hpp>
+#include <qce/objects/animation.hpp>
 
-#include <vector>
-#include <string>
 #include <variant>
 
 namespace QCE {

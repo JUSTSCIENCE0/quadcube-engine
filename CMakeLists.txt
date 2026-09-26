@@ -95,6 +95,7 @@ set(QCE_JSON_SERIALIZATION
     include/qce/loaders/mjson/resources_description.hpp
     include/qce/loaders/mjson/description_hub.hpp
     include/qce/loaders/mjson/generated_objects.hpp
+    include/qce/loaders/mjson/scene_description.hpp
     generated/mjson_output.hpp
 
     include/qce/ancillary/configs_traits.hpp

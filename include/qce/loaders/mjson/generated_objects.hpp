@@ -6,6 +6,6 @@
 #pragma once
 
 #include <qce/loaders/mjson/math_types.hpp>
-#include <qce/objects/animation.hpp>
+#include <qce/objects/scene.hpp>
 
 #include "mjson_output.hpp"
