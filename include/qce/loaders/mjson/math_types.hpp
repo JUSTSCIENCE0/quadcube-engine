@@ -30,6 +30,22 @@ namespace macrojson {
         root[name].PushBack(jw, alloc);
     }
 
+    static inline void write_to_json(
+            const char* name, const QCE::color_rgba& value, Document::AllocatorType& alloc, Value& root) {
+        Value jarr(kArrayType);
+
+        Value jr(value.r());
+        jarr.PushBack(jr, alloc);
+        Value jg(value.g());
+        jarr.PushBack(jg, alloc);
+        Value jb(value.b());
+        jarr.PushBack(jb, alloc);
+        Value ja(value.a());
+        jarr.PushBack(ja, alloc);
+
+        write_to_json(name, std::move(jarr), alloc, root);
+    }
+
     static inline MJsonErrorCode read_from_json(const char* name, const Value& root, QCE::float3d& val) {
         if (name && !root.HasMember(name)) {
             return E_MJSON_NOT_EXISTS;
@@ -72,6 +88,45 @@ namespace macrojson {
         return E_MJSON_TYPE_MISMATCH;
     }
 
+    static inline bool read_color_as_array(const Value& jval, QCE::color_rgba& val) {
+        assert(jval.IsArray());
+        const auto& arr = jval.GetArray();
+        if (arr.Size() != 4)
+            return false;
+
+        if (!arr[0].IsFloat() || !arr[1].IsFloat()|| !arr[2].IsFloat() || !arr[3].IsFloat())
+            return false;
+
+        val.r() = arr[0].GetFloat();
+        val.g() = arr[1].GetFloat();
+        val.b() = arr[2].GetFloat();
+        val.a() = arr[3].GetFloat();
+        return true;
+    }
+
+    static inline MJsonErrorCode read_from_json(const char* name, const Value& root, QCE::color_rgba& val) {
+        if (name && !root.HasMember(name)) {
+            return E_MJSON_NOT_EXISTS;
+        }
+
+        const Value& jval = name ? root[name] : root;
+        if (jval.IsArray()) {
+            if (read_color_as_array(jval, val))
+                return E_MJSON_OK;
+            else
+                return E_MJSON_TYPE_MISMATCH;
+        }
+        if (jval.IsString()) {
+            auto cstr = jval.GetString();
+            if (QCE::color_by_name(cstr, val))
+                return E_MJSON_OK;
+            if (QCE::color_by_hex(cstr, val))
+                return E_MJSON_OK;
+        }
+
+        return E_MJSON_TYPE_MISMATCH;
+    }
+
     template<
         typename Float3dT,
         std::enable_if_t<std::is_same_v<Float3dT, QCE::float3d>, bool> = true>
@@ -100,5 +155,26 @@ namespace macrojson {
             .maxItems = 4
         });
         generate_schema_base("items", nullptr, nullptr, "number", alloc, schema);
+    }
+
+    template<
+        typename ColorRgbaT,
+        std::enable_if_t<std::is_same_v<ColorRgbaT, QCE::color_rgba>, bool> = true>
+    inline void generate_schema(
+            const char* name, const char* title, const char* description,
+            Document::AllocatorType& alloc, Value& schema) {
+        schema.AddMember("oneOf", rapidjson::Value(rapidjson::kArrayType), alloc);
+        auto& joneof = schema["oneOf"];
+        auto jarray_type = rapidjson::Value(rapidjson::kObjectType); \
+        generate_schema_base(nullptr, nullptr, nullptr, "array", alloc, jarray_type);
+        add_validation_fields<std::vector<float>>(alloc, jarray_type, ArrayParams{
+            .minItems = 4,
+            .maxItems = 4
+        });
+        joneof.PushBack(jarray_type, alloc);
+
+        auto jstring_type = rapidjson::Value(rapidjson::kObjectType); \
+        generate_schema_base("items", nullptr, nullptr, "number", alloc, schema);
+        joneof.PushBack(jstring_type, alloc);
     }
 }
