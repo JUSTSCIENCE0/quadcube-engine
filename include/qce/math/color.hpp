@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <cstring>
+
 namespace QCE {
     struct color_rgba
     {
