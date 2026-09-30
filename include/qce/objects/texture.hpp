@@ -15,13 +15,16 @@
 
 namespace QCE {
 #define CU_ENUMS_DESCRIPTION \
-    CU_BEGIN_ENUM(TextureFormat) \
+    CU_BEGIN_ENUM_TYPED(TextureFormat, int16_t) \
         CU_VALUED_ENUM_UNIT(E_TEXFMT_UNKNOWN, -1) \
         CU_VALUED_ENUM_UNIT(E_TEXFMT_R32G32B32A32_SFLOAT, 109) \
         CU_VALUED_ENUM_UNIT(E_TEXFMT_BC7_UNORM_BLOCK, 145) \
         CU_VALUED_ENUM_UNIT(E_TEXFMT_BC7_SRGB_BLOCK, 146) \
-    CU_END_ENUM(TextureFormat)
-// TODO: enum TextureType
+    CU_END_ENUM(TextureFormat) \
+    CU_BEGIN_ENUM_TYPED(TextureType, int8_t) \
+        CU_ENUM_UNIT(E_TEXTYPE_2D) \
+        CU_ENUM_UNIT(E_TEXTYPE_CUBE_MAP) /*TODO: etc*/\
+    CU_END_ENUM(TextureType)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
 
@@ -49,6 +52,10 @@ namespace QCE {
         std::vector<MipLevel> mip_levels;
 
         void* ktx = nullptr;
+    };
+
+    struct TextureParams {
+        TextureType texture_type = TextureType::E_TEXTYPE_2D;
     };
 
     ErrorCode texture2d_load(const std::filesystem::path& path, Texture2D& texture);
