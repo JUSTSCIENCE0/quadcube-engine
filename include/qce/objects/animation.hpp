@@ -27,7 +27,10 @@ namespace QCE {
         CU_ENUM_UNIT(E_SPLINE_LINEAR) \
         CU_ENUM_UNIT(E_SPLINE_CATMULL_ROM) \
         CU_ENUM_ANCILLARY_UNITS(E_SPLINE) \
-    CU_END_ENUM(SplineFunc)
+    CU_END_ENUM(SplineFunc) \
+    CU_BEGIN_ENUM_TYPED(AnimationType, int8_t) \
+        CU_ENUM_UNIT(E_ANIMATION_TRANSFORM) /*TODO: etc*/\
+    CU_END_ENUM(AnimationType)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
 
@@ -89,6 +92,10 @@ namespace QCE {
             float3d c;
         };
         std::vector<SplineCoeffs> spline_cache{};
+    };
+
+    struct AnimationParams {
+        AnimationType animation_type = AnimationType::E_ANIMATION_TRANSFORM;
     };
 
     static inline float  calculate_animation_duration(const TransformAnimation& animation) {
