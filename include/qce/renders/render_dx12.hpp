@@ -236,6 +236,8 @@ namespace QCE {
         UINT m_cbv_srv_uav_descr_size = 0;
 
         uint64_t m_current_fence = 0;
+        UINT m_swap_chain_flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+        bool m_tearing_supported = false;
 
         BufferMap m_texture_buffer_map{};
         BufferMap m_material_texture_map{};

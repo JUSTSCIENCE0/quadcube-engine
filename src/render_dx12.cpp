@@ -7,6 +7,8 @@
 #include <qce/renders/render_dx12.hpp>
 #include <qce/renders/render_dx12_static_samplers.hpp>
 
+#include <dxgi1_5.h>
+
 namespace QCE {
     RenderDX12::RenderDX12(Entities& entities, RenderConfig initial_config, HWND window) :
         RenderBase(entities, std::move(initial_config)),
@@ -33,6 +35,18 @@ namespace QCE {
         auto hr = CreateDXGIFactory(IID_PPV_ARGS(&m_dxgi_factory));
         if (FAILED(hr)) {
             return ErrorCode::E_DX12_CREATE_DXGI_FAILED;
+        }
+
+        MsPtr<IDXGIFactory5> dxgi_factory5;
+        BOOL allow_tearing = FALSE;
+        if (SUCCEEDED(m_dxgi_factory.As(&dxgi_factory5)) &&
+            SUCCEEDED(dxgi_factory5->CheckFeatureSupport(
+                DXGI_FEATURE_PRESENT_ALLOW_TEARING,
+                &allow_tearing,
+                sizeof(allow_tearing))) &&
+            allow_tearing) {
+            m_tearing_supported = true;
+            m_swap_chain_flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
         }
 
         hr = D3D12CreateDevice(
@@ -146,7 +160,7 @@ namespace QCE {
         sd.OutputWindow = m_window;
         sd.Windowed = true;
         sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-        sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+        sd.Flags = m_swap_chain_flags;
 
         // Note: Swap chain uses queue to perform flush.
         auto hr = m_dxgi_factory->CreateSwapChain(
@@ -213,7 +227,7 @@ namespace QCE {
             SWAP_CHAIN_BUFFER_COUNT,
             m_config.width, m_config.height,
             BACK_BUFFER_FORMAT,
-            DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+            m_swap_chain_flags);
         if (FAILED(hr))
             return ErrorCode::E_DX12_SWAP_CHAIN_RESIZE_BUFFERS_FAILED;
 
@@ -794,7 +808,9 @@ namespace QCE {
         ID3D12CommandList* cmds_lists[] = { m_cmd_list.Get() };
         m_cmd_queue->ExecuteCommandLists(_countof(cmds_lists), cmds_lists);
 
-        hr = m_swap_chain->Present(0, 0);
+        hr = m_swap_chain->Present(
+            0, // TODO: add vsync support
+            m_tearing_supported ? DXGI_PRESENT_ALLOW_TEARING : 0);
         if (FAILED(hr)) {
             return ErrorCode::E_DX12_PRESENT_SWAP_CHAIN_FAILED;
         }
