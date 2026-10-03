@@ -16,6 +16,11 @@ namespace QCE {
         QCE_THROW_CRITICAL(Init());
     }
 
+    RenderDX12::~RenderDX12() {
+        if (m_cmd_queue.Get() != nullptr && m_fence.Get() != nullptr)
+            FlushCommandQueue();
+    }
+
     ErrorCode RenderDX12::Init() {
 //#if defined(DEBUG) || defined(_DEBUG) 
 //        {

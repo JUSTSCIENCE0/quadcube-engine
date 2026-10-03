@@ -34,6 +34,7 @@ namespace QCE {
     public:
         /// ctor
         RenderDX12(Entities& entities, RenderConfig initial_config, HWND window);
+        virtual ~RenderDX12();
 
         /// methods
         ErrorCode Draw() override;
