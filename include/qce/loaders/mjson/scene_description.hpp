@@ -31,4 +31,13 @@ MJSON_VARIANT_BEGIN(QCE::ResourceParams, ResourceType,
     MJSON_VARIANT_UNIT(QCE::AnimationParams, E_SCENE_RESOURCE_ANIMATION)
 MJSON_VARIANT_END(QCE::ResourceParams)
 
+MJSON_OBJECT_BEGIN(QCE::ResourceDescription, "Resource description", nullptr)
+    MJSON_FIELD(std::string, name, "Name", nullptr)
+    MJSON_FIELD(QCE::ResourceParams, params, "Parameters", nullptr)
+MJSON_OBJECT_END(QCE::ResourceDescription)
+
+MJSON_OBJECT_BEGIN(QCE::SceneDescription, "Scene description", nullptr)
+    MJSON_FIELD(std::vector<QCE::ResourceDescription>, resources, "Resources", nullptr)
+MJSON_OBJECT_END(QCE::SceneDescription)
+
 #endif
