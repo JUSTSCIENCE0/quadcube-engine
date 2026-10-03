@@ -86,8 +86,8 @@ namespace QCE {
         assert(hwnd == m_hwnd);
 
         auto get_mouse_position = [this](LPARAM lp) noexcept -> std::pair<float, float> {
-            float x = float(GET_X_LPARAM(lp)) / float(m_config.width);
-            float y = 1.0f - (float(GET_Y_LPARAM(lp)) / float(m_config.height));
+            float x = float(GET_X_LPARAM(lp)) / float(m_config.width) - 0.5f;
+            float y = 0.5f - (float(GET_Y_LPARAM(lp)) / float(m_config.height));
             return { x, y };
         };
 
@@ -156,17 +156,10 @@ namespace QCE {
             // TODO - check do we need this handler and early exit if we don't
 
             auto [x, y] = get_mouse_position(lParam);
-            float dx = x - m_prev_mouse_x;
-            float dy = y - m_prev_mouse_y;
-            m_prev_mouse_x = x;
-            m_prev_mouse_y = y;
-
-            if (!m_handle_next_mouse_move) {
-                m_handle_next_mouse_move = true;
+            if (std::abs(x) < MOUSE_DEADZONE && std::abs(y) < MOUSE_DEADZONE)
                 return 0;
-            }
 
-            m_hid_system.PushMouseMoveEvent(hid_event_on_mouse_move(dx, dy));
+            m_hid_system.PushMouseMoveEvent(hid_event_on_mouse_move(x, y));
 
             if (m_config.is_first_person)
                 CenterCursor();
@@ -227,6 +220,5 @@ namespace QCE {
         };
         ClientToScreen(m_hwnd, &pt);
         SetCursorPos(pt.x, pt.y);
-        m_handle_next_mouse_move = false;
     }
 }

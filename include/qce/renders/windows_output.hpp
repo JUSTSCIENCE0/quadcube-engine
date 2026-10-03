@@ -58,6 +58,7 @@ namespace QCE {
     private:
         using clock = std::chrono::steady_clock;
 
+        static constexpr auto MOUSE_DEADZONE = 0.00001f;
         static constexpr auto GAMEPAD_UPDATE_INTERVAL_MS = 1; // 1000 Hz
 
         ErrorCode Init();
@@ -72,10 +73,6 @@ namespace QCE {
         HidSystem& m_hid_system;
 
         HWND m_hwnd = nullptr;
-
-        bool  m_handle_next_mouse_move = false;
-        float m_prev_mouse_x = 0.0f;
-        float m_prev_mouse_y = 0.0f;
 
         std::array<XInputGamepad, XUSER_MAX_COUNT> m_gamepads{
             XInputGamepad(0, m_hid_system),
