@@ -6,6 +6,8 @@
 #pragma once
 
 #include <cstring>
+#include <string>
+#include <algorithm>
 
 namespace QCE {
     struct color_rgba
@@ -37,8 +39,16 @@ namespace QCE {
     static inline bool color_by_name(const char* color_name, QCE::color_rgba& val) {
         assert(color_name);
 
+        auto to_uppercase_copy = [](const char* input) {
+            std::string result = input;
+            std::ranges::transform(result, result.begin(), [](unsigned char c) {
+                return std::toupper(c);
+                });
+            return result;
+        };
+
 #define MJSON_COLOR_READER(name) \
-        if (!std::strcmp( #name , color_name)) { \
+        if (!std::strcmp(#name , to_uppercase_copy(color_name).c_str())) { \
             val = QCE::name; \
             return true; \
         }
