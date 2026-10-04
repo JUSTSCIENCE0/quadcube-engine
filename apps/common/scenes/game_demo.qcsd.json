@@ -13,6 +13,7 @@
             "name": "sphere_smooth",
             "params": {
                 "type": "sphere",
+                "radius": 1.0,
                 "subdivisions": 2,
                 "hard_edges": false
             }
@@ -21,6 +22,7 @@
             "name": "sphere_hard",
             "params": {
                 "type": "sphere",
+                "radius": 1.0,
                 "subdivisions": 2,
                 "hard_edges": true
             }
@@ -76,10 +78,12 @@
             }
         },
         {
-            "type": "material",
             "name": "textured_material",
             "params": {
-                "albedo_color": "light_gray",
+                "type": "material",
+                "albedo_color": "LIGHT_GRAY",
+                "fresnel": [ 0.01, 0.01, 0.01 ],
+                "shininess": 0.75,
                 "albedo_texture": "squares.bc7"
             }
         },
