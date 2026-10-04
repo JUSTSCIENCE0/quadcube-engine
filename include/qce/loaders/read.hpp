@@ -7,7 +7,7 @@
 
 #include <qce/ancillary/error_codes.hpp>
 
-#include <qce/loaders/binary/resources.hpp>
+#include <qce/loaders/binary/scene.hpp>
 #include <qce/loaders/mjson/generated_objects.hpp>
 
 #include <fstream>

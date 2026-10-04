@@ -25,6 +25,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         /DUNICODE /D_UNICODE  # use unicode
         /MP                   # multiple processes build
         /Zc:preprocessor      # __VA_ARG__ support
+        /Zc:__cplusplus       # use correct __cplusplus value
     )
 elseif ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
     add_compile_options(
@@ -104,6 +105,7 @@ set(QCE_JSON_SERIALIZATION
 set(QCE_BINARY_SERIALIZATION_HDRS
     include/qce/loaders/binary/math.hpp
     include/qce/loaders/binary/resources.hpp
+    include/qce/loaders/binary/scene.hpp
     include/qce/loaders/binary/compression.hpp
 )
 

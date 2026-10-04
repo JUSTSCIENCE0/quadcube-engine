@@ -5,14 +5,18 @@
 
 #pragma once
 
+#include <qce/objects/texture.hpp>
+#include <qce/objects/figures.hpp>
+#include <qce/objects/material.hpp>
 #include <qce/objects/animation.hpp>
 #include <qce/loaders/binary/math.hpp>
 #include <qce/loaders/binary/compression.hpp>
 
-#include <bitsery/traits/string.h>
-#include <bitsery/traits/vector.h>
 #include <bitsery/adapter/stream.h>
 #include <bitsery/ext/value_range.h>
+#include <bitsery/brief_syntax/vector.h>
+#include <bitsery/brief_syntax/string.h>
+#include <bitsery/brief_syntax/optional.h>
 
 #include <limits>
 
@@ -20,7 +24,6 @@ namespace bitsery {
 namespace ext {
 
 class TransformAnimationCompressor {
-    static constexpr size_t MAX_ID_LENGTH = 256;
     static constexpr size_t MAX_ANIMATION_KEYS_COUNT = 1024;
 
 public:
@@ -157,7 +160,7 @@ private:
             S& s,
             QCE::TransformAnimation& animation,
             const QCE::TransformAnimationCompressionContext& compression_ctx) const {
-        s.text1b(animation.id, MAX_ID_LENGTH);
+        s.object(animation.id);
 
         if (compression_ctx.has_rotation_channel) {
             QuaternionCompressor compressor{};
@@ -214,6 +217,53 @@ struct ExtensionTraits<ext::TransformAnimationCompressor, T> {
 
 namespace QCE {
     template<typename S>
+    void serialize(S& s, CuboidParams& params) {
+        s.value4b(params.length);
+        s.value4b(params.width);
+        s.value4b(params.height);
+    }
+
+    template<typename S>
+    void serialize(S& s, SphereParams& params) {
+        s.value4b(params.radius);
+        s.value4b(params.subdivisions);
+        s.value1b(params.hard_edges);
+    }
+
+    template<typename S>
+    void serialize(S& s, PlaneParams& params) {
+        s.value4b(params.length);
+        s.value4b(params.width);
+        s.value1b(params.hard_edges);
+        s.value1b(params.repeat_uv);
+        s.value1b(params.unit_squares);
+    }
+
+    template<typename S>
+    void serialize(S& s, MeshParams& params) {
+        s.value1b(params.is_empty);
+    }
+
+    template<typename S>
+    void serialize(S& s, TextureParams& params) {
+        s.value1b(params.texture_type);
+    }
+
+    template<typename S>
+    void serialize(S& s, MaterialParams& params) {
+        s.object(params.albedo_color);
+        s.object(params.fresnel);
+        s.value4b(params.shininess);
+
+        s.object(params.albedo_texture);
+        s.object(params.normal_texture);
+        s.object(params.metallic_texture);
+        s.object(params.roughness_texture);
+        s.object(params.occlusion_texture);
+        s.object(params.emissive_texture);
+    }
+
+    template<typename S>
     void serialize(S& s, AnimationRotationKey& key) {
         s.object(key.value);
         s.value4b(key.start_time); // TODO: use context to compress start_time
@@ -239,5 +289,10 @@ namespace QCE {
         s.enableBitPacking([&animation](typename S::BPEnabledType& sbp) {
             sbp.ext(animation, bitsery::ext::TransformAnimationCompressor{});
         });
+    }
+
+    template<typename S>
+    void serialize(S& s, AnimationParams& params) {
+        s.value1b(params.animation_type);
     }
 }
