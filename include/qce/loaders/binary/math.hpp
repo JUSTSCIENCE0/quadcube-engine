@@ -9,7 +9,7 @@
 
 #include <bitsery/bitsery.h>
 #include <bitsery/adapter/buffer.h>
-
+#include <bitsery/ext/value_range.h>
 
 namespace bitsery {
     namespace ext {
@@ -88,5 +88,17 @@ namespace QCE {
     template<typename S>
     void serialize(S& s, quaternion& value) {
         s.ext(value, bitsery::ext::QuaternionCompressor{});
+    }
+
+    template<typename S>
+    void serialize(S& s, color_rgba& value) {
+        s.enableBitPacking([&value](typename S::BPEnabledType& sbp) {
+            constexpr auto RANGE = bitsery::ext::ValueRange<float>
+                { 0.0f, 1.0f, bitsery::ext::BitsConstraint(10) };
+            sbp.ext(value.r(), RANGE);
+            sbp.ext(value.g(), RANGE);
+            sbp.ext(value.b(), RANGE);
+            sbp.ext(value.a(), RANGE);
+        });
     }
 }
