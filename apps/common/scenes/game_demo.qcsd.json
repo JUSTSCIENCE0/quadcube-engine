@@ -13,7 +13,7 @@
             "name": "sphere_smooth",
             "params": {
                 "type": "sphere",
-                "radius": 1.0,
+                "radius": 0.5,
                 "subdivisions": 2,
                 "hard_edges": false
             }
@@ -22,7 +22,7 @@
             "name": "sphere_hard",
             "params": {
                 "type": "sphere",
-                "radius": 1.0,
+                "radius": 0.5,
                 "subdivisions": 2,
                 "hard_edges": true
             }
