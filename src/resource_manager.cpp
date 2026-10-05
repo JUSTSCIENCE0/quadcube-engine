@@ -89,4 +89,48 @@ namespace QCE {
         QCE_CRITICAL(QCE::validate_animation(animation));
         return Add(std::move(animation));
     }
+
+    ErrorCode ResourceManager::LoadResources(const std::vector<ResourceDescription>& resources) {
+        for (const auto& resource : resources) {
+            auto result = std::visit([this, &resource](const auto& params) {
+                using T = std::decay_t<decltype(params)>;
+                if constexpr (std::is_same_v<T, CuboidParams> ||
+                              std::is_same_v<T, SphereParams> ||
+                              std::is_same_v<T, PlaneParams>) {
+                   return AddFigure(params, resource.name);
+                }
+                else if constexpr (std::is_same_v<T, MeshParams>) {
+                    QCE::Mesh mesh{};
+                    mesh.id = resource.name;
+                    // TODO: load mesh from file if not empty
+                    return Add(std::move(mesh));
+                }
+                else if constexpr (std::is_same_v<T, TextureParams>) {
+                    return AddTexture(resource.name);
+                }
+                else if constexpr (std::is_same_v<T, MaterialParams>) {
+                    QCE::Material material{};
+                    material.id = resource.name;
+                    material.albedo_color = params.albedo_color;
+                    material.fresnel = params.fresnel;
+                    material.shininess = params.shininess;
+                    if (params.albedo_texture.has_value()) {
+                        material.albedo_texture = GetIndex<QCE::Texture2D>(params.albedo_texture.value());
+                    }
+                    // TODO: add other textures
+                    return Add(std::move(material));
+                }
+                else if constexpr (std::is_same_v<T, AnimationParams>) {
+                    return AddAnimation(resource.name);
+                }
+                else {
+                    assert(!"Unknown resource type");
+                    return ErrorCode::E_RM_UNKNOWN_RESOURCE_TYPE;
+                }
+            }, resource.params);
+            QCE_CRITICAL(result);
+        }
+
+        return ErrorCode::SUCCESS;
+    }
 }

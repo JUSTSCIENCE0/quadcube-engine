@@ -7,11 +7,8 @@
 
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/objects/shader.hpp>
-#include <qce/objects/texture.hpp>
-#include <qce/objects/figures.hpp>
 #include <qce/objects/command.hpp>
-#include <qce/objects/material.hpp>
-#include <qce/objects/animation.hpp>
+#include <qce/objects/scene.hpp>
 
 #include <cu/file-utils.hpp>
 
@@ -120,6 +117,8 @@ namespace QCE {
             auto& storage = std::get<ResourceStorage<ResourceT>>(m_storages);
             return storage.Remove(id);
         }
+
+        ErrorCode LoadResources(const std::vector<ResourceDescription>& resources);
 
     private:
         /// ctor

@@ -92,6 +92,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_RM_ANIMATION_EMPTY) \
         CU_ENUM_UNIT(E_RM_ANIMATION_INVALID_TIMELINE) \
         CU_ENUM_UNIT(E_RM_ANIMATION_WRONG_DURATION) \
+        CU_ENUM_UNIT(E_RM_UNKNOWN_RESOURCE_TYPE) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -330,6 +331,9 @@ namespace QCE {
             break;
         case ErrorCode::E_RM_ANIMATION_WRONG_DURATION:
             result << "Resource Manager - Animation duration is less than maximum key time";
+            break;
+        case ErrorCode::E_RM_UNKNOWN_RESOURCE_TYPE:
+            result << "Resource Manager - Unknown resource type";
             break;
 
         default:
