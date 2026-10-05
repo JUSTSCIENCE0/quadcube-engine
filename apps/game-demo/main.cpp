@@ -25,36 +25,9 @@ int main(int argc, char* argv[]) {
         HillsAnimationConfig
     >());
 
-    QCE::CuboidParams cuboid{
-        .length = 1.0f,
-        .width = 1.0f,
-        .height = 1.0f
-    };
-    QCE_CRITICAL(app.Resources().AddFigure(cuboid, "cuboid"));
+    QCE_CRITICAL(app.LoadScene("game_demo"));
 
-    QCE::SphereParams sphere_smooth{
-        .radius = 0.5f,
-        .subdivisions = 2,
-        .hard_edges = false
-    };
-    QCE_CRITICAL(app.Resources().AddFigure(sphere_smooth, "sphere_smooth"));
-
-    QCE::SphereParams sphere_hard{
-        .radius = 0.5f,
-        .subdivisions = 2,
-        .hard_edges = true
-    };
-    QCE_CRITICAL(app.Resources().AddFigure(sphere_hard, "sphere_hard"));
-
-    QCE::PlaneParams flat_plane{
-        .length = 50.0f,
-        .width = 5.0f,
-        .hard_edges = false,
-        .repeat_uv = true,
-        .unit_squares = true
-    };
-    QCE_CRITICAL(app.Resources().AddFigure(flat_plane, "flat_plane"));
-
+    // TODO: create entities and components from scene description
     QCE::PlaneParams hills{
         .length = 100.0f,
         .width = 20.0f,
@@ -62,38 +35,6 @@ int main(int argc, char* argv[]) {
         .repeat_uv = true,
         .unit_squares = true
     };
-    QCE_CRITICAL(app.Resources().AddFigure(hills, "hills"));
-
-    QCE::Mesh left_hills_mesh;
-    left_hills_mesh.id = "left_hills";
-    QCE_CRITICAL(app.Resources().Add(std::move(left_hills_mesh)));
-
-    QCE::Mesh right_hills_mesh;
-    right_hills_mesh.id = "right_hills";
-    QCE_CRITICAL(app.Resources().Add(std::move(right_hills_mesh)));
-
-    QCE_CRITICAL(app.Resources().AddTexture("squares.bc7"));
-    QCE::Material textured_material{};
-    textured_material.id = "textured_material";
-    textured_material.albedo_color = QCE::LIGHT_GRAY;
-    textured_material.albedo_texture = app.Resources().GetIndex<QCE::Texture2D>("squares.bc7");
-    QCE_CRITICAL(app.Resources().Add(std::move(textured_material)));
-
-    QCE::Material untextured_material{};
-    untextured_material.id = "untextured_material";
-    untextured_material.albedo_color = QCE::GRAY;
-    QCE_CRITICAL(app.Resources().Add(std::move(untextured_material)));
-
-    QCE_CRITICAL(app.Resources().AddTexture("edges.bc7"));
-    QCE::Material edges_material{};
-    edges_material.id = "edges_material";
-    edges_material.albedo_color = QCE::WHITE;
-    edges_material.albedo_texture = app.Resources().GetIndex<QCE::Texture2D>("edges.bc7");
-    QCE_CRITICAL(app.Resources().Add(std::move(edges_material)));
-
-    QCE_CRITICAL(app.Resources().AddAnimation("deformation_demo"));
-    QCE_CRITICAL(app.Resources().AddAnimation("full_rotation"));
-
     QCE::StaticMesh cuboid_mesh_component{
         .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
     };
