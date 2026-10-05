@@ -39,6 +39,7 @@ qce_add_assets(${PROJECT_NAME} "${CMAKE_CURRENT_LIST_DIR}/../common/assets" FALS
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     qce_copy_configs_directory(${PROJECT_NAME} "${CMAKE_CURRENT_LIST_DIR}/../common/configs_win")
 endif() # Windows
+qce_copy_scenes_directory(${PROJECT_NAME} "${CMAKE_CURRENT_LIST_DIR}/../common/scenes")
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps")
 target_interface_group(common-utils)

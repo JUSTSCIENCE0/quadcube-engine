@@ -397,6 +397,7 @@ endif()
 # QCE CMake utils
 include(cmake/ResourcesUtils.cmake)
 include(cmake/ConfigsUtils.cmake)
+include(cmake/SceneUtils.cmake)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY INCLUDE_DIR_POSTFIX "qce")
 

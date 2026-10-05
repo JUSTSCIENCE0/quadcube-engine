@@ -10,11 +10,9 @@
 #include <qce/ancillary/error_codes.hpp>
 
 namespace QCE {
-    static inline std::filesystem::path get_configs_directory() {
-        static constexpr auto CONFIGS_DIRECTORY = "configs";
-
+    static inline std::filesystem::path get_directory(const std::string& directory_name) {
         std::filesystem::path result = CU::get_current_module_directory();
-        result.append(CONFIGS_DIRECTORY);
+        result.append(directory_name);
 
         if (!std::filesystem::exists(result) ||
             !std::filesystem::is_directory(result)) {
@@ -25,5 +23,13 @@ namespace QCE {
         }
 
         return result;
+    }
+
+    static inline std::filesystem::path get_configs_directory() {
+        return get_directory("configs");
+    }
+
+    static inline std::filesystem::path get_scenes_directory() {
+        return get_directory("scenes");
     }
 }
