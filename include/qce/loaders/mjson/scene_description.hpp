@@ -36,8 +36,21 @@ MJSON_OBJECT_BEGIN(QCE::ResourceDescription, "Resource description", nullptr)
     MJSON_FIELD(QCE::ResourceParams, params, "Parameters", nullptr)
 MJSON_OBJECT_END(QCE::ResourceDescription)
 
+MJSON_OBJECT_BEGIN(QCE::EntityDescription, "Entity description", nullptr)
+    MJSON_FIELD(std::optional<std::string>, name, "Name", nullptr)
+    MJSON_FIELD(std::optional<std::string>, static_mesh, "Static Mesh", nullptr)
+    MJSON_FIELD(std::optional<std::string>, dynamic_mesh, "Dynamic Mesh", nullptr)
+    MJSON_FIELD(std::optional<std::string>, material, "Material", nullptr)
+    MJSON_FIELD(std::optional<QCE::DirectionalLight>, directional_light, "Directional Light", nullptr)
+    MJSON_FIELD(std::optional<QCE::PointLight>, point_light, "Point Light", nullptr)
+    MJSON_FIELD(std::optional<QCE::SpotLight>, spot_light, "Spot Light", nullptr)
+    MJSON_FIELD(std::optional<QCE::TransformComponents>, transform, "Transform", nullptr)
+    MJSON_FIELD(std::optional<QCE::TransformAnimationDescription>, transform_animation, "Transform Animation", nullptr)
+MJSON_OBJECT_END(QCE::EntityDescription)
+
 MJSON_OBJECT_BEGIN(QCE::SceneDescription, "Scene description", nullptr)
     MJSON_FIELD(std::vector<QCE::ResourceDescription>, resources, "Resources", nullptr)
+    MJSON_FIELD(std::vector<QCE::EntityDescription>,   entities,  "Entities", nullptr)
 MJSON_OBJECT_END(QCE::SceneDescription)
 
 #endif
