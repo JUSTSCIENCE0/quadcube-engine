@@ -132,7 +132,10 @@
                 "scale": [ 1.0, 1.0, 1.0 ]
             },
             "material": "edges_material",
-            "transform_animation": "deformation_demo"
+            "transform_animation": {
+                "animation_name": "deformation_demo",
+                "is_looped":  true
+            }
         },
         {
             "name": "left_cuboid",
@@ -163,7 +166,10 @@
                 "scale":    [ 1.0, 1.0, 1.0 ]
             },
             "material": "untextured_material",
-            "transform_animation": "full_rotation"
+            "transform_animation": {
+                "animation_name": "full_rotation",
+                "is_looped": true
+            }
         },
         {
             "name": "middle_plane",
