@@ -31,6 +31,11 @@ namespace QCE {
         ResourceParams params;
     };
 
+    struct DynamicMeshDescription {
+        std::string base;
+        std::string deformated;
+    };
+
     struct TransformAnimationDescription {
         std::string animation_name;
         bool is_looped = false;
@@ -39,9 +44,9 @@ namespace QCE {
     struct EntityDescription {
         std::optional<std::string> name;
 
-        std::optional<std::string> static_mesh;
-        std::optional<std::string> dynamic_mesh;
-        std::optional<std::string> material;
+        std::optional<std::string>            static_mesh;
+        std::optional<DynamicMeshDescription> dynamic_mesh;
+        std::optional<std::string>            material;
 
         std::optional<DirectionalLight> directional_light;
         std::optional<PointLight>       point_light;

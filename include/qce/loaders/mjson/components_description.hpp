@@ -34,6 +34,11 @@ MJSON_OBJECT_BEGIN(QCE::TransformComponents, "Transform Components", "Entity tra
     MJSON_FIELD(QCE::float3d, scale, "Scale", nullptr)
 MJSON_OBJECT_END(QCE::TransformComponents)
 
+MJSON_OBJECT_BEGIN(QCE::DynamicMeshDescription, "Dynamic Mesh Description", nullptr)
+    MJSON_FIELD(std::string, base, "Base", nullptr)
+    MJSON_FIELD(std::string, deformated, "Deformated", nullptr)
+MJSON_OBJECT_END(QCE::DynamicMeshDescription)
+
 MJSON_OBJECT_BEGIN(QCE::TransformAnimationDescription, "Transform Animation Description", "Entity transform animation settings")
     MJSON_FIELD(std::string, animation_name, "Animation Name", nullptr)
     MJSON_FIELD(bool, is_looped, "Is Looped", nullptr)
