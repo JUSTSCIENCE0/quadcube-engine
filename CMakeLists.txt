@@ -108,6 +108,7 @@ set(QCE_BINARY_SERIALIZATION_HDRS
     include/qce/loaders/binary/resources.hpp
     include/qce/loaders/binary/scene.hpp
     include/qce/loaders/binary/compression.hpp
+    include/qce/loaders/binary/components.hpp
 )
 
 set(QCE_BINARY_SERIALIZATION_IMPL

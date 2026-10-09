@@ -6,7 +6,7 @@
 #pragma once
 
 #include <qce/loaders/binary/resources.hpp>
-#include <qce/objects/scene.hpp>
+#include <qce/loaders/binary/components.hpp>
 
 #include <bitsery/brief_syntax/variant.h>
 
@@ -18,7 +18,21 @@ namespace QCE {
     }
 
     template<typename S>
+    void serialize(S& s, EntityDescription& entity) {
+        s.object(entity.name);
+        s.object(entity.static_mesh);
+        s.object(entity.dynamic_mesh);
+        s.object(entity.material);
+        s.object(entity.directional_light);
+        s.object(entity.point_light);
+        s.object(entity.spot_light);
+        s.object(entity.transform);
+        s.object(entity.transform_animation);
+    }
+
+    template<typename S>
     void serialize(S& s, SceneDescription& scene) {
         s.object(scene.resources);
+        s.object(scene.entities);
     }
 }
