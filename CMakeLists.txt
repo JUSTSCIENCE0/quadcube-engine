@@ -131,6 +131,7 @@ set(QCE_OBJECTS_IMPL
     src/resource_manager.cpp
     src/figures.cpp
     src/texture.cpp
+    src/scene.cpp
 )
 
 set(QCE_MATH_HDRS

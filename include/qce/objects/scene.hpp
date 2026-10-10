@@ -5,13 +5,10 @@
 
 #pragma once
 
+#include <qce/ecs/ecs.hpp>
+
 #include <qce/objects/texture.hpp>
 #include <qce/objects/figures.hpp>
-#include <qce/objects/material.hpp>
-#include <qce/objects/animation.hpp>
-
-#include <qce/components/transform.hpp>
-#include <qce/components/light.hpp>
 
 #include <variant>
 
@@ -60,4 +57,7 @@ namespace QCE {
         std::vector<ResourceDescription> resources;
         std::vector<EntityDescription> entities;
     };
+
+    ErrorCode add_entity_from_description(
+        Entities& entities, const EntityDescription& desc);
 }

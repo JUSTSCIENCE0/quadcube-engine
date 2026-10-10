@@ -27,7 +27,9 @@ int main(int argc, char* argv[]) {
 
     QCE_CRITICAL(app.LoadScene("game_demo"));
 
-    // TODO: create entities and components from scene description
+    // Custom components
+    // TODO: add it to scene description and load automatically
+
     QCE::PlaneParams hills{
         .length = 100.0f,
         .width = 20.0f,
@@ -35,142 +37,25 @@ int main(int argc, char* argv[]) {
         .repeat_uv = true,
         .unit_squares = true
     };
-    QCE::StaticMesh cuboid_mesh_component{
-        .index = app.Resources().GetIndex<QCE::Mesh>("cuboid")
-    };
-    QCE::StaticMesh peaks_plane_mesh_component_left{
-        .index = app.Resources().GetIndex<QCE::Mesh>("hills")
-    };
-    QCE::DynamicMesh hills_mesh_component_right{
-        .base_mesh_index = app.Resources().GetIndex<QCE::Mesh>("hills"),
-        .deformated_mesh_index = app.Resources().GetIndex<QCE::Mesh>("right_hills")
-    };
     DeformationDescription hills_deformation_right{
         .update_period_sec = 0.5f,
         .plane_params = hills,
         .is_reflected = false
-    };
-    QCE::DynamicMesh hills_mesh_component_left{
-        .base_mesh_index = app.Resources().GetIndex<QCE::Mesh>("hills"),
-        .deformated_mesh_index = app.Resources().GetIndex<QCE::Mesh>("left_hills")
     };
     DeformationDescription hills_deformation_left{
         .update_period_sec = 0.5f,
         .plane_params = hills,
         .is_reflected = true
     };
-    QCE::MaterialComponent textured_material_component{
-        .index = app.Resources().GetIndex<QCE::Material>("textured_material")
-    };
-    QCE::MaterialComponent untextured_material_component{
-        .index = app.Resources().GetIndex<QCE::Material>("untextured_material")
-    };
-    QCE::MaterialComponent edges_material_component{
-        .index = app.Resources().GetIndex<QCE::Material>("edges_material")
-    };
-    QCE::TransformAnimationComponent deformation_demo_component{
-        .index = app.Resources().GetIndex<QCE::TransformAnimation>("deformation_demo"),
-        .is_looped = true
-    };
-    QCE::TransformAnimationComponent full_rotation_component{
-        .index = app.Resources().GetIndex<QCE::TransformAnimation>("full_rotation"),
-         .is_looped = true
-    };
-
-    auto entity0 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0, cuboid_mesh_component));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0,
-        QCE::TransformComponents{
-            { 0.0f, 0.0f, 0.0f, 1.0f },
-            { 1.0f, 0.0f, 0.0f },
-            { 1.0f, 1.0f, 1.0f }
-        }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0, edges_material_component));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity0, deformation_demo_component));
-
-    auto entity1 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity1, cuboid_mesh_component));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity1,
-        QCE::TransformComponents{
-            { 0.0f, 0.0f, 0.0f, 1.0f },
-            { -1.f, 0.0f, 0.0f },
-            { 1.0f, 1.0f, 1.0f }
-        }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity1, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity1, textured_material_component));
-
-    auto entity2 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity2, QCE::StaticMesh{
-        .index = app.Resources().GetIndex<QCE::Mesh>("sphere_smooth")
-        }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity2,
-        QCE::TransformComponents{
-            { 0.0f, 0.0f, 0.0f, 1.0f },
-            { 0.0f, 0.0f, 0.0f },
-            { 1.0f, 1.0f, 1.0f }
-        }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity2, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity2, untextured_material_component));
-
-    auto entity3 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::StaticMesh{
-        .index = app.Resources().GetIndex<QCE::Mesh>("sphere_hard")
-    }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3,
-        QCE::TransformComponents{
-            { 0.0f, 0.0f, 0.0f, 1.0f },
-            { 0.0f, 3.0f, 0.0f },
-            { 1.0f, 1.0f, 1.0f }
-        }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3, untextured_material_component));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity3, full_rotation_component));
-
-    auto entity4 = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity4, QCE::StaticMesh{
-        .index = app.Resources().GetIndex<QCE::Mesh>("flat_plane")
-    }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity4,
-        QCE::TransformComponents{
-            { 0.0f, 0.0f, 0.0f, 1.0f },
-            { 0.0f, -.5f, 20.5f },
-            { 1.0f, 1.0f, 1.0f }
-        }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity4, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity4, edges_material_component));
-
-    auto entity_id = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_mesh_component_right));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_deformation_right));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id,
-        QCE::TransformComponents{
-            { 0.0f, 0.0f, 0.0f, 1.0f },
-            { 7.5f, -.5f, 20.5f },
-            { 0.5f, 0.5f, 0.5f }
-        }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, edges_material_component));
-
-    entity_id = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_mesh_component_left));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_deformation_left));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id,
-        QCE::TransformComponents{
-            { 0.0f, 0.0f, 0.0f, 1.0f },
-            { -7.5f, -.5f, 20.5f },
-            { 0.5f, 0.5f, 0.5f }
-        }));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, QCE::TransformMatrix{}));
-    QCE_CRITICAL(app.m_entities.AddComponent(entity_id, edges_material_component));
-
-    auto sun = app.m_entities.AddEntity();
-    QCE_CRITICAL(app.m_entities.AddComponent(sun,
-        QCE::DirectionalLight{
-            .color = { 0.5f, 0.5f, 0.5f, 1.0f },
-            .direction = { 1.0f, -2.0f, 3.0f }
+    for (const auto entity_id : app.m_entities.QueryEntities<QCE::EntityName, QCE::DynamicMesh>()) {
+        const auto& entity_name = app.m_entities.GetComponent<QCE::EntityName>(entity_id).name;
+        if (entity_name == "right_hills") {
+            QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_deformation_right));
         }
-    ));
+        else if (entity_name == "left_hills") {
+            QCE_CRITICAL(app.m_entities.AddComponent(entity_id, hills_deformation_left));
+        }
+    }
 
     QCE_CRITICAL(
         app.m_systems.Get<HillsAnimationSystem>().UpdateScene());
