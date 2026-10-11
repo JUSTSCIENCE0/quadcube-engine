@@ -12,6 +12,13 @@
 #include <qce/loaders/binary/compression.hpp>
 
 namespace QCE::test {
+    inline void check_color_rgba(const color_rgba& lhs, const color_rgba& rhs) {
+        EXPECT_NEAR(lhs.r(), rhs.r(), 1.0f / 1023.0f);
+        EXPECT_NEAR(lhs.g(), rhs.g(), 1.0f / 1023.0f);
+        EXPECT_NEAR(lhs.b(), rhs.b(), 1.0f / 1023.0f);
+        EXPECT_NEAR(lhs.a(), rhs.a(), 1.0f / 1023.0f);
+    }
+
     inline float get_quaternion_dot_error(QuaternionQuantization quantization) {
         switch (quantization) {
         case E_32_BIT_QQ: {

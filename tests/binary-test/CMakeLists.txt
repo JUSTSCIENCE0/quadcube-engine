@@ -9,6 +9,7 @@ project(binary-test)
 
 add_executable(${PROJECT_NAME}
     animation-test.cpp
+    scene-test.cpp
 
     main.cpp
 )
