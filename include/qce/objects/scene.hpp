@@ -51,6 +51,10 @@ namespace QCE {
 
         std::optional<TransformComponents> transform;
         std::optional<TransformAnimationDescription> transform_animation;
+
+#define QCE_ECS_COMPONENT(type, attr_name) std::optional<type> attr_name;
+        QCE_ECS_ADDITIONAL_COMPONENTS
+#undef QCE_ECS_COMPONENT
     };
 
     struct SceneDescription {

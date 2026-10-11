@@ -6,4 +6,7 @@
 #include <qce/loaders/mjson/configs_description.hpp>
 #include <qce/loaders/mjson/resources_description.hpp>
 #include <qce/loaders/mjson/components_description.hpp>
+#ifdef QCE_ECS_ADDITIONAL_COMPONENTS_MJSON
+#  include QCE_ECS_ADDITIONAL_COMPONENTS_MJSON
+#endif
 #include <qce/loaders/mjson/scene_description.hpp>

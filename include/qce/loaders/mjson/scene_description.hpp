@@ -46,6 +46,10 @@ MJSON_OBJECT_BEGIN(QCE::EntityDescription, "Entity description", nullptr)
     MJSON_FIELD(std::optional<QCE::SpotLight>, spot_light, "Spot Light", nullptr)
     MJSON_FIELD(std::optional<QCE::TransformComponents>, transform, "Transform", nullptr)
     MJSON_FIELD(std::optional<QCE::TransformAnimationDescription>, transform_animation, "Transform Animation", nullptr)
+#define QCE_ECS_COMPONENT(type, attr_name) \
+    MJSON_FIELD(std::optional<type>, attr_name, #attr_name, nullptr)
+    QCE_ECS_ADDITIONAL_COMPONENTS
+#undef QCE_ECS_COMPONENT
 MJSON_OBJECT_END(QCE::EntityDescription)
 
 MJSON_OBJECT_BEGIN(QCE::SceneDescription, "Scene description", nullptr)

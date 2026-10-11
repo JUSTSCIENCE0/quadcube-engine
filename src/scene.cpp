@@ -94,6 +94,13 @@ namespace QCE {
             }));
         }
 
+#define QCE_ECS_COMPONENT(type, attr_name) \
+        if (desc.attr_name.has_value()) { \
+            QCE_CRITICAL(entities.AddComponent(entity_id, desc.attr_name.value())); \
+        }
+        QCE_ECS_ADDITIONAL_COMPONENTS
+#undef QCE_ECS_COMPONENT
+
         return ErrorCode::SUCCESS;
     }
 }

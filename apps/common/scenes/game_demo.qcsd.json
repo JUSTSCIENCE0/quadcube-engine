@@ -194,7 +194,7 @@
             },
             "material": "edges_material",
             "deformation": {
-                "update_period": 0.5,
+                "update_period_sec": 0.5,
                 "plane_params": {
                     "length": 100.0,
                     "width": 20.0,
@@ -218,7 +218,7 @@
             },
             "material": "edges_material",
             "deformation": {
-                "update_period": 0.5,
+                "update_period_sec": 0.5,
                 "plane_params": {
                     "length": 100.0,
                     "width": 20.0,

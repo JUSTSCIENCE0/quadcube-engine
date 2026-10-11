@@ -12,11 +12,15 @@ add_executable(${PROJECT_NAME}
     mesh_deformator.hpp
     mesh_deformator.cpp
     custom_components.hpp
+    custom_components_mjson.h
+    custom_components_binary.hpp
 )
 
 target_compile_definitions(quadcube-engine
     PUBLIC
-        QCE_ECS_ADDITIONAL_COMPONENTS_HEADER="../apps/game-demo/custom_components.hpp"
+        QCE_ECS_ADDITIONAL_COMPONENTS_DEFINITION="../apps/game-demo/custom_components.hpp"
+        QCE_ECS_ADDITIONAL_COMPONENTS_MJSON="../apps/game-demo/custom_components_mjson.h"
+        QCE_ECS_ADDITIONAL_COMPONENTS_BINARY="../apps/game-demo/custom_components_binary.hpp"
 )
 
 target_link_libraries(${PROJECT_NAME}

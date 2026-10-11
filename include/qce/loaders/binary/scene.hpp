@@ -7,6 +7,9 @@
 
 #include <qce/loaders/binary/resources.hpp>
 #include <qce/loaders/binary/components.hpp>
+#ifdef QCE_ECS_ADDITIONAL_COMPONENTS_BINARY
+#  include QCE_ECS_ADDITIONAL_COMPONENTS_BINARY
+#endif
 
 #include <bitsery/brief_syntax/variant.h>
 
@@ -28,6 +31,9 @@ namespace QCE {
         s.object(entity.spot_light);
         s.object(entity.transform);
         s.object(entity.transform_animation);
+#define QCE_ECS_COMPONENT(type, attr_name) s.object(entity.attr_name);
+        QCE_ECS_ADDITIONAL_COMPONENTS
+#undef QCE_ECS_COMPONENT
     }
 
     template<typename S>

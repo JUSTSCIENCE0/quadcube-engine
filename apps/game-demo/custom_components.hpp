@@ -14,4 +14,5 @@ struct DeformationDescription {
 };
 
 #define QCE_ECS_ENTITY_MANAGER_CACHE_SIZE 64
-#define QCE_ECS_ADDITIONAL_COMPONENTS DeformationDescription
+#define QCE_ECS_ADDITIONAL_COMPONENTS \
+    QCE_ECS_COMPONENT(DeformationDescription, deformation)

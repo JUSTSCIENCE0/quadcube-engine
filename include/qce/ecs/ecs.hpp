@@ -5,8 +5,8 @@
 
 #pragma once
 
-#ifdef QCE_ECS_ADDITIONAL_COMPONENTS_HEADER
-#  include QCE_ECS_ADDITIONAL_COMPONENTS_HEADER
+#ifdef QCE_ECS_ADDITIONAL_COMPONENTS_DEFINITION
+#  include QCE_ECS_ADDITIONAL_COMPONENTS_DEFINITION
 #else
 #  define QCE_ECS_ENTITY_MANAGER_CACHE_SIZE 64
 #  define QCE_ECS_ADDITIONAL_COMPONENTS
@@ -46,5 +46,7 @@ namespace QCE {
             TransformAnimationComponent,
             AdditionalComponents... > {};
 
+#define QCE_ECS_COMPONENT(type, attr_name) type
     using Entities = EcsCore< QCE_ECS_ADDITIONAL_COMPONENTS >;
+#undef QCE_ECS_COMPONENT
 }
