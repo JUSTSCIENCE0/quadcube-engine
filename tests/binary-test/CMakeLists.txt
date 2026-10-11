@@ -18,6 +18,11 @@ target_link_libraries(${PROJECT_NAME}
         quadcube-engine
 )
 
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/../common
+)
+
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "tests")
 target_interface_group(common-utils)
 target_interface_group(quadcube-engine)

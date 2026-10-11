@@ -7,6 +7,8 @@
 
 #include <qce/loaders/binary/resources.hpp>
 
+#include <math-utils.hpp>
+
 using namespace QCE;
 
 class AnimationSerializationTest :
@@ -32,7 +34,7 @@ protected:
             const auto& src = source_animation.rotation_channel[i];
             const auto& des = deserialized_animation.rotation_channel[i];
 
-            CheckQuaternions(src.value, des.value);
+            test::check_quaternions(src.value, des.value, compression_params.rotation_quantization);
             EXPECT_FLOAT_EQ(src.start_time, des.start_time);
             EXPECT_EQ(src.easing, des.easing);
         }
@@ -40,7 +42,7 @@ protected:
         for (size_t i = 0; i < source_animation.position_channel.size(); ++i) {
             const auto& src = source_animation.position_channel[i];
             const auto& des = deserialized_animation.position_channel[i];
-            CheckFloat3d(src.value, des.value, compression_params.position_eps);
+            test::check_float3d(src.value, des.value, compression_params.position_eps);
             EXPECT_FLOAT_EQ(src.start_time, des.start_time);
             EXPECT_EQ(src.easing, des.easing);
         }
@@ -48,7 +50,7 @@ protected:
         for (size_t i = 0; i < source_animation.scale_channel.size(); ++i) {
             const auto& src = source_animation.scale_channel[i];
             const auto& des = deserialized_animation.scale_channel[i];
-            CheckFloat3d(src.value, des.value, compression_params.scale_eps);
+            test::check_float3d(src.value, des.value, compression_params.scale_eps);
             EXPECT_FLOAT_EQ(src.start_time, des.start_time);
             EXPECT_EQ(src.easing, des.easing);
         }
@@ -58,47 +60,6 @@ protected:
     }
 
 private:
-    float GetQuaternionDotError() {
-        switch (compression_params.rotation_quantization) {
-        case E_32_BIT_QQ: {
-            // empirically found values
-            // TODO: find values ​​from verified sources
-            constexpr float AngularError = deg_to_rad(0.25f);
-            return std::cos(AngularError / 2);
-        }
-        case E_64_BIT_QQ: {
-            constexpr float AngularError = deg_to_rad(0.0005f);
-            return std::cos(AngularError / 2);
-        }
-        default:
-            return 0.0f;
-        }
-    }
-
-    void CheckQuaternions(const quaternion& lhs, const quaternion& rhs) {
-        if (compression_params.rotation_quantization == E_NO_QQ) {
-            EXPECT_FLOAT_EQ(lhs.x(), rhs.x()) << "Quaternion error";
-            EXPECT_FLOAT_EQ(lhs.y(), rhs.y()) << "Quaternion error";
-            EXPECT_FLOAT_EQ(lhs.z(), rhs.z()) << "Quaternion error";
-            EXPECT_FLOAT_EQ(lhs.w(), rhs.w()) << "Quaternion error";
-        }
-        else {
-            const float dot = std::abs(
-                lhs.x() * rhs.x() +
-                lhs.y() * rhs.y() +
-                lhs.z() * rhs.z() +
-                lhs.w() * rhs.w());
-
-            EXPECT_NEAR(dot, 1.0f, GetQuaternionDotError()) << "Quaternion error";
-        }
-    }
-
-    void CheckFloat3d(const float3d& lhs, const float3d& rhs, float eps) {
-        EXPECT_NEAR(lhs.x(), rhs.x(), eps) << "Float3D error";
-        EXPECT_NEAR(lhs.y(), rhs.y(), eps) << "Float3D error";
-        EXPECT_NEAR(lhs.z(), rhs.z(), eps) << "Float3D error";
-    }
-
     using Buffer = std::vector<uint8_t>;
     using OutputAdapter = bitsery::OutputBufferAdapter<Buffer>;
     using InputAdapter = bitsery::InputBufferAdapter<Buffer>;
