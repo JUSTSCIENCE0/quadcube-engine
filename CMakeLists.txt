@@ -15,7 +15,6 @@ endif()
 
 option(BUILD_QCE_APPS          "Build example applications" ON)
 option(BUILD_QCE_TEST          "Build tests" ON)
-option(QCE_ECS_ADD_COMPONENTS  "Use additional Components set" OFF)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_compile_options(
@@ -215,20 +214,6 @@ set(QCE_ANCILLARY_HDRS
 set(QCE_ANCILLARY_IMPL
     src/about.cpp
 )
-
-if (QCE_ECS_ADD_COMPONENTS)
-    if (NOT DEFINED QCE_ECS_ADDITIONAL_COMPONENTS_HEADER OR
-            "${QCE_ECS_ADDITIONAL_COMPONENTS_HEADER}" STREQUAL "")
-        message(FATAL_ERROR "QCE_ECS_ADDITIONAL_COMPONENTS_HEADER is not defined while QCE_ECS_ADD_COMPONENTS is ON")
-    endif() # !QCE_ECS_ADDITIONAL_COMPONENTS_HEADER
-    set(QCE_ECS_HDRS
-        ${QCE_ECS_HDRS}
-        ${QCE_ECS_ADDITIONAL_COMPONENTS_HEADER}
-    )
-    target_compile_definitions(${PROJECT_NAME}
-        PRIVATE
-            QCE_ECS_ADDITIONAL_COMPONENTS_HEADER="${QCE_ECS_ADDITIONAL_COMPONENTS_HEADER}")
-endif() # QCE_USE_CUSTOM_ECS_CORE
 
 set(QCE_SHADERS_DIR shaders)
 set(QCE_HLSL_SHADERS_DIR ${QCE_SHADERS_DIR}/hlsl)
