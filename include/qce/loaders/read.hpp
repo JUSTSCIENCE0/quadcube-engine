@@ -60,6 +60,8 @@ namespace QCE {
 
         auto json_file_name = path;
         json_file_name += ".json";
+        // TODO: use log system
+        std::cout << "Try load from json file: " << json_file_name.string() << std::endl;
         return read_from_json(json_file_name, object);
     }
 }
