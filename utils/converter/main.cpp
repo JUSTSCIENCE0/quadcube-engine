@@ -12,7 +12,7 @@
         std::string, ListValidator, "to_json", "to_bin" ) \
     CLI_OPTIONAL_PROPERTY(format, SYMBOL(f), format, "Input file format", \
         std::string, "autodetect", ListValidator, \
-            "autodetect", "animation" ) \
+            "autodetect", "animation", "scene" ) \
     CLI_OPTIONAL_PROPERTY(animation-position-eps, WO_SYMBOL, animation_position_eps, \
         "This parameter applies only when the input file format is an animation.\n" \
     "    Specifies the maximum allowable error for animation position channel compression.", \
@@ -33,6 +33,7 @@
 
 #include <cu/cli-utils.hpp>
 
+#include <qce/ecs/ecs.hpp>
 #include <qce/objects/resource_manager.hpp>
 
 #include <qce/loaders/read.hpp>
@@ -46,6 +47,7 @@
     CU_BEGIN_ENUM(Format) \
         CU_ENUM_UNIT(autodetect) \
         CU_ENUM_UNIT(animation) \
+        CU_ENUM_UNIT(scene) \
     CU_END_ENUM(Format)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -69,6 +71,10 @@ static inline Format detect_format(const std::filesystem::path& input_path) {
     if (QCE::ResourceManager::ANIMATION_CONTAINER == extension) {
         std::cout << "Transform animation format detected" << std::endl;
         return Format::animation;
+    }
+    if (QCE::SCENE_CONTAINER == extension) {
+        std::cout << "Scene description format detected" << std::endl;
+        return Format::scene;
     }
 
     std::cerr << "Unknown file extension: " << extension << std::endl;
@@ -145,6 +151,9 @@ int main(int argc, char* argv[]) {
         return convert_file<QCE::TransformAnimation>(
             cli_config.input_file, cli_config.output_file, convertion, std::move(ctx));
     }
+    case Format::scene:
+        return convert_file<QCE::SceneDescription>(
+            cli_config.input_file, cli_config.output_file, convertion);
     default:
         assert(!"Unsupported format");
         return -1;
