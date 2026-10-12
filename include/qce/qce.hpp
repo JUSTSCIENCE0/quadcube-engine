@@ -25,8 +25,6 @@ namespace QCE {
         friend GraphicsOutput;
 
     public:
-        static constexpr auto SCENE_CONTAINER = "qcsd";
-
         Application(const Application&) = delete;
         Application(Application&&) = delete;
         Application& operator=(const Application&) = delete;
