@@ -5,4 +5,4 @@ tests/test_data*/
 .vs/*
 
 # QCE binary formats
-*.qcta
+*.qc??
