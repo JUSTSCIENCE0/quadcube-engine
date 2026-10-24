@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/ancillary/timer.hpp>
+#include <qce/ancillary/extensions.hpp>
 
 #include <qce/ecs/ecs.hpp>
 #include <qce/ecs/systems_hub.hpp>
@@ -71,7 +72,7 @@ namespace QCE {
 
         ErrorCode LoadScene(std::string scene_name) {
             SceneDescription scene_desc{};
-            auto scene_file_path = QCE::get_scenes_directory() / (scene_name + ".qcsd");
+            auto scene_file_path = QCE::get_scenes_directory() / (scene_name + SCENE_CONTAINER);
             QCE_CRITICAL(read_from_file(scene_file_path, scene_desc));
             QCE_CRITICAL(Resources().LoadResources(scene_desc.resources));
             for (const auto& entity_desc : scene_desc.entities) {

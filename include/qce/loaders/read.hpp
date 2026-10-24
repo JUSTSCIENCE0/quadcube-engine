@@ -13,8 +13,6 @@
 #include <fstream>
 
 namespace QCE {
-    static constexpr auto SCENE_CONTAINER = "qcsd";
-
     // defaults
     template<typename T>
     ErrorCode read_from_binary(const std::filesystem::path& path, T& object) {

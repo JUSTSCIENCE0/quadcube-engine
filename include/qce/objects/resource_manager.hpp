@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/ancillary/error_codes.hpp>
+#include <qce/ancillary/extensions.hpp>
 #include <qce/objects/shader.hpp>
 #include <qce/objects/command.hpp>
 #include <qce/objects/scene.hpp>
@@ -37,8 +38,6 @@ namespace QCE {
     class ResourceManager final {
     public:
         static constexpr auto INVALID_RESOURCE_INDEX = std::numeric_limits<size_t>::max();
-        static constexpr auto TEXTURE_CONTAINER = "ktx2";
-        static constexpr auto ANIMATION_CONTAINER = "qcta";
 
         ResourceManager(const ResourceManager&) = delete;
         ResourceManager(ResourceManager&&) = delete;

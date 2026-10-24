@@ -33,6 +33,8 @@
 
 #include <cu/cli-utils.hpp>
 
+#include <qce/ancillary/extensions.hpp>
+
 #include <qce/ecs/ecs.hpp>
 #include <qce/objects/resource_manager.hpp>
 
@@ -68,7 +70,7 @@ static inline Format detect_format(const std::filesystem::path& input_path) {
     }
     extension.erase(0, 1); // remove dot
 
-    if (QCE::ResourceManager::ANIMATION_CONTAINER == extension) {
+    if (QCE::ANIMATION_CONTAINER == extension) {
         std::cout << "Transform animation format detected" << std::endl;
         return Format::animation;
     }

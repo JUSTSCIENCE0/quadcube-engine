@@ -8,6 +8,7 @@
 #include <qce/loaders/mjson/generated_objects.hpp>
 
 #include <qce/ancillary/error_codes.hpp>
+#include <qce/ancillary/extensions.hpp>
 #include <cu/file-utils.hpp>
 
 #include <stdint.h>
@@ -47,9 +48,9 @@ namespace QCE {
     static inline const char* get_shader_bytecode_type(RenderType render_type) {
         switch (render_type) {
         case RenderType::E_RENDER_DIRECTX12:
-            return "cso";
+            return DIRECTX12_SHADER_BYTECODE;
         case RenderType::E_RENDER_VULKAN:
-            return "spv";
+            return VULKAN_SHADER_BYTECODE;
         default:
             assert(!"Unexpected behavior");
             break;
