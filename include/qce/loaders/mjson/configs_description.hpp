@@ -3,23 +3,29 @@
 //
 // License: MIT
 
+// the engine objects have already been declared and defined within the engine
+// do not generate here
+#ifndef MJSON_OBJECTS_GENERATION_PART
+
 // common
-MJSON_ENUM_BEGIN(RenderType,
+using QCERenderType = QCE::RenderType;
+MJSON_ENUM_BEGIN(QCERenderType,
         "Render Type", "Rendering system API")
-    MJSON_ENUM_UNIT(E_RENDER_DIRECTX12, directx12)
-    MJSON_ENUM_UNIT(E_RENDER_VULKAN, vulkan)
-    MJSON_ENUM_VALUE(E_RENDER_UNKNOWN, unknown, -1)
-MJSON_ENUM_END(RenderType)
+    MJSON_ENUM_UNIT(QCE::RenderType::E_RENDER_DIRECTX12, directx12)
+    MJSON_ENUM_UNIT(QCE::RenderType::E_RENDER_VULKAN, vulkan)
+    MJSON_ENUM_VALUE(QCE::RenderType::E_RENDER_UNKNOWN, unknown, -1)
+MJSON_ENUM_END(QCERenderType)
 
 // camera config
-MJSON_ENUM_BEGIN(CameraType, "Camera Type", nullptr)
-    MJSON_ENUM_UNIT(E_CAMERA_FIXED, fixed)
-    MJSON_ENUM_UNIT(E_CAMERA_FIRST_PERSON, first_person)
-    MJSON_ENUM_UNIT(E_CAMERA_THIRD_PERSON, third_person)
-MJSON_ENUM_END(CameraType)
+using QCECameraType = QCE::CameraType;
+MJSON_ENUM_BEGIN(QCECameraType, "Camera Type", nullptr)
+    MJSON_ENUM_UNIT(QCE::CameraType::E_CAMERA_FIXED, fixed)
+    MJSON_ENUM_UNIT(QCE::CameraType::E_CAMERA_FIRST_PERSON, first_person)
+    MJSON_ENUM_UNIT(QCE::CameraType::E_CAMERA_THIRD_PERSON, third_person)
+MJSON_ENUM_END(QCECameraType)
 
 MJSON_OBJECT_BEGIN(
-        CameraConfigUnit,
+        QCE::CameraConfigUnit,
         "Camera Config Unit",
         "Configuration of a single camera")
     MJSON_FIELD(float, aspect,  "Aspect Ratio", nullptr)
@@ -32,153 +38,111 @@ MJSON_OBJECT_BEGIN(
     MJSON_FIELD(std::vector<float>, up,       "Up", "Up direction")
 
     MJSON_FIELD(std::string, camera_name, "Camera name", nullptr)
-    MJSON_FIELD(CameraType,  camera_type, "Camera Type", nullptr)
-MJSON_OBJECT_END(CameraConfigUnit)
+    MJSON_FIELD(QCE::CameraType, camera_type, "Camera Type", nullptr)
+MJSON_OBJECT_END(QCE::CameraConfigUnit)
 
 MJSON_OBJECT_BEGIN(
-        CameraConfig,
+        QCE::CameraConfig,
         "Camera Config",
         "Configuration of the camera system")
-    MJSON_FIELD(std::vector<CameraConfigUnit>, cameras,
+    MJSON_FIELD(std::vector<QCE::CameraConfigUnit>, cameras,
                 "Cameras", "Description of all cameras")
-MJSON_OBJECT_END(CameraConfig)
+MJSON_OBJECT_END(QCE::CameraConfig)
 
 // hid config
-MJSON_ENUM_BEGIN(HidEventType, "Hid Event Type", nullptr)
-    MJSON_ENUM_UNIT (E_HET_SINGLE,  single)
-    MJSON_ENUM_UNIT (E_HET_ACCORD,  accord)
-    MJSON_ENUM_UNIT (E_HET_COMBO,   combo)
-    MJSON_ENUM_VALUE(E_HET_UNKNOWN, unknown, -1)
-MJSON_ENUM_END(HidEventType)
+using QCEHidEventType = QCE::HidEventType;
+MJSON_ENUM_BEGIN(QCEHidEventType, "Hid Event Type", nullptr)
+    MJSON_ENUM_UNIT (QCE::HidEventType::E_HET_SINGLE,  single)
+    MJSON_ENUM_UNIT (QCE::HidEventType::E_HET_ACCORD,  accord)
+    MJSON_ENUM_UNIT (QCE::HidEventType::E_HET_COMBO,   combo)
+    MJSON_ENUM_VALUE(QCE::HidEventType::E_HET_UNKNOWN, unknown, -1)
+MJSON_ENUM_END(QCEHidEventType)
 
-#define MJSON_BASE_OBJECT_NAME HidEventDescriptor
+#define MJSON_BASE_OBJECT_NAME QCE::HidEventDescriptor
 MJSON_POLYMORPHIC_OBJECT_BEGIN(
         "HID Event Descriptor",
         "HID Event Descriptor Base Class")
-    MJSON_BASE_OBJECT_BEGIN(HidEventType)
+    MJSON_BASE_OBJECT_BEGIN(QCE::HidEventType)
       MJSON_BASE_OBJECT_FIELD(std::string, handler,
         "Handler",
         "Handler name for this event")
     MJSON_BASE_OBJECT_END()
-    MJSON_DERIVED_OBJECT_BEGIN(HidSingleEvent, E_HET_SINGLE)
+    MJSON_DERIVED_OBJECT_BEGIN(QCE::HidSingleEvent, QCE::HidEventType::E_HET_SINGLE)
       MJSON_DERIVED_OBJECT_FIELD(std::string, hid_event_code_name,
         "HID Event Code Name",
         "Name of the HID event code\n"
         "Structure: <INPUT_DEVICE>_<EVENT>")
-    MJSON_DERIVED_OBJECT_END(HidSingleEvent)
+    MJSON_DERIVED_OBJECT_END(QCE::HidSingleEvent)
     // TODO - HidAccordEvent, HidComboEvent
 MJSON_POLYMORPHIC_OBJECT_END()
 #undef MJSON_BASE_OBJECT_NAME
 
 MJSON_OBJECT_BEGIN(
-        HidConfig,
+        QCE::HidConfig,
         "HID Config",
         "Configuration of the HID system")
     MJSON_FIELD(
-        std::vector<std::unique_ptr<HidEventDescriptor>>,
+        std::vector<std::unique_ptr<QCE::HidEventDescriptor>>,
         event_descriptors, nullptr, nullptr)
-MJSON_OBJECT_END(HidConfig)
+MJSON_OBJECT_END(QCE::HidConfig)
 
 // movement config
 MJSON_OBJECT_BEGIN(
-        MovementConfig,
+        QCE::MovementConfig,
         "Movement Config",
         "Configuration of the movement system")
     MJSON_FIELD(std::optional<std::string>, temporal, nullptr, nullptr)
-MJSON_OBJECT_END(MovementConfig)
+MJSON_OBJECT_END(QCE::MovementConfig)
 
 // render config
-MJSON_ENUM_BEGIN(ShaderType, "Shader Type", nullptr)
-    MJSON_ENUM_UNIT (E_VERTEX_SHADER, vertex)
-    MJSON_ENUM_UNIT (E_PIXEL_SHADER,  pixel)
+using QCEShaderType = QCE::ShaderType;
+MJSON_ENUM_BEGIN(QCEShaderType, "Shader Type", nullptr)
+    MJSON_ENUM_UNIT (QCE::ShaderType::E_VERTEX_SHADER, vertex)
+    MJSON_ENUM_UNIT (QCE::ShaderType::E_PIXEL_SHADER,  pixel)
 // ancillary
-    MJSON_ENUM_UNIT (E_SHADERS_TYPE_COUNT, count)
-    MJSON_ENUM_VALUE(E_UNKNOWN_SHADER, unknown, -1)
+    MJSON_ENUM_UNIT (QCE::ShaderType::E_SHADERS_TYPE_COUNT, count)
+    MJSON_ENUM_VALUE(QCE::ShaderType::E_UNKNOWN_SHADER, unknown, -1)
 // TODO:
 //     E_TESSELLATION_CONTROL_SHADER
 //     E_TESSELLATION_EVALUATION_SHADER
 //     E_GEOMETRY_SHADER
 //     E_MESH_SHADER
-MJSON_ENUM_END(ShaderType)
+MJSON_ENUM_END(QCEShaderType)
 
-MJSON_OBJECT_BEGIN(ShaderDescr, "Shader Description", nullptr)
+MJSON_OBJECT_BEGIN(QCE::ShaderDescr, "Shader Description", nullptr)
     MJSON_FIELD(std::string, shader_name, "Shader Name", nullptr)
-    MJSON_FIELD(ShaderType, shader_type, "Shader Type", nullptr)
-MJSON_OBJECT_END(ShaderDescr)
+    MJSON_FIELD(QCE::ShaderType, shader_type, "Shader Type", nullptr)
+MJSON_OBJECT_END(QCE::ShaderDescr)
 
 MJSON_OBJECT_BEGIN(
-        RenderConfig,
+        QCE::RenderConfig,
         "Render Configuration",
         "Configuration of render system")
     MJSON_FIELD(int, width, "Width", nullptr)
     MJSON_FIELD(int, height, "Height", nullptr)
-    MJSON_FIELD(std::vector<ShaderDescr>, used_shaders,
+    MJSON_FIELD(std::vector<QCE::ShaderDescr>, used_shaders,
                 "Used shaders", "List of used shaders")
-MJSON_OBJECT_END(RenderConfig)
+MJSON_OBJECT_END(QCE::RenderConfig)
 
 // graphics output config
-MJSON_ENUM_BEGIN(WindowMode, "Window Mode", nullptr)
-    MJSON_ENUM_UNIT(E_REGULAR_WINDOW,    regular)
-    MJSON_ENUM_UNIT(E_FRAMELESS_WINDOW,  frameless)
-    MJSON_ENUM_UNIT(E_FULLSCREEN_WINDOW, fullscreen)
-MJSON_ENUM_END(WindowMode)
+using QCEWindowMode = QCE::WindowMode;
+MJSON_ENUM_BEGIN(QCEWindowMode, "Window Mode", nullptr)
+    MJSON_ENUM_UNIT(QCE::WindowMode::E_REGULAR_WINDOW,    regular)
+    MJSON_ENUM_UNIT(QCE::WindowMode::E_FRAMELESS_WINDOW,  frameless)
+    MJSON_ENUM_UNIT(QCE::WindowMode::E_FULLSCREEN_WINDOW, fullscreen)
+MJSON_ENUM_END(QCEWindowMode)
 
-MJSON_OBJECT_BEGIN(GraphicsOutputConfig, "Graphics Output Configuration", nullptr)
-    MJSON_FIELD(WindowMode, mode, "Window Mode", nullptr)
+MJSON_OBJECT_BEGIN(QCE::GraphicsOutputConfig, "Graphics Output Configuration", nullptr)
+    MJSON_FIELD(QCE::WindowMode, mode, "Window Mode", nullptr)
     MJSON_FIELD(int, width, "Width", nullptr)
     MJSON_FIELD(int, height, "Height", nullptr)
     MJSON_FIELD(std::string, caption, "Caption", nullptr)
     MJSON_FIELD(bool, is_first_person, "Is First Person", nullptr)
-MJSON_OBJECT_END(GraphicsOutputConfig)
+MJSON_OBJECT_END(QCE::GraphicsOutputConfig)
 
 // common config
-MJSON_OBJECT_BEGIN(CommonConfig, "Common Configuration", nullptr)
-    MJSON_FIELD(RenderType, render_type, "Render Type", nullptr)
-MJSON_OBJECT_END(CommonConfig)
+MJSON_OBJECT_BEGIN(QCE::CommonConfig, "Common Configuration", nullptr)
+    MJSON_FIELD(QCE::RenderType, render_type, "Render Type", nullptr)
+MJSON_OBJECT_END(QCE::CommonConfig)
 
-#ifndef QCE_CONFIGS_ANCILLARY_H
-#define QCE_CONFIGS_ANCILLARY_H
-
-namespace QCE {
-    using ::RenderType, ::CameraType, ::ShaderType, ::HidEventType, ::WindowMode;
-    using ::CameraConfigUnit, ::CameraConfig;
-    using ::MovementConfig;
-    using ::ShaderDescr, ::RenderConfig;
-    using ::HidEventDescriptor, ::HidSingleEvent, ::HidConfig;
-    using ::GraphicsOutputConfig, ::CommonConfig;
-
-#  ifdef WIN32
-    static constexpr auto DEFAULT_RENDER_TYPE = RenderType::E_RENDER_DIRECTX12;
-#  else
-    static constexpr auto DEFAULT_RENDER_TYPE = RenderType::E_RENDER_VULKAN;
-#  endif
-
-    static const CameraConfigUnit DEFAULT_CAMERA_CONFIG_UNIT = {
-        .aspect  = (16.0f / 9.0f),
-        .fov_rad = 1.0471975512f, // 60 deg
-        .znear   = 1.0f,
-        .zfar    = 1000.0f,
-
-        .position = { 2.0f, 2.0f, -2.0f },
-        .target   = { 0.0f, 0.0f, 0.0f },
-        .up       = { 0.0f, 1.0f, 0.0f },
-
-        .camera_name  = "MainCamera",
-        .camera_type  = CameraType::E_CAMERA_FIRST_PERSON
-    };
-
-    static const CameraConfig DEFAULT_CAMERA_CONFIG = {
-        .cameras = { DEFAULT_CAMERA_CONFIG_UNIT }
-    };
-
-    static const RenderConfig DEFAULT_RENDER_CONFIG = {
-        .width = 1280,
-        .height = 720,
-        .used_shaders = {
-            { "simple", QCE::ShaderType::E_VERTEX_SHADER },
-            { "simple", QCE::ShaderType::E_PIXEL_SHADER }
-        }
-    };
-}
-
-#endif // QCE_CONFIGS_ANCILLARY_H
+#endif

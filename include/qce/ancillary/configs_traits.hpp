@@ -5,13 +5,13 @@
 
 #pragma once
 
-struct CameraConfig;
-struct HidConfig;
-struct MovementConfig;
-struct RenderConfig;
-struct TransformAnimationConfig;
-
 namespace QCE {
+    struct CameraConfig;
+    struct HidConfig;
+    struct MovementConfig;
+    struct RenderConfig;
+    struct TransformAnimationConfig;
+
     template<typename T>
     struct config_corresponding_system {
         static_assert(false, "System for this config not found or not implemented");

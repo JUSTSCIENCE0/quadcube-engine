@@ -7,5 +7,6 @@
 
 #include <qce/loaders/mjson/math_types.hpp>
 #include <qce/objects/scene.hpp>
+#include <qce/systems/system_configs.hpp>
 
 #include "mjson_output.hpp"
