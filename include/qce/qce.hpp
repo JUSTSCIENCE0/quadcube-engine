@@ -48,16 +48,10 @@ namespace QCE {
 #endif
 
             const auto CONFIGS_DIR = QCE::get_configs_directory();
-            const auto common_config_json_file = CONFIGS_DIR / "common_config.json";
+            const auto common_config_file = std::format("{}/{}.{}", CONFIGS_DIR.string(), "common_config", SYSTEM_CONFIG_CONTAINER);
 
-            std::string error_descr = "";
             CommonConfig common_config{};
-            auto parse_result = macrojson::json_file_to_object(common_config_json_file, common_config, error_descr);
-            if (macrojson::E_MJSON_OK != parse_result) {
-                // TODO: use log system
-                std::cout << error_descr << std::endl;
-                return ErrorCode::E_ENG_BAD_CONFIG_FILE;
-            }
+            QCE_CRITICAL(read_from_file(common_config_file, common_config));
             ResourceManager::Initialize(common_config.render_type);
 
             return m_systems.Setup<

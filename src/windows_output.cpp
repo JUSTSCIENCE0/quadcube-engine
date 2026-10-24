@@ -6,8 +6,11 @@
 #include <qce/renders/windows_output.hpp>
 #include <qce/hid/win_events.hpp>
 #include <qce/ancillary/directories.hpp>
+#include <qce/loaders/read.hpp>
 
 #include <cu/string-utils.hpp>
+
+#include <format>
 
 #include <windowsx.h>
 
@@ -20,15 +23,9 @@ namespace QCE {
 
     ErrorCode WinNtWindow::Setup() {
         const auto CONFIGS_DIR = QCE::get_configs_directory();
-        const auto graphics_output_config_json_file = CONFIGS_DIR / "graphics_output_config.json";
-
-        std::string error_descr = "";
-        auto parse_result = macrojson::json_file_to_object(graphics_output_config_json_file, m_config, error_descr);
-        if (macrojson::E_MJSON_OK != parse_result) {
-            // TODO: use log system
-            std::cout << error_descr << std::endl;
-            return ErrorCode::E_ENG_BAD_CONFIG_FILE;
-        }
+        const auto graphics_output_config_file = std::format(
+            "{}/{}.{}", CONFIGS_DIR.string(), "graphics_output_config", SYSTEM_CONFIG_CONTAINER);
+        QCE_CRITICAL(read_from_file(graphics_output_config_file, m_config));
 
         return Init();
     }
