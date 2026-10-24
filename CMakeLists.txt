@@ -218,8 +218,9 @@ set(QCE_ANCILLARY_IMPL
     src/about.cpp
 )
 
-set(QCE_SHADERS_DIR shaders)
-set(QCE_HLSL_SHADERS_DIR ${QCE_SHADERS_DIR}/hlsl)
+set(QCE_SHADERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/shaders")
+set(QCE_HLSL_SHADERS_DIR "${QCE_SHADERS_DIR}/hlsl")
+set(QCE_GLSL_SHADERS_DIR "${QCE_SHADERS_DIR}/glsl")
 set(QCE_HLSL_COMMON
     ${QCE_HLSL_SHADERS_DIR}/common.hlsl
     ${QCE_HLSL_SHADERS_DIR}/base_lighting.hlsl

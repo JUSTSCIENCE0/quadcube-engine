@@ -25,34 +25,41 @@ function(use_qce_shaders target_name)
     endif()
 
     set(shaders_list ${ARGN})
-    set(QCE_HLSL_PREFIX ${QCE_SHADERS_BINARY_DIR}/hlsl)
-    set(QCE_GLSL_PREFIX ${QCE_SHADERS_BINARY_DIR}/glsl)
-
     foreach(file IN LISTS shaders_list)
-        # copy HLSL byte-code
-        set(hlsl_path "${QCE_HLSL_PREFIX}/${file}.cso")
-        if (EXISTS "${hlsl_path}")
-            add_custom_command(
-                TARGET ${target_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                        "${hlsl_path}"
-                        "$<TARGET_FILE_DIR:${target_name}>/resources/shaders/hlsl/"
-            )
-        else()
-            message(WARNING "HLSL shader ${file} not found, path ${hlsl_path}")
+        set(hlsl_source "${QCE_HLSL_SHADERS_DIR}/${file}.hlsl")
+        set(glsl_source "${QCE_GLSL_SHADERS_DIR}/${file}.glsl")
+        set(shader_source_found FALSE)
+
+        if (EXISTS "${hlsl_source}")
+            set(shader_source_found TRUE)
+            if (CMAKE_SYSTEM_NAME STREQUAL "Windows"
+                    AND CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+                add_custom_command(
+                    TARGET ${target_name} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                            "${QCE_SHADERS_BINARY_DIR}/hlsl/${file}.cso"
+                            "$<TARGET_FILE_DIR:${target_name}>/resources/shaders/hlsl/${file}.cso"
+                    VERBATIM
+                )
+            endif()
         endif()
 
-        # copy GLSL byte-code
-        set(glsl_path "${QCE_GLSL_PREFIX}/${file}.spv")
-        if (EXISTS "${glsl_path}")
+        if (EXISTS "${glsl_source}")
+            set(shader_source_found TRUE)
             add_custom_command(
                 TARGET ${target_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                        "${glsl_path}"
-                        "$<TARGET_FILE_DIR:${target_name}>/resources/shaders/glsl/"
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "${QCE_SHADERS_BINARY_DIR}/glsl/${file}.spv"
+                        "$<TARGET_FILE_DIR:${target_name}>/resources/shaders/glsl/${file}.spv"
+                VERBATIM
             )
-        else()
-            message(WARNING "GLSL shader ${file} not found, path ${glsl_path}")
+        endif()
+
+        if (NOT shader_source_found)
+            message(WARNING
+                "Shader source ${file} not found; checked "
+                "${hlsl_source} and ${glsl_source}"
+            )
         endif()
     endforeach()
 endfunction()
@@ -83,4 +90,3 @@ function(qce_add_assets target_name assets_dir is_copy)
         )
     endif()
 endfunction()
-
