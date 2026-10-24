@@ -6,8 +6,10 @@
 #pragma once
 
 #include <qce/ancillary/error_codes.hpp>
+#include <qce/ancillary/extensions.hpp>
 
 #include <qce/loaders/binary/scene.hpp>
+#include <qce/loaders/binary/system_configs.hpp>
 #include <qce/loaders/mjson/generated_objects.hpp>
 
 #include <fstream>

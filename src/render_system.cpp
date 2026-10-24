@@ -5,6 +5,9 @@
 
 #include <qce/systems/render_system.hpp>
 #include <qce/ancillary/directories.hpp>
+#include <qce/loaders/read.hpp>
+
+#include <format>
 
 #ifdef WIN32
 #  include <qce/renders/render_dx12.hpp>
@@ -25,25 +28,14 @@ namespace QCE {
 
     ErrorCode RenderSystem::Setup() {
         const auto CONFIGS_DIR = QCE::get_configs_directory();
-        const auto render_config_json_file = CONFIGS_DIR / "render_system.json";
+        const auto render_config_file = std::format("{}/{}.{}", CONFIGS_DIR.string(), "render_system", SYSTEM_CONFIG_CONTAINER);
 
-        RenderConfig config;
-        std::string error_descr = "";
-        auto parse_result = macrojson::json_file_to_object(render_config_json_file, config, error_descr);
-        if (macrojson::E_MJSON_OK != parse_result) {
-            // TODO: use log system
-            std::cout << error_descr << std::endl;
-            return ErrorCode::E_ENG_BAD_CONFIG_FILE;
-        }
+        RenderConfig config{};
+        QCE_CRITICAL(read_from_file(render_config_file, config));
 
-        const auto common_config_json_file = CONFIGS_DIR / "common_config.json";
+        const auto common_config_file = std::format("{}/{}.{}", CONFIGS_DIR.string(), "common_config", SYSTEM_CONFIG_CONTAINER);
         CommonConfig common_config{};
-        parse_result = macrojson::json_file_to_object(common_config_json_file, common_config, error_descr);
-        if (macrojson::E_MJSON_OK != parse_result) {
-            // TODO: use log system
-            std::cout << error_descr << std::endl;
-            return ErrorCode::E_ENG_BAD_CONFIG_FILE;
-        }
+        QCE_CRITICAL(read_from_file(common_config_file, common_config));
 
         if (m_render_type != common_config.render_type) {
             m_render.reset();

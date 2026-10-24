@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/ecs/ecs.hpp>
+#include <qce/systems/system_configs.hpp>
 #include <qce/renders/render.hpp>
 
 namespace QCE {

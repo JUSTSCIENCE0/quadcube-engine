@@ -6,7 +6,7 @@
 #pragma once
 
 #include <qce/ecs/ecs.hpp>
-#include <qce/loaders/mjson/generated_objects.hpp>
+#include <qce/systems/system_configs.hpp>
 
 namespace QCE {
     class MovementSystem {

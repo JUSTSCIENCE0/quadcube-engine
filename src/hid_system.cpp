@@ -5,20 +5,17 @@
 
 #include <qce/systems/hid_system.hpp>
 #include <qce/ancillary/directories.hpp>
+#include <qce/loaders/read.hpp>
+
+#include <format>
 
 namespace QCE {
     ErrorCode HidSystem::Setup() {
         const auto CONFIGS_DIR = QCE::get_configs_directory();
-        const auto hid_events_config_json_file = CONFIGS_DIR / "hid_system.json";
+        const auto hid_events_config_file = std::format("{}/{}.{}", CONFIGS_DIR.string(), "hid_system", SYSTEM_CONFIG_CONTAINER);
 
         HidConfig config;
-        std::string error_descr = "";
-        auto parse_result = macrojson::json_file_to_object(hid_events_config_json_file, config, error_descr);
-        if (macrojson::E_MJSON_OK != parse_result) {
-            // TODO: use log system
-            std::cout << error_descr << std::endl;
-            return ErrorCode::E_ENG_BAD_CONFIG_FILE;
-        }
+        QCE_CRITICAL(read_from_file(hid_events_config_file, config));
 
         // register default handler
         QCE_CRITICAL(

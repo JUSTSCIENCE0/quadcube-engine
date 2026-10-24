@@ -5,9 +5,8 @@
 
 #pragma once
 
-#include <qce/loaders/mjson/generated_objects.hpp>
-
 #include <qce/ecs/ecs.hpp>
+#include <qce/systems/system_configs.hpp>
 #include <qce/hid/events_handler.hpp>
 
 namespace QCE {

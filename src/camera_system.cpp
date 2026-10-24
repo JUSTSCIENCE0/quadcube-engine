@@ -5,28 +5,19 @@
 
 #include <qce/systems/camera_system.hpp>
 #include <qce/ancillary/directories.hpp>
+#include <qce/loaders/read.hpp>
+
+#include <format>
 
 namespace QCE {
     ErrorCode CameraSystem::Setup() {
         const auto CONFIGS_DIR = QCE::get_configs_directory();
-        const auto camera_config_json_file = CONFIGS_DIR / "camera_system.json";
+        const auto camera_config_file = std::format("{}/{}.{}", CONFIGS_DIR.string(), "camera_system", SYSTEM_CONFIG_CONTAINER);
+        QCE_CRITICAL(read_from_file(camera_config_file, m_config));
 
-        std::string error_descr = "";
-        auto parse_result = macrojson::json_file_to_object(camera_config_json_file, m_config, error_descr);
-        if (macrojson::E_MJSON_OK != parse_result) {
-            // TODO: use log system
-            std::cout << error_descr << std::endl;
-            return ErrorCode::E_ENG_BAD_CONFIG_FILE;
-        }
-
-        const auto common_config_json_file = CONFIGS_DIR / "common_config.json";
+        const auto common_config_file = std::format("{}/{}.{}", CONFIGS_DIR.string(), "common_config", SYSTEM_CONFIG_CONTAINER);
         CommonConfig common_config{};
-        parse_result = macrojson::json_file_to_object(common_config_json_file, common_config, error_descr);
-        if (macrojson::E_MJSON_OK != parse_result) {
-            // TODO: use log system
-            std::cout << error_descr << std::endl;
-            return ErrorCode::E_ENG_BAD_CONFIG_FILE;
-        }
+        QCE_CRITICAL(read_from_file(common_config_file, common_config));
         m_render_type = common_config.render_type;
 
         // TODO: remove existing cameras
