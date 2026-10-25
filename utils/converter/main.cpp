@@ -50,7 +50,13 @@
         CU_ENUM_UNIT(autodetect) \
         CU_ENUM_UNIT(animation) \
         CU_ENUM_UNIT(scene) \
-    CU_END_ENUM(Format)
+        CU_ENUM_UNIT(camera_system_config) \
+        CU_ENUM_UNIT(hid_system_config) \
+        CU_ENUM_UNIT(movement_system_config) \
+        CU_ENUM_UNIT(render_system_config) \
+        CU_ENUM_UNIT(graphics_output_config) \
+        CU_ENUM_UNIT(common_config) \
+        CU_END_ENUM(Format)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
 
@@ -60,8 +66,10 @@ static inline bool is_json(const std::filesystem::path& input_path) {
 
 static inline Format detect_format(const std::filesystem::path& input_path) {
     auto extension = input_path.extension().string();
+    auto file_name = input_path.stem().string();
     if (is_json(input_path)) {
         extension = input_path.stem().extension().string();
+        file_name = file_name.substr(0, file_name.find_last_of('.'));
     }
 
     if (extension.size() != 5 || !extension.starts_with('.')) {
@@ -77,6 +85,36 @@ static inline Format detect_format(const std::filesystem::path& input_path) {
     if (QCE::SCENE_CONTAINER == extension) {
         std::cout << "Scene description format detected" << std::endl;
         return Format::scene;
+    }
+    if (QCE::SYSTEM_CONFIG_CONTAINER == extension) {
+        std::cout << "System config format detected" << std::endl;
+        if ("camera_system" == file_name) {
+            std::cout << "Camera system config format detected" << std::endl;
+            return Format::camera_system_config;
+        }
+        if ("hid_system" == file_name) {
+            std::cout << "HID system config format detected" << std::endl;
+            return Format::hid_system_config;
+        }
+        if ("movement_system" == file_name) {
+            std::cout << "Movement system config format detected" << std::endl;
+            return Format::movement_system_config;
+        }
+        if ("render_system" == file_name) {
+            std::cout << "Render system config format detected" << std::endl;
+            return Format::render_system_config;
+        }
+        if ("graphics_output_config" == file_name) {
+            std::cout << "Graphics output system config format detected" << std::endl;
+            return Format::graphics_output_config;
+        }
+        if ("common_config" == file_name) {
+            std::cout << "Common system config format detected" << std::endl;
+            return Format::common_config;
+        }
+
+        std::cerr << "Unknown system config file name: " << file_name << std::endl;
+        return Format::E_Format_UNKNOWN;
     }
 
     std::cerr << "Unknown file extension: " << extension << std::endl;
@@ -155,6 +193,24 @@ int main(int argc, char* argv[]) {
     }
     case Format::scene:
         return convert_file<QCE::SceneDescription>(
+            cli_config.input_file, cli_config.output_file, convertion);
+    case Format::camera_system_config:
+        return convert_file<QCE::CameraConfig>(
+            cli_config.input_file, cli_config.output_file, convertion);
+    case Format::hid_system_config:
+        return convert_file<QCE::HidConfig>(
+            cli_config.input_file, cli_config.output_file, convertion);
+    case Format::movement_system_config:
+        return convert_file<QCE::MovementConfig>(
+            cli_config.input_file, cli_config.output_file, convertion);
+    case Format::render_system_config:
+        return convert_file<QCE::RenderConfig>(
+            cli_config.input_file, cli_config.output_file, convertion);
+    case Format::graphics_output_config:
+        return convert_file<QCE::GraphicsOutputConfig>(
+            cli_config.input_file, cli_config.output_file, convertion);
+    case Format::common_config:
+        return convert_file<QCE::CommonConfig>(
             cli_config.input_file, cli_config.output_file, convertion);
     default:
         assert(!"Unsupported format");
