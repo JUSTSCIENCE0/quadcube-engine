@@ -140,6 +140,8 @@ namespace QCE {
         public:
             ErrorCode Add(ResourceT resource) {
                 std::string id = resource.id;
+                if (id.empty())
+                    return ErrorCode::E_RM_EMPTY_RESOURCE_NAME;
 
                 if (m_index.end() != m_index.find(id))
                     return ErrorCode::E_RM_RESOURCE_ALREADY_EXISTS;

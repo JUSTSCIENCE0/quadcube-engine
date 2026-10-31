@@ -82,11 +82,18 @@ namespace QCE {
     ErrorCode ResourceManager::AddAnimation(
             const std::string& animation_name
             /*TODO: AnimationType animation_type = AnimationType::TRANSFORM_ANIMATION*/) {
+        if (animation_name.empty())
+            return ErrorCode::E_RM_EMPTY_RESOURCE_NAME;
+
         const auto file_name = m_animations_directory / (animation_name + "." + ANIMATION_CONTAINER);
 
         QCE::TransformAnimation animation{};
         QCE_CRITICAL(read_from_file(file_name, animation));
         QCE_CRITICAL(QCE::validate_animation(animation));
+
+        if (animation.id != animation_name)
+            return ErrorCode::E_RM_WRONG_RESOURCE_NAME;
+
         return Add(std::move(animation));
     }
 
