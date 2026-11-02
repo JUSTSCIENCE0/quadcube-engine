@@ -122,10 +122,13 @@ namespace QCE {
                    return AddFigure(params, resource.name);
                 }
                 else if constexpr (std::is_same_v<T, MeshParams>) {
-                    QCE::Mesh mesh{};
-                    mesh.id = resource.name;
-                    // TODO: load mesh from file if not empty
-                    return Add(std::move(mesh));
+                    if (params.is_empty) {
+                        QCE::Mesh mesh{};
+                        mesh.id = resource.name;
+                        return Add(std::move(mesh));
+                    }
+                    else
+                        return AddMesh(resource.name);
                 }
                 else if constexpr (std::is_same_v<T, TextureParams>) {
                     return AddTexture(resource.name);
