@@ -64,6 +64,13 @@
             }
         },
         {
+            "name": "crystal",
+            "params": {
+                "type": "mesh",
+                "is_empty": false
+            }
+        },
+        {
             "name": "squares.bc7",
             "params": {
                 "type": "texture",
@@ -153,6 +160,16 @@
             "transform": {
                 "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
                 "position": [ 0.0, 0.0, 0.0 ],
+                "scale": [ 1.0, 1.0, 1.0 ]
+            },
+            "material": "untextured_material"
+        },
+        {
+            "name": "simple_crystal",
+            "static_mesh": "crystal",
+            "transform": {
+                "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                "position": [ 0.0, 1.0, 3.0 ],
                 "scale": [ 1.0, 1.0, 1.0 ]
             },
             "material": "untextured_material"
