@@ -6,6 +6,7 @@
 #pragma once
 
 #include <qce/loaders/mjson/math_types.hpp>
+#include <qce/objects/mesh.hpp>
 #include <qce/objects/scene.hpp>
 #include <qce/systems/system_configs.hpp>
 

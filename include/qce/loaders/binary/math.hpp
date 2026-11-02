@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <qce/objects/index.hpp>
 #include <qce/loaders/binary/compression.hpp>
 
 #include <bitsery/bitsery.h>
@@ -79,6 +80,12 @@ namespace bitsery {
 
 namespace QCE {
     template<typename S>
+    void serialize(S& s, float2d& value) {
+        s.value4b(value.x());
+        s.value4b(value.y());
+    }
+
+    template<typename S>
     void serialize(S& s, float3d& value) {
         s.value4b(value.x());
         s.value4b(value.y());
@@ -100,5 +107,25 @@ namespace QCE {
             sbp.ext(value.b(), RANGE);
             sbp.ext(value.a(), RANGE);
         });
+    }
+
+    template<typename S>
+    void serialize(S& s, vertex& value) {
+        s.object(value.position);
+        s.object(value.normal);
+        s.object(value.texture_coordinates);
+    }
+
+    template<typename S>
+    void serialize(S& s, index_t& value) {
+        if constexpr (sizeof(index_t) == 1) {
+            s.value1b(value);
+        }
+        else if constexpr (sizeof(index_t) == 2) {
+            s.value2b(value);
+        }
+        else {
+            s.value4b(value);
+        }
     }
 }

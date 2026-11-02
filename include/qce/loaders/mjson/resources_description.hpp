@@ -27,6 +27,18 @@ MJSON_OBJECT_BEGIN(QCE::PlaneParams, "Plane parameters", "Parameters for plane m
     MJSON_FIELD(bool,  unit_squares, "Unit Squares", nullptr)
 MJSON_OBJECT_END(QCE::PlaneParams)
 
+MJSON_OBJECT_BEGIN(QCE::vertex, "Vertex", "Single vertex of a mesh")
+    MJSON_FIELD(QCE::float3d, position, "Position", nullptr)
+    MJSON_FIELD(QCE::float3d, normal, "Normal", nullptr)
+    MJSON_FIELD(QCE::float2d, texture_coordinates, "Texture coordinates", nullptr)
+MJSON_OBJECT_END(QCE::vertex)
+
+MJSON_OBJECT_BEGIN(QCE::Mesh, "Mesh", "Mesh geometry data")
+    MJSON_FIELD(std::string, id, "ID", nullptr)
+    MJSON_FIELD(std::vector<QCE::vertex>, vertices, "Vertices", nullptr)
+    MJSON_FIELD(std::vector<QCE::index_t>, indices, "Indices", nullptr)
+MJSON_OBJECT_END(QCE::Mesh)
+
 MJSON_OBJECT_BEGIN(QCE::MeshParams, "Mesh parameters", "Describe additional mesh params")
     MJSON_FIELD(bool, is_empty, "Is Empty", nullptr)
 MJSON_OBJECT_END(QCE::MeshParams)

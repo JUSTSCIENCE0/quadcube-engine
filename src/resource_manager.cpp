@@ -97,6 +97,21 @@ namespace QCE {
         return Add(std::move(animation));
     }
 
+    ErrorCode ResourceManager::AddMesh(const std::string& mesh_name) {
+        if (mesh_name.empty())
+            return ErrorCode::E_RM_EMPTY_RESOURCE_NAME;
+
+        const auto file_name = m_meshes_directory / (mesh_name + "." + MESH_CONTAINER);
+
+        QCE::Mesh mesh{};
+        QCE_CRITICAL(read_from_file(file_name, mesh));
+
+        if (mesh.id != mesh_name)
+            return ErrorCode::E_RM_WRONG_RESOURCE_NAME;
+
+        return Add(std::move(mesh));
+    }
+
     ErrorCode ResourceManager::LoadResources(const std::vector<ResourceDescription>& resources) {
         for (const auto& resource : resources) {
             auto result = std::visit([this, &resource](const auto& params) {

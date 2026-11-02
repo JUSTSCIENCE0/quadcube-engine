@@ -217,6 +217,27 @@ struct ExtensionTraits<ext::TransformAnimationCompressor, T> {
 
 namespace QCE {
     template<typename S>
+    void serialize(S& s, Mesh& mesh) {
+        s.object(mesh.id);
+        s.container(mesh.vertices, std::numeric_limits<size_t>::max(),
+            [](S& sb, vertex& value) {
+                sb.object(value);
+            });
+        s.container(mesh.indices, std::numeric_limits<size_t>::max(),
+            [](S& sb, index_t& value) {
+                if constexpr (sizeof(index_t) == 1) {
+                    sb.value1b(value);
+                }
+                else if constexpr (sizeof(index_t) == 2) {
+                    sb.value2b(value);
+                }
+                else {
+                    sb.value4b(value);
+                }
+            });
+    }
+
+    template<typename S>
     void serialize(S& s, CuboidParams& params) {
         s.value4b(params.length);
         s.value4b(params.width);
