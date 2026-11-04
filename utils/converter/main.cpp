@@ -12,7 +12,7 @@
         std::string, ListValidator, "to_json", "to_bin" ) \
     CLI_OPTIONAL_PROPERTY(format, SYMBOL(f), format, "Input file format", \
         std::string, "autodetect", ListValidator, \
-            "autodetect", "animation", "scene" ) \
+            "autodetect", "animation", "scene", "mesh" ) \
     CLI_OPTIONAL_PROPERTY(animation-position-eps, WO_SYMBOL, animation_position_eps, \
         "This parameter applies only when the input file format is an animation.\n" \
     "    Specifies the maximum allowable error for animation position channel compression.", \
@@ -50,6 +50,7 @@
         CU_ENUM_UNIT(autodetect) \
         CU_ENUM_UNIT(animation) \
         CU_ENUM_UNIT(scene) \
+        CU_ENUM_UNIT(mesh) \
         CU_ENUM_UNIT(camera_system_config) \
         CU_ENUM_UNIT(hid_system_config) \
         CU_ENUM_UNIT(movement_system_config) \
@@ -85,6 +86,10 @@ static inline Format detect_format(const std::filesystem::path& input_path) {
     if (QCE::SCENE_CONTAINER == extension) {
         std::cout << "Scene description format detected" << std::endl;
         return Format::scene;
+    }
+    if (QCE::MESH_CONTAINER == extension) {
+        std::cout << "Mesh format detected" << std::endl;
+        return Format::mesh;
     }
     if (QCE::SYSTEM_CONFIG_CONTAINER == extension) {
         std::cout << "System config format detected" << std::endl;
@@ -193,6 +198,9 @@ int main(int argc, char* argv[]) {
     }
     case Format::scene:
         return convert_file<QCE::SceneDescription>(
+            cli_config.input_file, cli_config.output_file, convertion);
+    case Format::mesh:
+        return convert_file<QCE::Mesh>(
             cli_config.input_file, cli_config.output_file, convertion);
     case Format::camera_system_config:
         return convert_file<QCE::CameraConfig>(
