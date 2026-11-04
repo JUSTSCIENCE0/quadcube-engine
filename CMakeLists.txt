@@ -71,6 +71,22 @@ if (NOT TARGET bitsery)
 endif()
 set_property(TARGET bitsery PROPERTY FOLDER "externals")
 
+if (NOT TARGET tinyobjloader)
+    FetchContent_Declare(
+        tinyobjloader
+        GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader.git
+        GIT_TAG        45636bdcef1a4fec140346b90c0b50bf0bc3e23b # release 2026-06-19
+    )
+    set(TINYOBJLOADER_BUILD_C_LIBRARY OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(tinyobjloader)
+endif()
+set_property(TARGET tinyobjloader PROPERTY FOLDER "externals")
+if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    target_compile_options(tinyobjloader PRIVATE /wd4456)
+elseif ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+    target_compile_options(tinyobjloader PRIVATE -Wno-shadow)
+endif()
+
 find_package(ktx REQUIRED)
 
 # generate mjson headers from configs_description.h
@@ -361,6 +377,7 @@ target_link_libraries(${PROJECT_NAME}
         common-utils
         KTX::ktx
         bitsery
+        tinyobjloader
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
