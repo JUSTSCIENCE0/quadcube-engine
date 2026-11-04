@@ -9,6 +9,7 @@ project(binary-test)
 
 add_executable(${PROJECT_NAME}
     animation-test.cpp
+    mesh-test.cpp
     scene-test.cpp
     system-config-test.cpp
 
