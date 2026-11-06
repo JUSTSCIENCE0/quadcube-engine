@@ -125,10 +125,13 @@ set(QCE_BINARY_SERIALIZATION_HDRS
     include/qce/loaders/binary/compression.hpp
     include/qce/loaders/binary/components.hpp
     include/qce/loaders/binary/system_configs.hpp
+
+    include/qce/loaders/binary/obj.hpp
 )
 
 set(QCE_BINARY_SERIALIZATION_IMPL
     src/binary_compression.cpp
+    src/obj_loader.cpp
 )
 
 set(QCE_OBJECTS_HDRS
