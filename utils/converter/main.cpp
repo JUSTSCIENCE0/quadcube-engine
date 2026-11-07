@@ -8,7 +8,7 @@
         std::string, BaseValidator) \
     CLI_REQUIRED_PROPERTY(output, SYMBOL(o), output_file, "Output file path", \
         std::string, BaseValidator) \
-    CLI_REQUIRED_PROPERTY(convertion, SYMBOL(c), convertion, "Conversion type", \
+    CLI_REQUIRED_PROPERTY(conversion, SYMBOL(c), conversion, "Conversion type", \
         std::string, ListValidator, "to_json", "to_bin" ) \
     CLI_OPTIONAL_PROPERTY(format, SYMBOL(f), format, "Input file format", \
         std::string, "autodetect", ListValidator, \
@@ -21,7 +21,7 @@
         "This parameter applies only when the input file format is an animation.\n" \
     "    Specifies the maximum allowable error for animation rotation channel compression.", \
         float, 0.0005f, BaseValidator) \
-    CLI_OPTIONAL_PROPERTY(animation-quternion-size, WO_SYMBOL, animation_quternion_size, \
+    CLI_OPTIONAL_PROPERTY(animation-quaternion-size, WO_SYMBOL, animation_quternion_size, \
         "This parameter applies only when the input file format is an animation.\n" \
     "    Specifies the number of bits used to pack quaternions in the animation rotation channel.", \
         int, 32, ListValidator, 32, 64, 128)
@@ -42,10 +42,10 @@
 #include <qce/loaders/write.hpp>
 
 #define CU_ENUMS_DESCRIPTION \
-    CU_BEGIN_ENUM(Convertion) \
+    CU_BEGIN_ENUM(Conversion) \
         CU_ENUM_UNIT(to_json) \
         CU_ENUM_UNIT(to_bin) \
-    CU_END_ENUM(Convertion) \
+    CU_END_ENUM(Conversion) \
     CU_BEGIN_ENUM(Format) \
         CU_ENUM_UNIT(autodetect) \
         CU_ENUM_UNIT(animation) \
@@ -139,7 +139,7 @@ template<typename T, typename CtxT = QCE::Private::NoContext>
 int convert_file(
         const std::filesystem::path& input_path,
         const std::filesystem::path& output_path,
-        Convertion convertion,
+        Conversion conversion,
         CtxT&& ctx = {}) {
     T data{};
     if (!load_file(input_path, data)) {
@@ -147,21 +147,21 @@ int convert_file(
         return -1;
     }
 
-    switch (convertion) {
-    case Convertion::to_json:
+    switch (conversion) {
+    case Conversion::to_json:
         if (QCE::write_to_json(output_path, data) != QCE::ErrorCode::SUCCESS) {
             std::cerr << "Failed to write JSON file: " << output_path.string() << std::endl;
             return -1;
         }
         break;
-    case Convertion::to_bin:
+    case Conversion::to_bin:
         if (QCE::write_to_binary(output_path, data, std::forward<CtxT>(ctx)) != QCE::ErrorCode::SUCCESS) {
             std::cerr << "Failed to write binary file: " << output_path.string() << std::endl;
             return -1;
         }
         break;
     default:
-        std::cerr << "Unknown convertion type" << std::endl;
+        std::cerr << "Unknown conversion type" << std::endl;
         return -1;
     }
 
@@ -174,7 +174,7 @@ int main(int argc, char* argv[]) {
         return -1;
 
     auto format = Format_from_string(cli_config.format.c_str());
-    const auto convertion = Convertion_from_string(cli_config.convertion.c_str());
+    const auto conversion = Conversion_from_string(cli_config.conversion.c_str());
 
     if (Format::autodetect == format) {
         format = detect_format(cli_config.input_file);
@@ -194,32 +194,32 @@ int main(int argc, char* argv[]) {
                     QCE::E_64_BIT_QQ : QCE::E_NO_QQ
         };
         return convert_file<QCE::TransformAnimation>(
-            cli_config.input_file, cli_config.output_file, convertion, std::move(ctx));
+            cli_config.input_file, cli_config.output_file, conversion, std::move(ctx));
     }
     case Format::scene:
         return convert_file<QCE::SceneDescription>(
-            cli_config.input_file, cli_config.output_file, convertion);
+            cli_config.input_file, cli_config.output_file, conversion);
     case Format::mesh:
         return convert_file<QCE::Mesh>(
-            cli_config.input_file, cli_config.output_file, convertion);
+            cli_config.input_file, cli_config.output_file, conversion);
     case Format::camera_system_config:
         return convert_file<QCE::CameraConfig>(
-            cli_config.input_file, cli_config.output_file, convertion);
+            cli_config.input_file, cli_config.output_file, conversion);
     case Format::hid_system_config:
         return convert_file<QCE::HidConfig>(
-            cli_config.input_file, cli_config.output_file, convertion);
+            cli_config.input_file, cli_config.output_file, conversion);
     case Format::movement_system_config:
         return convert_file<QCE::MovementConfig>(
-            cli_config.input_file, cli_config.output_file, convertion);
+            cli_config.input_file, cli_config.output_file, conversion);
     case Format::render_system_config:
         return convert_file<QCE::RenderConfig>(
-            cli_config.input_file, cli_config.output_file, convertion);
+            cli_config.input_file, cli_config.output_file, conversion);
     case Format::graphics_output_config:
         return convert_file<QCE::GraphicsOutputConfig>(
-            cli_config.input_file, cli_config.output_file, convertion);
+            cli_config.input_file, cli_config.output_file, conversion);
     case Format::common_config:
         return convert_file<QCE::CommonConfig>(
-            cli_config.input_file, cli_config.output_file, convertion);
+            cli_config.input_file, cli_config.output_file, conversion);
     default:
         assert(!"Unsupported format");
         return -1;
