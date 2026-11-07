@@ -45,34 +45,36 @@ namespace {
         const auto output_path_exists = std::filesystem::exists(output_directory, error);
         if (error) {
             std::cerr << "Failed to inspect output path: " << output_directory.string()
-                      << " (" << error.message() << ")\n";
+                      << " " << error.message() << std::endl;
             return false;
         }
         if (output_path_exists) {
             const auto output_is_directory = std::filesystem::is_directory(output_directory, error);
             if (error) {
                 std::cerr << "Failed to inspect output path: " << output_directory.string()
-                          << " (" << error.message() << ")\n";
+                          << " " << error.message() << std::endl;
                 return false;
             }
             if (!output_is_directory) {
-                std::cerr << "Output path is not a directory: " << output_directory.string() << '\n';
+                std::cerr << "Output path is not a directory: "
+                          << output_directory.string() << std::endl;
                 return false;
             }
             return true;
         }
-        if (std::filesystem::create_directories(output_directory, error)) {
+
+        if (std::filesystem::create_directories(output_directory, error))
             return true;
-        }
+
         if (error) {
             std::cerr << "Failed to create output directory: " << output_directory.string()
-                      << " (" << error.message() << ")\n";
+                      << " " << error.message() << std::endl;
             return false;
         }
         const auto output_is_directory = std::filesystem::is_directory(output_directory, error);
         if (error) {
             std::cerr << "Failed to inspect output path: " << output_directory.string()
-                      << " (" << error.message() << ")\n";
+                      << " " << error.message() << std::endl;
             return false;
         }
         return output_is_directory;
@@ -99,25 +101,26 @@ namespace {
             std::set<std::string>& output_names,
             std::vector<std::filesystem::path>& output_paths) {
         if (!is_single_filename_component(mesh_id)) {
-            std::cerr << "Mesh name must be a single filename component: " << mesh_id << '\n';
+            std::cerr << "Mesh name must be a single filename component: "
+                      << mesh_id << std::endl;
             return false;
         }
 
         auto output_path = output_directory / (mesh_id + extension);
         if (!output_names.insert(make_collision_key(output_path)).second) {
             std::cerr << "Multiple meshes map to the same output file: "
-                      << output_path.string() << '\n';
+                      << output_path.string() << std::endl;
             return false;
         }
 
         std::error_code error;
         if (std::filesystem::exists(output_path, error)) {
-            std::cerr << "Output file already exists: " << output_path.string() << '\n';
+            std::cerr << "Output file already exists: " << output_path.string() << std::endl;
             return false;
         }
         if (error) {
             std::cerr << "Failed to inspect output file: " << output_path.string()
-                      << " (" << error.message() << ")\n";
+                      << " " << error.message() << std::endl;
             return false;
         }
 
@@ -155,11 +158,11 @@ namespace {
         const auto load_result = QCE::load_obj_file(input_path, resources, model_descriptions);
         if (load_result != QCE::ErrorCode::SUCCESS) {
             std::cerr << "Failed to load OBJ file: " << input_path.string()
-                      << " (" << QCE::describe_error(load_result) << ")\n";
+                      << " " << QCE::describe_error(load_result) << std::endl;
             return -1;
         }
         if (resources.meshes.empty()) {
-            std::cerr << "OBJ file contains no meshes: " << input_path.string() << '\n';
+            std::cerr << "OBJ file contains no meshes: " << input_path.string() << std::endl;
             return -1;
         }
 
@@ -180,10 +183,10 @@ namespace {
                 : QCE::write_to_binary(output_path, mesh);
             if (write_result != QCE::ErrorCode::SUCCESS) {
                 std::cerr << "Failed to write mesh file: " << output_path.string()
-                          << " (" << QCE::describe_error(write_result) << ")\n";
+                          << " " << QCE::describe_error(write_result) << std::endl;
                 return -1;
             }
-            std::cout << "Wrote mesh: " << output_path.string() << '\n';
+            std::cout << "Wrote mesh: " << output_path.string() << std::endl;
         }
 
         return 0;
@@ -197,7 +200,7 @@ int main(int argc, char* argv[]) {
 
     const auto conversion = Conversion_from_string(cli_config.conversion.c_str());
     if (conversion == Conversion::E_Conversion_UNKNOWN) {
-        std::cerr << "Unknown conversion type: " << cli_config.conversion << '\n';
+        std::cerr << "Unknown conversion type: " << cli_config.conversion << std::endl;
         return 1;
     }
 
