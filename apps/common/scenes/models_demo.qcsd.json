@@ -1,0 +1,51 @@
+{
+    "resources": [
+        {
+            "name": "plane",
+            "params": {
+                "type": "plane",
+                "length": 10.0,
+                "width": 10.0,
+                "hard_edges": false,
+                "repeat_uv": true,
+                "unit_squares": true
+            }
+        },
+        {
+            "name": "edges.bc7",
+            "params": {
+                "type": "texture",
+                "texture_type": "texture_2d"
+            }
+        },
+        {
+            "name": "plane_material",
+            "params": {
+                "type": "material",
+                "albedo_color": "white",
+                "fresnel": [0.01, 0.01, 0.01],
+                "shininess": 0.75,
+                "albedo_texture": "edges.bc7"
+            }
+        }
+    ],
+    "entities": [
+        {
+            "name": "plane",
+            "static_mesh": "plane",
+            "transform": {
+                "rotation": [0.0, 0.0, 0.0, 1.0],
+                "position": [0.0, 0.0, 0.0],
+                "scale": [1.0, 1.0, 1.0]
+            },
+            "material": "plane_material"
+        },
+        {
+            "name": "sun",
+            "directional_light": {
+                "color": "gray",
+                "direction": [1.0, -2.0, 3.0]
+            }
+        }
+    ]
+}
