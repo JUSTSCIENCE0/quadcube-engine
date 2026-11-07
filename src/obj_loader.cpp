@@ -23,10 +23,25 @@ namespace QCE {
         inline bool is_valid_optional_obj_index(int index, std::size_t count) {
             return index == -1 || is_valid_obj_index(index, count);
         }
+
+        inline std::string resolve_material_id(
+                const std::vector<tinyobj::material_t>& materials,
+                const std::vector<int>& material_ids) {
+            for (const auto material_id : material_ids) {
+                if (material_id >= 0 && static_cast<std::size_t>(material_id) < materials.size())
+                    return materials[material_id].name;
+            }
+            return {};
+        }
     }
 
-    // TODO: add support for materials and textures
-    ErrorCode load_obj_file(const std::filesystem::path& path, std::vector<Mesh>& meshes) {
+    ErrorCode load_obj_file(
+            const std::filesystem::path& path,
+            ModelResources& resources,
+            std::vector<ModelDescription>& model_descriptions) {
+        resources = {};
+        model_descriptions.clear();
+
         if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
             return ErrorCode::E_ENG_FILE_NOT_FOUND;
         }
@@ -47,15 +62,32 @@ namespace QCE {
         }
 
         const auto& attrib = reader.GetAttrib();
+        const auto& materials = reader.GetMaterials();
+        resources.materials.reserve(materials.size());
+        for (const auto& material : materials) {
+            Material loaded_material{};
+            loaded_material.id = material.name;
+            loaded_material.albedo_color.r() = material.diffuse[0];
+            loaded_material.albedo_color.g() = material.diffuse[1];
+            loaded_material.albedo_color.b() = material.diffuse[2];
+            loaded_material.albedo_color.a() = (material.dissolve >= 0.0f && material.dissolve <= 1.0f)
+                ? material.dissolve
+                : 1.0f;
+            loaded_material.shininess = material.shininess;
+            resources.materials.push_back(std::move(loaded_material));
+        }
+
         using ObjIndex = std::tuple<int, int, int>;
         const auto max_index = static_cast<std::size_t>(std::numeric_limits<index_t>::max());
-        std::vector<Mesh> loaded_meshes;
         const auto& shapes = reader.GetShapes();
-        loaded_meshes.reserve(shapes.size());
+        resources.meshes.reserve(shapes.size());
+        model_descriptions.reserve(shapes.size());
 
-        for (const auto& shape: shapes) {
+        for (const auto& shape : shapes) {
             Mesh loaded_mesh{};
-            loaded_mesh.id = shape.name;
+            loaded_mesh.id = shape.name.empty()
+                ? "mesh_" + std::to_string(resources.meshes.size())
+                : shape.name;
             std::map<ObjIndex, std::size_t> vertex_map;
 
             for (const auto& obj_index : shape.mesh.indices) {
@@ -98,15 +130,13 @@ namespace QCE {
 
                 const auto position_offset = obj_index.vertex_index * 3;
                 for (index_t component = 0; component < 3; ++component) {
-                    loaded_vertex.position.arr[component] =
-                        attrib.vertices[position_offset + component];
+                    loaded_vertex.position.arr[component] = attrib.vertices[position_offset + component];
                 }
 
                 if (obj_index.normal_index >= 0) {
                     const auto normal_offset = obj_index.normal_index * 3;
                     for (index_t component = 0; component < 3; ++component) {
-                        loaded_vertex.normal.arr[component] =
-                            attrib.normals[normal_offset + component];
+                        loaded_vertex.normal.arr[component] = attrib.normals[normal_offset + component];
                     }
                 }
 
@@ -121,10 +151,13 @@ namespace QCE {
                 loaded_mesh.indices.push_back(static_cast<index_t>(vertex_index));
             }
 
-            loaded_meshes.push_back(std::move(loaded_mesh));
+            resources.meshes.push_back(std::move(loaded_mesh));
+            model_descriptions.push_back({
+                resources.meshes.back().id,
+                resolve_material_id(materials, shape.mesh.material_ids)
+            });
         }
 
-        meshes = std::move(loaded_meshes);
         return ErrorCode::SUCCESS;
     }
 }

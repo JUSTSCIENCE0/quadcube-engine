@@ -145,6 +145,7 @@ set(QCE_OBJECTS_HDRS
     include/qce/objects/texture.hpp
     include/qce/objects/material.hpp
     include/qce/objects/animation.hpp
+    include/qce/objects/model.hpp
 )
 set(QCE_OBJECTS_IMPL
     src/resource_manager.cpp

@@ -6,11 +6,11 @@
 #pragma once
 
 #include <qce/ancillary/error_codes.hpp>
-#include <qce/objects/mesh.hpp>
+#include <qce/objects/model.hpp>
 
 #include <filesystem>
 #include <vector>
 
 namespace QCE {
-    ErrorCode load_obj_file(const std::filesystem::path& path, std::vector<Mesh>& meshes);
+    ErrorCode load_obj_file(const std::filesystem::path& path, ModelResources& resources, std::vector<ModelDescription>& model_descriptions);
 }
