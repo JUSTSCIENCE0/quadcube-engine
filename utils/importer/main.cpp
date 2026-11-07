@@ -1,0 +1,205 @@
+// Copyright (c) 2026, Yakov Usoltsev
+// Email: yakovmen62@gmail.com
+//
+// License: MIT
+
+#define CLI_CONFIGURATION \
+    CLI_REQUIRED_PROPERTY(input, SYMBOL(i), input_file, "Input file path (mesh geometry only)", \
+        std::string, BaseValidator) \
+    CLI_REQUIRED_PROPERTY(output, SYMBOL(o), output_directory, "Output directory path", \
+        std::string, BaseValidator) \
+    CLI_REQUIRED_PROPERTY(conversion, SYMBOL(c), conversion, "Output format", \
+        std::string, ListValidator, "to_json", "to_bin")
+
+#define CLI_ABOUT \
+    "Copyright (c) 2026, Yakov Usoltsev\n" \
+    "Email: yakovmen62@gmail.com\n" \
+    "License: MIT"
+
+#include <cu/cli-utils.hpp>
+
+#include <qce/ancillary/extensions.hpp>
+#include <qce/ancillary/error_codes.hpp>
+#include <qce/loaders/binary/obj.hpp>
+#include <qce/loaders/write.hpp>
+
+#define CU_ENUMS_DESCRIPTION \
+    CU_BEGIN_ENUM(Conversion) \
+        CU_ENUM_UNIT(to_json) \
+        CU_ENUM_UNIT(to_bin) \
+    CU_END_ENUM(Conversion)
+#include <cu/enum-utils.hpp>
+#undef CU_ENUMS_DESCRIPTION
+
+#include <algorithm>
+#include <cctype>
+#include <filesystem>
+#include <iostream>
+#include <set>
+#include <string>
+#include <vector>
+
+namespace {
+    static inline bool ensure_output_directory_exists(const std::filesystem::path& output_directory) {
+        std::error_code error;
+        const auto output_path_exists = std::filesystem::exists(output_directory, error);
+        if (error) {
+            std::cerr << "Failed to inspect output path: " << output_directory.string()
+                      << " (" << error.message() << ")\n";
+            return false;
+        }
+        if (output_path_exists) {
+            const auto output_is_directory = std::filesystem::is_directory(output_directory, error);
+            if (error) {
+                std::cerr << "Failed to inspect output path: " << output_directory.string()
+                          << " (" << error.message() << ")\n";
+                return false;
+            }
+            if (!output_is_directory) {
+                std::cerr << "Output path is not a directory: " << output_directory.string() << '\n';
+                return false;
+            }
+            return true;
+        }
+        if (std::filesystem::create_directories(output_directory, error)) {
+            return true;
+        }
+        if (error) {
+            std::cerr << "Failed to create output directory: " << output_directory.string()
+                      << " (" << error.message() << ")\n";
+            return false;
+        }
+        const auto output_is_directory = std::filesystem::is_directory(output_directory, error);
+        if (error) {
+            std::cerr << "Failed to inspect output path: " << output_directory.string()
+                      << " (" << error.message() << ")\n";
+            return false;
+        }
+        return output_is_directory;
+    }
+
+    static inline bool is_single_filename_component(const std::string& name) {
+        const std::filesystem::path path{name};
+        return !name.empty() && name != "." && name != ".." &&
+            !path.has_parent_path() && !path.has_root_name() &&
+            !path.has_root_directory() && path.filename().string() == name;
+    }
+
+    static inline std::string make_collision_key(const std::filesystem::path& path) {
+        auto key = path.filename().string();
+        std::transform(key.begin(), key.end(), key.begin(),
+            [](unsigned char character) { return static_cast<char>(std::tolower(character)); });
+        return key;
+    }
+
+    static inline bool append_mesh_output_path(
+            const std::filesystem::path& output_directory,
+            const std::string& mesh_id,
+            const std::string& extension,
+            std::set<std::string>& output_names,
+            std::vector<std::filesystem::path>& output_paths) {
+        if (!is_single_filename_component(mesh_id)) {
+            std::cerr << "Mesh name must be a single filename component: " << mesh_id << '\n';
+            return false;
+        }
+
+        auto output_path = output_directory / (mesh_id + extension);
+        if (!output_names.insert(make_collision_key(output_path)).second) {
+            std::cerr << "Multiple meshes map to the same output file: "
+                      << output_path.string() << '\n';
+            return false;
+        }
+
+        std::error_code error;
+        if (std::filesystem::exists(output_path, error)) {
+            std::cerr << "Output file already exists: " << output_path.string() << '\n';
+            return false;
+        }
+        if (error) {
+            std::cerr << "Failed to inspect output file: " << output_path.string()
+                      << " (" << error.message() << ")\n";
+            return false;
+        }
+
+        output_paths.push_back(std::move(output_path));
+        return true;
+    }
+
+    static inline bool prepare_mesh_output_paths(
+            const std::vector<QCE::Mesh>& meshes,
+            const std::filesystem::path& output_directory,
+            const std::string& extension,
+            std::vector<std::filesystem::path>& output_paths) {
+        if (!ensure_output_directory_exists(output_directory)) {
+            return false;
+        }
+
+        std::set<std::string> output_names;
+        output_paths.clear();
+        output_paths.reserve(meshes.size());
+        for (const auto& mesh : meshes) {
+            if (!append_mesh_output_path(
+                    output_directory, mesh.id, extension, output_names, output_paths)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static inline int import_obj(
+            const std::filesystem::path& input_path,
+            const std::filesystem::path& output_directory,
+            Conversion conversion) {
+        QCE::ModelResources resources{};
+        std::vector<QCE::ModelDescription> model_descriptions{};
+        const auto load_result = QCE::load_obj_file(input_path, resources, model_descriptions);
+        if (load_result != QCE::ErrorCode::SUCCESS) {
+            std::cerr << "Failed to load OBJ file: " << input_path.string()
+                      << " (" << QCE::describe_error(load_result) << ")\n";
+            return -1;
+        }
+        if (resources.meshes.empty()) {
+            std::cerr << "OBJ file contains no meshes: " << input_path.string() << '\n';
+            return -1;
+        }
+
+        const auto extension = conversion == Conversion::to_json
+            ? "." + std::string{QCE::MESH_CONTAINER} + ".json"
+            : "." + std::string{QCE::MESH_CONTAINER};
+        std::vector<std::filesystem::path> output_paths;
+        if (!prepare_mesh_output_paths(
+                resources.meshes, output_directory, extension, output_paths)) {
+            return -1;
+        }
+
+        for (std::size_t mesh_index = 0; mesh_index < resources.meshes.size(); ++mesh_index) {
+            const auto& mesh = resources.meshes[mesh_index];
+            const auto& output_path = output_paths[mesh_index];
+            const auto write_result = conversion == Conversion::to_json
+                ? QCE::write_to_json(output_path, mesh)
+                : QCE::write_to_binary(output_path, mesh);
+            if (write_result != QCE::ErrorCode::SUCCESS) {
+                std::cerr << "Failed to write mesh file: " << output_path.string()
+                          << " (" << QCE::describe_error(write_result) << ")\n";
+                return -1;
+            }
+            std::cout << "Wrote mesh: " << output_path.string() << '\n';
+        }
+
+        return 0;
+    }
+}
+
+int main(int argc, char* argv[]) {
+    CU::CLIConfig cli_config{};
+    if (!CU::parse_cli_args(argc, argv, &cli_config))
+        return -1;
+
+    const auto conversion = Conversion_from_string(cli_config.conversion.c_str());
+    if (conversion == Conversion::E_Conversion_UNKNOWN) {
+        std::cerr << "Unknown conversion type: " << cli_config.conversion << '\n';
+        return 1;
+    }
+
+    return import_obj(cli_config.input_file, cli_config.output_directory, conversion);
+}
