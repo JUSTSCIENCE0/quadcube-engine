@@ -21,6 +21,22 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
+qce_import_obj_if_missing(
+    ${PROJECT_NAME}
+    "${CMAKE_CURRENT_LIST_DIR}/assets/prism.obj"
+    "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/prism.qcsm"
+)
+qce_import_obj_if_missing(
+    ${PROJECT_NAME}
+    "${CMAKE_CURRENT_LIST_DIR}/assets/palm.obj"
+    "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/palm.qcsm"
+)
+qce_import_obj_if_missing(
+    ${PROJECT_NAME}
+    "${CMAKE_CURRENT_LIST_DIR}/assets/palm_smooth.obj"
+    "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/palm_smooth.qcsm"
+)
+
 qce_create_resources_directory(${PROJECT_NAME})
 set(SHADERS_QCE
     simple_vs

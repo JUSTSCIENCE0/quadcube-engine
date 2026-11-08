@@ -12,6 +12,27 @@
             }
         },
         {
+            "name": "prism",
+            "params": {
+                "type": "mesh",
+                "is_empty": false
+            }
+        },
+        {
+            "name": "palm",
+            "params": {
+                "type": "mesh",
+                "is_empty": false
+            }
+        },
+        {
+            "name": "palm_smooth",
+            "params": {
+                "type": "mesh",
+                "is_empty": false
+            }
+        },
+        {
             "name": "edges.bc7",
             "params": {
                 "type": "texture",
@@ -27,6 +48,15 @@
                 "shininess": 0.75,
                 "albedo_texture": "edges.bc7"
             }
+        },
+        {
+            "name": "untextured_material",
+            "params": {
+                "type": "material",
+                "albedo_color": "gray",
+                "fresnel": [ 0.01, 0.01, 0.01],
+                "shininess": 0.75
+            }
         }
     ],
     "entities": [
@@ -39,6 +69,36 @@
                 "scale": [1.0, 1.0, 1.0]
             },
             "material": "plane_material"
+        },
+        {
+            "name": "prism",
+            "static_mesh": "prism",
+            "transform": {
+                "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                "position": [ -3.0, 0.0, -2.0 ],
+                "scale": [ 1.0, 1.0, 1.0 ]
+            },
+            "material": "untextured_material"
+        },
+        {
+            "name": "palm",
+            "static_mesh": "palm",
+            "transform": {
+                "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                "position": [ 0.0, 0.0, -2.0 ],
+                "scale": [ 0.5, 0.5, 0.5 ]
+            },
+            "material": "untextured_material"
+        },
+        {
+            "name": "palm_smooth",
+            "static_mesh": "palm_smooth",
+            "transform": {
+                "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                "position": [ 3.0, 0.0, -2.0 ],
+                "scale": [ 0.5, 0.5, 0.5 ]
+            },
+            "material": "untextured_material"
         },
         {
             "name": "sun",
