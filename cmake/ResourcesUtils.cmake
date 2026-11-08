@@ -90,3 +90,39 @@ function(qce_add_assets target_name assets_dir is_copy)
         )
     endif()
 endfunction()
+
+# Import an OBJ file when its expected mesh output is missing.
+function(qce_import_obj_if_missing target_name obj_file mesh_file)
+    if (NOT TARGET ${target_name})
+        message(FATAL_ERROR "Target ${target_name} does not exist")
+    endif()
+    if (NOT TARGET qce-importer)
+        message(FATAL_ERROR "Target qce-importer does not exist")
+    endif()
+    if (NOT EXISTS "${obj_file}")
+        message(FATAL_ERROR "OBJ file ${obj_file} does not exist")
+    endif()
+
+    add_dependencies(${target_name} qce-importer)
+
+    get_filename_component(mesh_file "${mesh_file}" ABSOLUTE)
+    if (NOT EXISTS "${mesh_file}")
+        get_filename_component(mesh_directory "${mesh_file}" DIRECTORY)
+        get_filename_component(mesh_target_name "${mesh_file}" NAME_WE)
+        set(import_target_name "${target_name}-${mesh_target_name}-mesh")
+
+        add_custom_command(
+            OUTPUT "${mesh_file}"
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${mesh_directory}"
+            COMMAND $<TARGET_FILE:qce-importer>
+                    --input "${obj_file}"
+                    --output "${mesh_directory}"
+                    --conversion to_bin
+            COMMENT "Importing ${obj_file}"
+            VERBATIM
+        )
+        add_custom_target(${import_target_name} DEPENDS "${mesh_file}")
+        add_dependencies(${import_target_name} qce-importer)
+        add_dependencies(${target_name} ${import_target_name})
+    endif()
+endfunction()
