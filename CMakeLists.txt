@@ -414,6 +414,8 @@ include(cmake/SceneUtils.cmake)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY INCLUDE_DIR_POSTFIX "qce")
 
+add_subdirectory(utils)
+
 if (BUILD_QCE_APPS)
     add_subdirectory(apps)
 endif(BUILD_QCE_APPS)
@@ -421,7 +423,5 @@ endif(BUILD_QCE_APPS)
 if (BUILD_QCE_TEST)
     add_subdirectory(tests)
 endif(BUILD_QCE_TEST)
-
-add_subdirectory(utils)
 
 target_interface_group(common-utils)
