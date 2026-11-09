@@ -40,6 +40,13 @@
             }
         },
         {
+            "name": "prism.bc7",
+            "params": {
+                "type": "texture",
+                "texture_type": "texture_2d"
+            }
+        },
+        {
             "name": "plane_material",
             "params": {
                 "type": "material",
@@ -56,6 +63,16 @@
                 "albedo_color": "gray",
                 "fresnel": [ 0.01, 0.01, 0.01],
                 "shininess": 0.75
+            }
+        },
+        {
+            "name": "prism_material",
+            "params": {
+                "type": "material",
+                "albedo_color": "white",
+                "fresnel": [ 0.01, 0.01, 0.01],
+                "shininess": 0.75,
+                "albedo_texture": "prism.bc7"
             }
         }
     ],
@@ -78,7 +95,7 @@
                 "position": [ -3.0, 0.0, -2.0 ],
                 "scale": [ 1.0, 1.0, 1.0 ]
             },
-            "material": "untextured_material"
+            "material": "prism_material"
         },
         {
             "name": "palm",
