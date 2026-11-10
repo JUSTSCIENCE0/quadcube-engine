@@ -39,10 +39,12 @@ namespace QCE {
     };
 
     struct MaterialParams {
+        std::optional<bool> load_from_file = std::nullopt;
+
         /// base
-        color_rgba albedo_color = WHITE;
-        float3d    fresnel = { 0.01f, 0.01f, 0.01f };
-        float      shininess = 0.75f;
+        std::optional<color_rgba> albedo_color = WHITE;
+        std::optional<float3d>    fresnel = float3d{ 0.01f, 0.01f, 0.01f };
+        std::optional<float>      shininess = 0.75f;
 
         /// textures
         std::optional<std::string> albedo_texture    = std::nullopt;

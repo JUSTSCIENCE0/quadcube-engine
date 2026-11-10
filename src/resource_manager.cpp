@@ -112,6 +112,21 @@ namespace QCE {
         return Add(std::move(mesh));
     }
 
+    ErrorCode ResourceManager::AddMaterial(const std::string& material_name) {
+        if (material_name.empty())
+            return ErrorCode::E_RM_EMPTY_RESOURCE_NAME;
+
+        const auto file_name = m_materials_directory / (material_name + "." + MATERIAL_CONTAINER);
+
+        QCE::Material material{};
+        QCE_CRITICAL(read_from_file(file_name, material));
+
+        if (material.id != material_name)
+            return ErrorCode::E_RM_WRONG_RESOURCE_NAME;
+
+        return Add(std::move(material));
+    }
+
     ErrorCode ResourceManager::LoadResources(const std::vector<ResourceDescription>& resources) {
         for (const auto& resource : resources) {
             auto result = std::visit([this, &resource](const auto& params) {
@@ -134,11 +149,19 @@ namespace QCE {
                     return AddTexture(resource.name);
                 }
                 else if constexpr (std::is_same_v<T, MaterialParams>) {
+                    if (params.load_from_file.value_or(false))
+                        return AddMaterial(resource.name);
+
+                    if (!params.albedo_color.has_value() ||
+                        !params.fresnel.has_value() ||
+                        !params.shininess.has_value())
+                        return ErrorCode::E_RM_MATERIAL_INVALID_PARAMS;
+
                     QCE::Material material{};
                     material.id = resource.name;
-                    material.albedo_color = params.albedo_color;
-                    material.fresnel = params.fresnel;
-                    material.shininess = params.shininess;
+                    material.albedo_color = params.albedo_color.value();
+                    material.fresnel = params.fresnel.value();
+                    material.shininess = params.shininess.value();
                     if (params.albedo_texture.has_value()) {
                         const auto texture_index =
                             GetIndex<QCE::Texture2D>(params.albedo_texture.value());

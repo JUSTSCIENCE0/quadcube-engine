@@ -95,6 +95,7 @@ namespace QCE {
         CU_ENUM_UNIT(E_RM_UNKNOWN_RESOURCE_TYPE) \
         CU_ENUM_UNIT(E_RM_EMPTY_RESOURCE_NAME) \
         CU_ENUM_UNIT(E_RM_WRONG_RESOURCE_NAME) \
+        CU_ENUM_UNIT(E_RM_MATERIAL_INVALID_PARAMS) \
     CU_END_ENUM(ErrorCode)
 #include <cu/enum-utils.hpp>
 #undef CU_ENUMS_DESCRIPTION
@@ -342,6 +343,9 @@ namespace QCE {
             break;
         case ErrorCode::E_RM_WRONG_RESOURCE_NAME:
             result << "Resource Manager - Resource name does not match the expected one";
+            break;
+        case ErrorCode::E_RM_MATERIAL_INVALID_PARAMS:
+            result << "Resource Manager - Material is missing required parameters";
             break;
 
         default:

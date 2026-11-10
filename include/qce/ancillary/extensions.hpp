@@ -15,6 +15,7 @@ namespace QCE {
 
     static constexpr auto MESH_CONTAINER          = "qcsm"; // quadcube static mesh
     static constexpr auto SCENE_CONTAINER         = "qcsd"; // quadcube scene description
+    static constexpr auto MATERIAL_CONTAINER      = "qcmd"; // quadcube material description
     static constexpr auto ANIMATION_CONTAINER     = "qcta"; // quadcube transform animation
     static constexpr auto SYSTEM_CONFIG_CONTAINER = "qcsc"; // quadcube system configuration
 }

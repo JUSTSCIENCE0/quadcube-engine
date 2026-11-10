@@ -71,6 +71,8 @@ namespace QCE {
 
         ErrorCode AddMesh(const std::string& mesh_name);
 
+        ErrorCode AddMaterial(const std::string& material_name);
+
         template <Resource ResourceT>
         ErrorCode Add(ResourceT resource) {
             auto& storage = std::get<ResourceStorage<ResourceT>>(m_storages);
@@ -128,6 +130,7 @@ namespace QCE {
             m_resources_directory(GetResourcesDirectory()),
             m_shaders_bytecode_directory(m_resources_directory / SHADERS_BYTECODE_SUBDIRECTORY),
             m_textures_directory(m_resources_directory / TEXTURES_SUBDIRECTORY),
+            m_materials_directory(m_resources_directory / MATERIALS_SUBDIRECTORY),
             m_animations_directory(m_resources_directory / ANIMATIONS_SUBDIRECTORY),
             m_meshes_directory(m_resources_directory / MESHES_SUBDIRECTORY) {
             RegisterDefaultCommands();
@@ -223,6 +226,7 @@ namespace QCE {
         static constexpr auto RESOURCES_DIRECTORY = "resources";
         static constexpr auto SHADERS_BYTECODE_SUBDIRECTORY = "shaders";
         static constexpr auto TEXTURES_SUBDIRECTORY = "assets/textures";
+        static constexpr auto MATERIALS_SUBDIRECTORY = "assets/materials";
         static constexpr auto ANIMATIONS_SUBDIRECTORY = "assets/animations";
         static constexpr auto MESHES_SUBDIRECTORY = "assets/meshes";
 
@@ -236,6 +240,7 @@ namespace QCE {
         const std::filesystem::path m_resources_directory;
         const std::filesystem::path m_shaders_bytecode_directory;
         const std::filesystem::path m_textures_directory;
+        const std::filesystem::path m_materials_directory;
         const std::filesystem::path m_animations_directory;
         const std::filesystem::path m_meshes_directory;
 

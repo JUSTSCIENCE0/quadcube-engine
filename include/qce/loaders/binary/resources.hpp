@@ -271,10 +271,37 @@ namespace QCE {
     }
 
     template<typename S>
+    void serialize(S& s, Material& material) {
+        s.object(material.id);
+        s.object(material.albedo_color);
+        s.object(material.fresnel);
+        s.value4b(material.shininess);
+
+        auto serialize_texture_index = [&s](std::optional<size_t>& index) {
+            s.ext(index, bitsery::ext::StdOptional{},
+                [](auto& sb, size_t& value) {
+                    if constexpr (sizeof(size_t) == 8)
+                        sb.value8b(value);
+                    else
+                        sb.value4b(value);
+                });
+        };
+        serialize_texture_index(material.albedo_texture);
+        serialize_texture_index(material.normal_texture);
+        serialize_texture_index(material.metallic_texture);
+        serialize_texture_index(material.roughness_texture);
+        serialize_texture_index(material.occlusion_texture);
+        serialize_texture_index(material.emissive_texture);
+    }
+
+    template<typename S>
     void serialize(S& s, MaterialParams& params) {
+        s.ext(params.load_from_file, bitsery::ext::StdOptional{},
+            [](auto& sb, bool& value) { sb.boolValue(value); });
         s.object(params.albedo_color);
         s.object(params.fresnel);
-        s.value4b(params.shininess);
+        s.ext(params.shininess, bitsery::ext::StdOptional{},
+            [](auto& sb, float& value) { sb.value4b(value); });
 
         s.object(params.albedo_texture);
         s.object(params.normal_texture);
