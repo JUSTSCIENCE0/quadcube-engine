@@ -140,7 +140,11 @@ namespace QCE {
                     material.fresnel = params.fresnel;
                     material.shininess = params.shininess;
                     if (params.albedo_texture.has_value()) {
-                        material.albedo_texture = GetIndex<QCE::Texture2D>(params.albedo_texture.value());
+                        const auto texture_index =
+                            GetIndex<QCE::Texture2D>(params.albedo_texture.value());
+                        if (INVALID_RESOURCE_INDEX == texture_index)
+                            return ErrorCode::E_RM_RESOURCE_NOT_FOUND; // FIXME: resource order in the scene description currently matters
+                        material.albedo_texture = texture_index;
                     }
                     // TODO: add other textures
                     return Add(std::move(material));
