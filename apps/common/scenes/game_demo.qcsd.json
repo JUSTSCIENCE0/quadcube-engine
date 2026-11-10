@@ -105,13 +105,10 @@
             }
         },
         {
-            
             "name": "untextured_material",
             "params": {
                 "type": "material",
-                "albedo_color": "gray",
-                "fresnel": [ 0.01, 0.01, 0.01],
-                "shininess": 0.75
+                "load_from_file": true
             }
         },
         {

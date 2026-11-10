@@ -1,0 +1,6 @@
+{
+    "id": "untextured_material",
+    "albedo_color": "gray",
+    "fresnel": [0.01, 0.01, 0.01],
+    "shininess": 0.75
+}
