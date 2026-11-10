@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 
 #include <qce/loaders/binary/scene.hpp>
+#include <qce/loaders/read.hpp>
 
 #include <math-utils.hpp>
 
@@ -29,6 +30,12 @@ SceneDescription generate_full_sample_scene() {
     material.normal_texture = "normal";
     material.roughness_texture = "roughness";
     material.emissive_texture = "emissive";
+    MaterialParams file_material{
+        .load_from_file = true,
+        .albedo_color = std::nullopt,
+        .fresnel = std::nullopt,
+        .shininess = std::nullopt
+    };
 
     scene.resources = {
         { "cuboid", CuboidParams{ 2.0f, 3.0f, 4.0f } },
@@ -37,6 +44,7 @@ SceneDescription generate_full_sample_scene() {
         { "mesh", MeshParams{ true } },
         { "texture", TextureParams{ E_TEXTYPE_CUBE_MAP } },
         { "material", material },
+        { "file_material", file_material },
         { "animation", AnimationParams{ AnimationType::E_ANIMATION_TRANSFORM } }
     };
 
@@ -135,9 +143,16 @@ protected:
                     EXPECT_EQ(src_params.texture_type, des_params.texture_type);
                 }
                 else if constexpr (std::is_same_v<T, MaterialParams>) {
-                    test::check_color_rgba(src_params.albedo_color, des_params.albedo_color);
-                    test::check_float3d(src_params.fresnel, des_params.fresnel, 0.000001f);
-                    EXPECT_FLOAT_EQ(src_params.shininess, des_params.shininess);
+                    EXPECT_EQ(src_params.load_from_file, des_params.load_from_file);
+                    ASSERT_EQ(src_params.albedo_color.has_value(), des_params.albedo_color.has_value());
+                    ASSERT_EQ(src_params.fresnel.has_value(), des_params.fresnel.has_value());
+                    ASSERT_EQ(src_params.shininess.has_value(), des_params.shininess.has_value());
+                    if (src_params.albedo_color.has_value())
+                        test::check_color_rgba(src_params.albedo_color.value(), des_params.albedo_color.value());
+                    if (src_params.fresnel.has_value())
+                        test::check_float3d(src_params.fresnel.value(), des_params.fresnel.value(), 0.000001f);
+                    if (src_params.shininess.has_value())
+                        EXPECT_FLOAT_EQ(src_params.shininess.value(), des_params.shininess.value());
                     EXPECT_EQ(src_params.albedo_texture, des_params.albedo_texture);
                     EXPECT_EQ(src_params.normal_texture, des_params.normal_texture);
                     EXPECT_EQ(src_params.metallic_texture, des_params.metallic_texture);
@@ -212,6 +227,68 @@ private:
 TEST_P(SceneDescriptionSerializationTest, SerializeDeserialize) {
     Process();
     Validate();
+}
+
+TEST(SceneDescriptionJsonTest, MaterialFileFlagAllowsInlineParametersToBeOmitted) {
+    rapidjson::Document json;
+    json.Parse(R"({
+        "resources": [
+            {
+                "name": "material",
+                "params": {
+                    "type": "material",
+                    "load_from_file": true
+                }
+            }
+        ]
+    })");
+    ASSERT_FALSE(json.HasParseError());
+
+    SceneDescription scene{};
+    ASSERT_EQ(macrojson::read_from_json(nullptr, json, scene), macrojson::E_MJSON_OK);
+    ASSERT_EQ(scene.resources.size(), 1);
+    ASSERT_TRUE(std::holds_alternative<MaterialParams>(scene.resources.front().params));
+
+    const auto& params = std::get<MaterialParams>(scene.resources.front().params);
+    EXPECT_EQ(params.load_from_file, true);
+    EXPECT_FALSE(params.albedo_color.has_value());
+    EXPECT_FALSE(params.fresnel.has_value());
+    EXPECT_FALSE(params.shininess.has_value());
+}
+
+TEST(MaterialSerializationTest, SerializesMaterialResource) {
+    Material source{};
+    source.id = "material";
+    source.albedo_color = { 0.2f, 0.4f, 0.6f, 1.0f };
+    source.fresnel = { 0.1f, 0.2f, 0.3f };
+    source.shininess = 0.85f;
+    source.albedo_texture = 1;
+    source.normal_texture = 2;
+    source.metallic_texture = 3;
+    source.roughness_texture = 4;
+    source.occlusion_texture = 5;
+    source.emissive_texture = 6;
+
+    Buffer buffer;
+    const auto written_bytes = bitsery::quickSerialization(OutputAdapter{ buffer }, source);
+    ASSERT_GT(written_bytes, 0);
+
+    Material deserialized{};
+    const auto state = bitsery::quickDeserialization<InputAdapter>(
+        { buffer.begin(), written_bytes }, deserialized);
+    ASSERT_EQ(state.first, bitsery::ReaderError::NoError);
+    ASSERT_TRUE(state.second);
+
+    EXPECT_EQ(deserialized.id, source.id);
+    test::check_color_rgba(source.albedo_color, deserialized.albedo_color);
+    test::check_float3d(source.fresnel, deserialized.fresnel, 0.000001f);
+    EXPECT_FLOAT_EQ(deserialized.shininess, source.shininess);
+    EXPECT_EQ(deserialized.albedo_texture, source.albedo_texture);
+    EXPECT_EQ(deserialized.normal_texture, source.normal_texture);
+    EXPECT_EQ(deserialized.metallic_texture, source.metallic_texture);
+    EXPECT_EQ(deserialized.roughness_texture, source.roughness_texture);
+    EXPECT_EQ(deserialized.occlusion_texture, source.occlusion_texture);
+    EXPECT_EQ(deserialized.emissive_texture, source.emissive_texture);
 }
 
 INSTANTIATE_TEST_SUITE_P(
