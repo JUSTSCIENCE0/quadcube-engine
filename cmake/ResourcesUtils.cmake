@@ -91,7 +91,7 @@ function(qce_add_assets target_name assets_dir is_copy)
     endif()
 endfunction()
 
-# Import an OBJ file when its expected mesh output is missing.
+# Import an OBJ file when its expected mesh or material output is missing.
 function(qce_import_obj_if_missing target_name obj_file mesh_file)
     if (NOT TARGET ${target_name})
         message(FATAL_ERROR "Target ${target_name} does not exist")
@@ -106,22 +106,41 @@ function(qce_import_obj_if_missing target_name obj_file mesh_file)
     add_dependencies(${target_name} qce-importer)
 
     get_filename_component(mesh_file "${mesh_file}" ABSOLUTE)
+    set(import_outputs)
+    set(import_directories)
+    set(importer_arguments
+        --input "${obj_file}"
+        --conversion to_bin
+    )
     if (NOT EXISTS "${mesh_file}")
         get_filename_component(mesh_directory "${mesh_file}" DIRECTORY)
+        list(APPEND import_outputs "${mesh_file}")
+        list(APPEND import_directories "${mesh_directory}")
+        list(APPEND importer_arguments --mesh-output "${mesh_directory}")
+    endif()
+
+    if (ARGC GREATER 3 AND NOT "${ARGV3}" STREQUAL "")
+        get_filename_component(material_file "${ARGV3}" ABSOLUTE)
+        if (NOT EXISTS "${material_file}")
+            get_filename_component(material_directory "${material_file}" DIRECTORY)
+            list(APPEND import_outputs "${material_file}")
+            list(APPEND import_directories "${material_directory}")
+            list(APPEND importer_arguments --material-output "${material_directory}")
+        endif()
+    endif()
+
+    if (import_outputs)
         get_filename_component(mesh_target_name "${mesh_file}" NAME_WE)
-        set(import_target_name "${target_name}-${mesh_target_name}-mesh")
+        set(import_target_name "${target_name}-${mesh_target_name}-import")
 
         add_custom_command(
-            OUTPUT "${mesh_file}"
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${mesh_directory}"
-            COMMAND $<TARGET_FILE:qce-importer>
-                    --input "${obj_file}"
-                    --output "${mesh_directory}"
-                    --conversion to_bin
+            OUTPUT ${import_outputs}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${import_directories}
+            COMMAND $<TARGET_FILE:qce-importer> ${importer_arguments}
             COMMENT "Importing ${obj_file}"
             VERBATIM
         )
-        add_custom_target(${import_target_name} DEPENDS "${mesh_file}")
+        add_custom_target(${import_target_name} DEPENDS ${import_outputs})
         add_dependencies(${import_target_name} qce-importer)
         add_dependencies(${target_name} ${import_target_name})
     endif()

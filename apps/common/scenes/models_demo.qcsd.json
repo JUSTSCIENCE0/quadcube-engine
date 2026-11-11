@@ -57,15 +57,6 @@
             }
         },
         {
-            "name": "untextured_material",
-            "params": {
-                "type": "material",
-                "albedo_color": "gray",
-                "fresnel": [ 0.01, 0.01, 0.01],
-                "shininess": 0.75
-            }
-        },
-        {
             "name": "prism_material",
             "params": {
                 "type": "material",
@@ -73,6 +64,13 @@
                 "fresnel": [ 0.01, 0.01, 0.01],
                 "shininess": 0.75,
                 "albedo_texture": "prism.bc7"
+            }
+        },
+        {
+            "name": "palm_material",
+            "params": {
+                "type": "material",
+                "load_from_file": true
             }
         }
     ],
@@ -105,7 +103,7 @@
                 "position": [ 0.0, 0.0, -2.0 ],
                 "scale": [ 0.5, 0.5, 0.5 ]
             },
-            "material": "untextured_material"
+            "material": "palm_material"
         },
         {
             "name": "palm_smooth",
@@ -115,7 +113,7 @@
                 "position": [ 3.0, 0.0, -2.0 ],
                 "scale": [ 0.5, 0.5, 0.5 ]
             },
-            "material": "untextured_material"
+            "material": "palm_material"
         },
         {
             "name": "sun",

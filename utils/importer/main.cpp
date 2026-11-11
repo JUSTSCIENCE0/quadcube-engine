@@ -4,12 +4,16 @@
 // License: MIT
 
 #define CLI_CONFIGURATION \
-    CLI_REQUIRED_PROPERTY(input, SYMBOL(i), input_file, "Input file path (mesh geometry only)", \
-        std::string, BaseValidator) \
-    CLI_REQUIRED_PROPERTY(output, SYMBOL(o), output_directory, "Output directory path", \
+    CLI_REQUIRED_PROPERTY(input, SYMBOL(i), input_file, "Input OBJ file path", \
         std::string, BaseValidator) \
     CLI_REQUIRED_PROPERTY(conversion, SYMBOL(c), conversion, "Output format", \
-        std::string, ListValidator, "to_json", "to_bin")
+        std::string, ListValidator, "to_json", "to_bin") \
+    CLI_OPTIONAL_PROPERTY(mesh-output, WO_SYMBOL, mesh_output_directory, \
+        "Output directory for meshes; meshes are not saved when omitted", \
+        std::string, "", BaseValidator) \
+    CLI_OPTIONAL_PROPERTY(material-output, WO_SYMBOL, material_output_directory, \
+        "Output directory for binary materials; materials are not saved when omitted", \
+        std::string, "", BaseValidator)
 
 #define CLI_ABOUT \
     "Copyright (c) 2026, Yakov Usoltsev\n" \
@@ -94,7 +98,7 @@ namespace {
         return key;
     }
 
-    static inline bool append_mesh_output_path(
+    static inline bool append_resource_output_path(
             const std::filesystem::path& output_directory,
             const std::string& mesh_id,
             const std::string& extension,
@@ -141,8 +145,29 @@ namespace {
         output_paths.clear();
         output_paths.reserve(meshes.size());
         for (const auto& mesh : meshes) {
-            if (!append_mesh_output_path(
+            if (!append_resource_output_path(
                     output_directory, mesh.id, extension, output_names, output_paths)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static inline bool prepare_material_output_paths(
+            const std::vector<QCE::Material>& materials,
+            const std::filesystem::path& output_directory,
+            std::vector<std::filesystem::path>& output_paths) {
+        if (!ensure_output_directory_exists(output_directory)) {
+            return false;
+        }
+
+        std::set<std::string> output_names;
+        output_paths.clear();
+        output_paths.reserve(materials.size());
+        const auto extension = "." + std::string{QCE::MATERIAL_CONTAINER};
+        for (const auto& material : materials) {
+            if (!append_resource_output_path(
+                    output_directory, material.id, extension, output_names, output_paths)) {
                 return false;
             }
         }
@@ -151,8 +176,14 @@ namespace {
 
     static inline int import_obj(
             const std::filesystem::path& input_path,
-            const std::filesystem::path& output_directory,
+            const std::filesystem::path& mesh_output_directory,
+            const std::filesystem::path& material_output_directory,
             Conversion conversion) {
+        if (mesh_output_directory.empty() && material_output_directory.empty()) {
+            std::cerr << "At least one output directory must be specified" << std::endl;
+            return -1;
+        }
+
         QCE::ModelResources resources{};
         std::vector<QCE::ModelDescription> model_descriptions{};
         const auto load_result = QCE::load_obj_file(input_path, resources, model_descriptions);
@@ -170,23 +201,48 @@ namespace {
             ? "." + std::string{QCE::MESH_CONTAINER} + ".json"
             : "." + std::string{QCE::MESH_CONTAINER};
         std::vector<std::filesystem::path> output_paths;
-        if (!prepare_mesh_output_paths(
-                resources.meshes, output_directory, extension, output_paths)) {
+        if (!mesh_output_directory.empty() &&
+            !prepare_mesh_output_paths(
+                resources.meshes, mesh_output_directory, extension, output_paths)) {
             return -1;
         }
 
-        for (std::size_t mesh_index = 0; mesh_index < resources.meshes.size(); ++mesh_index) {
-            const auto& mesh = resources.meshes[mesh_index];
-            const auto& output_path = output_paths[mesh_index];
-            const auto write_result = conversion == Conversion::to_json
-                ? QCE::write_to_json(output_path, mesh)
-                : QCE::write_to_binary(output_path, mesh);
-            if (write_result != QCE::ErrorCode::SUCCESS) {
-                std::cerr << "Failed to write mesh file: " << output_path.string()
-                          << " " << QCE::describe_error(write_result) << std::endl;
-                return -1;
+        std::vector<std::filesystem::path> material_output_paths;
+        if (!material_output_directory.empty() &&
+            !prepare_material_output_paths(
+                resources.materials, material_output_directory, material_output_paths)) {
+            return -1;
+        }
+
+        if (!mesh_output_directory.empty()) {
+            for (std::size_t mesh_index = 0; mesh_index < resources.meshes.size(); ++mesh_index) {
+                const auto& mesh = resources.meshes[mesh_index];
+                const auto& output_path = output_paths[mesh_index];
+                const auto write_result = conversion == Conversion::to_json
+                    ? QCE::write_to_json(output_path, mesh)
+                    : QCE::write_to_binary(output_path, mesh);
+                if (write_result != QCE::ErrorCode::SUCCESS) {
+                    std::cerr << "Failed to write mesh file: " << output_path.string()
+                              << " " << QCE::describe_error(write_result) << std::endl;
+                    return -1;
+                }
+                std::cout << "Wrote mesh: " << output_path.string() << std::endl;
             }
-            std::cout << "Wrote mesh: " << output_path.string() << std::endl;
+        }
+
+        if (!material_output_directory.empty()) {
+            for (std::size_t material_index = 0;
+                    material_index < resources.materials.size(); ++material_index) {
+                const auto& material = resources.materials[material_index];
+                const auto& output_path = material_output_paths[material_index];
+                const auto write_result = QCE::write_to_binary(output_path, material);
+                if (write_result != QCE::ErrorCode::SUCCESS) {
+                    std::cerr << "Failed to write material file: " << output_path.string()
+                              << " " << QCE::describe_error(write_result) << std::endl;
+                    return -1;
+                }
+                std::cout << "Wrote material: " << output_path.string() << std::endl;
+            }
         }
 
         return 0;
@@ -204,5 +260,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    return import_obj(cli_config.input_file, cli_config.output_directory, conversion);
+    return import_obj(
+        cli_config.input_file,
+        cli_config.mesh_output_directory,
+        cli_config.material_output_directory,
+        conversion);
 }

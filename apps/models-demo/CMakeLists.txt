@@ -25,11 +25,13 @@ qce_import_obj_if_missing(
     ${PROJECT_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/assets/prism.obj"
     "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/prism.qcsm"
+    "${CMAKE_CURRENT_LIST_DIR}/../common/assets/materials/prism_material.qcmd"
 )
 qce_import_obj_if_missing(
     ${PROJECT_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/assets/palm.obj"
     "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/palm.qcsm"
+    "${CMAKE_CURRENT_LIST_DIR}/../common/assets/materials/palm_material.qcmd"
 )
 qce_import_obj_if_missing(
     ${PROJECT_NAME}
