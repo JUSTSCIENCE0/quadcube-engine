@@ -87,6 +87,23 @@ elseif ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES 
     target_compile_options(tinyobjloader PRIVATE -Wno-shadow)
 endif()
 
+if (NOT TARGET fastgltf)
+    FetchContent_Declare(
+        fastgltf
+        GIT_REPOSITORY https://github.com/spnda/fastgltf.git
+        GIT_TAG        87cfbceeeda127ccc9092694279437b700046119 # v1.0.1
+    )
+    set(FASTGLTF_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(fastgltf)
+endif()
+set_property(TARGET fastgltf PROPERTY FOLDER "externals")
+if (MSVC)
+    target_compile_options(fastgltf PRIVATE /wd4456 /wd4458)
+    if (TARGET fastgltf_simdutf)
+        target_compile_options(fastgltf_simdutf PRIVATE /wd4310 /wd4702)
+    endif()
+endif()
+
 find_package(ktx REQUIRED)
 
 # generate mjson headers from configs_description.h
@@ -127,11 +144,13 @@ set(QCE_BINARY_SERIALIZATION_HDRS
     include/qce/loaders/binary/system_configs.hpp
 
     include/qce/loaders/binary/obj.hpp
+    include/qce/loaders/binary/gltf.hpp
 )
 
 set(QCE_BINARY_SERIALIZATION_IMPL
     src/binary_compression.cpp
     src/obj_loader.cpp
+    src/gltf_loader.cpp
 )
 
 set(QCE_OBJECTS_HDRS
@@ -382,6 +401,7 @@ target_link_libraries(${PROJECT_NAME}
         KTX::ktx
         bitsery
         tinyobjloader
+        fastgltf::fastgltf
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
