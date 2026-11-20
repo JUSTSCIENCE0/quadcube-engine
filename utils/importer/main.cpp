@@ -4,7 +4,7 @@
 // License: MIT
 
 #define CLI_CONFIGURATION \
-    CLI_REQUIRED_PROPERTY(input, SYMBOL(i), input_file, "Input OBJ file path", \
+    CLI_REQUIRED_PROPERTY(input, SYMBOL(i), input_file, "Input OBJ, glTF, or GLB file path", \
         std::string, BaseValidator) \
     CLI_REQUIRED_PROPERTY(conversion, SYMBOL(c), conversion, "Output format", \
         std::string, ListValidator, "to_json", "to_bin") \
@@ -24,6 +24,7 @@
 
 #include <qce/ancillary/extensions.hpp>
 #include <qce/ancillary/error_codes.hpp>
+#include <qce/loaders/binary/gltf.hpp>
 #include <qce/loaders/binary/obj.hpp>
 #include <qce/loaders/write.hpp>
 
@@ -174,7 +175,7 @@ namespace {
         return true;
     }
 
-    static inline int import_obj(
+    static inline int import_model(
             const std::filesystem::path& input_path,
             const std::filesystem::path& mesh_output_directory,
             const std::filesystem::path& material_output_directory,
@@ -186,14 +187,30 @@ namespace {
 
         QCE::ModelResources resources{};
         std::vector<QCE::ModelDescription> model_descriptions{};
-        const auto load_result = QCE::load_obj_file(input_path, resources, model_descriptions);
+        auto input_extension = input_path.extension().string();
+        std::transform(input_extension.begin(), input_extension.end(), input_extension.begin(),
+            [](unsigned char character) { return static_cast<char>(std::tolower(character)); });
+        if (!input_extension.empty() && input_extension.front() == '.')
+            input_extension.erase(0, 1);
+
+        QCE::ErrorCode load_result{};
+        if (input_extension == QCE::OBJ_MODEL_CONTAINER)
+            load_result = QCE::load_obj_file(input_path, resources, model_descriptions);
+        else if (input_extension == QCE::GLTF_MODEL_CONTAINER ||
+                 input_extension == QCE::GLB_MODEL_CONTAINER)
+            load_result = QCE::load_gltf_file(input_path, resources, model_descriptions);
+        else {
+            std::cerr << "Unsupported input file extension: " << input_extension << std::endl;
+            return -1;
+        }
+
         if (load_result != QCE::ErrorCode::SUCCESS) {
-            std::cerr << "Failed to load OBJ file: " << input_path.string()
+            std::cerr << "Failed to load model file: " << input_path.string()
                       << " " << QCE::describe_error(load_result) << std::endl;
             return -1;
         }
         if (resources.meshes.empty()) {
-            std::cerr << "OBJ file contains no meshes: " << input_path.string() << std::endl;
+            std::cerr << "Model file contains no meshes: " << input_path.string() << std::endl;
             return -1;
         }
 
@@ -260,7 +277,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    return import_obj(
+    return import_model(
         cli_config.input_file,
         cli_config.mesh_output_directory,
         cli_config.material_output_directory,

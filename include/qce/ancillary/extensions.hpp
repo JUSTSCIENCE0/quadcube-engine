@@ -11,7 +11,9 @@ namespace QCE {
     static constexpr auto DIRECTX12_SHADER_BYTECODE = "cso";
     static constexpr auto VULKAN_SHADER_BYTECODE    = "spv";
 
-    static constexpr auto OBJ_MODEL_CONTAINER       = "obj"; // wavefront obj model
+    static constexpr auto OBJ_MODEL_CONTAINER       = "obj";  // wavefront obj model
+    static constexpr auto GLTF_MODEL_CONTAINER      = "gltf"; // glTF JSON model
+    static constexpr auto GLB_MODEL_CONTAINER       = "glb";  // glTF binary model
 
     static constexpr auto MESH_CONTAINER          = "qcsm"; // quadcube static mesh
     static constexpr auto SCENE_CONTAINER         = "qcsd"; // quadcube scene description
