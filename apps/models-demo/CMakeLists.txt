@@ -21,19 +21,25 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
-qce_import_obj_if_missing(
+qce_import_model_if_missing(
     ${PROJECT_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/assets/prism.obj"
     "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/prism.qcsm"
     "${CMAKE_CURRENT_LIST_DIR}/../common/assets/materials/prism_material.qcmd"
 )
-qce_import_obj_if_missing(
+qce_import_model_if_missing(
+    ${PROJECT_NAME}
+    "${CMAKE_CURRENT_LIST_DIR}/assets/prism.glb"
+    "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/prism_glb.qcsm"
+    "${CMAKE_CURRENT_LIST_DIR}/../common/assets/materials/prism_material_glb.qcmd"
+)
+qce_import_model_if_missing(
     ${PROJECT_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/assets/palm.obj"
     "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/palm.qcsm"
     "${CMAKE_CURRENT_LIST_DIR}/../common/assets/materials/palm_material.qcmd"
 )
-qce_import_obj_if_missing(
+qce_import_model_if_missing(
     ${PROJECT_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/assets/palm_smooth.obj"
     "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/palm_smooth.qcsm"

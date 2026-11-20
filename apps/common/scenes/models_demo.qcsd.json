@@ -19,6 +19,13 @@
             }
         },
         {
+            "name": "prism_glb",
+            "params": {
+                "type": "mesh",
+                "is_empty": false
+            }
+        },
+        {
             "name": "palm",
             "params": {
                 "type": "mesh",
@@ -67,6 +74,13 @@
             }
         },
         {
+            "name": "prism_material_glb",
+            "params": {
+                "type": "material",
+                "load_from_file": true
+            }
+        },
+        {
             "name": "palm_material",
             "params": {
                 "type": "material",
@@ -94,6 +108,16 @@
                 "scale": [ 1.0, 1.0, 1.0 ]
             },
             "material": "prism_material"
+        },
+        {
+            "name": "prism_glb",
+            "static_mesh": "prism_glb",
+            "transform": {
+                "rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+                "position": [ -3.0, 0.0, 2.0 ],
+                "scale": [ 1.0, 1.0, 1.0 ]
+            },
+            "material": "prism_material_glb"
         },
         {
             "name": "palm",
