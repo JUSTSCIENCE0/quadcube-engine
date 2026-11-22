@@ -104,6 +104,10 @@ if (MSVC)
     endif()
 endif()
 
+if (NOT TARGET stb)
+    include(cmake/AddSTB.cmake)
+endif()
+
 find_package(ktx REQUIRED)
 
 # generate mjson headers from configs_description.h
@@ -402,6 +406,7 @@ target_link_libraries(${PROJECT_NAME}
         bitsery
         tinyobjloader
         fastgltf::fastgltf
+        stb
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
