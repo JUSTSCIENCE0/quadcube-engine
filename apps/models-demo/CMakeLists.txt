@@ -41,8 +41,20 @@ qce_import_model_if_missing(
 )
 qce_import_model_if_missing(
     ${PROJECT_NAME}
+    "${CMAKE_CURRENT_LIST_DIR}/assets/palm_hard.glb"
+    "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/palm_hard_glb.qcsm"
+    "${CMAKE_CURRENT_LIST_DIR}/../common/assets/materials/palm_material_hard_glb.qcmd"
+)
+qce_import_model_if_missing(
+    ${PROJECT_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/assets/palm_smooth.obj"
     "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/palm_smooth.qcsm"
+)
+qce_import_model_if_missing(
+    ${PROJECT_NAME}
+    "${CMAKE_CURRENT_LIST_DIR}/assets/palm_smooth.glb"
+    "${CMAKE_CURRENT_LIST_DIR}/../common/assets/meshes/palm_smooth_glb.qcsm"
+    "${CMAKE_CURRENT_LIST_DIR}/../common/assets/materials/palm_material_smooth_glb.qcmd"
 )
 
 qce_create_resources_directory(${PROJECT_NAME})
