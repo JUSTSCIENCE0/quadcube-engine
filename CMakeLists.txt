@@ -108,6 +108,8 @@ if (NOT TARGET stb)
     include(cmake/AddSTB.cmake)
 endif()
 
+include(cmake/FindCompressionator.cmake)
+
 find_package(ktx REQUIRED)
 
 # generate mjson headers from configs_description.h
@@ -403,6 +405,7 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
         common-utils
         KTX::ktx
+        Compressonator
         bitsery
         tinyobjloader
         fastgltf::fastgltf
