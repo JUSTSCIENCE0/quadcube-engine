@@ -151,12 +151,14 @@ set(QCE_BINARY_SERIALIZATION_HDRS
 
     include/qce/loaders/binary/obj.hpp
     include/qce/loaders/binary/gltf.hpp
+    include/qce/loaders/binary/texture.hpp
 )
 
 set(QCE_BINARY_SERIALIZATION_IMPL
     src/binary_compression.cpp
     src/obj_loader.cpp
     src/gltf_loader.cpp
+    src/texture_loader.cpp
 
     src/stb_image.cpp
 )

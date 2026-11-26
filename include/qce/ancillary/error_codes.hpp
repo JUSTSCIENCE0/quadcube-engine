@@ -74,6 +74,9 @@ namespace QCE {
         CU_ENUM_UNIT(E_ENG_BAD_CONFIGS_DIRECTORY) \
         CU_ENUM_UNIT(E_ENG_BAD_CONFIG_FILE) \
         CU_ENUM_UNIT(E_ENG_DYNAMIC_GEOMETRY_BUFFER_OVERFLOW) \
+        CU_ENUM_UNIT(E_ENG_BAD_ARG) \
+        CU_ENUM_UNIT(E_ENG_UNSUPPORTED_CONTAINER) \
+        CU_ENUM_UNIT(E_ENG_INVALID_IMAGE_DATA) \
         CU_VALUED_ENUM_UNIT(GROUP_RESOURCE_MANAGER, 0x60000) \
         CU_ENUM_UNIT(E_RM_MESH_ID_COLLISION) \
         CU_ENUM_UNIT(E_RM_MESH_NOT_FOUND) \
@@ -281,6 +284,15 @@ namespace QCE {
             break;
         case ErrorCode::E_ENG_DYNAMIC_GEOMETRY_BUFFER_OVERFLOW:
             result << "ENGINE - Dynamic geometry buffer overflow";
+            break;
+        case ErrorCode::E_ENG_BAD_ARG:
+            result << "ENGINE - Bad argument";
+            break;
+        case ErrorCode::E_ENG_UNSUPPORTED_CONTAINER:
+            result << "ENGINE - Unsupported container";
+            break;
+        case ErrorCode::E_ENG_INVALID_IMAGE_DATA:
+            result << "ENGINE - Invalid image data";
             break;
 
         /* Group Resource Manager*/
