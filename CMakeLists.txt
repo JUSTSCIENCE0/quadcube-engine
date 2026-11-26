@@ -157,6 +157,8 @@ set(QCE_BINARY_SERIALIZATION_IMPL
     src/binary_compression.cpp
     src/obj_loader.cpp
     src/gltf_loader.cpp
+
+    src/stb_image.cpp
 )
 
 set(QCE_OBJECTS_HDRS
