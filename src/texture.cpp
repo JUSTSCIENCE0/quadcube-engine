@@ -22,6 +22,10 @@ namespace QCE {
 
     Texture2D& Texture2D::operator=(Texture2D&& other) noexcept {
         if (this != &other) {
+            if (ktx) {
+                ktxTexture2_Destroy(static_cast<ktxTexture2 *>(ktx));
+                ktx = nullptr;
+            }
             id = std::move(other.id);
             format = other.format;
             base_width = other.base_width;
