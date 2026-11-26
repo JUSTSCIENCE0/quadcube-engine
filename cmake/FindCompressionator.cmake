@@ -77,6 +77,12 @@ if(Compressonator_FOUND AND NOT TARGET Compressonator)
         MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE
         MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE
     )
+
+    if(MSVC)
+        target_link_options(Compressonator INTERFACE
+            "$<$<CONFIG:Debug>:/IGNORE:4099>"
+        )
+    endif()
 endif()
 
 mark_as_advanced(
