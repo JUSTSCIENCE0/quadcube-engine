@@ -7,8 +7,28 @@
 
 #include <qce/loaders/binary/texture.hpp>
 
+#include <chrono>
 #include <cstdint>
+#include <filesystem>
+#include <string>
+#include <system_error>
 #include <vector>
+
+class ScopedTempFile {
+public:
+    ScopedTempFile() {
+        const auto timestamp = std::chrono::steady_clock::now().time_since_epoch().count();
+        path = std::filesystem::temp_directory_path() /
+            ("qce_texture_save_" + std::to_string(timestamp) + ".ktx2");
+    }
+
+    ~ScopedTempFile() {
+        std::error_code error;
+        std::filesystem::remove(path, error);
+    }
+
+    std::filesystem::path path;
+};
 
 static const std::vector<uint8_t> PNG_IMAGE = {
     0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
@@ -126,4 +146,34 @@ TEST(TextureImportTest, PreservesOutputsWhenInputIsInvalid) {
     EXPECT_EQ(texture.format, previous_format);
     ASSERT_EQ(texture.mip_levels.size(), 1u);
     EXPECT_EQ(texture.mip_levels[0].data, previous_mip_data);
+}
+
+TEST(TextureImportTest, SavesTextureAsKtx2AndLoadsItBack) {
+    QCE::ImageContainer container = QCE::ImageContainer::E_IMAGE_CONTAINER_JPEG;
+    QCE::Texture2D texture;
+    ASSERT_EQ(
+        QCE::import_texture(PNG_IMAGE.data(), PNG_IMAGE.size(), container, texture),
+        QCE::ErrorCode::SUCCESS);
+    ScopedTempFile output;
+
+    ASSERT_EQ(
+        QCE::save_texture_to_ktx2(texture, output.path),
+        QCE::ErrorCode::SUCCESS);
+    ASSERT_TRUE(std::filesystem::exists(output.path));
+
+    QCE::Texture2D loaded_texture;
+    ASSERT_EQ(QCE::texture2d_load(output.path, loaded_texture), QCE::ErrorCode::SUCCESS);
+    EXPECT_EQ(loaded_texture.format, texture.format);
+    EXPECT_EQ(loaded_texture.base_width, texture.base_width);
+    EXPECT_EQ(loaded_texture.base_height, texture.base_height);
+    ASSERT_EQ(loaded_texture.mip_levels.size(), texture.mip_levels.size());
+    EXPECT_EQ(loaded_texture.mip_levels[0].width, texture.mip_levels[0].width);
+    EXPECT_EQ(loaded_texture.mip_levels[0].height, texture.mip_levels[0].height);
+}
+
+TEST(TextureImportTest, RejectsTextureWithoutKtxBacking) {
+    const QCE::Texture2D texture;
+    const auto status = QCE::save_texture_to_ktx2(texture, "unused.ktx2");
+
+    EXPECT_EQ(status, QCE::ErrorCode::E_ENG_BAD_ARG);
 }

@@ -223,4 +223,23 @@ namespace QCE {
 
         return ErrorCode::SUCCESS;
     }
+
+    ErrorCode save_texture_to_ktx2(const Texture2D& texture, const std::filesystem::path& file_path) {
+        if (file_path.empty() || !texture.ktx)
+            return ErrorCode::E_ENG_BAD_ARG;
+
+        const auto output_path = file_path.string();
+        const auto ktx_status = ktxTexture2_WriteToNamedFile(
+            static_cast<ktxTexture2*>(texture.ktx),
+            output_path.c_str());
+        if (ktx_status == KTX_SUCCESS)
+            return ErrorCode::SUCCESS;
+
+        // TODO: use log system
+        std::cerr << "KTX2: Failed to save texture to " << output_path << ": "
+                  << ktxErrorString(ktx_status) << ".\n";
+        if (ktx_status == KTX_FILE_OPEN_FAILED)
+            return ErrorCode::E_ENG_FILE_OPEN_FAILED;
+        return ErrorCode::E_ENG_FILE_WRITE_FAILED;
+    }
 }

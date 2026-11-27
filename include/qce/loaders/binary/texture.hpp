@@ -8,6 +8,8 @@
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/objects/texture.hpp>
 
+#include <filesystem>
+
 namespace QCE {
 #define CU_ENUMS_DESCRIPTION \
     CU_BEGIN_ENUM_TYPED(ImageContainer, int8_t) \
@@ -18,4 +20,5 @@ namespace QCE {
 #undef CU_ENUMS_DESCRIPTION
 
     ErrorCode import_texture(const uint8_t* data, size_t data_size, ImageContainer& container, Texture2D& texture);
+    ErrorCode save_texture_to_ktx2(const Texture2D& texture, const std::filesystem::path& file_path);
 }
