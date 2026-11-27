@@ -453,6 +453,8 @@ if (BUILD_QCE_APPS)
 endif(BUILD_QCE_APPS)
 
 if (BUILD_QCE_TEST)
+    set(BUILD_TESTING ON)
+    include(CTest)
     add_subdirectory(tests)
 endif(BUILD_QCE_TEST)
 

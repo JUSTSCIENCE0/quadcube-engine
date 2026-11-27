@@ -7,11 +7,14 @@ cmake_minimum_required(VERSION 3.22)
 
 project(binary-test)
 
+include(GoogleTest)
+
 add_executable(${PROJECT_NAME}
     animation-test.cpp
     mesh-test.cpp
     scene-test.cpp
     system-config-test.cpp
+    texture-test.cpp
 
     main.cpp
 )
@@ -20,6 +23,8 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
         quadcube-engine
 )
+
+gtest_discover_tests(${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE
