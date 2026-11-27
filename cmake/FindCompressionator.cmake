@@ -79,9 +79,7 @@ if(Compressonator_FOUND AND NOT TARGET Compressonator)
     )
 
     if(MSVC)
-        target_link_options(Compressonator INTERFACE
-            "$<$<CONFIG:Debug>:/IGNORE:4099>"
-        )
+        target_link_options(Compressonator INTERFACE "/IGNORE:4099")
     endif()
 endif()
 
