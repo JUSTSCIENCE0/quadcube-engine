@@ -11,6 +11,7 @@ include(GoogleTest)
 
 add_executable(${PROJECT_NAME}
     animation-test.cpp
+    gltf-test.cpp
     mesh-test.cpp
     scene-test.cpp
     system-config-test.cpp
