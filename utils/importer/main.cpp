@@ -13,6 +13,9 @@
         std::string, "", BaseValidator) \
     CLI_OPTIONAL_PROPERTY(material-output, WO_SYMBOL, material_output_directory, \
         "Output directory for binary materials; materials are not saved when omitted", \
+        std::string, "", BaseValidator) \
+    CLI_OPTIONAL_PROPERTY(texture-output, WO_SYMBOL, texture_output_directory, \
+        "Output directory for KTX2 textures; textures are not saved when omitted", \
         std::string, "", BaseValidator)
 
 #define CLI_ABOUT \
@@ -26,6 +29,7 @@
 #include <qce/ancillary/error_codes.hpp>
 #include <qce/loaders/binary/gltf.hpp>
 #include <qce/loaders/binary/obj.hpp>
+#include <qce/loaders/binary/texture.hpp>
 #include <qce/loaders/write.hpp>
 
 #define CU_ENUMS_DESCRIPTION \
@@ -106,14 +110,14 @@ namespace {
             std::set<std::string>& output_names,
             std::vector<std::filesystem::path>& output_paths) {
         if (!is_single_filename_component(mesh_id)) {
-            std::cerr << "Mesh name must be a single filename component: "
+            std::cerr << "Resource name must be a single filename component: "
                       << mesh_id << std::endl;
             return false;
         }
 
         auto output_path = output_directory / (mesh_id + extension);
         if (!output_names.insert(make_collision_key(output_path)).second) {
-            std::cerr << "Multiple meshes map to the same output file: "
+            std::cerr << "Multiple resources map to the same output file: "
                       << output_path.string() << std::endl;
             return false;
         }
@@ -175,12 +179,36 @@ namespace {
         return true;
     }
 
+    static inline bool prepare_texture_output_paths(
+            const std::vector<QCE::Texture2D>& textures,
+            const std::filesystem::path& output_directory,
+            std::vector<std::filesystem::path>& output_paths) {
+        if (!ensure_output_directory_exists(output_directory)) {
+            return false;
+        }
+
+        std::set<std::string> output_names;
+        output_paths.clear();
+        output_paths.reserve(textures.size());
+        const auto extension = "." + std::string{QCE::TEXTURE_CONTAINER};
+        for (const auto& texture : textures) {
+            if (!append_resource_output_path(
+                    output_directory, texture.id, extension, output_names, output_paths)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     static inline int import_model(
             const std::filesystem::path& input_path,
             const std::filesystem::path& mesh_output_directory,
             const std::filesystem::path& material_output_directory,
+            const std::filesystem::path& texture_output_directory,
             Conversion conversion) {
-        if (mesh_output_directory.empty() && material_output_directory.empty()) {
+        if (mesh_output_directory.empty() &&
+            material_output_directory.empty() &&
+            texture_output_directory.empty()) {
             std::cerr << "At least one output directory must be specified" << std::endl;
             return -1;
         }
@@ -231,6 +259,13 @@ namespace {
             return -1;
         }
 
+        std::vector<std::filesystem::path> texture_output_paths;
+        if (!texture_output_directory.empty() &&
+            !prepare_texture_output_paths(
+                resources.textures, texture_output_directory, texture_output_paths)) {
+            return -1;
+        }
+
         if (!mesh_output_directory.empty()) {
             for (std::size_t mesh_index = 0; mesh_index < resources.meshes.size(); ++mesh_index) {
                 const auto& mesh = resources.meshes[mesh_index];
@@ -262,6 +297,21 @@ namespace {
             }
         }
 
+        if (!texture_output_directory.empty()) {
+            for (std::size_t texture_index = 0;
+                    texture_index < resources.textures.size(); ++texture_index) {
+                const auto& texture = resources.textures[texture_index];
+                const auto& output_path = texture_output_paths[texture_index];
+                const auto write_result = QCE::save_texture_to_ktx2(texture, output_path);
+                if (write_result != QCE::ErrorCode::SUCCESS) {
+                    std::cerr << "Failed to write texture file: " << output_path.string()
+                              << " " << QCE::describe_error(write_result) << std::endl;
+                    return -1;
+                }
+                std::cout << "Wrote texture: " << output_path.string() << std::endl;
+            }
+        }
+
         return 0;
     }
 }
@@ -281,5 +331,6 @@ int main(int argc, char* argv[]) {
         cli_config.input_file,
         cli_config.mesh_output_directory,
         cli_config.material_output_directory,
+        cli_config.texture_output_directory,
         conversion);
 }
